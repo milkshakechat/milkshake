@@ -6,7 +6,7 @@
 - [✅] Check for auto-reconnecting websockets
 - [✅] Set up pwa manifest and service worker, test deploy with ngrok
 - [✅] Set up Zustrand
-- [ ] Set up client routing with react-router
+- [✅] Set up client routing with react-router
 - [ ] Set up Firebase auth
 - [ ] Set up Firebase storage
 - [ ] Set up Firestore database

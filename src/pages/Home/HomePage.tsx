@@ -1,7 +1,7 @@
 import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import TemplateComponentGQL from "@/components/Template/TemplateComponentGQL";
+import logo from "../../logo.svg";
+import "./HomePage.css";
+import TemplateComponentGQL from "@/components/TemplateComponentGQL/TemplateComponentGQL";
 import DarkModeSwitch from "@/components/DarkModeSwitch/DarkModeSwitch";
 
 function App() {

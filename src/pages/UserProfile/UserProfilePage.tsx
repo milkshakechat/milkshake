@@ -4,9 +4,12 @@ import {
   useDemoPing,
   useDemoQuery,
   useDemoSubscription,
-} from "@/components/Template/useTemplate.graphql";
+} from "@/components/TemplateComponentGQL/useTemplate.graphql";
+import { useParams } from "react-router-dom";
 
-export const TemplateComponentGQL = () => {
+export const UserProfilePage = () => {
+  const { username } = useParams();
+
   const {
     data: demoQueryData,
     error: demoQueryError,
@@ -42,8 +45,9 @@ export const TemplateComponentGQL = () => {
   return (
     <div>
       <h2>
-        <code>{`<TemplateComponentGQL />`}</code>
+        <code>{`<UserProfilePage />`}</code>
       </h2>
+      <h3>{`@${username}`}</h3>
       <button onClick={executeGraphQL}>Run GraphQL Operations</button>
       <br />
       <br />
@@ -90,4 +94,4 @@ export const TemplateComponentGQL = () => {
     </div>
   );
 };
-export default TemplateComponentGQL;
+export default UserProfilePage;

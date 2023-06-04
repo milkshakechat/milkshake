@@ -1,10 +1,9 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { hi } from "@/hooks/graphql.hook";
+import TemplateComponent from "@/components/Template/TemplateComponent";
 
 function App() {
-  console.log(hi);
   return (
     <div className="App">
       <header className="App-header">
@@ -21,6 +20,7 @@ function App() {
           Learn React
         </a>
       </header>
+      <TemplateComponent />
     </div>
   );
 }

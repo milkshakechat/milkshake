@@ -9,7 +9,7 @@
 - [ ] Set up Firestore database
 - [ ] Set up client routing
 - [ ] Set up server side SendBird user creation
-- [ ] Set up backend auth check helpers
+- [ ] Set up backend auth check helpers (including graphql introspection by developers, as well as user auth)
 - [ ] Set up SendBird chat
 - [ ] Set up firebase bucket ACL to only allow user to save to their own folder route
 

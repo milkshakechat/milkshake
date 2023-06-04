@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { SendBirdService } from "@/services/sendbird";
+import { SendBirdService } from "@/api/sendbird";
 
 export function useSendbird() {
   const ref = useRef<SendBirdService>();

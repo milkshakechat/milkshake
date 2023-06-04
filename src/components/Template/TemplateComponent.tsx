@@ -1,5 +1,6 @@
 import {
   useDemoMutation,
+  useDemoPing,
   useDemoQuery,
   useDemoSubscription,
 } from "@/components/Template/useTemplate.graphql";
@@ -23,11 +24,18 @@ export const TemplateComponent = () => {
     runSubscription: runDemoSubscription,
   } = useDemoSubscription();
 
+  const {
+    data: pingData,
+    error: pingError,
+    runQuery: runPingQuery,
+  } = useDemoPing();
+
   const executeGraphQL = () => {
     console.log(`Executing GraphQL Operations...`);
     runDemoQuery({ input: "Hello" });
     runDemoMutation({ title: "Big Title" });
     runDemoSubscription();
+    runPingQuery();
   };
 
   return (
@@ -37,6 +45,12 @@ export const TemplateComponent = () => {
       </h2>
       <button onClick={executeGraphQL}>Run GraphQL Operations</button>
       <br />
+      <br />
+      <section>
+        <h3>Ping</h3>
+        {pingData && <span>{pingData.timestamp}</span>}
+        {pingError && <span style={{ color: "red" }}>{pingError.message}</span>}
+      </section>
       <br />
       <section>
         <h3>Query</h3>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import gql from "graphql-tag";
 import { print } from "graphql/language/printer";
 import { client } from "@/api/graphql";
@@ -8,7 +8,9 @@ import {
   DemoQueryQuery,
   DemoSubscriptionEvent,
   DemoSubscriptionSubscription,
+  Ping,
   QueryDemoQueryArgs,
+  Query,
 } from "@/api/graphql/types";
 
 export const useDemoQuery = () => {
@@ -122,4 +124,40 @@ export const useDemoSubscription = () => {
   };
 
   return { data: events, error, runSubscription };
+};
+
+export const useDemoPing = () => {
+  const [data, setData] = useState<Ping>();
+  const [error, setError] = useState<Error>();
+
+  const runQuery = async () => {
+    try {
+      const DEMO_PING = gql`
+        query DemoPing {
+          demoPing {
+            timestamp
+          }
+        }
+      `;
+      const result = await new Promise<Ping>((resolve, reject) => {
+        client.subscribe(
+          {
+            query: print(DEMO_PING),
+          },
+          {
+            next: ({ data }: { data: Pick<Query, "demoPing"> }) => {
+              resolve(data.demoPing);
+            },
+            error: reject,
+            complete: () => {},
+          }
+        );
+      });
+      setData(result);
+    } catch (e) {
+      setError(e as unknown as Error);
+    }
+  };
+
+  return { data, error, runQuery };
 };

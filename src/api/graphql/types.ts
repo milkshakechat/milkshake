@@ -35,9 +35,16 @@ export type MutationDemoMutationArgs = {
   title: Scalars['String']['input'];
 };
 
+export type Ping = {
+  __typename?: 'Ping';
+  timestamp: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
+  demoPing: Ping;
   demoQuery: Scalars['String']['output'];
+  ping: Ping;
 };
 
 

@@ -1,9 +1,17 @@
 # To Do list
 
 ## Priority
+- [ ] Set up graphql websockets
+- [ ] Set up pwa manifest and service worker, test deploy with ngrok
+- [ ] Set up Partytown async bundler
+- [ ] Set up i18n langauge support
 - [ ] Set up Firebase auth
 - [ ] Set up Firestore database
+- [ ] Set up client routing
+- [ ] Set up server side SendBird user creation
+- [ ] Set up backend auth check helpers (including graphql introspection by developers, as well as user auth)
 - [ ] Set up SendBird chat
+- [ ] Set up firebase bucket ACL to only allow user to save to their own folder route
 
 ## Backlog
 - [ ] Update service worker to cache images and fonts from a list of authorized domains (currently only caches from same domain). [docs](https://create-react-app.dev/docs/making-a-progressive-web-app/)

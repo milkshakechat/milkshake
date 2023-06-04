@@ -3,13 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "craco start",
-    "build": "npm run generate && craco build",
+    "clean": "rimraf build",
+    "dev": "NODE_ENV=development && craco start",
+    "start": "NODE_ENV=staging && craco start",
+    "build": "NODE_ENV=production && npm run clean && npm run generate && craco build",
     "test": "craco test",
     "generate": "graphql-codegen",
-    "eject": "react-scripts eject"
+    "generate:prod": "graphql-codegen --config codegen.prod.yml",
+    "eject": "react-scripts eject",
+    "deploy": "firebase deploy"
   },
   "dependencies": {
+    "@builder.io/partytown": "^0.8.0",
     "@graphql-codegen/cli": "^4.0.1",
     "@milkshakechat/helpers": "^1.0.0",
     "@sendbird/chat": "^4.9.0",
@@ -64,6 +69,7 @@
     "@graphql-codegen/introspection": "^4.0.0",
     "@graphql-codegen/typescript": "^4.0.0",
     "@graphql-codegen/typescript-resolvers": "^4.0.0",
+    "@pawjs/pawjs": "^4.0.0-beta.19",
     "dotenv": "^10.0.0",
     "graphql-codegen": "^0.4.0",
     "ts-node": "^10.9.1"

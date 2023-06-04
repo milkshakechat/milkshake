@@ -75,3 +75,8 @@ export type DemoSubscriptionSubscriptionVariables = Exact<{ [key: string]: never
 
 
 export type DemoSubscriptionSubscription = { __typename?: 'Subscription', demoSubscription: { __typename?: 'DemoSubscriptionEvent', message: string } };
+
+export type DemoPingQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type DemoPingQuery = { __typename?: 'Query', demoPing: { __typename?: 'Ping', timestamp: string } };

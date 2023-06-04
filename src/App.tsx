@@ -1,7 +1,8 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import TemplateComponent from "@/components/Template/TemplateComponent";
+import TemplateComponentGQL from "@/components/Template/TemplateComponentGQL";
+import DarkModeSwitch from "@/components/DarkModeSwitch/DarkModeSwitch";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
+        <DarkModeSwitch />
         <a
           className="App-link"
           href="https://reactjs.org"
@@ -20,7 +22,7 @@ function App() {
           Learn React
         </a>
       </header>
-      <TemplateComponent />
+      <TemplateComponentGQL />
     </div>
   );
 }

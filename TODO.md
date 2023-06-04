@@ -5,10 +5,11 @@
 - [✅] Deploy to staging environment
 - [✅] Check for auto-reconnecting websockets
 - [✅] Set up pwa manifest and service worker, test deploy with ngrok
+- [✅] Set up Zustrand
+- [ ] Set up client routing with react-router
 - [ ] Set up Firebase auth
 - [ ] Set up Firebase storage
 - [ ] Set up Firestore database
-- [ ] Set up client routing
 - [ ] Set up i18n language support
 - [ ] Set up server side SendBird user creation
 - [ ] Transition backend from using .env to configFiles with secret manager

@@ -1,8 +1,10 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import logo from "./logo.svg";
+import "./App.css";
+import { hi } from "@/hooks/graphql.hook";
 
 function App() {
+  console.log(hi);
   return (
     <div className="App">
       <header className="App-header">

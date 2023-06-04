@@ -3,33 +3,33 @@ import gql from "graphql-tag";
 import { print } from "graphql/language/printer";
 import { client } from "@/api/graphql";
 import {
-  Annoucement,
-  CreateStoryMutation,
-  GetGreetingsQuery,
-  MutationCreateStoryArgs,
-  QueryGreetingsArgs,
-  SubscribeAnnouncementsSubscription,
+  DemoMutationMutation,
+  DemoMutationMutationVariables,
+  DemoQueryQuery,
+  DemoSubscriptionEvent,
+  DemoSubscriptionSubscription,
+  QueryDemoQueryArgs,
 } from "@/api/graphql/types";
 
-export const useGetGreetings = () => {
-  const [data, setData] = useState<GetGreetingsQuery>();
+export const useDemoQuery = () => {
+  const [data, setData] = useState<DemoQueryQuery>();
   const [error, setError] = useState<Error>();
 
-  const runQuery = async (args: QueryGreetingsArgs) => {
+  const runQuery = async (args: QueryDemoQueryArgs) => {
     try {
-      const GET_GREETINGS = gql`
-        query GetGreetings($input: String!) {
-          greetings(input: $input)
+      const DEMO_QUERY = gql`
+        query DemoQuery($input: String!) {
+          demoQuery(input: $input)
         }
       `;
-      const result = await new Promise<GetGreetingsQuery>((resolve, reject) => {
+      const result = await new Promise<DemoQueryQuery>((resolve, reject) => {
         client.subscribe(
           {
-            query: print(GET_GREETINGS),
+            query: print(DEMO_QUERY),
             variables: args,
           },
           {
-            next: ({ data }: { data: GetGreetingsQuery }) => resolve(data),
+            next: ({ data }: { data: DemoQueryQuery }) => resolve(data),
             error: reject,
             complete: () => {},
           }
@@ -44,29 +44,29 @@ export const useGetGreetings = () => {
   return { data, error, runQuery };
 };
 
-export const useCreateStory = () => {
-  const [data, setData] = useState<CreateStoryMutation>();
+export const useDemoMutation = () => {
+  const [data, setData] = useState<DemoMutationMutation>();
   const [error, setError] = useState<Error>();
 
-  const runMutation = async (args: MutationCreateStoryArgs) => {
+  const runMutation = async (args: DemoMutationMutationVariables) => {
     try {
-      const CREATE_STORY = gql`
-        mutation CreateStory($title: String!) {
-          createStory(title: $title) {
+      const DEMO_MUTATION = gql`
+        mutation DemoMutation($title: String!) {
+          demoMutation(title: $title) {
             id
             title
           }
         }
       `;
-      const result = await new Promise<CreateStoryMutation>(
+      const result = await new Promise<DemoMutationMutation>(
         (resolve, reject) => {
           client.subscribe(
             {
-              query: print(CREATE_STORY),
+              query: print(DEMO_MUTATION),
               variables: args,
             },
             {
-              next: ({ data }: { data: CreateStoryMutation }) => resolve(data),
+              next: ({ data }: { data: DemoMutationMutation }) => resolve(data),
               error: reject,
               complete: () => {},
             }
@@ -82,8 +82,8 @@ export const useCreateStory = () => {
   return { data, error, runMutation };
 };
 
-export const useSubscribeAnnouncements = () => {
-  const [events, setEvents] = useState<Annoucement[]>([]);
+export const useDemoSubscription = () => {
+  const [events, setEvents] = useState<DemoSubscriptionEvent[]>([]);
   const eventsRef = useRef(events); // create a reference
   const [error, setError] = useState<Error>();
 
@@ -95,20 +95,20 @@ export const useSubscribeAnnouncements = () => {
     let unsubscribe = null;
 
     try {
-      const SUBSCRIBE_ANNOUNCEMENTS = gql`
-        subscription SubscribeAnnouncements {
-          announcements {
+      const DEMO_SUBSCRIPTION = gql`
+        subscription DemoSubscription {
+          demoSubscription {
             message
           }
         }
       `;
       unsubscribe = await client.subscribe(
-        { query: print(SUBSCRIBE_ANNOUNCEMENTS) },
+        { query: print(DEMO_SUBSCRIPTION) },
         {
-          next: ({ data }: { data: SubscribeAnnouncementsSubscription }) => {
-            console.log(`Incoming event: `, data.announcements);
+          next: ({ data }: { data: DemoSubscriptionSubscription }) => {
+            console.log(`Incoming event: `, data.demoSubscription);
             console.log(`Current Events: `, eventsRef.current); // access the latest events
-            setEvents((prevEvents) => [...prevEvents, data.announcements]);
+            setEvents((prevEvents) => [...prevEvents, data.demoSubscription]);
           },
           error: setError,
           complete: () => {},

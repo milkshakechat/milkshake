@@ -1,33 +1,33 @@
 import {
-  useCreateStory,
-  useGetGreetings,
-  useSubscribeAnnouncements,
-} from "@/components/Template/useGQL.template";
+  useDemoMutation,
+  useDemoQuery,
+  useDemoSubscription,
+} from "@/components/Template/useTemplate.graphql";
 
 export const TemplateComponent = () => {
   const {
-    data: greetingsData,
-    error: greetingsError,
-    runQuery: greetingsQuery,
-  } = useGetGreetings();
+    data: demoQueryData,
+    error: demoQueryError,
+    runQuery: runDemoQuery,
+  } = useDemoQuery();
 
   const {
-    data: createStoryData,
-    error: createStoryError,
-    runMutation: createStoryMutation,
-  } = useCreateStory();
+    data: demoMutationData,
+    error: demoMutationError,
+    runMutation: runDemoMutation,
+  } = useDemoMutation();
 
   const {
-    data: announcementsData,
-    error: announcementsError,
-    runSubscription: announcementsSubscription,
-  } = useSubscribeAnnouncements();
+    data: demoSubscriptionData,
+    error: demoSubscriptionError,
+    runSubscription: runDemoSubscription,
+  } = useDemoSubscription();
 
   const executeGraphQL = () => {
     console.log(`Executing GraphQL Operations...`);
-    greetingsQuery({ input: "Hello" });
-    createStoryMutation({ title: "Big Title" });
-    announcementsSubscription();
+    runDemoQuery({ input: "Hello" });
+    runDemoMutation({ title: "Big Title" });
+    runDemoSubscription();
   };
 
   return (
@@ -40,31 +40,31 @@ export const TemplateComponent = () => {
       <br />
       <section>
         <h3>Query</h3>
-        {greetingsData && <span>{greetingsData.greetings}</span>}
-        {greetingsError && (
-          <span style={{ color: "red" }}>{greetingsError.message}</span>
+        {demoQueryData && <span>{demoQueryData.demoQuery}</span>}
+        {demoQueryError && (
+          <span style={{ color: "red" }}>{demoQueryError.message}</span>
         )}
       </section>
       <br />
       <section>
         <h3>Mutation</h3>
-        {createStoryData && <span>{createStoryData.createStory.title}</span>}
-        {createStoryError && (
-          <span style={{ color: "red" }}>{createStoryError.message}</span>
+        {demoMutationData && <span>{demoMutationData.demoMutation.title}</span>}
+        {demoMutationError && (
+          <span style={{ color: "red" }}>{demoMutationError.message}</span>
         )}
       </section>
       <br />
       <section>
         <h3>Subscription</h3>
-        {announcementsData && (
+        {demoSubscriptionData && (
           <div>
-            {announcementsData.map((a, i) => (
+            {demoSubscriptionData.map((a, i) => (
               <p key={`${i}-${a.message}`}>{a.message}</p>
             ))}
           </div>
         )}
-        {announcementsError && (
-          <span style={{ color: "red" }}>{announcementsError.message}</span>
+        {demoSubscriptionError && (
+          <span style={{ color: "red" }}>{demoSubscriptionError.message}</span>
         )}
       </section>
       <br />

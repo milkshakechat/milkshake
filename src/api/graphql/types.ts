@@ -14,57 +14,57 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
-export type Annoucement = {
-  __typename?: 'Annoucement';
+export type DemoMutatedItem = {
+  __typename?: 'DemoMutatedItem';
+  id: Scalars['ID']['output'];
+  title: Scalars['String']['output'];
+};
+
+export type DemoSubscriptionEvent = {
+  __typename?: 'DemoSubscriptionEvent';
   message: Scalars['String']['output'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  createStory: Story;
+  demoMutation: DemoMutatedItem;
 };
 
 
-export type MutationCreateStoryArgs = {
+export type MutationDemoMutationArgs = {
   title: Scalars['String']['input'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  greetings: Scalars['String']['output'];
+  demoQuery: Scalars['String']['output'];
 };
 
 
-export type QueryGreetingsArgs = {
+export type QueryDemoQueryArgs = {
   input: Scalars['String']['input'];
-};
-
-export type Story = {
-  __typename?: 'Story';
-  id: Scalars['ID']['output'];
-  title: Scalars['String']['output'];
 };
 
 export type Subscription = {
   __typename?: 'Subscription';
-  announcements: Annoucement;
+  demoSubscription: DemoSubscriptionEvent;
 };
 
-export type GetGreetingsQueryVariables = Exact<{
+export type DemoQueryQueryVariables = Exact<{
   input: Scalars['String']['input'];
 }>;
 
 
-export type GetGreetingsQuery = { __typename?: 'Query', greetings: string };
+export type DemoQueryQuery = { __typename?: 'Query', demoQuery: string };
 
-export type CreateStoryMutationVariables = Exact<{
+export type DemoMutationMutationVariables = Exact<{
   title: Scalars['String']['input'];
 }>;
 
 
-export type CreateStoryMutation = { __typename?: 'Mutation', createStory: { __typename?: 'Story', id: string, title: string } };
+export type DemoMutationMutation = { __typename?: 'Mutation', demoMutation: { __typename?: 'DemoMutatedItem', id: string, title: string } };
 
-export type SubscribeAnnouncementsSubscriptionVariables = Exact<{ [key: string]: never; }>;
+export type DemoSubscriptionSubscriptionVariables = Exact<{ [key: string]: never; }>;
 
 
-export type SubscribeAnnouncementsSubscription = { __typename?: 'Subscription', announcements: { __typename?: 'Annoucement', message: string } };
+export type DemoSubscriptionSubscription = { __typename?: 'Subscription', demoSubscription: { __typename?: 'DemoSubscriptionEvent', message: string } };

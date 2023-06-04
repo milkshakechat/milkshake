@@ -1,5 +1,5 @@
 overwrite: true
-schema: "http://localhost:8080/graphql"
+schema: "https://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql"
 documents: "src/**/*.tsx"
 generates:
   src/api/graphql/types.ts:

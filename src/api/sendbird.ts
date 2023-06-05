@@ -1,23 +1,38 @@
-import SendbirdChat, { LocalCacheConfig } from "@sendbird/chat";
-import {
-  CachedDataClearOrder,
-  GroupChannelModule,
-} from "@sendbird/chat/lib/__definition";
+import { UserID } from "@milkshakechat/helpers";
+import SendbirdChat, { LocalCacheConfig, User } from "@sendbird/chat";
+import { GroupChannelModule } from "@sendbird/chat/groupChannel";
 import { SendbirdGroupChat } from "@sendbird/chat/groupChannel";
+import config from "@/config.env";
 
-export class SendBirdService {
-  sendbird: SendbirdGroupChat;
-  constructor() {
-    const SENDBIRD_APP_ID = process.env.SENDBIRD_APP_ID || "";
+class SendBirdService {
+  private static instance: SendBirdService | null = null;
+  public sendbird: SendbirdGroupChat;
+
+  private constructor() {
+    const SENDBIRD_APP_ID = config.SENDBIRD_APP_ID || "";
     const sb = SendbirdChat.init({
       appId: SENDBIRD_APP_ID,
       localCacheEnabled: true,
       localCacheConfig: new LocalCacheConfig({
         maxSize: 256, // The value is in MB.
-        clearOrder: CachedDataClearOrder.MESSAGE_COLLECTION_ACCESSED_AT,
       }),
       modules: [new GroupChannelModule()],
     }) as SendbirdGroupChat;
     this.sendbird = sb;
   }
+
+  // Add connect method
+  public async connect(userId: UserID, accessToken: string): Promise<User> {
+    return this.sendbird.connect(userId, accessToken);
+  }
+
+  public static getInstance(): SendBirdService {
+    if (!SendBirdService.instance) {
+      SendBirdService.instance = new SendBirdService();
+    }
+
+    return SendBirdService.instance;
+  }
 }
+
+export default SendBirdService;

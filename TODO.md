@@ -8,7 +8,11 @@
 - [✅] Set up Zustrand
 - [✅] Set up client routing with react-router
 - [✅] Set up Firebase auth
-- [ ] Set up GraphQL websockets to include firebase auth token
+- [✅] Fix issue when deployed, all routes go to /index.html and dont load the correct page
+- [✅] Set up GraphQL websockets to include firebase auth token
+- [✅] Set up backend user auth check helpers
+- [ ] Transition backend from using .env to configFiles with secret manager
+- [ ] Fix graphql `dairyfarm:authGuard.ts` file to properly instantiate firebase.auth using secret key loading
 - [ ] Set up Firebase cloudfns
 - [ ] Set up Firestore database (fn: onCreateUser)
 - [ ] Set up exclusive usernames and add blacklist of usernames (system usernames)
@@ -17,11 +21,11 @@
 - [ ] Set up Firebase bucket ACL to only allow user to save to their own folder route
 - [ ] Set up i18n language support
 - [ ] Set up server side SendBird user creation
-- [ ] Transition backend from using .env to configFiles with secret manager
-- [ ] Set up backend auth check helpers (including graphql introspection by developers, as well as user auth)
 - [ ] Set up SendBird chat
 
+
 ## Backlog
+- [ ] Disable graphql introspection in prod
 - [ ] Update service worker to cache images and fonts from a list of authorized domains (currently only caches from same domain). [docs](https://create-react-app.dev/docs/making-a-progressive-web-app/)
 - [ ] Set up a way to test the service worker locally (because by default it won't work in development env)
 - [ ] Add partytown to the project so that app loads faster and load other scripts after [docs](https://www.youtube.com/watch?v=ZZIR1NGwy-s). for google tag manager & other scripts. [docs](https://partytown.builder.io/common-services)
@@ -32,3 +36,4 @@
 ## Scaling
 
 - [ ] Connect multiple cloudrun instances with the same memory. concurrent connections can be up to 1000 on a single large cloud run instance. [docs](https://cloud.google.com/run/docs/triggering/websockets)
+- [ ] Add prod error masking in server graphql error logs. [docs](https://the-guild.dev/graphql/yoga-server/tutorial/basic/09-error-handling#yoga-error-masking)

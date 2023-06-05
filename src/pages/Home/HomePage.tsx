@@ -3,10 +3,12 @@ import logo from "../../logo.svg";
 import "./HomePage.css";
 import TemplateComponentGQL from "@/components/TemplateComponentGQL/TemplateComponentGQL";
 import DarkModeSwitch from "@/components/DarkModeSwitch/DarkModeSwitch";
+import QuickNav from "@/components/QuickNav/QuickNav";
 
 function App() {
   return (
     <div className="App">
+      <QuickNav />
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>

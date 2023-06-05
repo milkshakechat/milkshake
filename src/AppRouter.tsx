@@ -1,30 +1,68 @@
 import { BrowserRouter } from "react-router-dom";
 import { Routes, Route, Outlet, Link } from "react-router-dom";
 import Page404 from "@/pages/404";
-import UserProfilePage from "@/pages/UserProfile/UserProfilePage";
+import PublicUserProfilePage from "@/pages/PublicUserProfile/PublicUserProfilePage";
 import HomePage from "@/pages/Home/HomePage";
 import SettingsPage from "@/pages/Settings/SettingsPage";
+import SignUpPage from "@/pages/SignUp/SignUpPage";
+import SignUpVerifyPage from "@/pages/SignUp/SignUpVerifyPage";
+import LogOutPage from "@/pages/LogOut/LogOutPage";
+import LoginPage from "@/pages/Login/LoginPage";
+import {
+  AuthProvider,
+  AuthProtect,
+} from "@/components/AuthProtect/AuthProtect";
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/:username" element={<UserProfilePage />} />
+        <Route path="/" element={<HomePage />} index />
+        <Route path="/:username" element={<PublicUserProfilePage />} />
         <Route path="/app" element={<div>app</div>}></Route>
         <Route path="/app" errorElement={<Page404 />}>
           {/* Public Routes */}
           <Route path="welcome" element={<div>welcome</div>} />
-          <Route path="signup" element={<div>signup</div>} />
-          <Route path="login" element={<div>login</div>} />
-          <Route path="logout" element={<div>logout</div>} />
-          <Route path="*" element={<Page404 />} />
-
-          {/* Private Routes */}
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="profile" element={<div>profile</div>} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="logout" element={<LogOutPage />} />
+          <Route path="signup" element={<SignUpPage />} />
+          <Route path="signup/verify" element={<SignUpVerifyPage />} />
         </Route>
       </Routes>
+
+      {/* Private Routes */}
+
+      <AuthProvider>
+        <Routes>
+          <Route path="/app" errorElement={<Page404 />}>
+            <Route
+              path="settings"
+              element={
+                <AuthProtect>
+                  <SettingsPage />
+                </AuthProtect>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <AuthProtect>
+                  <div>profile</div>
+                </AuthProtect>
+              }
+            />
+
+            <Route path="*" element={<Page404 />} />
+          </Route>
+        </Routes>
+      </AuthProvider>
+
+      {/* Catch All (404) */}
+      {/* <Routes>
+        <Route path="/app" errorElement={<Page404 />}>
+          <Route path="*" element={<Page404 />} />
+        </Route>
+      </Routes> */}
     </BrowserRouter>
   );
 };

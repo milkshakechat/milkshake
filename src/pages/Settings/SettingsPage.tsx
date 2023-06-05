@@ -1,4 +1,6 @@
+import CurrentUser from "@/components/CurrentUser/CurrentUser";
 import DarkModeSwitch from "@/components/DarkModeSwitch/DarkModeSwitch";
+import QuickNav from "@/components/QuickNav/QuickNav";
 import {
   useDemoMutation,
   useDemoPing,
@@ -41,6 +43,7 @@ export const SettingsPage = () => {
 
   return (
     <div>
+      <QuickNav />
       <h2>
         <code>{`<SettingsPage />`}</code>
       </h2>

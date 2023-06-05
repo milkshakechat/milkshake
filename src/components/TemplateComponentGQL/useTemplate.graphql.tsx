@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import gql from "graphql-tag";
 import { print } from "graphql/language/printer";
-import { client } from "@/api/graphql";
 import {
   DemoMutationMutation,
   DemoMutationMutationVariables,
@@ -12,12 +11,17 @@ import {
   QueryDemoQueryArgs,
   Query,
 } from "@/api/graphql/types";
+import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
+import { GraphQLError } from "graphql";
+import { ErrorLine } from "@/api/graphql/error-line";
 
 export const useDemoQuery = () => {
   const [data, setData] = useState<DemoQueryQuery>();
-  const [error, setError] = useState<Error>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
 
   const runQuery = async (args: QueryDemoQueryArgs) => {
+    console.log(`RUNNING QYERY`);
     try {
       const DEMO_QUERY = gql`
         query DemoQuery($input: String!) {
@@ -31,7 +35,18 @@ export const useDemoQuery = () => {
             variables: args,
           },
           {
-            next: ({ data }: { data: DemoQueryQuery }) => resolve(data),
+            next: ({
+              data,
+              errors,
+            }: {
+              data: DemoQueryQuery;
+              errors: readonly GraphQLError[];
+            }) => {
+              if (errors && errors.length > 0) {
+                setErrors(errors.map((e) => e.message));
+              }
+              resolve(data);
+            },
             error: reject,
             complete: () => {},
           }
@@ -39,16 +54,17 @@ export const useDemoQuery = () => {
       });
       setData(result);
     } catch (e) {
-      setError(e as unknown as Error);
+      setErrors([...errors, (e as any).message]);
     }
   };
 
-  return { data, error, runQuery };
+  return { data, errors, runQuery };
 };
 
 export const useDemoMutation = () => {
   const [data, setData] = useState<DemoMutationMutation>();
-  const [error, setError] = useState<Error>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
 
   const runMutation = async (args: DemoMutationMutationVariables) => {
     try {
@@ -68,7 +84,18 @@ export const useDemoMutation = () => {
               variables: args,
             },
             {
-              next: ({ data }: { data: DemoMutationMutation }) => resolve(data),
+              next: ({
+                data,
+                errors,
+              }: {
+                data: DemoMutationMutation;
+                errors: readonly GraphQLError[];
+              }) => {
+                if (errors && errors.length > 0) {
+                  setErrors(errors.map((e) => e.message));
+                }
+                resolve(data);
+              },
               error: reject,
               complete: () => {},
             }
@@ -77,17 +104,18 @@ export const useDemoMutation = () => {
       );
       setData(result);
     } catch (e) {
-      setError(e as unknown as Error);
+      setErrors([...errors, (e as any).message]);
     }
   };
 
-  return { data, error, runMutation };
+  return { data, errors, runMutation };
 };
 
 export const useDemoSubscription = () => {
   const [events, setEvents] = useState<DemoSubscriptionEvent[]>([]);
   const eventsRef = useRef(events); // create a reference
-  const [error, setError] = useState<Error>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
 
   useEffect(() => {
     eventsRef.current = events; // update the reference whenever events change
@@ -107,28 +135,38 @@ export const useDemoSubscription = () => {
       unsubscribe = await client.subscribe(
         { query: print(DEMO_SUBSCRIPTION) },
         {
-          next: ({ data }: { data: DemoSubscriptionSubscription }) => {
+          next: ({
+            data,
+            errors,
+          }: {
+            data: DemoSubscriptionSubscription;
+            errors: readonly GraphQLError[];
+          }) => {
+            if (errors && errors.length > 0) {
+              setErrors(errors.map((e) => e.message));
+            }
             console.log(`Incoming event: `, data.demoSubscription);
             console.log(`Current Events: `, eventsRef.current); // access the latest events
             setEvents((prevEvents) => [...prevEvents, data.demoSubscription]);
           },
-          error: setError,
+          error: setErrors,
           complete: () => {},
         }
       );
     } catch (e) {
-      setError(e as unknown as Error);
+      setErrors([...errors, (e as any).message]);
     }
 
     return unsubscribe;
   };
 
-  return { data: events, error, runSubscription };
+  return { data: events, errors, runSubscription };
 };
 
 export const useDemoPing = () => {
   const [data, setData] = useState<Ping>();
-  const [error, setError] = useState<Error>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
 
   const runQuery = async () => {
     try {
@@ -145,7 +183,16 @@ export const useDemoPing = () => {
             query: print(DEMO_PING),
           },
           {
-            next: ({ data }: { data: Pick<Query, "demoPing"> }) => {
+            next: ({
+              data,
+              errors,
+            }: {
+              data: Pick<Query, "demoPing">;
+              errors: readonly GraphQLError[];
+            }) => {
+              if (errors && errors.length > 0) {
+                setErrors(errors.map((e) => e.message));
+              }
               resolve(data.demoPing);
             },
             error: reject,
@@ -155,9 +202,9 @@ export const useDemoPing = () => {
       });
       setData(result);
     } catch (e) {
-      setError(e as unknown as Error);
+      setErrors([...errors, (e as any).message]);
     }
   };
 
-  return { data, error, runQuery };
+  return { data, errors, runQuery };
 };

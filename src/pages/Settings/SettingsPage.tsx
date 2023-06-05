@@ -1,3 +1,4 @@
+import { ErrorLines } from "@/api/graphql/error-line";
 import CurrentUser from "@/components/CurrentUser/CurrentUser";
 import DarkModeSwitch from "@/components/DarkModeSwitch/DarkModeSwitch";
 import QuickNav from "@/components/QuickNav/QuickNav";
@@ -6,30 +7,30 @@ import {
   useDemoPing,
   useDemoQuery,
   useDemoSubscription,
-} from "@/pages/Settings/useTemplate.graphql";
+} from "@/components/TemplateComponentGQL/useTemplate.graphql";
 
 export const SettingsPage = () => {
   const {
     data: demoQueryData,
-    error: demoQueryError,
+    errors: demoQueryErrors,
     runQuery: runDemoQuery,
   } = useDemoQuery();
 
   const {
     data: demoMutationData,
-    error: demoMutationError,
+    errors: demoMutationErrors,
     runMutation: runDemoMutation,
   } = useDemoMutation();
 
   const {
     data: demoSubscriptionData,
-    error: demoSubscriptionError,
+    errors: demoSubscriptionErrors,
     runSubscription: runDemoSubscription,
   } = useDemoSubscription();
 
   const {
     data: pingData,
-    error: pingError,
+    errors: pingErrors,
     runQuery: runPingQuery,
   } = useDemoPing();
 
@@ -53,23 +54,21 @@ export const SettingsPage = () => {
       <section>
         <h3>Ping</h3>
         {pingData && <span>{pingData.timestamp}</span>}
-        {pingError && <span style={{ color: "red" }}>{pingError.message}</span>}
+
+        <ErrorLines errors={pingErrors} />
       </section>
       <br />
       <section>
         <h3>Query</h3>
         {demoQueryData && <span>{demoQueryData.demoQuery}</span>}
-        {demoQueryError && (
-          <span style={{ color: "red" }}>{demoQueryError.message}</span>
-        )}
+        <ErrorLines errors={demoQueryErrors} />
       </section>
       <br />
       <section>
         <h3>Mutation</h3>
         {demoMutationData && <span>{demoMutationData.demoMutation.title}</span>}
-        {demoMutationError && (
-          <span style={{ color: "red" }}>{demoMutationError.message}</span>
-        )}
+
+        <ErrorLines errors={demoMutationErrors} />
       </section>
       <br />
       <section>
@@ -81,9 +80,7 @@ export const SettingsPage = () => {
             ))}
           </div>
         )}
-        {demoSubscriptionError && (
-          <span style={{ color: "red" }}>{demoSubscriptionError.message}</span>
-        )}
+        <ErrorLines errors={demoSubscriptionErrors} />
       </section>
       <br />
       <DarkModeSwitch />

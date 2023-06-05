@@ -12,58 +12,54 @@ import {
   AuthProvider,
   AuthProtect,
 } from "@/components/AuthProtect/AuthProtect";
+import { GraphqlClientProvider } from "@/context/GraphQLSocketProvider";
 
 const AppRouter = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} index />
-        <Route path="/:username" element={<PublicUserProfilePage />} />
-        <Route path="/app" element={<div>app</div>}></Route>
-        <Route path="/app" errorElement={<Page404 />}>
-          {/* Public Routes */}
-          <Route path="welcome" element={<div>welcome</div>} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="logout" element={<LogOutPage />} />
-          <Route path="signup" element={<SignUpPage />} />
-          <Route path="signup/verify" element={<SignUpVerifyPage />} />
-        </Route>
-      </Routes>
-
-      {/* Private Routes */}
-
-      <AuthProvider>
+    <GraphqlClientProvider>
+      <BrowserRouter>
         <Routes>
+          <Route path="/" element={<HomePage />} index />
+          <Route path="/:username" element={<PublicUserProfilePage />} />
+          <Route path="/app" element={<div>app</div>}></Route>
           <Route path="/app" errorElement={<Page404 />}>
-            <Route
-              path="settings"
-              element={
-                <AuthProtect>
-                  <SettingsPage />
-                </AuthProtect>
-              }
-            />
-            <Route
-              path="profile"
-              element={
-                <AuthProtect>
-                  <div>profile</div>
-                </AuthProtect>
-              }
-            />
-
-            <Route path="*" element={<Page404 />} />
+            {/* Public Routes */}
+            <Route path="welcome" element={<div>welcome</div>} />
+            <Route path="login" element={<LoginPage />} />
+            <Route path="logout" element={<LogOutPage />} />
+            <Route path="signup" element={<SignUpPage />} />
+            <Route path="signup/verify" element={<SignUpVerifyPage />} />
           </Route>
         </Routes>
-      </AuthProvider>
 
-      {/* Catch All (404) */}
-      {/* <Routes>
-        <Route path="/app" errorElement={<Page404 />}>
-          <Route path="*" element={<Page404 />} />
-        </Route>
-      </Routes> */}
-    </BrowserRouter>
+        {/* Private Routes */}
+
+        <AuthProvider>
+          <Routes>
+            <Route path="/app" errorElement={<Page404 />}>
+              <Route
+                path="settings"
+                element={
+                  <AuthProtect>
+                    <SettingsPage />
+                  </AuthProtect>
+                }
+              />
+              <Route
+                path="profile"
+                element={
+                  <AuthProtect>
+                    <div>profile</div>
+                  </AuthProtect>
+                }
+              />
+
+              {/* <Route path="*" element={<Page404 />} /> */}
+            </Route>
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </GraphqlClientProvider>
   );
 };
 

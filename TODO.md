@@ -7,15 +7,19 @@
 - [✅] Set up pwa manifest and service worker, test deploy with ngrok
 - [✅] Set up Zustrand
 - [✅] Set up client routing with react-router
-- [ ] Set up Firebase auth
+- [✅] Set up Firebase auth
+- [ ] Set up GraphQL websockets to include firebase auth token
+- [ ] Set up Firebase cloudfns
+- [ ] Set up Firestore database (fn: onCreateUser)
+- [ ] Set up exclusive usernames and add blacklist of usernames (system usernames)
+- [ ] Set up Zustrand with persistent memory. [docs](https://docs.pmnd.rs/zustand/integrations/persisting-store-data)
 - [ ] Set up Firebase storage
-- [ ] Set up Firestore database
+- [ ] Set up Firebase bucket ACL to only allow user to save to their own folder route
 - [ ] Set up i18n language support
 - [ ] Set up server side SendBird user creation
 - [ ] Transition backend from using .env to configFiles with secret manager
 - [ ] Set up backend auth check helpers (including graphql introspection by developers, as well as user auth)
 - [ ] Set up SendBird chat
-- [ ] Set up firebase bucket ACL to only allow user to save to their own folder route
 
 ## Backlog
 - [ ] Update service worker to cache images and fonts from a list of authorized domains (currently only caches from same domain). [docs](https://create-react-app.dev/docs/making-a-progressive-web-app/)

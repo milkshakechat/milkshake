@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (user) {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/auth.user
-        console.log(`User is signed in`, user);
+        // console.log(`User is signed in`, user);
         // ...
         await fullLogin(user);
       } else {

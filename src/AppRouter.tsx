@@ -13,6 +13,12 @@ import {
   AuthProtect,
 } from "@/components/AuthProtect/AuthProtect";
 import { GraphqlClientProvider } from "@/context/GraphQLSocketProvider";
+import {
+  SendBirdServiceContext,
+  SendBirdServiceProvider,
+} from "@/context/SendbirdProvider";
+import SendBirdService from "@/api/sendbird";
+import ConversationPage from "./pages/Conversation/ConversationPage";
 
 const AppRouter = () => {
   return (
@@ -35,28 +41,38 @@ const AppRouter = () => {
         {/* Private Routes */}
 
         <AuthProvider>
-          <Routes>
-            <Route path="/app" errorElement={<Page404 />}>
-              <Route
-                path="settings"
-                element={
-                  <AuthProtect>
-                    <SettingsPage />
-                  </AuthProtect>
-                }
-              />
-              <Route
-                path="profile"
-                element={
-                  <AuthProtect>
-                    <div>profile</div>
-                  </AuthProtect>
-                }
-              />
+          <SendBirdServiceProvider>
+            <Routes>
+              <Route path="/app" errorElement={<Page404 />}>
+                <Route
+                  path="chat"
+                  element={
+                    <AuthProtect>
+                      <ConversationPage />
+                    </AuthProtect>
+                  }
+                />
+                <Route
+                  path="settings"
+                  element={
+                    <AuthProtect>
+                      <SettingsPage />
+                    </AuthProtect>
+                  }
+                />
+                <Route
+                  path="profile"
+                  element={
+                    <AuthProtect>
+                      <div>profile</div>
+                    </AuthProtect>
+                  }
+                />
 
-              {/* <Route path="*" element={<Page404 />} /> */}
-            </Route>
-          </Routes>
+                {/* <Route path="*" element={<Page404 />} /> */}
+              </Route>
+            </Routes>
+          </SendBirdServiceProvider>
         </AuthProvider>
       </BrowserRouter>
     </GraphqlClientProvider>

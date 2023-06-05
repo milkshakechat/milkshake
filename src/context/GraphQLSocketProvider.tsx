@@ -18,9 +18,9 @@ export const GraphqlClientProvider = ({ children }: Props) => {
     const auth = getAuth();
     const createNewClient = async () => {
       const user = auth.currentUser;
-      console.log(`user: `, user);
+
       let idToken = user ? await user.getIdToken() : undefined;
-      console.log(`idToken: `, idToken);
+
       setClient(
         createClient({
           url: GRAPHQL_SOCKET_SERVER,
@@ -37,8 +37,6 @@ export const GraphqlClientProvider = ({ children }: Props) => {
     onIdTokenChanged(auth, () => createNewClient());
     createNewClient();
   }, []);
-
-  console.log(`client`, client);
 
   if (isLoading) {
     return <span>Loading GQL Sockets...</span>;

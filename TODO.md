@@ -7,7 +7,7 @@
 - [✅] Set up pwa manifest and service worker, test deploy with ngrok
 - [✅] Set up Zustrand
 - [✅] Set up client routing with react-router
-- [ ] Set up Firebase auth
+- [✅] Set up Firebase auth
 - [ ] Set up GraphQL websockets to include firebase auth token
 - [ ] Set up Firebase cloudfns
 - [ ] Set up Firestore database (fn: onCreateUser)

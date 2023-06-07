@@ -23,9 +23,7 @@ export const useSendBirdConnection = () => {
       sendbirdRef.current = sendBirdService.sendbird;
       const connect = async () => {
         try {
-          console.log(`We going in! ${userId} // ${accessToken}`);
           const user = await sendBirdService.connect(userId, accessToken);
-          console.log(user);
           setUser(user);
         } catch (error) {
           console.error("Failed to connect to Sendbird:", error);

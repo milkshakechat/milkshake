@@ -15,8 +15,10 @@
 - [✅] Fix graphql `dairyfarm:authGuard.ts` file to properly instantiate firebase.auth using secret key loading
 - [✅] Investigate `graphql-ws` issue with too many simultaneous connections from same client
 - [✅] Test server side SendBird user creation
-- [🔵] Test SendBird client (fix localStorage too! initial load throws `Failed to connect to Sendbird: Error: Store is not initialized.`)
-- [🔵] Investigate how to prevent unauth SendBird client from creating new accounts
+- [✅] Test SendBird client (fix localStorage too! initial load throws `Failed to connect to Sendbird: Error: Store is not initialized.`)
+- [✅] Investigate how to prevent unauth SendBird client from creating new accounts
+- [✅] Write skeleton of GQL & Firestore schema
+- [✅] Determine whether cookie ownership balance should be on User or wallet abstraction
 - [ ] Create GQL query for client to get SendBird user access token. Set up full flow
 - [ ] Test SendBird chat ui
 - [ ] Set up initial app skeleton

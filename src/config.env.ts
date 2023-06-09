@@ -5,7 +5,7 @@ export const FIREBASE_AUTH_REFRESH_TOKEN_LOCALSTORAGE =
 export const FIREBASE_AUTH_ACCESS_TOKEN_LOCALSTORAGE =
   "FIREBASE_AUTH_ACCESS_TOKEN_LOCALSTORAGE";
 
-const devConfig = {
+const devConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER: "ws://localhost:8080/graphql",
   SENDBIRD_APP_ID: "D24F8D62-B601-4978-8DFB-F17DB6CD741F",
   VERIFY_EMAIL_DOMAIN: "http://localhost:3000",
@@ -19,7 +19,7 @@ const devConfig = {
     measurementId: "G-N0YXCSQJ89",
   },
 };
-const stagingConfig = {
+const stagingConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
     "wss://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
   SENDBIRD_APP_ID: "D24F8D62-B601-4978-8DFB-F17DB6CD741F",
@@ -34,7 +34,7 @@ const stagingConfig = {
     measurementId: "G-N0YXCSQJ89",
   },
 };
-const prodConfig = {
+const prodConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
     "wss://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
   SENDBIRD_APP_ID: "D24F8D62-B601-4978-8DFB-F17DB6CD741F",
@@ -49,6 +49,21 @@ const prodConfig = {
     measurementId: "G-N0YXCSQJ89",
   },
 };
+
+interface ConfigEnv {
+  GRAPHQL_SOCKET_SERVER: string;
+  SENDBIRD_APP_ID: string;
+  VERIFY_EMAIL_DOMAIN: string;
+  FIREBASE: {
+    apiKey: string;
+    authDomain: string;
+    projectId: string;
+    storageBucket: string;
+    messagingSenderId: string;
+    appId: string;
+    measurementId: string;
+  };
+}
 
 export default (() => {
   // console.log(`process.env.NODE_ENV: ${process.env.NODE_ENV}`);

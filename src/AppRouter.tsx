@@ -1,5 +1,5 @@
 import { BrowserRouter } from "react-router-dom";
-import { Routes, Route, Outlet, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Page404 from "@/pages/404";
 import PublicUserProfilePage from "@/pages/PublicUserProfile/PublicUserProfilePage";
 import HomePage from "@/pages/Home/HomePage";
@@ -45,7 +45,7 @@ const AppRouter = () => {
             <Routes>
               <Route path="/app" errorElement={<Page404 />}>
                 <Route
-                  path="chat"
+                  path="sandbox"
                   element={
                     <AuthProtect>
                       <ConversationPage />

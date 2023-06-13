@@ -12,6 +12,8 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  GroupChatID: { input: any; output: any; }
+  UserID: { input: any; output: any; }
 };
 
 export type DemoMutatedItem = {
@@ -51,6 +53,28 @@ export type Query = {
 export type QueryDemoQueryArgs = {
   input: Scalars['String']['input'];
 };
+
+export type ResponseError = {
+  __typename?: 'ResponseError';
+  error: Status;
+};
+
+export type Status = {
+  __typename?: 'Status';
+  code: StatusCode;
+  message: Scalars['String']['output'];
+};
+
+export enum StatusCode {
+  BadRequest = 'BadRequest',
+  Forbidden = 'Forbidden',
+  InvalidOperation = 'InvalidOperation',
+  NotFound = 'NotFound',
+  NotImplemented = 'NotImplemented',
+  ServerError = 'ServerError',
+  Success = 'Success',
+  Unauthorized = 'Unauthorized'
+}
 
 export type Subscription = {
   __typename?: 'Subscription';

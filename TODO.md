@@ -19,6 +19,8 @@
 - [✅] Investigate how to prevent unauth SendBird client from creating new accounts
 - [✅] Write skeleton of GQL & Firestore schema
 - [✅] Determine whether cookie ownership balance should be on User or wallet abstraction
+- [✅] Scope out responsibilities of frontend chat sdk vs backend server
+- [🔵] Write interface skeleton of the base graphql operations
 - [ ] Create GQL query for client to get SendBird user access token. Set up full flow
 - [ ] Test SendBird chat ui
 - [ ] Set up initial app skeleton

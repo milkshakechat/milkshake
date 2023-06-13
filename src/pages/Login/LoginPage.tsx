@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import { getAuth, sendSignInLinkToEmail } from "firebase/auth";
 import config from "@/config.env";
 import QuickNav from "@/components/QuickNav/QuickNav";
+import { NavLink } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -63,6 +64,17 @@ const LoginPage = () => {
       {displayStatus === "check_verify" && (
         <span>Check your email to verify</span>
       )}
+
+      <br />
+      <br />
+      <NavLink
+        to="/app/signup"
+        className={({ isActive, isPending }) =>
+          isPending ? "pending" : isActive ? "active" : ""
+        }
+      >
+        Sign Up
+      </NavLink>
     </div>
   );
 };

@@ -10,48 +10,63 @@ import {
   Ping,
   QueryDemoQueryArgs,
   Query,
+  DemoQueryResponseSuccess,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { GraphQLError } from "graphql";
 import { ErrorLine } from "@/api/graphql/error-line";
 
 export const useDemoQuery = () => {
-  const [data, setData] = useState<DemoQueryQuery>();
+  const [data, setData] = useState<DemoQueryResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
 
   const runQuery = async (args: QueryDemoQueryArgs) => {
-    console.log(`RUNNING QYERY`);
+    console.log(`RUNNING QUERY`);
     try {
       const DEMO_QUERY = gql`
-        query DemoQuery($input: String!) {
-          demoQuery(input: $input)
+        query DemoQuery($input: DemoQueryInput!) {
+          demoQuery(input: $input) {
+            __typename
+            ... on DemoQueryResponseSuccess {
+              message
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
         }
       `;
-      const result = await new Promise<DemoQueryQuery>((resolve, reject) => {
-        client.subscribe(
-          {
-            query: print(DEMO_QUERY),
-            variables: args,
-          },
-          {
-            next: ({
-              data,
-              errors,
-            }: {
-              data: DemoQueryQuery;
-              errors: readonly GraphQLError[];
-            }) => {
-              if (errors && errors.length > 0) {
-                setErrors(errors.map((e) => e.message));
-              }
-              resolve(data);
+      const result = await new Promise<DemoQueryResponseSuccess>(
+        (resolve, reject) => {
+          client.subscribe(
+            {
+              query: print(DEMO_QUERY),
+              variables: args,
             },
-            error: reject,
-            complete: () => {},
-          }
-        );
-      });
+            {
+              next: ({
+                data,
+                errors: graphQLErrors,
+              }: {
+                data: DemoQueryQuery;
+                errors: readonly GraphQLError[];
+              }) => {
+                if (graphQLErrors && graphQLErrors.length > 0) {
+                  setErrors(graphQLErrors.map((e) => e.message));
+                }
+                if (data.demoQuery.__typename === "DemoQueryResponseSuccess") {
+                  resolve(data.demoQuery);
+                }
+              },
+              error: reject,
+              complete: () => {},
+            }
+          );
+        }
+      );
       setData(result);
     } catch (e) {
       setErrors([...errors, (e as any).message]);

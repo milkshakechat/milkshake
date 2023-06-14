@@ -22,8 +22,26 @@ export type DemoMutatedItem = {
   title: Scalars['String']['output'];
 };
 
+export type DemoQueryInput = {
+  name: Scalars['String']['input'];
+};
+
+export type DemoQueryResponse = DemoQueryResponseSuccess | ResponseError;
+
+export type DemoQueryResponseSuccess = {
+  __typename?: 'DemoQueryResponseSuccess';
+  message: Scalars['String']['output'];
+};
+
 export type DemoSubscriptionEvent = {
   __typename?: 'DemoSubscriptionEvent';
+  message: Scalars['String']['output'];
+};
+
+export type GetMyProfileResponse = GetMyProfileResponseSuccess | ResponseError;
+
+export type GetMyProfileResponseSuccess = {
+  __typename?: 'GetMyProfileResponseSuccess';
   message: Scalars['String']['output'];
 };
 
@@ -45,13 +63,14 @@ export type Ping = {
 export type Query = {
   __typename?: 'Query';
   demoPing: Ping;
-  demoQuery: Scalars['String']['output'];
+  demoQuery: DemoQueryResponse;
+  getMyProfile: GetMyProfileResponse;
   ping: Ping;
 };
 
 
 export type QueryDemoQueryArgs = {
-  input: Scalars['String']['input'];
+  input: DemoQueryInput;
 };
 
 export type ResponseError = {
@@ -82,11 +101,11 @@ export type Subscription = {
 };
 
 export type DemoQueryQueryVariables = Exact<{
-  input: Scalars['String']['input'];
+  input: DemoQueryInput;
 }>;
 
 
-export type DemoQueryQuery = { __typename?: 'Query', demoQuery: string };
+export type DemoQueryQuery = { __typename?: 'Query', demoQuery: { __typename: 'DemoQueryResponseSuccess', message: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type DemoMutationMutationVariables = Exact<{
   title: Scalars['String']['input'];

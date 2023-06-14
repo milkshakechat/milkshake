@@ -1,5 +1,4 @@
 import { ErrorLines } from "@/api/graphql/error-line";
-import CurrentUser from "@/components/CurrentUser/CurrentUser";
 import DarkModeSwitch from "@/components/DarkModeSwitch/DarkModeSwitch";
 import QuickNav from "@/components/QuickNav/QuickNav";
 import {
@@ -36,7 +35,7 @@ export const SettingsPage = () => {
 
   const executeGraphQL = () => {
     console.log(`Executing GraphQL Operations...`);
-    runDemoQuery({ input: "Hello" });
+    runDemoQuery({ input: { name: "Hello" } });
     runDemoMutation({ title: "Big Title" });
     runDemoSubscription();
     runPingQuery();
@@ -60,7 +59,7 @@ export const SettingsPage = () => {
       <br />
       <section>
         <h3>Query</h3>
-        {demoQueryData && <span>{demoQueryData.demoQuery}</span>}
+        {demoQueryData && <span>{demoQueryData.message}</span>}
         <ErrorLines errors={demoQueryErrors} />
       </section>
       <br />

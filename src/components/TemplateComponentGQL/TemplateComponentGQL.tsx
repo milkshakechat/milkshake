@@ -34,7 +34,7 @@ export const TemplateComponentGQL = () => {
 
   const executeGraphQL = () => {
     console.log(`Executing GraphQL Operations...`);
-    runDemoQuery({ input: "Hello" });
+    runDemoQuery({ input: { name: "Hello" } });
     runDemoMutation({ title: "Big Title" });
     runDemoSubscription();
     runPingQuery();
@@ -56,7 +56,7 @@ export const TemplateComponentGQL = () => {
       <br />
       <section>
         <h3>Query</h3>
-        {demoQueryData && <span>{demoQueryData.demoQuery}</span>}
+        {demoQueryData && <span>{demoQueryData.message}</span>}
         <ErrorLines errors={demoQueryErrors} />
       </section>
       <br />

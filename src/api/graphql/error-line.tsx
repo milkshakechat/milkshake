@@ -5,7 +5,9 @@ export const ErrorLines = ({ errors }: { errors: ErrorLine[] }) => {
     return (
       <div>
         {errors.map((err) => (
-          <span style={{ color: "red" }}>{err}</span>
+          <span key={err} style={{ color: "red" }}>
+            {err}
+          </span>
         ))}
       </div>
     );

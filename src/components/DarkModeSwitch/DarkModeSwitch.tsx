@@ -9,7 +9,7 @@ const DarkModeSwitch = () => {
         type="checkbox"
         id="myCheck"
         checked={theme === "dark" ? true : false}
-        onClick={() =>
+        onChange={() =>
           switchTheme(
             theme === themeMode.dark ? themeMode.light : themeMode.dark
           )

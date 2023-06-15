@@ -1,12 +1,5 @@
 import { ErrorLines } from "@/api/graphql/error-line";
-import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import QuickNav from "@/components/QuickNav/QuickNav";
-import {
-  useDemoMutation,
-  useDemoPing,
-  useDemoQuery,
-  useDemoSubscription,
-} from "@/components/TemplateComponentGQL/useTemplate.graphql";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserState } from "@/state/user.state";
 import AppLayout from "@/AppLayout";

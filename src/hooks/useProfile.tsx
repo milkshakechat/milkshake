@@ -10,6 +10,7 @@ import {
   GetMyProfileResponseSuccess,
 } from "@/api/graphql/types";
 import { useUserState } from "@/state/user.state";
+import { Observable, FetchResult } from "@apollo/client/core";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
@@ -40,34 +41,35 @@ export const useProfile = () => {
           }
         }
       `;
+      let subscription: Observable<FetchResult<any>>;
       const result = await new Promise<GetMyProfileResponseSuccess>(
         (resolve, reject) => {
-          client.subscribe(
+          subscription = client.subscribe(
             {
-              query: print(GET_MY_PROFILE),
-            },
-            {
-              next: ({
-                data,
-                errors: graphQLErrors,
-              }: {
-                data: GetMyProfileQuery;
-                errors: readonly GraphQLError[];
-              }) => {
-                if (graphQLErrors && graphQLErrors.length > 0) {
-                  setErrors(graphQLErrors.map((e) => e.message));
-                  client.dispose();
-                }
-                if (
-                  data.getMyProfile.__typename === "GetMyProfileResponseSuccess"
-                ) {
-                  resolve(data.getMyProfile);
-                  setGQLUser(data.getMyProfile.user);
-                }
-              },
-              error: reject,
-              complete: () => {},
+              query: GET_MY_PROFILE,
             }
+            // {
+            //   next: ({
+            //     data,
+            //     errors: graphQLErrors,
+            //   }: {
+            //     data: GetMyProfileQuery;
+            //     errors: readonly GraphQLError[];
+            //   }) => {
+            //     if (graphQLErrors && graphQLErrors.length > 0) {
+            //       setErrors(graphQLErrors.map((e) => e.message));
+            //       subscription.unsubscribe();
+            //     }
+            //     if (
+            //       data.getMyProfile.__typename === "GetMyProfileResponseSuccess"
+            //     ) {
+            //       resolve(data.getMyProfile);
+            //       setGQLUser(data.getMyProfile.user);
+            //     }
+            //   },
+            //   error: reject,
+            //   complete: () => {},
+            // }
           );
         }
       );

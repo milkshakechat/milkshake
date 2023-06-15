@@ -89,7 +89,7 @@ const StyleConfigPanel = () => {
     items: themeItems,
     onClick: handleThemeMenuClick,
   };
-  console.log(`theme color`, themeColor);
+
   const colorThemeItems: MenuProps["items"] = [
     {
       label: themeColorEnum.paper,

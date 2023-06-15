@@ -37,8 +37,8 @@ export const UserProfilePage = () => {
 
   const executeGraphQL = () => {
     console.log(`Executing GraphQL Operations...`);
-    runDemoQuery({ input: { name: "Hello" } });
-    runDemoMutation({ title: "Big Title" });
+    runDemoQuery({ name: "Hello" });
+    runDemoMutation({ name: "Big Title" });
     runDemoSubscription();
     runPingQuery();
   };
@@ -66,7 +66,7 @@ export const UserProfilePage = () => {
       <br />
       <section>
         <h3>Mutation</h3>
-        {demoMutationData && <span>{demoMutationData.demoMutation.title}</span>}
+        {demoMutationData && <span>{demoMutationData.item.title}</span>}
 
         <ErrorLines errors={demoMutationErrors} />
       </section>

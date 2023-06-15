@@ -7,38 +7,18 @@ import {
   useDemoQuery,
   useDemoSubscription,
 } from "@/components/TemplateComponentGQL/useTemplate.graphql";
+import { useProfile } from "@/hooks/useProfile";
 
 export const SettingsPage = () => {
   const {
-    data: demoQueryData,
-    errors: demoQueryErrors,
-    runQuery: runDemoQuery,
-  } = useDemoQuery();
-
-  const {
-    data: demoMutationData,
-    errors: demoMutationErrors,
-    runMutation: runDemoMutation,
-  } = useDemoMutation();
-
-  const {
-    data: demoSubscriptionData,
-    errors: demoSubscriptionErrors,
-    runSubscription: runDemoSubscription,
-  } = useDemoSubscription();
-
-  const {
-    data: pingData,
-    errors: pingErrors,
-    runQuery: runPingQuery,
-  } = useDemoPing();
+    data: profileData,
+    errors: profileErrors,
+    runQuery: getProfile,
+  } = useProfile();
 
   const executeGraphQL = () => {
     console.log(`Executing GraphQL Operations...`);
-    runDemoQuery({ input: { name: "Hello" } });
-    runDemoMutation({ title: "Big Title" });
-    runDemoSubscription();
-    runPingQuery();
+    getProfile();
   };
 
   return (
@@ -51,40 +31,10 @@ export const SettingsPage = () => {
       <br />
       <br />
       <section>
-        <h3>Ping</h3>
-        {pingData && <span>{pingData.timestamp}</span>}
-
-        <ErrorLines errors={pingErrors} />
+        <h3>Profile</h3>
+        {profileData && <span>{profileData.user.id}</span>}
+        <ErrorLines errors={profileErrors} />
       </section>
-      <br />
-      <section>
-        <h3>Query</h3>
-        {demoQueryData && <span>{demoQueryData.message}</span>}
-        <ErrorLines errors={demoQueryErrors} />
-      </section>
-      <br />
-      <section>
-        <h3>Mutation</h3>
-        {demoMutationData && <span>{demoMutationData.demoMutation.title}</span>}
-
-        <ErrorLines errors={demoMutationErrors} />
-      </section>
-      <br />
-      <section>
-        <h3>Subscription</h3>
-        {demoSubscriptionData && (
-          <div>
-            {demoSubscriptionData.map((a, i) => (
-              <p key={`${i}-${a.message}`}>{a.message}</p>
-            ))}
-          </div>
-        )}
-        <ErrorLines errors={demoSubscriptionErrors} />
-      </section>
-      <br />
-      <DarkModeSwitch />
-      <br />
-      <br />
       <br />
     </div>
   );

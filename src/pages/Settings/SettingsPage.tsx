@@ -9,6 +9,7 @@ import {
 } from "@/components/TemplateComponentGQL/useTemplate.graphql";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserState } from "@/state/user.state";
+import AppLayout from "@/components/AppLayout/AppLayout";
 
 export const SettingsPage = () => {
   const {
@@ -25,23 +26,25 @@ export const SettingsPage = () => {
   };
 
   return (
-    <div>
-      <QuickNav />
-      <h2>
-        <code>{`<SettingsPage />`}</code>
-      </h2>
-      <button onClick={executeGraphQL}>Run GraphQL Operations</button>
-      <br />
-      <br />
-      <section>
-        <h3>Profile</h3>
-        {profileData && <span>{profileData.user.id}</span>}
+    <AppLayout>
+      <div>
+        <QuickNav />
+        <h2>
+          <code>{`<SettingsPage />`}</code>
+        </h2>
+        <button onClick={executeGraphQL}>Run GraphQL Operations</button>
         <br />
-        {user && <span>{user.email}</span>}
-        <ErrorLines errors={profileErrors} />
-      </section>
-      <br />
-    </div>
+        <br />
+        <section>
+          <h3>Profile</h3>
+          {profileData && <span>{profileData.user.id}</span>}
+          <br />
+          {user && <span>{user.email}</span>}
+          <ErrorLines errors={profileErrors} />
+        </section>
+        <br />
+      </div>
+    </AppLayout>
   );
 };
 export default SettingsPage;

@@ -2,9 +2,12 @@ import { shallow } from "zustand/shallow";
 import {
   localeEnum,
   localeLabelText,
-  themeEnum,
+  themeTypeEnum,
   themeLabelText,
   useStyleConfigGlobal,
+  hexToThemeColorMap,
+  themeColorEnum,
+  themeColorToHexMap,
 } from "@/state/styleconfig.state";
 import { DownOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
@@ -12,18 +15,24 @@ import { Button, ColorPicker, Dropdown, message, Space, theme } from "antd";
 import type { Color } from "antd/es/color-picker";
 
 const StyleConfigPanel = () => {
-  const { theme, locale, switchLocale, switchTheme, themeColor, switchColor } =
-    useStyleConfigGlobal(
-      (state) => ({
-        theme: state.theme,
-        locale: state.locale,
-        themeColor: state.themeColor,
-        switchLocale: state.switchLocale,
-        switchTheme: state.switchTheme,
-        switchColor: state.switchColor,
-      }),
-      shallow
-    );
+  const {
+    themeType,
+    locale,
+    switchLocale,
+    switchTheme,
+    themeColor,
+    switchColor,
+  } = useStyleConfigGlobal(
+    (state) => ({
+      themeType: state.themeType,
+      locale: state.locale,
+      themeColor: state.themeColor,
+      switchLocale: state.switchLocale,
+      switchTheme: state.switchTheme,
+      switchColor: state.switchColor,
+    }),
+    shallow
+  );
 
   const handleLocaleMenuClick: MenuProps["onClick"] = (e) => {
     message.info(`Language changed to ${localeLabelText[e.key as localeEnum]}`);
@@ -64,23 +73,54 @@ const StyleConfigPanel = () => {
 
   const themeItems: MenuProps["items"] = [
     {
-      label: themeLabelText[themeEnum.light],
-      key: themeEnum.light,
+      label: themeLabelText[themeTypeEnum.light],
+      key: themeTypeEnum.light,
     },
     {
-      label: themeLabelText[themeEnum.dark],
-      key: themeEnum.dark,
+      label: themeLabelText[themeTypeEnum.dark],
+      key: themeTypeEnum.dark,
     },
   ];
   const handleThemeMenuClick: MenuProps["onClick"] = (e) => {
-    message.info(`Theme changed to ${themeLabelText[e.key as themeEnum]}`);
-    switchTheme(e.key as themeEnum);
+    message.info(`Theme changed to ${themeLabelText[e.key as themeTypeEnum]}`);
+    switchTheme(e.key as themeTypeEnum);
   };
   const localeThemeProps = {
     items: themeItems,
     onClick: handleThemeMenuClick,
   };
-
+  console.log(`theme color`, themeColor);
+  const colorThemeItems: MenuProps["items"] = [
+    {
+      label: themeColorEnum.paper,
+      key: themeColorToHexMap[themeColorEnum.paper],
+    },
+    {
+      label: themeColorEnum.dairy,
+      key: themeColorToHexMap[themeColorEnum.dairy],
+    },
+    {
+      label: themeColorEnum.sakura,
+      key: themeColorToHexMap[themeColorEnum.sakura],
+    },
+    {
+      label: themeColorEnum.skyblue,
+      key: themeColorToHexMap[themeColorEnum.skyblue],
+    },
+    {
+      label: themeColorEnum.toxic,
+      key: themeColorToHexMap[themeColorEnum.toxic],
+    },
+  ];
+  const handleColorThemeMenuClick: MenuProps["onClick"] = (e) => {
+    console.log(`e.key`, e);
+    message.info(`Theme color changed to ${hexToThemeColorMap[e.key]}`);
+    switchColor(e.key);
+  };
+  const colorThemeProps = {
+    items: colorThemeItems,
+    onClick: handleColorThemeMenuClick,
+  };
   const handleColorChange = (value: Color, hex: string) => {
     switchColor(hex);
   };
@@ -99,10 +139,21 @@ const StyleConfigPanel = () => {
       <br />
       <br />
       <label>Theme</label>
+      <Dropdown menu={colorThemeProps}>
+        <Button>
+          <Space>
+            {hexToThemeColorMap[themeColor] || `Custom ${themeColor}`}
+            <DownOutlined />
+          </Space>
+        </Button>
+      </Dropdown>
+      <br />
+      <br />
+      <label>Mode</label>
       <Dropdown menu={localeThemeProps}>
         <Button>
           <Space>
-            {themeLabelText[theme]}
+            {themeLabelText[themeType]}
             <DownOutlined />
           </Space>
         </Button>
@@ -110,12 +161,11 @@ const StyleConfigPanel = () => {
       <br />
       <br />
       <Space direction="horizontal">
-        <label>Color</label>
+        <label>Custom</label>
         <ColorPicker value={themeColor} onChange={handleColorChange} />
       </Space>
       <br />
       <br />
-      <Button type="primary">Demo Button</Button>
     </div>
   );
 };

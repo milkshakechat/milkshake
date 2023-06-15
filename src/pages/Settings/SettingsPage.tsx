@@ -1,5 +1,5 @@
 import { ErrorLines } from "@/api/graphql/error-line";
-import DarkModeSwitch from "@/components/DarkModeSwitch/DarkModeSwitch";
+import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import QuickNav from "@/components/QuickNav/QuickNav";
 import {
   useDemoMutation,
@@ -8,6 +8,7 @@ import {
   useDemoSubscription,
 } from "@/components/TemplateComponentGQL/useTemplate.graphql";
 import { useProfile } from "@/hooks/useProfile";
+import { useUserState } from "@/state/user.state";
 
 export const SettingsPage = () => {
   const {
@@ -15,6 +16,8 @@ export const SettingsPage = () => {
     errors: profileErrors,
     runQuery: getProfile,
   } = useProfile();
+
+  const user = useUserState((state) => state.user);
 
   const executeGraphQL = () => {
     console.log(`Executing GraphQL Operations...`);
@@ -33,6 +36,8 @@ export const SettingsPage = () => {
       <section>
         <h3>Profile</h3>
         {profileData && <span>{profileData.user.id}</span>}
+        <br />
+        {user && <span>{user.email}</span>}
         <ErrorLines errors={profileErrors} />
       </section>
       <br />

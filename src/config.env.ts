@@ -7,6 +7,7 @@ export const FIREBASE_AUTH_ACCESS_TOKEN_LOCALSTORAGE =
 
 const devConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER: "ws://localhost:8080/graphql",
+  GRAPHQL_SERVER: "http://localhost:8080/graphql",
   SENDBIRD_APP_ID: "D24F8D62-B601-4978-8DFB-F17DB6CD741F",
   VERIFY_EMAIL_DOMAIN: "http://localhost:3000",
   FIREBASE: {
@@ -22,6 +23,7 @@ const devConfig: ConfigEnv = {
 const stagingConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
     "wss://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
+  GRAPHQL_SERVER: "http://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
   SENDBIRD_APP_ID: "D24F8D62-B601-4978-8DFB-F17DB6CD741F",
   VERIFY_EMAIL_DOMAIN: "https://milkshake-dev-faf77.firebaseapp.com",
   FIREBASE: {
@@ -37,6 +39,7 @@ const stagingConfig: ConfigEnv = {
 const prodConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
     "wss://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
+  GRAPHQL_SERVER: "http://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
   SENDBIRD_APP_ID: "D24F8D62-B601-4978-8DFB-F17DB6CD741F",
   VERIFY_EMAIL_DOMAIN: "https://milkshake-dev-faf77.firebaseapp.com",
   FIREBASE: {
@@ -52,6 +55,7 @@ const prodConfig: ConfigEnv = {
 
 interface ConfigEnv {
   GRAPHQL_SOCKET_SERVER: string;
+  GRAPHQL_SERVER: string;
   SENDBIRD_APP_ID: string;
   VERIFY_EMAIL_DOMAIN: string;
   FIREBASE: {

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import gql from "graphql-tag";
-import { print } from "graphql/language/printer";
 import {
   DemoMutationMutation,
   DemoMutationMutationVariables,
@@ -11,17 +10,22 @@ import {
   QueryDemoQueryArgs,
   Query,
   DemoQueryResponseSuccess,
+  MutationDemoMutationArgs,
+  DemoMutationResponseSuccess,
+  DemoMutationInput,
+  DemoQueryInput,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { GraphQLError } from "graphql";
 import { ErrorLine } from "@/api/graphql/error-line";
+import { ObservableSubscription } from "@apollo/client/core";
 
 export const useDemoQuery = () => {
   const [data, setData] = useState<DemoQueryResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
 
-  const runQuery = async (args: QueryDemoQueryArgs) => {
+  const runQuery = async (args: DemoQueryInput) => {
     try {
       const DEMO_QUERY = gql`
         query DemoQuery($input: DemoQueryInput!) {
@@ -39,37 +43,28 @@ export const useDemoQuery = () => {
         }
       `;
       const result = await new Promise<DemoQueryResponseSuccess>(
-        (resolve, reject) => {
-          client.subscribe(
-            {
-              query: print(DEMO_QUERY),
-              variables: args,
-            },
-            {
-              next: ({
-                data,
-                errors: graphQLErrors,
-              }: {
-                data: DemoQueryQuery;
-                errors: readonly GraphQLError[];
-              }) => {
-                if (graphQLErrors && graphQLErrors.length > 0) {
-                  setErrors(graphQLErrors.map((e) => e.message));
-                  client.dispose();
-                }
-                if (data.demoQuery.__typename === "DemoQueryResponseSuccess") {
-                  resolve(data.demoQuery);
-                }
-              },
-              error: reject,
-              complete: () => {},
-            }
-          );
+        async (resolve, reject) => {
+          client
+            .query<DemoQueryQuery>({
+              query: DEMO_QUERY,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (data.demoQuery.__typename === "DemoQueryResponseSuccess") {
+                resolve(data.demoQuery);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
         }
       );
       setData(result);
     } catch (e) {
-      setErrors([...errors, (e as any).message]);
+      console.log(e);
     }
   };
 
@@ -77,50 +72,55 @@ export const useDemoQuery = () => {
 };
 
 export const useDemoMutation = () => {
-  const [data, setData] = useState<DemoMutationMutation>();
+  const [data, setData] = useState<DemoMutationResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
 
-  const runMutation = async (args: DemoMutationMutationVariables) => {
+  const runMutation = async (args: DemoMutationInput) => {
     try {
       const DEMO_MUTATION = gql`
-        mutation DemoMutation($title: String!) {
-          demoMutation(title: $title) {
-            id
-            title
+        mutation DemoMutation($input: DemoMutationInput!) {
+          demoMutation(input: $input) {
+            __typename
+            ... on DemoMutationResponseSuccess {
+              item {
+                id
+                title
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
           }
         }
       `;
-      const result = await new Promise<DemoMutationMutation>(
+      const result = await new Promise<DemoMutationResponseSuccess>(
         (resolve, reject) => {
-          client.subscribe(
-            {
-              query: print(DEMO_MUTATION),
-              variables: args,
-            },
-            {
-              next: ({
-                data,
-                errors,
-              }: {
-                data: DemoMutationMutation;
-                errors: readonly GraphQLError[];
-              }) => {
-                if (errors && errors.length > 0) {
-                  setErrors(errors.map((e) => e.message));
-                  client.dispose();
-                }
-                resolve(data);
-              },
-              error: reject,
-              complete: () => {},
-            }
-          );
+          client
+            .mutate<DemoMutationMutation>({
+              mutation: DEMO_MUTATION,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.demoMutation.__typename === "DemoMutationResponseSuccess"
+              ) {
+                resolve(data.demoMutation);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
         }
       );
       setData(result);
     } catch (e) {
-      setErrors([...errors, (e as any).message]);
+      console.log(e);
     }
   };
 
@@ -141,6 +141,7 @@ export const useDemoSubscription = () => {
     let unsubscribe = null;
 
     try {
+      let subscription: ObservableSubscription;
       const DEMO_SUBSCRIPTION = gql`
         subscription DemoSubscription {
           demoSubscription {
@@ -148,28 +149,28 @@ export const useDemoSubscription = () => {
           }
         }
       `;
-      unsubscribe = await client.subscribe(
-        { query: print(DEMO_SUBSCRIPTION) },
-        {
-          next: ({
-            data,
-            errors,
-          }: {
-            data: DemoSubscriptionSubscription;
-            errors: readonly GraphQLError[];
-          }) => {
-            if (errors && errors.length > 0) {
-              setErrors(errors.map((e) => e.message));
-              client.dispose();
-            }
-            console.log(`Incoming event: `, data.demoSubscription);
-            console.log(`Current Events: `, eventsRef.current); // access the latest events
-            setEvents((prevEvents) => [...prevEvents, data.demoSubscription]);
-          },
-          error: setErrors,
-          complete: () => {},
-        }
-      );
+      const observable = await client.subscribe({
+        query: DEMO_SUBSCRIPTION,
+      });
+      subscription = observable.subscribe({
+        next: ({
+          data,
+          errors,
+        }: {
+          data: DemoSubscriptionSubscription;
+          errors: readonly GraphQLError[];
+        }) => {
+          if (errors && errors.length > 0) {
+            setErrors(errors.map((e) => e.message));
+            subscription.unsubscribe();
+          }
+          // console.log(`Incoming event: `, data.demoSubscription);
+          // console.log(`Current Events: `, eventsRef.current); // access the latest events
+          setEvents((prevEvents) => [...prevEvents, data.demoSubscription]);
+        },
+        error: setErrors,
+        complete: () => {},
+      });
     } catch (e) {
       setErrors([...errors, (e as any).message]);
     }
@@ -187,6 +188,7 @@ export const useDemoPing = () => {
 
   const runQuery = async () => {
     try {
+      let subscription: ObservableSubscription;
       const DEMO_PING = gql`
         query DemoPing {
           demoPing {
@@ -195,28 +197,26 @@ export const useDemoPing = () => {
         }
       `;
       const result = await new Promise<Ping>((resolve, reject) => {
-        client.subscribe(
-          {
-            query: print(DEMO_PING),
+        const observeable = client.subscribe({
+          query: DEMO_PING,
+        });
+        subscription = observeable.subscribe({
+          next: ({
+            data,
+            errors,
+          }: {
+            data: Pick<Query, "demoPing">;
+            errors: readonly GraphQLError[];
+          }) => {
+            if (errors && errors.length > 0) {
+              setErrors(errors.map((e) => e.message));
+              subscription.unsubscribe();
+            }
+            resolve(data.demoPing);
           },
-          {
-            next: ({
-              data,
-              errors,
-            }: {
-              data: Pick<Query, "demoPing">;
-              errors: readonly GraphQLError[];
-            }) => {
-              if (errors && errors.length > 0) {
-                setErrors(errors.map((e) => e.message));
-                client.dispose();
-              }
-              resolve(data.demoPing);
-            },
-            error: reject,
-            complete: () => {},
-          }
-        );
+          error: reject,
+          complete: () => {},
+        });
       });
       setData(result);
     } catch (e) {

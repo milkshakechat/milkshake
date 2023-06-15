@@ -10,6 +10,7 @@ import {
   GetMyProfileResponseSuccess,
 } from "@/api/graphql/types";
 import { useUserState } from "@/state/user.state";
+import { Observable, FetchResult } from "@apollo/client/core";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
@@ -42,39 +43,29 @@ export const useProfile = () => {
       `;
       const result = await new Promise<GetMyProfileResponseSuccess>(
         (resolve, reject) => {
-          client.subscribe(
-            {
-              query: print(GET_MY_PROFILE),
-            },
-            {
-              next: ({
-                data,
-                errors: graphQLErrors,
-              }: {
-                data: GetMyProfileQuery;
-                errors: readonly GraphQLError[];
-              }) => {
-                if (graphQLErrors && graphQLErrors.length > 0) {
-                  setErrors(graphQLErrors.map((e) => e.message));
-                  client.dispose();
-                }
-                if (
-                  data.getMyProfile.__typename === "GetMyProfileResponseSuccess"
-                ) {
-                  resolve(data.getMyProfile);
-                  setGQLUser(data.getMyProfile.user);
-                }
-              },
-              error: reject,
-              complete: () => {},
-            }
-          );
+          client
+            .query<GetMyProfileQuery>({
+              query: GET_MY_PROFILE,
+            })
+            .then(({ data }) => {
+              if (
+                data.getMyProfile.__typename === "GetMyProfileResponseSuccess"
+              ) {
+                resolve(data.getMyProfile);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
         }
       );
       setData(result);
+      setGQLUser(result.user);
     } catch (e) {
       console.log(e);
-      setErrors([...errors, ((e as any) || {}).message]);
     }
   };
 

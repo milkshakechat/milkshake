@@ -130,7 +130,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   );
   const { token } = theme.useToken();
 
-  console.log(`token`, token);
+  // console.log(`token`, token);
 
   if (screen === ScreenSize.mobile) {
     return (

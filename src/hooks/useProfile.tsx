@@ -9,11 +9,13 @@ import {
   GetMyProfileResponse,
   GetMyProfileResponseSuccess,
 } from "@/api/graphql/types";
+import { useUserState } from "@/state/user.state";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
+  const setGQLUser = useUserState((state) => state.setGQLUser);
 
   const runQuery = async () => {
     try {
@@ -60,6 +62,7 @@ export const useProfile = () => {
                   data.getMyProfile.__typename === "GetMyProfileResponseSuccess"
                 ) {
                   resolve(data.getMyProfile);
+                  setGQLUser(data.getMyProfile.user);
                 }
               },
               error: reject,

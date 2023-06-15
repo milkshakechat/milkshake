@@ -2,7 +2,7 @@ import React from "react";
 import logo from "../../logo.svg";
 import "./HomePage.css";
 import TemplateComponentGQL from "@/components/TemplateComponentGQL/TemplateComponentGQL";
-import DarkModeSwitch from "@/components/DarkModeSwitch/DarkModeSwitch";
+import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import QuickNav from "@/components/QuickNav/QuickNav";
 
 function App() {
@@ -14,7 +14,6 @@ function App() {
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
-        <DarkModeSwitch />
         <a
           className="App-link"
           href="https://reactjs.org"

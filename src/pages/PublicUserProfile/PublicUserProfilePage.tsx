@@ -1,5 +1,5 @@
 import { ErrorLines } from "@/api/graphql/error-line";
-import DarkModeSwitch from "@/components/DarkModeSwitch/DarkModeSwitch";
+import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import {
   useDemoMutation,
   useDemoPing,
@@ -83,7 +83,7 @@ export const UserProfilePage = () => {
         <ErrorLines errors={demoSubscriptionErrors} />
       </section>
       <br />
-      <DarkModeSwitch />
+      <StyleConfigPanel />
       <br />
       <br />
       <br />

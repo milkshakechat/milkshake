@@ -1,5 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
+import { shallow } from "zustand/shallow";
 import Page404 from "@/pages/404";
 import PublicUserProfilePage from "@/pages/PublicUserProfile/PublicUserProfilePage";
 import HomePage from "@/pages/Home/HomePage";
@@ -18,63 +19,87 @@ import {
   SendBirdServiceProvider,
 } from "@/context/SendbirdProvider";
 import SendBirdService from "@/api/sendbird";
-import ConversationPage from "./pages/Conversation/ConversationPage";
+import { ConfigProvider, RadioChangeEvent, theme } from "antd";
+import ConversationPage from "@/pages/Conversation/ConversationPage";
+import { useState } from "react";
+import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 
 const AppRouter = () => {
+  const { textDirection, antLocale, themeAlgo, themeColor } =
+    useStyleConfigGlobal(
+      (state) => ({
+        textDirection: state.textDirection,
+        antLocale: state.antLocale,
+        themeAlgo: state.themeAlgo,
+        themeColor: state.themeColor,
+      }),
+      shallow
+    );
   return (
     <GraphqlClientProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} index />
-          <Route path="/:username" element={<PublicUserProfilePage />} />
-          <Route path="/app" element={<div>app</div>}></Route>
-          <Route path="/app" errorElement={<Page404 />}>
-            {/* Public Routes */}
-            <Route path="welcome" element={<div>welcome</div>} />
-            <Route path="login" element={<LoginPage />} />
-            <Route path="logout" element={<LogOutPage />} />
-            <Route path="signup" element={<SignUpPage />} />
-            <Route path="signup/verify" element={<SignUpVerifyPage />} />
-          </Route>
-        </Routes>
+      <ConfigProvider
+        direction={textDirection}
+        locale={antLocale}
+        theme={{
+          algorithm: themeAlgo,
+          token: {
+            colorPrimary: themeColor,
+          },
+        }}
+      >
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} index />
+            <Route path="/:username" element={<PublicUserProfilePage />} />
+            <Route path="/app" element={<div>app</div>}></Route>
+            <Route path="/app" errorElement={<Page404 />}>
+              {/* Public Routes */}
+              <Route path="welcome" element={<div>welcome</div>} />
+              <Route path="login" element={<LoginPage />} />
+              <Route path="logout" element={<LogOutPage />} />
+              <Route path="signup" element={<SignUpPage />} />
+              <Route path="signup/verify" element={<SignUpVerifyPage />} />
+            </Route>
+          </Routes>
 
-        {/* Private Routes */}
+          {/* Private Routes */}
 
-        <AuthProvider>
-          <SendBirdServiceProvider>
-            <Routes>
-              <Route path="/app" errorElement={<Page404 />}>
-                <Route
-                  path="sandbox"
-                  element={
-                    <AuthProtect>
-                      <ConversationPage />
-                    </AuthProtect>
-                  }
-                />
-                <Route
-                  path="settings"
-                  element={
-                    <AuthProtect>
-                      <SettingsPage />
-                    </AuthProtect>
-                  }
-                />
-                <Route
-                  path="profile"
-                  element={
-                    <AuthProtect>
-                      <div>profile</div>
-                    </AuthProtect>
-                  }
-                />
+          <AuthProvider>
+            <SendBirdServiceProvider>
+              <Routes>
+                <Route path="/app" errorElement={<Page404 />}>
+                  <Route
+                    path="sandbox"
+                    element={
+                      <AuthProtect>
+                        <ConversationPage />
+                      </AuthProtect>
+                    }
+                  />
+                  <Route
+                    path="settings"
+                    element={
+                      <AuthProtect>
+                        <SettingsPage />
+                      </AuthProtect>
+                    }
+                  />
+                  <Route
+                    path="profile"
+                    element={
+                      <AuthProtect>
+                        <div>profile</div>
+                      </AuthProtect>
+                    }
+                  />
 
-                {/* <Route path="*" element={<Page404 />} /> */}
-              </Route>
-            </Routes>
-          </SendBirdServiceProvider>
-        </AuthProvider>
-      </BrowserRouter>
+                  {/* <Route path="*" element={<Page404 />} /> */}
+                </Route>
+              </Routes>
+            </SendBirdServiceProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </ConfigProvider>
     </GraphqlClientProvider>
   );
 };

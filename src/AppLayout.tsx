@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  DesktopOutlined,
+  SettingOutlined,
   VideoCameraOutlined,
   MessageOutlined,
   BellOutlined,
@@ -12,6 +12,8 @@ import useWindowSize, { ScreenSize } from "@/api/utils/screen";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import { shallow } from "zustand/shallow";
 import LogoText from "@/components/LogoText/LogoText";
+import { NavLink } from "react-router-dom";
+import NotificationsPage from "@/pages/Notifications/NotificationsPage";
 const { Header, Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -32,44 +34,85 @@ function getItem(
 
 const items: MenuItem[] = [
   getItem(
-    "New Story",
+    <NavLink to="/app/story/new">New Story</NavLink>,
     "newstory",
     <VideoCameraOutlined style={{ fontSize: "1rem" }} />
   ),
   getItem(
-    "Messages",
+    <NavLink
+      to="/app/sandbox"
+      className={({ isActive, isPending }) =>
+        isPending ? "pending" : isActive ? "active" : ""
+      }
+    >
+      Messages
+    </NavLink>,
     "messages",
     <MessageOutlined style={{ fontSize: "1rem" }} />
   ),
   getItem(
-    "Notifications",
+    <NavLink to="/app/notifications">Notifications</NavLink>,
     "notifications",
     <BellOutlined style={{ fontSize: "1rem" }} />
   ),
   getItem("Account", "account", <UserOutlined style={{ fontSize: "1rem" }} />, [
-    getItem("Profile", "profile"),
+    getItem(
+      <NavLink
+        to="/app/profile"
+        className={({ isActive, isPending }) =>
+          isPending ? "pending" : isActive ? "active" : ""
+        }
+      >
+        Profile
+      </NavLink>,
+      "profile"
+    ),
     getItem("Contacts", "contacts"),
     getItem("Wishlists", "wishlists"),
-    getItem("Settings", "settings"),
+    getItem(
+      <NavLink
+        to="/app/settings"
+        className={({ isActive, isPending }) =>
+          isPending ? "pending" : isActive ? "active" : ""
+        }
+      >
+        Settings
+      </NavLink>,
+      "settings"
+    ),
   ]),
 ];
-const itemsMobile: MenuItem[] = [
-  getItem(
-    "New",
-    "newstory",
-    <VideoCameraOutlined style={{ fontSize: "1rem" }} />
-  ),
-  getItem(
-    "Messages",
-    "messages",
-    <MessageOutlined style={{ fontSize: "1rem" }} />
-  ),
-  getItem(
-    "Notifications",
-    "notifications",
-    <BellOutlined style={{ fontSize: "1rem" }} />
-  ),
-  getItem("Account", "account", <UserOutlined style={{ fontSize: "1rem" }} />),
+const itemsMobile = [
+  {
+    key: "profile",
+    text: "Profile",
+    route: "/app/profile",
+    icon: <UserOutlined style={{ fontSize: "1rem" }} />,
+  },
+  {
+    key: "messages",
+    text: "Messages",
+    route: "/app/sandbox",
+    icon: <MessageOutlined style={{ fontSize: "1rem" }} />,
+  },
+  {
+    key: "newstory",
+    text: "New Story",
+    route: "/app/story/new",
+    icon: <VideoCameraOutlined style={{ fontSize: "1rem" }} />,
+  },
+  {
+    key: "notifications",
+    text: "Notifications",
+    route: "/app/notifications",
+    icon: <BellOutlined style={{ fontSize: "1rem" }} />,
+  },
+  {
+    key: "settings",
+    text: "Settings",
+    route: "/app/profile/settings",
+    icon: <SettingOutlined style={{ fontSize: "1rem" }} />,
+  },
 ];
 
 interface AppLayoutProps {
@@ -134,13 +177,36 @@ const AppLayout = ({ children }: AppLayoutProps) => {
             style={{
               width: "100%",
               height: "100%",
-              justifyContent: "space-between",
+              display: "flex",
+              flex: "auto",
+              justifyContent: "center",
               color: token.colorPrimaryText,
               fontWeight: 500,
               backgroundColor: token.colorBgBase,
             }}
-            items={itemsMobile}
-          />
+          >
+            {itemsMobile.map((item) => {
+              if (item && item.key && item.icon) {
+                return (
+                  <Menu.Item
+                    key={item.key}
+                    icon={item.icon}
+                    style={{ flex: 1, textAlign: "center" }}
+                  >
+                    <NavLink
+                      to={item.route}
+                      className={({ isActive, isPending }) =>
+                        isPending ? "pending" : isActive ? "active" : ""
+                      }
+                    >
+                      {item.text}
+                    </NavLink>
+                  </Menu.Item>
+                );
+              }
+              return null;
+            })}
+          </Menu>
         </Footer>
       </Layout>
     );

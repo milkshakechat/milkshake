@@ -108,6 +108,10 @@ const StyleConfigPanel = () => {
       key: themeColorToHexMap[themeColorEnum.skyblue],
     },
     {
+      label: themeColorEnum.pastures,
+      key: themeColorToHexMap[themeColorEnum.pastures],
+    },
+    {
       label: themeColorEnum.toxic,
       key: themeColorToHexMap[themeColorEnum.toxic],
     },

@@ -17,25 +17,61 @@ import { MappingAlgorithm } from "antd/lib/config-provider/context";
 
 dayjs.locale("en");
 
-export enum themeEnum {
+export enum themeTypeEnum {
   dark = "dark",
   light = "light",
-  compact = "compact",
 }
 export const themeLabelText = {
-  [themeEnum.dark]: "Dark",
-  [themeEnum.light]: "Light",
-  [themeEnum.compact]: "Compact",
+  [themeTypeEnum.dark]: "Dark",
+  [themeTypeEnum.light]: "Light",
 };
-const determineAntThemeAlgorithm = (th: themeEnum) => {
-  switch (th) {
-    case themeEnum.dark:
+const determineAntThemeAlgorithm = (themeType: themeTypeEnum) => {
+  switch (themeType) {
+    case themeTypeEnum.dark:
       return theme.darkAlgorithm;
-    case themeEnum.light:
+    case themeTypeEnum.light:
       return theme.defaultAlgorithm;
     default:
       return theme.defaultAlgorithm;
   }
+};
+
+export enum themeColorEnum {
+  paper = "Paper",
+  dairy = "Dairy",
+  sakura = "Sakura",
+  skyblue = "Sky Blue",
+  toxic = "Toxic",
+}
+export const hexToThemeColorMap: Record<string, string> = {
+  "#292929": themeColorEnum.paper,
+  "#E4E4E4": themeColorEnum.dairy,
+  "#ea8e7f": themeColorEnum.sakura,
+  "#2EB8F6": themeColorEnum.skyblue,
+  "#684BE4": themeColorEnum.toxic,
+};
+export const themeColorToHexMap: Record<string, string> = {
+  [themeColorEnum.paper]: "#292929",
+  [themeColorEnum.dairy]: "#E4E4E4",
+  [themeColorEnum.sakura]: "#ea8e7f",
+  [themeColorEnum.skyblue]: "#2EB8F6",
+  [themeColorEnum.toxic]: "#684BE4",
+};
+const determineThemeTypeFromHex = (hex: string) => {
+  console.log(`hex`, hex);
+  console.log(`hexToThemeColorMap[hex]`, hexToThemeColorMap[hex]);
+  if (hexToThemeColorMap[hex] === themeColorEnum.paper) {
+    return themeTypeEnum.light;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.dairy) {
+    return themeTypeEnum.dark;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.sakura) {
+    return themeTypeEnum.light;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.skyblue) {
+    return themeTypeEnum.light;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.toxic) {
+    return themeTypeEnum.dark;
+  }
+  return null;
 };
 
 export enum localeEnum {
@@ -104,28 +140,28 @@ const handleLocaleChange = (locale: localeEnum) => {
 };
 
 interface StyleConfigState {
-  theme: themeEnum;
+  themeType: themeTypeEnum;
   themeAlgo: MappingAlgorithm | MappingAlgorithm[];
   themeColor: string;
   locale: localeEnum;
   antLocale: Locale;
   textDirection: textDirectionEnum;
-  switchTheme: (theme: themeEnum) => void;
+  switchTheme: (theme: themeTypeEnum) => void;
   switchLocale: (locale: localeEnum) => void;
   switchColor: (hex: string) => void;
 }
 const defaultThemeColorHex = "#2EB8F6";
 export const useStyleConfigGlobal = create<StyleConfigState>()((set) => ({
-  theme: themeEnum.light,
+  themeType: themeTypeEnum.light,
   themeAlgo: theme.defaultAlgorithm,
   themeColor: defaultThemeColorHex,
   locale: localeEnum.english,
   antLocale: enUS,
   textDirection: textDirectionEnum.ltr,
-  switchTheme: (theme) => {
-    const themeAlgo = determineAntThemeAlgorithm(theme);
+  switchTheme: (themeType) => {
+    const themeAlgo = determineAntThemeAlgorithm(themeType);
     set((state) => ({
-      theme: theme,
+      themeType: themeType,
       themeAlgo,
     }));
   },
@@ -140,8 +176,18 @@ export const useStyleConfigGlobal = create<StyleConfigState>()((set) => ({
     });
   },
   switchColor: (hex) => {
-    set((state) => ({
-      themeColor: hex,
-    }));
+    const themeType = determineThemeTypeFromHex(hex);
+    if (!themeType) {
+      set((state) => ({
+        themeColor: hex,
+      }));
+    } else {
+      const themeAlgo = determineAntThemeAlgorithm(themeType);
+      set((state) => ({
+        themeColor: hex,
+        themeType,
+        themeAlgo,
+      }));
+    }
   },
 }));

@@ -22,7 +22,6 @@ export const useDemoQuery = () => {
   const client = useGraphqlClient();
 
   const runQuery = async (args: QueryDemoQueryArgs) => {
-    console.log(`RUNNING QUERY`);
     try {
       const DEMO_QUERY = gql`
         query DemoQuery($input: DemoQueryInput!) {
@@ -56,6 +55,7 @@ export const useDemoQuery = () => {
               }) => {
                 if (graphQLErrors && graphQLErrors.length > 0) {
                   setErrors(graphQLErrors.map((e) => e.message));
+                  client.dispose();
                 }
                 if (data.demoQuery.__typename === "DemoQueryResponseSuccess") {
                   resolve(data.demoQuery);
@@ -108,6 +108,7 @@ export const useDemoMutation = () => {
               }) => {
                 if (errors && errors.length > 0) {
                   setErrors(errors.map((e) => e.message));
+                  client.dispose();
                 }
                 resolve(data);
               },
@@ -159,6 +160,7 @@ export const useDemoSubscription = () => {
           }) => {
             if (errors && errors.length > 0) {
               setErrors(errors.map((e) => e.message));
+              client.dispose();
             }
             console.log(`Incoming event: `, data.demoSubscription);
             console.log(`Current Events: `, eventsRef.current); // access the latest events
@@ -207,6 +209,7 @@ export const useDemoPing = () => {
             }) => {
               if (errors && errors.length > 0) {
                 setErrors(errors.map((e) => e.message));
+                client.dispose();
               }
               resolve(data.demoPing);
             },

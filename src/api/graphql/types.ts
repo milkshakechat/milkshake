@@ -12,7 +12,9 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  DateString: { input: any; output: any; }
   GroupChatID: { input: any; output: any; }
+  SendBirdInternalUserID: { input: any; output: any; }
   UserID: { input: any; output: any; }
 };
 
@@ -42,7 +44,7 @@ export type GetMyProfileResponse = GetMyProfileResponseSuccess | ResponseError;
 
 export type GetMyProfileResponseSuccess = {
   __typename?: 'GetMyProfileResponseSuccess';
-  message: Scalars['String']['output'];
+  user: User;
 };
 
 export type Mutation = {
@@ -100,6 +102,20 @@ export type Subscription = {
   demoSubscription: DemoSubscriptionEvent;
 };
 
+export type User = {
+  __typename?: 'User';
+  bio: Scalars['String']['output'];
+  createdAt: Scalars['DateString']['output'];
+  disabled: Scalars['Boolean']['output'];
+  displayName: Scalars['String']['output'];
+  email: Scalars['String']['output'];
+  id: Scalars['UserID']['output'];
+  isCreator: Scalars['Boolean']['output'];
+  isPaidChat: Scalars['Boolean']['output'];
+  phone?: Maybe<Scalars['String']['output']>;
+  username: Scalars['String']['output'];
+};
+
 export type DemoQueryQueryVariables = Exact<{
   input: DemoQueryInput;
 }>;
@@ -123,3 +139,8 @@ export type DemoPingQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type DemoPingQuery = { __typename?: 'Query', demoPing: { __typename?: 'Ping', timestamp: string } };
+
+export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any } } | { __typename: 'ResponseError' } };

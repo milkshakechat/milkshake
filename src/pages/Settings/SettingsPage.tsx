@@ -9,7 +9,7 @@ import {
 } from "@/components/TemplateComponentGQL/useTemplate.graphql";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserState } from "@/state/user.state";
-import AppLayout from "@/components/AppLayout/AppLayout";
+import AppLayout from "@/AppLayout";
 
 export const SettingsPage = () => {
   const {

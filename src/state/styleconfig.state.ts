@@ -42,12 +42,14 @@ export enum themeColorEnum {
   sakura = "Sakura",
   skyblue = "Sky Blue",
   toxic = "Toxic",
+  pastures = "Pastures",
 }
 export const hexToThemeColorMap: Record<string, string> = {
   "#292929": themeColorEnum.paper,
   "#E4E4E4": themeColorEnum.dairy,
   "#ea8e7f": themeColorEnum.sakura,
   "#2EB8F6": themeColorEnum.skyblue,
+  "#18BF04": themeColorEnum.pastures,
   "#684BE4": themeColorEnum.toxic,
 };
 export const themeColorToHexMap: Record<string, string> = {
@@ -55,11 +57,10 @@ export const themeColorToHexMap: Record<string, string> = {
   [themeColorEnum.dairy]: "#E4E4E4",
   [themeColorEnum.sakura]: "#ea8e7f",
   [themeColorEnum.skyblue]: "#2EB8F6",
+  [themeColorEnum.pastures]: "#18BF04",
   [themeColorEnum.toxic]: "#684BE4",
 };
 const determineThemeTypeFromHex = (hex: string) => {
-  console.log(`hex`, hex);
-  console.log(`hexToThemeColorMap[hex]`, hexToThemeColorMap[hex]);
   if (hexToThemeColorMap[hex] === themeColorEnum.paper) {
     return themeTypeEnum.light;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.dairy) {
@@ -70,6 +71,8 @@ const determineThemeTypeFromHex = (hex: string) => {
     return themeTypeEnum.light;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.toxic) {
     return themeTypeEnum.dark;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.pastures) {
+    return themeTypeEnum.light;
   }
   return null;
 };

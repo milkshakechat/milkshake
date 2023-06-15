@@ -1,5 +1,4 @@
-import { BrowserRouter } from "react-router-dom";
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter, useLocation, Routes, Route } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import Page404 from "@/pages/404";
 import PublicUserProfilePage from "@/pages/PublicUserProfile/PublicUserProfilePage";
@@ -19,10 +18,15 @@ import {
   SendBirdServiceProvider,
 } from "@/context/SendbirdProvider";
 import SendBirdService from "@/api/sendbird";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { ConfigProvider, RadioChangeEvent, theme } from "antd";
 import ConversationPage from "@/pages/Conversation/ConversationPage";
-import { useState } from "react";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
+import ProfilePage from "@/pages/Profile/ProfilePage";
+import ProfileStylePage from "@/pages/ProfileStyle/ProfileStylePage";
+import ProfileSettingsPage from "@/pages/ProfileSettings/ProfileSettingsPage";
+import NotificationsPage from "@/pages/Notifications/NotificationsPage";
+import NewStoryPage from "@/pages/NewStory/NewStoryPage";
 
 const AppRouter = () => {
   const { textDirection, antLocale, themeAlgo, themeColor } =
@@ -48,56 +52,104 @@ const AppRouter = () => {
         }}
       >
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} index />
-            <Route path="/:username" element={<PublicUserProfilePage />} />
-            <Route path="/app" element={<div>app</div>}></Route>
-            <Route path="/app" errorElement={<Page404 />}>
-              {/* Public Routes */}
-              <Route path="welcome" element={<div>welcome</div>} />
-              <Route path="login" element={<LoginPage />} />
-              <Route path="logout" element={<LogOutPage />} />
-              <Route path="signup" element={<SignUpPage />} />
-              <Route path="signup/verify" element={<SignUpVerifyPage />} />
-            </Route>
-          </Routes>
-
-          {/* Private Routes */}
-
-          <AuthProvider>
-            <SendBirdServiceProvider>
+          <TransitionGroup>
+            <CSSTransition
+              key={window.location.pathname}
+              classNames="fade"
+              timeout={300}
+            >
               <Routes>
+                <Route path="/" element={<HomePage />} index />
+                <Route path="/:username" element={<PublicUserProfilePage />} />
+                <Route path="/app" element={<div>app</div>}></Route>
                 <Route path="/app" errorElement={<Page404 />}>
-                  <Route
-                    path="sandbox"
-                    element={
-                      <AuthProtect>
-                        <ConversationPage />
-                      </AuthProtect>
-                    }
-                  />
-                  <Route
-                    path="settings"
-                    element={
-                      <AuthProtect>
-                        <SettingsPage />
-                      </AuthProtect>
-                    }
-                  />
-                  <Route
-                    path="profile"
-                    element={
-                      <AuthProtect>
-                        <div>profile</div>
-                      </AuthProtect>
-                    }
-                  />
-
-                  {/* <Route path="*" element={<Page404 />} /> */}
+                  {/* Public Routes */}
+                  <Route path="welcome" element={<div>welcome</div>} />
+                  <Route path="login" element={<LoginPage />} />
+                  <Route path="logout" element={<LogOutPage />} />
+                  <Route path="signup" element={<SignUpPage />} />
+                  <Route path="signup/verify" element={<SignUpVerifyPage />} />
                 </Route>
               </Routes>
-            </SendBirdServiceProvider>
-          </AuthProvider>
+            </CSSTransition>
+          </TransitionGroup>
+
+          <TransitionGroup>
+            <CSSTransition
+              key={window.location.pathname}
+              classNames="fade"
+              timeout={300}
+            >
+              {/* Private Routes */}
+
+              <AuthProvider>
+                <SendBirdServiceProvider>
+                  <Routes>
+                    <Route path="/app" errorElement={<Page404 />}>
+                      <Route
+                        path="sandbox"
+                        element={
+                          <AuthProtect>
+                            <ConversationPage />
+                          </AuthProtect>
+                        }
+                      />
+                      <Route
+                        path="settings"
+                        element={
+                          <AuthProtect>
+                            <SettingsPage />
+                          </AuthProtect>
+                        }
+                      />
+                      <Route
+                        path="profile"
+                        element={
+                          <AuthProtect>
+                            <ProfilePage />
+                          </AuthProtect>
+                        }
+                      />
+                      <Route
+                        path="profile/style"
+                        element={
+                          <AuthProtect>
+                            <ProfileStylePage />
+                          </AuthProtect>
+                        }
+                      />
+                      <Route
+                        path="profile/settings"
+                        element={
+                          <AuthProtect>
+                            <ProfileSettingsPage />
+                          </AuthProtect>
+                        }
+                      />
+                      <Route
+                        path="notifications"
+                        element={
+                          <AuthProtect>
+                            <NotificationsPage />
+                          </AuthProtect>
+                        }
+                      />
+                      <Route
+                        path="story/new"
+                        element={
+                          <AuthProtect>
+                            <NewStoryPage />
+                          </AuthProtect>
+                        }
+                      />
+
+                      {/* <Route path="*" element={<Page404 />} /> */}
+                    </Route>
+                  </Routes>
+                </SendBirdServiceProvider>
+              </AuthProvider>
+            </CSSTransition>
+          </TransitionGroup>
         </BrowserRouter>
       </ConfigProvider>
     </GraphqlClientProvider>

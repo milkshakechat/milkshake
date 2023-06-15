@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { createClient, Client, ClientOptions } from "graphql-ws";
 import config from "@/config.env";
 import { print } from "graphql";
-import { getAuth, onIdTokenChanged, User } from "firebase/auth";
+import { getAuth, onIdTokenChanged } from "firebase/auth";
 import {
   ApolloLink,
   Operation,
@@ -24,7 +24,7 @@ interface Props {
   children: React.ReactNode;
 }
 class WebSocketLink extends ApolloLink {
-  private client: Client;
+  public client: Client;
 
   constructor(options: ClientOptions) {
     super();
@@ -50,6 +50,7 @@ export const GraphqlClientProvider = ({ children }: Props) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let socketLink: WebSocketLink | null;
     const auth = getAuth();
     const createNewClient = async () => {
       const user = auth.currentUser;
@@ -62,7 +63,11 @@ export const GraphqlClientProvider = ({ children }: Props) => {
           authorization: idToken ? `Bearer ${idToken}` : "",
         },
       });
-      const socketLink = new WebSocketLink({
+      if (socketLink) {
+        await socketLink.client.dispose();
+        socketLink = null;
+      }
+      socketLink = new WebSocketLink({
         url: GRAPHQL_SOCKET_SERVER,
         lazy: false,
         connectionParams: async () => ({
@@ -81,8 +86,15 @@ export const GraphqlClientProvider = ({ children }: Props) => {
       setIsLoading(false);
     };
 
-    onIdTokenChanged(auth, () => createNewClient());
-    createNewClient();
+    onIdTokenChanged(auth, async () => {
+      createNewClient();
+    });
+
+    return () => {
+      if (socketLink) {
+        socketLink.client.dispose();
+      }
+    };
   }, []);
 
   if (isLoading) {

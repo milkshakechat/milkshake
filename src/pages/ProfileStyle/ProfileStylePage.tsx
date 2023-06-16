@@ -26,7 +26,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Rule } from "antd/es/form";
 import { debounce } from "lodash";
-import { useCheckUsernameAvailable } from "@/hooks/useProfile";
+import {
+  useCheckUsernameAvailable,
+  useUpdateProfile,
+} from "@/hooks/useProfile";
 import { useToken } from "antd/es/theme/internal";
 
 const formLayout = "horizontal";
@@ -79,6 +82,8 @@ const displayNameRules: Rule[] = [
   },
 ];
 
+const usernameFeedbackProps = { wrapperCol: { span: 20, offset: 4 } };
+
 const ProfileStylePage = () => {
   const [form] = Form.useForm();
   const user = useUserState((state) => state.user);
@@ -91,8 +96,15 @@ const ProfileStylePage = () => {
   const [showUpdate, setShowUpdate] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [usernameValue, setUsernameValue] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialFormValues, setInitialFormValues] =
     useState<ProfileStyleInitialFormValue>(PROFILE_STYLE_INITIAL_FORM_VALUE);
+
+  const {
+    data: updateProfileMutationData,
+    errors: updateProfileMutationErrors,
+    runMutation: runUpdateProfileMutation,
+  } = useUpdateProfile();
 
   const {
     data: checkUsernameAvailableData,
@@ -113,12 +125,15 @@ const ProfileStylePage = () => {
     if (user) {
       setAvatarUrl(user.avatar);
       setUsernameValue(user.username);
-      setInitialFormValues({
+      const initValues = {
         displayName: user.displayName,
         username: user.username,
         bio: user.bio,
         link: user.link,
-      });
+      };
+
+      setInitialFormValues(initValues);
+      form.setFieldsValue(initValues);
     }
   }, [user]);
 
@@ -149,7 +164,6 @@ const ProfileStylePage = () => {
     setShowUpdate(true);
   };
   const validateFile = (file: File) => {
-    console.log(`Validate File... file.type = `, file.type);
     if (file.type in ["image/png", "image/jpeg", "image/jpg"]) {
       message.error(`${file.name} is not a png file`);
       return false;
@@ -158,7 +172,6 @@ const ProfileStylePage = () => {
   };
 
   const uploadNewAvatar = async (file: string | Blob | RcFile) => {
-    console.log(`Upload New Avatar... file = `, file);
     setIsUploadingFile(true);
     const url = await uploadFile({
       file: file as File,
@@ -171,6 +184,21 @@ const ProfileStylePage = () => {
     setShowUpdate(true);
     return url;
   };
+
+  const submitForm = async (values: ProfileStyleInitialFormValue) => {
+    setIsSubmitting(true);
+    await runUpdateProfileMutation({
+      displayName: values.displayName,
+      username: values.username,
+      bio: values.bio,
+      avatar: avatarUrl,
+      link: values.link,
+    });
+    setShowUpdate(false);
+    setIsSubmitting(false);
+    message.success("Profile updated!");
+  };
+
   return (
     <AppLayout>
       <>
@@ -190,89 +218,96 @@ const ProfileStylePage = () => {
               onClick={() => form.submit()}
               type="primary"
               disabled={!showUpdate}
+              loading={isSubmitting}
             >
               Update
             </Button>
           }
         />
         <AppLayoutPadding align="center">
-          <Form
-            {...formItemLayout}
-            layout={formLayout}
-            form={form}
-            colon={false}
-            initialValues={initialFormValues}
-            onFieldsChange={onFormLayoutChange}
-            onFinish={(values) => console.log(`onFinish`, values)}
-            style={{ width: "100%", maxWidth: 600 }}
-          >
-            <Spacer />
-            <Form.Item {...buttonItemLayout} name="avatar">
-              <Avatar size={64} src={avatarUrl} icon={<UserOutlined />} />
-              <Upload
-                showUploadList={false}
-                customRequest={async (options) => {
-                  try {
-                    await uploadNewAvatar(options.file);
-                    if (options && options.onSuccess) {
-                      options.onSuccess({});
-                    }
-                  } catch (e) {
-                    if (options.onError) {
-                      options.onError(e as Error);
-                    }
-                  }
-                }}
-                beforeUpload={validateFile}
-              >
-                <Button type="link" style={{ marginLeft: 16 }}>
-                  {isUploadingFile ? (
-                    <Space direction="horizontal">
-                      <Spin />
-                      <Spacer width="5px" />
-                      <span>{`Uploading...`}</span>
-                    </Space>
-                  ) : (
-                    "Change Picture"
-                  )}
-                </Button>
-              </Upload>
-            </Form.Item>
-            <Form.Item
-              label="Display Name"
-              name="displayName"
-              rules={displayNameRules}
+          {user ? (
+            <Form
+              {...formItemLayout}
+              layout={formLayout}
+              form={form}
+              colon={false}
+              initialValues={initialFormValues}
+              onFieldsChange={onFormLayoutChange}
+              onFinish={submitForm}
+              style={{ width: "100%", maxWidth: 600 }}
             >
-              <Input placeholder="Public Display Name" />
-            </Form.Item>
-            <Form.Item label="Username" name="username" rules={usernameRules}>
-              <Space direction="vertical" style={{ width: "100%" }}>
+              <Spacer />
+              <Form.Item {...buttonItemLayout} name="avatar">
+                <Avatar size={64} src={avatarUrl} icon={<UserOutlined />} />
+                <Upload
+                  showUploadList={false}
+                  customRequest={async (options) => {
+                    try {
+                      await uploadNewAvatar(options.file);
+                      if (options && options.onSuccess) {
+                        options.onSuccess({});
+                      }
+                    } catch (e) {
+                      if (options.onError) {
+                        options.onError(e as Error);
+                      }
+                    }
+                  }}
+                  beforeUpload={validateFile}
+                >
+                  <Button type="link" style={{ marginLeft: 16 }}>
+                    {isUploadingFile ? (
+                      <Space direction="horizontal">
+                        <Spin />
+                        <Spacer width="5px" />
+                        <span>{`Uploading...`}</span>
+                      </Space>
+                    ) : (
+                      "Change Picture"
+                    )}
+                  </Button>
+                </Upload>
+              </Form.Item>
+              <Form.Item
+                label="Display Name"
+                name="displayName"
+                rules={displayNameRules}
+              >
+                <Input placeholder="Public Display Name" />
+              </Form.Item>
+              <Form.Item label="Username" name="username" rules={usernameRules}>
                 <Input
                   placeholder="Public Username"
                   onChange={handleUsernameChange}
                   style={{ width: "100%" }}
                 />
-                {!checkUsernameAvailableData ? (
-                  ""
-                ) : checkUsernameAvailableData.isAvailable ? (
+              </Form.Item>
+
+              {!checkUsernameAvailableData ? (
+                ""
+              ) : checkUsernameAvailableData.isAvailable ? (
+                <Form.Item {...usernameFeedbackProps} style={{ padding: "0" }}>
                   <span style={{ color: token.colorSuccessText }}>
                     Username is available
                   </span>
-                ) : (
+                </Form.Item>
+              ) : (
+                <Form.Item {...usernameFeedbackProps}>
                   <span style={{ color: token.colorErrorText }}>
                     Username is not available
                   </span>
-                )}
-              </Space>
-            </Form.Item>
-
-            <Form.Item label="Bio" name="bio" rules={bioRules}>
-              <Input.TextArea rows={3} placeholder="Public Biography" />
-            </Form.Item>
-            <Form.Item label="Link" name="link" rules={linkRules}>
-              <Input placeholder="Link to Website" />
-            </Form.Item>
-          </Form>
+                </Form.Item>
+              )}
+              <Form.Item label="Bio" name="bio" rules={bioRules}>
+                <Input.TextArea rows={3} placeholder="Public Biography" />
+              </Form.Item>
+              <Form.Item label="Link" name="link" rules={linkRules}>
+                <Input placeholder="Link to Website" />
+              </Form.Item>
+            </Form>
+          ) : (
+            <Spin />
+          )}
         </AppLayoutPadding>
       </>
     </AppLayout>

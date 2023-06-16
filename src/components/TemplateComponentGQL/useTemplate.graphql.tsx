@@ -14,6 +14,7 @@ import {
   DemoMutationResponseSuccess,
   DemoMutationInput,
   DemoQueryInput,
+  Mutation,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { GraphQLError } from "graphql";
@@ -99,7 +100,7 @@ export const useDemoMutation = () => {
       const result = await new Promise<DemoMutationResponseSuccess>(
         (resolve, reject) => {
           client
-            .mutate<DemoMutationMutation>({
+            .mutate<Pick<Mutation, "demoMutation">>({
               mutation: DEMO_MUTATION,
               variables: { input: args },
             })

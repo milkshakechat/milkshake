@@ -69,14 +69,35 @@ export type GetMyProfileResponseSuccess = {
   user: User;
 };
 
+export type ModifyProfileInput = {
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  bio?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  link?: InputMaybe<Scalars['String']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ModifyProfileResponse = ModifyProfileResponseSuccess | ResponseError;
+
+export type ModifyProfileResponseSuccess = {
+  __typename?: 'ModifyProfileResponseSuccess';
+  user: User;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   demoMutation: DemoMutationResponse;
+  modifyProfile: ModifyProfileResponse;
 };
 
 
 export type MutationDemoMutationArgs = {
   input: DemoMutationInput;
+};
+
+
+export type MutationModifyProfileArgs = {
+  input: ModifyProfileInput;
 };
 
 export type Ping = {
@@ -174,3 +195,10 @@ export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any } } | { __typename: 'ResponseError' } };
+
+export type CheckUsernameAvailableQueryVariables = Exact<{
+  input: CheckUsernameAvailableInput;
+}>;
+
+
+export type CheckUsernameAvailableQuery = { __typename?: 'Query', checkUsernameAvailable: { __typename: 'CheckUsernameAvailableResponseSuccess', isAvailable: boolean } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };

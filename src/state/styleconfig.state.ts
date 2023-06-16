@@ -88,21 +88,13 @@ const determineThemeTypeFromHex = (hex: ThemeColorHex) => {
   return null;
 };
 
-export const localeLabelText = {
-  [localeEnum.english]: "English",
-  [localeEnum.spanish]: "Español",
-  [localeEnum.chinese]: "中文",
-  [localeEnum.arabic]: "عربى",
-  [localeEnum.thai]: "ไทย",
-  [localeEnum.vietnamese]: "Tiếng Việt",
-};
 export enum textDirectionEnum {
   ltr = "ltr",
   rtl = "rtl",
 }
 
 const determineTextDirection = (locale: localeEnum) => {
-  if (locale === localeEnum.arabic) return textDirectionEnum.rtl;
+  // if (locale === localeEnum.arabic) return textDirectionEnum.rtl;
   return textDirectionEnum.ltr;
 };
 const determineAntLocale = (locale: localeEnum): Locale => {
@@ -113,8 +105,6 @@ const determineAntLocale = (locale: localeEnum): Locale => {
       return esES;
     case localeEnum.chinese:
       return zhCN;
-    case localeEnum.arabic:
-      return arEG;
     case localeEnum.thai:
       return thTH;
     case localeEnum.vietnamese:
@@ -133,8 +123,6 @@ const handleLocaleChange = (locale: localeEnum) => {
     dayjs.locale("es");
   } else if (locale === localeEnum.chinese) {
     dayjs.locale("zh");
-  } else if (locale === localeEnum.arabic) {
-    dayjs.locale("ar");
   } else if (locale === localeEnum.thai) {
     dayjs.locale("th");
   } else if (locale === localeEnum.vietnamese) {

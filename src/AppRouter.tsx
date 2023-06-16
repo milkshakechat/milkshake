@@ -9,6 +9,12 @@ import SignUpVerifyPage from "@/pages/SignUp/SignUpVerifyPage";
 import LogOutPage from "@/pages/LogOut/LogOutPage";
 import LoginPage from "@/pages/Login/LoginPage";
 import {
+  IntlProvider,
+  FormattedMessage,
+  FormattedNumber,
+  MessageFormatElement,
+} from "react-intl";
+import {
   AuthProvider,
   AuthProtect,
 } from "@/components/AuthProtect/AuthProtect";
@@ -31,20 +37,29 @@ import { UserInfoProvider } from "@/context/UserInfoProvider";
 import AppLayout from "@/AppLayout";
 import { useEffect } from "react";
 import { THEME_COLOR_LOCALSTORAGE } from "@/config.env";
-import { ThemeColorHex } from "@milkshakechat/helpers";
+import { ThemeColorHex, localeEnum } from "@milkshakechat/helpers";
+import { localeEnumToFormatJSLocale } from "@/i18n";
+import COMPILED_LANGUAGE_MAPPINGS from "@/i18n/output/i18n.global.messages.build";
 
 const AppRouter = () => {
-  const { textDirection, antLocale, themeAlgo, themeColor, switchColor } =
-    useStyleConfigGlobal(
-      (state) => ({
-        textDirection: state.textDirection,
-        antLocale: state.antLocale,
-        themeAlgo: state.themeAlgo,
-        themeColor: state.themeColor,
-        switchColor: state.switchColor,
-      }),
-      shallow
-    );
+  const {
+    textDirection,
+    locale,
+    antLocale,
+    themeAlgo,
+    themeColor,
+    switchColor,
+  } = useStyleConfigGlobal(
+    (state) => ({
+      textDirection: state.textDirection,
+      locale: state.locale,
+      antLocale: state.antLocale,
+      themeAlgo: state.themeAlgo,
+      themeColor: state.themeColor,
+      switchColor: state.switchColor,
+    }),
+    shallow
+  );
   useEffect(() => {
     const cachedThemeColor = window.localStorage.getItem(
       THEME_COLOR_LOCALSTORAGE
@@ -53,6 +68,13 @@ const AppRouter = () => {
       switchColor(cachedThemeColor as ThemeColorHex);
     }
   }, []);
+  console.log(`zuzstrand locale (enum)`, locale);
+  const formatJSLocale = localeEnumToFormatJSLocale[locale];
+  console.log(`formatJSLocale`, formatJSLocale);
+  console.log(
+    `COMPILED_LANGUAGE_MAPPINGS[formatJSLocale]`,
+    COMPILED_LANGUAGE_MAPPINGS[formatJSLocale]
+  );
   return (
     <GraphqlClientProvider>
       <ConfigProvider
@@ -65,110 +87,123 @@ const AppRouter = () => {
           },
         }}
       >
-        <BrowserRouter>
-          <TransitionGroup>
-            <CSSTransition
-              key={window.location.pathname}
-              classNames="fade"
-              timeout={300}
-            >
-              <Routes>
-                <Route path="/" element={<HomePage />} index />
-                <Route path="/:username" element={<PublicUserProfilePage />} />
-                <Route path="/app" element={<div>app</div>}></Route>
-                <Route path="/app" errorElement={<Page404 />}>
-                  {/* Public Routes */}
-                  <Route path="welcome" element={<div>welcome</div>} />
-                  <Route path="login" element={<LoginPage />} />
-                  <Route path="logout" element={<LogOutPage />} />
-                  <Route path="signup" element={<SignUpPage />} />
-                  <Route path="signup/verify" element={<SignUpVerifyPage />} />
-                </Route>
-              </Routes>
-            </CSSTransition>
-          </TransitionGroup>
+        <IntlProvider
+          messages={COMPILED_LANGUAGE_MAPPINGS[formatJSLocale]}
+          locale={formatJSLocale}
+          key={formatJSLocale}
+          defaultLocale={localeEnumToFormatJSLocale[localeEnum.english]}
+        >
+          <BrowserRouter>
+            <TransitionGroup>
+              <CSSTransition
+                key={window.location.pathname}
+                classNames="fade"
+                timeout={300}
+              >
+                <Routes>
+                  <Route path="/" element={<HomePage />} index />
+                  <Route
+                    path="/:username"
+                    element={<PublicUserProfilePage />}
+                  />
+                  <Route path="/app" element={<div>app</div>}></Route>
+                  <Route path="/app" errorElement={<Page404 />}>
+                    {/* Public Routes */}
+                    <Route path="welcome" element={<div>welcome</div>} />
+                    <Route path="login" element={<LoginPage />} />
+                    <Route path="logout" element={<LogOutPage />} />
+                    <Route path="signup" element={<SignUpPage />} />
+                    <Route
+                      path="signup/verify"
+                      element={<SignUpVerifyPage />}
+                    />
+                  </Route>
+                </Routes>
+              </CSSTransition>
+            </TransitionGroup>
 
-          <TransitionGroup>
-            <CSSTransition
-              key={window.location.pathname}
-              classNames="fade"
-              timeout={300}
-            >
-              {/* Private Routes */}
+            <TransitionGroup>
+              <CSSTransition
+                key={window.location.pathname}
+                classNames="fade"
+                timeout={300}
+              >
+                {/* Private Routes */}
 
-              <AuthProvider>
-                <SendBirdServiceProvider>
-                  <UserInfoProvider>
-                    <AppLayout>
-                      <Routes>
-                        <Route path="/app" errorElement={<Page404 />}>
-                          <Route
-                            path="sandbox"
-                            element={
-                              <AuthProtect>
-                                <ConversationPage />
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="settings"
-                            element={
-                              <AuthProtect>
-                                <SettingsPage />
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="profile"
-                            element={
-                              <AuthProtect>
-                                <ProfilePage />
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="profile/style"
-                            element={
-                              <AuthProtect>
-                                <ProfileStylePage />
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="profile/settings"
-                            element={
-                              <AuthProtect>
-                                <ProfileSettingsPage />
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="notifications"
-                            element={
-                              <AuthProtect>
-                                <NotificationsPage />
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="story/new"
-                            element={
-                              <AuthProtect>
-                                <NewStoryPage />
-                              </AuthProtect>
-                            }
-                          />
+                <AuthProvider>
+                  <SendBirdServiceProvider>
+                    <UserInfoProvider>
+                      <AppLayout>
+                        <Routes>
+                          <Route path="/app" errorElement={<Page404 />}>
+                            <Route
+                              path="sandbox"
+                              element={
+                                <AuthProtect>
+                                  <ConversationPage />
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="settings"
+                              element={
+                                <AuthProtect>
+                                  <SettingsPage />
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="profile"
+                              element={
+                                <AuthProtect>
+                                  <ProfilePage />
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="profile/style"
+                              element={
+                                <AuthProtect>
+                                  <ProfileStylePage />
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="profile/settings"
+                              element={
+                                <AuthProtect>
+                                  <ProfileSettingsPage />
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="notifications"
+                              element={
+                                <AuthProtect>
+                                  <NotificationsPage />
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="story/new"
+                              element={
+                                <AuthProtect>
+                                  <NewStoryPage />
+                                </AuthProtect>
+                              }
+                            />
 
-                          {/* <Route path="*" element={<Page404 />} /> */}
-                        </Route>
-                      </Routes>
-                    </AppLayout>
-                  </UserInfoProvider>
-                </SendBirdServiceProvider>
-              </AuthProvider>
-            </CSSTransition>
-          </TransitionGroup>
-        </BrowserRouter>
+                            {/* <Route path="*" element={<Page404 />} /> */}
+                          </Route>
+                        </Routes>
+                      </AppLayout>
+                    </UserInfoProvider>
+                  </SendBirdServiceProvider>
+                </AuthProvider>
+              </CSSTransition>
+            </TransitionGroup>
+          </BrowserRouter>
+        </IntlProvider>
       </ConfigProvider>
     </GraphqlClientProvider>
   );

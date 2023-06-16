@@ -21,9 +21,9 @@ import { useUserState } from "@/state/user.state";
 import { useEffect, useState } from "react";
 import { shallow } from "zustand/shallow";
 import type { Color } from "antd/es/color-picker";
+import { useIntl, FormattedDate } from "react-intl";
 import {
   hexToThemeColorMap,
-  localeLabelText,
   themeColorEnum,
   themeColorToHexMap,
   themeLabelText,
@@ -38,6 +38,7 @@ import {
 } from "@milkshakechat/helpers";
 import { LanguageEnum, PrivacyModeEnum } from "@/api/graphql/types";
 import { useUpdateProfile } from "@/hooks/useProfile";
+import { localeLabelText } from "@/i18n";
 
 const formLayout = "horizontal";
 
@@ -56,6 +57,7 @@ const noLabelFieldProps = { wrapperCol: { span: 20, offset: 4 } };
 
 const ProfileSettingsPage = () => {
   const [form] = Form.useForm();
+  const intl = useIntl();
   const user = useUserState((state) => state.user);
   const [privacyTip, setPrivacyTip] = useState("");
   const { token } = theme.useToken();
@@ -89,6 +91,7 @@ const ProfileSettingsPage = () => {
     useState<ProfileSettingsInitialFormValue>(
       PROFILE_SETTINGS_INITIAL_FORM_VALUE
     );
+
   const {
     data: updateProfileMutationData,
     errors: updateProfileMutationErrors,

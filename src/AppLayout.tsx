@@ -307,7 +307,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           style={{ display: "flex", flexDirection: "column", height: "100%" }}
         >
           <Space style={{ padding: "10px 20px" }}>
-            <LogoText fill={token.colorPrimaryText} />
+            <NavLink to="/">
+              <LogoText fill={token.colorPrimaryText} />
+            </NavLink>
           </Space>
           <Menu
             theme={themeType}

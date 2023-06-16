@@ -1,6 +1,5 @@
 import { shallow } from "zustand/shallow";
 import {
-  localeLabelText,
   themeTypeEnum,
   themeLabelText,
   useStyleConfigGlobal,
@@ -13,6 +12,7 @@ import type { MenuProps } from "antd";
 import { Button, ColorPicker, Dropdown, message, Space, theme } from "antd";
 import type { Color } from "antd/es/color-picker";
 import { localeEnum } from "@milkshakechat/helpers";
+import { localeLabelText } from "@/i18n";
 
 const StyleConfigPanel = () => {
   const {
@@ -51,10 +51,6 @@ const StyleConfigPanel = () => {
     {
       label: localeLabelText[localeEnum.chinese],
       key: localeEnum.chinese,
-    },
-    {
-      label: localeLabelText[localeEnum.arabic],
-      key: localeEnum.arabic,
     },
     {
       label: localeLabelText[localeEnum.thai],

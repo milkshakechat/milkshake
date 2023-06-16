@@ -89,6 +89,7 @@ export const useProfile = () => {
       setData(result);
       setGQLUser(result.user);
       const { language, themeColor } = result.user;
+
       switchLocale(language as unknown as localeEnum);
       switchColor(themeColor);
     } catch (e) {

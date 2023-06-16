@@ -69,7 +69,7 @@ export const GraphqlClientProvider = ({ children }: Props) => {
       }
       socketLink = new WebSocketLink({
         url: GRAPHQL_SOCKET_SERVER,
-        lazy: false,
+        lazy: true,
         connectionParams: async () => ({
           authorization: idToken ? `Bearer ${idToken}` : "",
         }),

@@ -18,6 +18,17 @@ export type Scalars = {
   UserID: { input: any; output: any; }
 };
 
+export type CheckUsernameAvailableInput = {
+  username: Scalars['String']['input'];
+};
+
+export type CheckUsernameAvailableResponse = CheckUsernameAvailableResponseSuccess | ResponseError;
+
+export type CheckUsernameAvailableResponseSuccess = {
+  __typename?: 'CheckUsernameAvailableResponseSuccess';
+  isAvailable: Scalars['Boolean']['output'];
+};
+
 export type DemoMutatedItem = {
   __typename?: 'DemoMutatedItem';
   id: Scalars['ID']['output'];
@@ -75,10 +86,16 @@ export type Ping = {
 
 export type Query = {
   __typename?: 'Query';
+  checkUsernameAvailable: CheckUsernameAvailableResponse;
   demoPing: Ping;
   demoQuery: DemoQueryResponse;
   getMyProfile: GetMyProfileResponse;
   ping: Ping;
+};
+
+
+export type QueryCheckUsernameAvailableArgs = {
+  input: CheckUsernameAvailableInput;
 };
 
 
@@ -115,6 +132,7 @@ export type Subscription = {
 
 export type User = {
   __typename?: 'User';
+  avatar: Scalars['String']['output'];
   bio: Scalars['String']['output'];
   createdAt: Scalars['DateString']['output'];
   disabled: Scalars['Boolean']['output'];
@@ -123,6 +141,7 @@ export type User = {
   id: Scalars['UserID']['output'];
   isCreator: Scalars['Boolean']['output'];
   isPaidChat: Scalars['Boolean']['output'];
+  link: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
   username: Scalars['String']['output'];
 };
@@ -154,4 +173,4 @@ export type DemoPingQuery = { __typename?: 'Query', demoPing: { __typename?: 'Pi
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any } } | { __typename: 'ResponseError' } };
+export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any } } | { __typename: 'ResponseError' } };

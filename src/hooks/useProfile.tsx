@@ -5,6 +5,8 @@ import { useState } from "react";
 import { print } from "graphql/language/printer";
 import { GraphQLError } from "graphql";
 import {
+  CheckUsernameAvailableInput,
+  CheckUsernameAvailableResponseSuccess,
   GetMyProfileQuery,
   GetMyProfileResponse,
   GetMyProfileResponseSuccess,
@@ -32,6 +34,8 @@ export const useProfile = () => {
                 phone
                 displayName
                 bio
+                avatar
+                link
                 disabled
                 isPaidChat
                 isCreator
@@ -64,6 +68,60 @@ export const useProfile = () => {
       );
       setData(result);
       setGQLUser(result.user);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runQuery };
+};
+
+export const useCheckUsernameAvailable = () => {
+  const [data, setData] = useState<CheckUsernameAvailableResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const runQuery = async (args: CheckUsernameAvailableInput) => {
+    try {
+      const CHECK_USERNAME_AVAILABLE = gql`
+        query CheckUsernameAvailable($input: CheckUsernameAvailableInput!) {
+          checkUsernameAvailable(input: $input) {
+            __typename
+            ... on CheckUsernameAvailableResponseSuccess {
+              isAvailable
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<CheckUsernameAvailableResponseSuccess>(
+        async (resolve, reject) => {
+          client
+            .query({
+              query: CHECK_USERNAME_AVAILABLE,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data.checkUsernameAvailable.__typename ===
+                "CheckUsernameAvailableResponseSuccess"
+              ) {
+                resolve(data.checkUsernameAvailable);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
     } catch (e) {
       console.log(e);
     }

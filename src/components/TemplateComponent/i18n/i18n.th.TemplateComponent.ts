@@ -2,10 +2,7 @@ import { i18n_TemplateComponent } from "./types.i18n.TemplateComponent";
 
 export const importLanguage = (): i18n_TemplateComponent => {
   const language: i18n_TemplateComponent = {
-    i18n_TemplateComponent: {
-      title: "TemplateComponent (ไทย)",
-    },
-    message: "Hello World - ไทย",
+    "title.___TemplateComponent": "TemplateComponent (ไทย)",
   };
   return language;
 };

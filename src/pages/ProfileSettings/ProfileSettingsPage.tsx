@@ -207,7 +207,6 @@ const ProfileSettingsPage = () => {
       />
       <AppLayoutPadding align="center">
         <>
-          <TemplateComponent />
           <Form
             {...formItemLayout}
             layout={formLayout}

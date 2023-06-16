@@ -5,16 +5,10 @@ const TemplateComponent = () => {
   const intl = useIntl();
 
   const title = intl.formatMessage({
-    id: `i18n_TemplateComponent.title`,
+    id: `title.${cid}`,
     defaultMessage: "TemplateComponent (English fallback)",
   });
-  return (
-    <div>
-      {title}
-      <br />
-      <FormattedMessage id="message" defaultMessage={"yoo"} />
-    </div>
-  );
+  return <div>{title}</div>;
 };
 
 export default TemplateComponent;

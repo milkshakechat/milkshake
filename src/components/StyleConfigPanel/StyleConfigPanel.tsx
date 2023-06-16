@@ -1,6 +1,5 @@
 import { shallow } from "zustand/shallow";
 import {
-  localeEnum,
   localeLabelText,
   themeTypeEnum,
   themeLabelText,
@@ -13,6 +12,7 @@ import { DownOutlined, UserOutlined } from "@ant-design/icons";
 import type { MenuProps } from "antd";
 import { Button, ColorPicker, Dropdown, message, Space, theme } from "antd";
 import type { Color } from "antd/es/color-picker";
+import { localeEnum } from "@milkshakechat/helpers";
 
 const StyleConfigPanel = () => {
   const {

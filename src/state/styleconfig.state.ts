@@ -14,6 +14,11 @@ import "dayjs/locale/th";
 import "dayjs/locale/vi";
 import { ThemeConfig, theme } from "antd";
 import { MappingAlgorithm } from "antd/lib/config-provider/context";
+import {
+  ThemeColorHex,
+  defaultThemeColorHex,
+  localeEnum,
+} from "@milkshakechat/helpers";
 
 dayjs.locale("en");
 
@@ -44,7 +49,7 @@ export enum themeColorEnum {
   toxic = "Toxic",
   pastures = "Pastures",
 }
-export const hexToThemeColorMap: Record<string, string> = {
+export const hexToThemeColorMap: Record<ThemeColorHex, themeColorEnum> = {
   "#292929": themeColorEnum.paper,
   "#E4E4E4": themeColorEnum.dairy,
   "#ea8e7f": themeColorEnum.sakura,
@@ -52,7 +57,7 @@ export const hexToThemeColorMap: Record<string, string> = {
   "#18BF04": themeColorEnum.pastures,
   "#684BE4": themeColorEnum.toxic,
 };
-export const themeColorToHexMap: Record<string, string> = {
+export const themeColorToHexMap: Record<themeColorEnum, ThemeColorHex> = {
   [themeColorEnum.paper]: "#292929",
   [themeColorEnum.dairy]: "#E4E4E4",
   [themeColorEnum.sakura]: "#ea8e7f",
@@ -77,17 +82,6 @@ const determineThemeTypeFromHex = (hex: string) => {
   return null;
 };
 
-export enum localeEnum {
-  english = "english",
-  spanish = "spanish",
-  chinese = "chinese",
-  arabic = "arabic",
-  thai = "thai",
-  vietnamese = "vietnamese",
-  // japanese = "japanese",
-  // korean = "korean",
-  // russian = "russian",
-}
 export const localeLabelText = {
   [localeEnum.english]: "English",
   [localeEnum.spanish]: "Español",
@@ -153,7 +147,7 @@ interface StyleConfigState {
   switchLocale: (locale: localeEnum) => void;
   switchColor: (hex: string) => void;
 }
-const defaultThemeColorHex = "#2EB8F6";
+
 export const useStyleConfigGlobal = create<StyleConfigState>()((set) => ({
   themeType: themeTypeEnum.light,
   themeAlgo: theme.defaultAlgorithm,

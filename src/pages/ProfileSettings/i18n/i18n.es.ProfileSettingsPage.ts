@@ -6,6 +6,7 @@ export const importLanguage = (): i18n_Mapping => {
     "languageLabel.___ProfileSettingsPage": "Idioma",
     "themeLabel.___ProfileSettingsPage": "Tema",
     "privacyLabel.___ProfileSettingsPage": "Privacidad",
+    "logout.___ProfileSettingsPage": "Cerrar sesión",
   };
   return language;
 };

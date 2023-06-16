@@ -59,7 +59,7 @@ const SignUpVerifyPage = () => {
 
         // navigate elsewhere
         setTimeout(() => {
-          navigate("/app/settings");
+          navigate("/app/profile");
         }, 1000);
         // Additional user info profile not available via:
         // result.additionalUserInfo.profile == null

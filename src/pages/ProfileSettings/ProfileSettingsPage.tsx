@@ -5,6 +5,7 @@ import AppLayout, {
 } from "@/components/AppLayout/AppLayout";
 import {
   Button,
+  Divider,
   Dropdown,
   Form,
   MenuProps,
@@ -15,7 +16,7 @@ import {
 } from "antd";
 import { LeftOutlined, DownOutlined } from "@ant-design/icons";
 import useWindowSize, { ScreenSize } from "@/api/utils/screen";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import { useUserState } from "@/state/user.state";
 import { useEffect, useState } from "react";
@@ -56,8 +57,6 @@ const PROFILE_SETTINGS_INITIAL_FORM_VALUE = {
   language: localeEnum.english,
 };
 
-const noLabelFieldProps = { wrapperCol: { span: 20, offset: 4 } };
-
 const ProfileSettingsPage = () => {
   const [form] = Form.useForm();
   const intl = useIntl();
@@ -74,6 +73,11 @@ const ProfileSettingsPage = () => {
     translatePrivacyModeEnum,
     translatePrivacyModeEnumHelpTip,
   } = useSharedTranslations();
+
+  const noLabelFieldProps =
+    screen === ScreenSize.mobile
+      ? { wrapperCol: { span: 24 } }
+      : { wrapperCol: { span: 20, offset: 4 } };
 
   const titleText = intl.formatMessage({
     id: `title.${cid}`,
@@ -93,6 +97,11 @@ const ProfileSettingsPage = () => {
   const privacyText = intl.formatMessage({
     id: `privacyLabel.${cid}`,
     defaultMessage: "Settings",
+  });
+
+  const logoutText = intl.formatMessage({
+    id: `logout.${cid}`,
+    defaultMessage: "Log Out",
   });
 
   const {
@@ -316,6 +325,14 @@ const ProfileSettingsPage = () => {
               {...noLabelFieldProps}
             >
               <i style={{ color: token.colorTextSecondary }}>{privacyTip}</i>
+            </Form.Item>
+            <Form.Item name="divider" {...noLabelFieldProps}>
+              <Divider />
+            </Form.Item>
+            <Form.Item name="logoutButton" {...noLabelFieldProps}>
+              <NavLink to="/app/logout">
+                <Button danger>{logoutText}</Button>
+              </NavLink>
             </Form.Item>
           </Form>
         </>

@@ -129,70 +129,80 @@ const AppRouter = () => {
                 <AuthProvider>
                   <SendBirdServiceProvider>
                     <UserInfoProvider>
-                      <AppLayout>
-                        <Routes>
-                          <Route path="/app" errorElement={<Page404 />}>
-                            <Route
-                              path="sandbox"
-                              element={
-                                <AuthProtect>
-                                  <ConversationPage />
-                                </AuthProtect>
-                              }
-                            />
-                            <Route
-                              path="settings"
-                              element={
-                                <AuthProtect>
+                      <Routes>
+                        <Route path="/app" errorElement={<Page404 />}>
+                          <Route
+                            path="sandbox"
+                            element={
+                              <AuthProtect>
+                                <ConversationPage />
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="settings"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
                                   <SettingsPage />
-                                </AuthProtect>
-                              }
-                            />
-                            <Route
-                              path="profile"
-                              element={
-                                <AuthProtect>
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="profile"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
                                   <ProfilePage />
-                                </AuthProtect>
-                              }
-                            />
-                            <Route
-                              path="profile/style"
-                              element={
-                                <AuthProtect>
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="profile/style"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
                                   <ProfileStylePage />
-                                </AuthProtect>
-                              }
-                            />
-                            <Route
-                              path="profile/settings"
-                              element={
-                                <AuthProtect>
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="profile/settings"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
                                   <ProfileSettingsPage />
-                                </AuthProtect>
-                              }
-                            />
-                            <Route
-                              path="notifications"
-                              element={
-                                <AuthProtect>
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="notifications"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
                                   <NotificationsPage />
-                                </AuthProtect>
-                              }
-                            />
-                            <Route
-                              path="story/new"
-                              element={
-                                <AuthProtect>
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="story/new"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
                                   <NewStoryPage />
-                                </AuthProtect>
-                              }
-                            />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
 
-                            {/* <Route path="*" element={<Page404 />} /> */}
-                          </Route>
-                        </Routes>
-                      </AppLayout>
+                          {/* <Route path="*" element={<Page404 />} /> */}
+                        </Route>
+                      </Routes>
                     </UserInfoProvider>
                   </SendBirdServiceProvider>
                 </AuthProvider>

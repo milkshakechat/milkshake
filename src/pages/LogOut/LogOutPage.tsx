@@ -3,6 +3,7 @@ import {
   FIREBASE_AUTH_ACCESS_TOKEN_LOCALSTORAGE,
   FIREBASE_AUTH_ID_TOKEN_LOCALSTORAGE,
   FIREBASE_AUTH_REFRESH_TOKEN_LOCALSTORAGE,
+  THEME_COLOR_LOCALSTORAGE,
 } from "@/config.env";
 import { useUserState } from "@/state/user.state";
 import { getAuth, signOut } from "firebase/auth";
@@ -23,6 +24,8 @@ const LogOutPage = () => {
           FIREBASE_AUTH_REFRESH_TOKEN_LOCALSTORAGE
         );
         window.localStorage.removeItem(FIREBASE_AUTH_ACCESS_TOKEN_LOCALSTORAGE);
+        window.localStorage.removeItem(THEME_COLOR_LOCALSTORAGE);
+
         // save to global state
         setFirebaseUser({
           userID: null,

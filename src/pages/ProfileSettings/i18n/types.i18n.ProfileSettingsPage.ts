@@ -4,4 +4,5 @@ export interface i18n_Mapping {
   "languageLabel.___ProfileSettingsPage": string;
   "themeLabel.___ProfileSettingsPage": string;
   "privacyLabel.___ProfileSettingsPage": string;
+  "logout.___ProfileSettingsPage": string;
 }

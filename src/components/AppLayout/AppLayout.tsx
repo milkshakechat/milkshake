@@ -476,6 +476,9 @@ export const LayoutInteriorHeader = ({
         width: "100%",
         padding: screen === ScreenSize.mobile ? "5px 10px" : "10px 20px",
         backgroundColor: token.colorBgElevated,
+        position: "sticky",
+        top: 0,
+        zIndex: 1,
       }}
     >
       {leftAction ? (

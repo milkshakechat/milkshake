@@ -91,8 +91,6 @@ const displayNameRules: Rule[] = [
   },
 ];
 
-const noLabelFieldProps = { wrapperCol: { span: 20, offset: 4 } };
-
 const ProfileStylePage = () => {
   const [form] = Form.useForm();
   const user = useUserState((state) => state.user);
@@ -116,6 +114,10 @@ const ProfileStylePage = () => {
     errors: updateProfileMutationErrors,
     runMutation: runUpdateProfileMutation,
   } = useUpdateProfile();
+  const noLabelFieldProps =
+    screen === ScreenSize.mobile
+      ? { wrapperCol: { span: 24 } }
+      : { wrapperCol: { span: 20, offset: 4 } };
 
   const {
     data: checkUsernameAvailableData,

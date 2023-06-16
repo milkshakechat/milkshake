@@ -4,7 +4,7 @@ import "./HomePage.css";
 import TemplateComponentGQL from "@/components/TemplateComponentGQL/TemplateComponentGQL";
 import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import QuickNav from "@/components/QuickNav/QuickNav";
-import AppLayout from "@/AppLayout";
+import AppLayout from "@/components/AppLayout/AppLayout";
 import TemplateComponent from "@/components/TemplateComponent/TemplateComponent";
 
 const loremIpsum = `What is Lorem Ipsum?

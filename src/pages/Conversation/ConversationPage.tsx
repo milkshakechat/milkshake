@@ -1,4 +1,4 @@
-import AppLayout from "@/AppLayout";
+import AppLayout from "@/components/AppLayout/AppLayout";
 import QuickNav from "@/components/QuickNav/QuickNav";
 import { useSendBirdConnection } from "@/hooks/useSendbird";
 import { placeholderImageThumbnail } from "@milkshakechat/helpers";

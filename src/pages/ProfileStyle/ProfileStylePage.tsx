@@ -2,7 +2,7 @@ import AppLayout, {
   AppLayoutPadding,
   LayoutInteriorHeader,
   Spacer,
-} from "@/AppLayout";
+} from "@/components/AppLayout/AppLayout";
 import {
   Avatar,
   Button,

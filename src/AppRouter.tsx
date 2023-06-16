@@ -34,7 +34,7 @@ import ProfileSettingsPage from "@/pages/ProfileSettings/ProfileSettingsPage";
 import NotificationsPage from "@/pages/Notifications/NotificationsPage";
 import NewStoryPage from "@/pages/NewStory/NewStoryPage";
 import { UserInfoProvider } from "@/context/UserInfoProvider";
-import AppLayout from "@/AppLayout";
+import AppLayout from "@/components/AppLayout/AppLayout";
 import { useEffect } from "react";
 import { THEME_COLOR_LOCALSTORAGE } from "@/config.env";
 import { ThemeColorHex, localeEnum } from "@milkshakechat/helpers";

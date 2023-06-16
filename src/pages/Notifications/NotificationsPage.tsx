@@ -1,4 +1,4 @@
-import AppLayout from "@/AppLayout";
+import AppLayout from "@/components/AppLayout/AppLayout";
 
 const NotificationsPage = () => {
   return <div>NotificationsPage</div>;

@@ -17,6 +17,8 @@ import NotificationsPage from "@/pages/Notifications/NotificationsPage";
 import { LeftOutlined } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
 import { ItemType } from "antd/es/menu/hooks/useItems";
+import { cid } from "./i18n/types.i18n.AppLayout";
+import { useIntl } from "react-intl";
 const { Header, Content, Footer, Sider } = Layout;
 
 interface MenuItem {
@@ -43,106 +45,13 @@ function getItem(
   };
 }
 
-const items = [
-  getItem(
-    <NavLink to="/app/story/new">New Story</NavLink>,
-    "newstory",
-    "/app/story/new",
-    <VideoCameraOutlined style={{ fontSize: "1rem" }} />
-  ),
-  getItem(
-    <NavLink
-      to="/app/sandbox"
-      className={({ isActive, isPending }) =>
-        isPending ? "pending" : isActive ? "active" : ""
-      }
-    >
-      Messages
-    </NavLink>,
-    "messages",
-    "/app/sandbox",
-    <MessageOutlined style={{ fontSize: "1rem" }} />
-  ),
-  getItem(
-    <NavLink to="/app/notifications">Notifications</NavLink>,
-    "notifications",
-    "/app/notifications",
-    <BellOutlined style={{ fontSize: "1rem" }} />
-  ),
-  getItem(
-    "Account",
-    "account",
-    "/app",
-    <UserOutlined style={{ fontSize: "1rem" }} />,
-    [
-      getItem(
-        <NavLink
-          to="/app/profile"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          Profile
-        </NavLink>,
-        "profile",
-        "/app/profile"
-      ),
-      getItem("Contacts", "contacts", "/app/friends"),
-      getItem("Wishlists", "wishlists", "/app/wishlists"),
-      getItem(
-        <NavLink
-          to="/app/profile/settings"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          Settings
-        </NavLink>,
-        "settings",
-        "/app/profile/settings"
-      ),
-    ]
-  ),
-];
-const itemsMobile = [
-  {
-    key: "profile",
-    text: "Profile",
-    route: "/app/profile",
-    icon: <UserOutlined style={{ fontSize: "1rem" }} />,
-  },
-  {
-    key: "messages",
-    text: "Messages",
-    route: "/app/sandbox",
-    icon: <MessageOutlined style={{ fontSize: "1rem" }} />,
-  },
-  {
-    key: "newstory",
-    text: "New Story",
-    route: "/app/story/new",
-    icon: <VideoCameraOutlined style={{ fontSize: "1rem" }} />,
-  },
-  {
-    key: "notifications",
-    text: "Notifications",
-    route: "/app/notifications",
-    icon: <BellOutlined style={{ fontSize: "1rem" }} />,
-  },
-  {
-    key: "settings",
-    text: "Settings",
-    route: "/app/profile/settings",
-    icon: <SettingOutlined style={{ fontSize: "1rem" }} />,
-  },
-];
-
 interface AppLayoutProps {
   children: React.ReactElement;
 }
 const AppLayout = ({ children }: AppLayoutProps) => {
   const { screen } = useWindowSize();
   const location = useLocation();
+  const intl = useIntl();
   const user = useUserState((state) => state.user);
   const [collapsed, setCollapsed] = useState(false);
   const { themeType, themeColor } = useStyleConfigGlobal(
@@ -153,6 +62,133 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     shallow
   );
   const { token } = theme.useToken();
+
+  const newStoryText = intl.formatMessage({
+    id: `new_story_sidebar.${cid}`,
+    defaultMessage: "New Story",
+  });
+  const messagesText = intl.formatMessage({
+    id: `messages_sidebar.${cid}`,
+    defaultMessage: "Messages",
+  });
+  const notificationsText = intl.formatMessage({
+    id: `notifications_sidebar.${cid}`,
+    defaultMessage: "Notifications",
+  });
+  const accountText = intl.formatMessage({
+    id: `account_sidebar.${cid}`,
+    defaultMessage: "Account",
+  });
+  const profileText = intl.formatMessage({
+    id: `profile_sidebar.${cid}`,
+    defaultMessage: "Profile",
+  });
+  const contactsText = intl.formatMessage({
+    id: `contacts_sidebar.${cid}`,
+    defaultMessage: "Contacts",
+  });
+  const wishlistsText = intl.formatMessage({
+    id: `wishlists_sidebar.${cid}`,
+    defaultMessage: "Wishlists",
+  });
+  const settingsText = intl.formatMessage({
+    id: `settings_sidebar.${cid}`,
+    defaultMessage: "Settings",
+  });
+
+  const items = [
+    getItem(
+      <NavLink to="/app/story/new">{newStoryText}</NavLink>,
+      "newstory",
+      "/app/story/new",
+      <VideoCameraOutlined style={{ fontSize: "1rem" }} />
+    ),
+    getItem(
+      <NavLink
+        to="/app/sandbox"
+        className={({ isActive, isPending }) =>
+          isPending ? "pending" : isActive ? "active" : ""
+        }
+      >
+        {messagesText}
+      </NavLink>,
+      "messages",
+      "/app/sandbox",
+      <MessageOutlined style={{ fontSize: "1rem" }} />
+    ),
+    getItem(
+      <NavLink to="/app/notifications">{notificationsText}</NavLink>,
+      "notifications",
+      "/app/notifications",
+      <BellOutlined style={{ fontSize: "1rem" }} />
+    ),
+    getItem(
+      accountText,
+      "account",
+      "/app",
+      <UserOutlined style={{ fontSize: "1rem" }} />,
+      [
+        getItem(
+          <NavLink
+            to="/app/profile"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            {profileText}
+          </NavLink>,
+          "profile",
+          "/app/profile"
+        ),
+        getItem(contactsText, "contacts", "/app/friends"),
+        getItem(wishlistsText, "wishlists", "/app/wishlists"),
+        getItem(
+          <NavLink
+            to="/app/profile/settings"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            {settingsText}
+          </NavLink>,
+          "settings",
+          "/app/profile/settings"
+        ),
+      ]
+    ),
+  ];
+  const itemsMobile = [
+    {
+      key: "profile",
+      text: profileText,
+      route: "/app/profile",
+      icon: <UserOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "messages",
+      text: messagesText,
+      route: "/app/sandbox",
+      icon: <MessageOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "newstory",
+      text: newStoryText,
+      route: "/app/story/new",
+      icon: <VideoCameraOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "notifications",
+      text: notificationsText,
+      route: "/app/notifications",
+      icon: <BellOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "settings",
+      text: settingsText,
+      route: "/app/profile/settings",
+      icon: <SettingOutlined style={{ fontSize: "1rem" }} />,
+    },
+  ];
 
   // console.log(`token`, token);
   const matchPathToMenuKey = (

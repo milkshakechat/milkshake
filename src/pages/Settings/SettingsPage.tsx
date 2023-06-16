@@ -2,7 +2,7 @@ import { ErrorLines } from "@/api/graphql/error-line";
 import QuickNav from "@/components/QuickNav/QuickNav";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserState } from "@/state/user.state";
-import AppLayout from "@/AppLayout";
+import AppLayout from "@/components/AppLayout/AppLayout";
 import TemplateComponentGQL from "@/components/TemplateComponentGQL/TemplateComponentGQL";
 import TemplateComponent from "@/components/TemplateComponent/TemplateComponent";
 

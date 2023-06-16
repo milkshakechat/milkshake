@@ -1,4 +1,4 @@
-import AppLayout from "@/AppLayout";
+import AppLayout from "@/components/AppLayout/AppLayout";
 import { NavLink } from "react-router-dom";
 
 const ProfilePage = () => {

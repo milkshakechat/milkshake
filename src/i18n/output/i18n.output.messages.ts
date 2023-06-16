@@ -1,5 +1,14 @@
 const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
   "zh": {
+    "title.___ProfileStylePage": "编辑个人资料",
+    "changePicture.___ProfileStylePage": "换图片",
+    "uploading.___ProfileStylePage": "上传中...",
+    "displayName.___ProfileStylePage": "显示名称",
+    "username.___ProfileStylePage": "用户名",
+    "bio.___ProfileStylePage": "传",
+    "link.___ProfileStylePage": "网站",
+    "usernameAvailable.___ProfileStylePage": "用户名可用",
+    "usernameUnavailable.___ProfileStylePage": "用户名不可用",
     "title.___ProfileSettingsPage": "设置",
     "languageLabel.___ProfileSettingsPage": "语言",
     "themeLabel.___ProfileSettingsPage": "主题",
@@ -23,6 +32,15 @@ const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
     "settings_sidebar.___AppLayout": "设置"
   },
   "vi": {
+    "title.___ProfileStylePage": "Chỉnh sửa hồ sơ",
+    "uploading.___ProfileStylePage": "Đang tải lên...",
+    "changePicture.___ProfileStylePage": "Đổi ảnh",
+    "displayName.___ProfileStylePage": "Tên hiển thị",
+    "username.___ProfileStylePage": "Tên tài khoản",
+    "bio.___ProfileStylePage": "Tiểu sử",
+    "link.___ProfileStylePage": "Trang mạng",
+    "usernameAvailable.___ProfileStylePage": "Tên người dùng có sẵn",
+    "usernameUnavailable.___ProfileStylePage": "Tên người dùng không khả dụng",
     "title.___ProfileSettingsPage": "Cài đặt",
     "languageLabel.___ProfileSettingsPage": "Idioma",
     "themeLabel.___ProfileSettingsPage": "Chủ đề",
@@ -46,6 +64,15 @@ const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
     "settings_sidebar.___AppLayout": "Cài đặt"
   },
   "th": {
+    "title.___ProfileStylePage": "แก้ไขโปรไฟล์",
+    "changePicture.___ProfileStylePage": "เปลี่ยนรูปภาพ",
+    "uploading.___ProfileStylePage": "กำลังอัปโหลด...",
+    "displayName.___ProfileStylePage": "ชื่อที่แสดง",
+    "username.___ProfileStylePage": "ชื่อผู้ใช้",
+    "bio.___ProfileStylePage": "ชีวประวัติ",
+    "link.___ProfileStylePage": "เว็บไซต์",
+    "usernameAvailable.___ProfileStylePage": "ชื่อผู้ใช้สามารถใช้ได้",
+    "usernameUnavailable.___ProfileStylePage": "ชื่อผู้ใช้ไม่พร้อมใช้งาน",
     "title.___ProfileSettingsPage": "การตั้งค่า",
     "languageLabel.___ProfileSettingsPage": "ภาษา",
     "themeLabel.___ProfileSettingsPage": "ธีม",
@@ -69,6 +96,15 @@ const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
     "settings_sidebar.___AppLayout": "การตั้งค่า"
   },
   "es": {
+    "title.___ProfileStylePage": "Editar perfil",
+    "changePicture.___ProfileStylePage": "Cambiar imagen",
+    "uploading.___ProfileStylePage": "Subiendo...",
+    "displayName.___ProfileStylePage": "Nombre para mostrar",
+    "username.___ProfileStylePage": "Nombre de usuario",
+    "bio.___ProfileStylePage": "Biografía",
+    "link.___ProfileStylePage": "Sitio web",
+    "usernameAvailable.___ProfileStylePage": "Nombre de usuario disponible",
+    "usernameUnavailable.___ProfileStylePage": "nombre de usuario no esta disponible",
     "title.___ProfileSettingsPage": "Ajustes",
     "languageLabel.___ProfileSettingsPage": "Idioma",
     "themeLabel.___ProfileSettingsPage": "Tema",
@@ -92,6 +128,15 @@ const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
     "settings_sidebar.___AppLayout": "Ajustes"
   },
   "en": {
+    "title.___ProfileStylePage": "Edit Profile",
+    "changePicture.___ProfileStylePage": "Change Picture",
+    "uploading.___ProfileStylePage": "Uploading...",
+    "displayName.___ProfileStylePage": "Display Name",
+    "username.___ProfileStylePage": "Username",
+    "bio.___ProfileStylePage": "Bio",
+    "link.___ProfileStylePage": "Link",
+    "usernameAvailable.___ProfileStylePage": "Username is available",
+    "usernameUnavailable.___ProfileStylePage": "Username is not available",
     "title.___ProfileSettingsPage": "Settings",
     "languageLabel.___ProfileSettingsPage": "Language",
     "themeLabel.___ProfileSettingsPage": "Theme",

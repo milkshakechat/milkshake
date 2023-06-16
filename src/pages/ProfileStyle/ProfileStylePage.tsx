@@ -37,6 +37,9 @@ import {
   privacyModeEnum,
 } from "@milkshakechat/helpers";
 import { PrivacyModeEnum } from "@/api/graphql/types";
+import useSharedTranslations from "@/i18n/useSharedTranslations";
+import { cid } from "./i18n/types.i18n.ProfileStylePage";
+import { useIntl } from "react-intl";
 
 const formLayout = "horizontal";
 
@@ -45,14 +48,12 @@ interface ProfileStyleInitialFormValue {
   username: string;
   bio: string;
   link: string;
-  privacyMode: privacyModeEnum;
 }
 const PROFILE_STYLE_INITIAL_FORM_VALUE = {
   displayName: "",
   username: "",
   bio: "",
   link: "",
-  privacyMode: privacyModeEnum.private,
 };
 
 const usernameRules: Rule[] = [
@@ -98,6 +99,7 @@ const ProfileStylePage = () => {
   const userID = useUserState((state) => state.userID);
   const { token } = theme.useToken();
   const navigate = useNavigate();
+  const intl = useIntl();
   const { screen } = useWindowSize();
   const { uploadFile } = useStorage();
   const [isUploadingFile, setIsUploadingFile] = useState(false);
@@ -108,7 +110,7 @@ const ProfileStylePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialFormValues, setInitialFormValues] =
     useState<ProfileStyleInitialFormValue>(PROFILE_STYLE_INITIAL_FORM_VALUE);
-
+  const { backButtonText, updateButtonText } = useSharedTranslations();
   const {
     data: updateProfileMutationData,
     errors: updateProfileMutationErrors,
@@ -120,6 +122,49 @@ const ProfileStylePage = () => {
     errors: checkUsernameAvailableErrors,
     runQuery: runCheckUsernameAvailableQuery,
   } = useCheckUsernameAvailable();
+
+  const editProfileText = intl.formatMessage({
+    id: `title.${cid}`,
+    defaultMessage: "Edit Profile",
+  });
+  const changePictureText = intl.formatMessage({
+    id: `changePicture.${cid}`,
+    defaultMessage: "Change Picture",
+  });
+  const uploadingText = intl.formatMessage({
+    id: `uploading.${cid}`,
+    defaultMessage: "Uploading...",
+  });
+
+  const displayNameText = intl.formatMessage({
+    id: `displayName.${cid}`,
+    defaultMessage: "Display Name",
+  });
+
+  const usernameText = intl.formatMessage({
+    id: `username.${cid}`,
+    defaultMessage: "Username",
+  });
+
+  const bioText = intl.formatMessage({
+    id: `bio.${cid}`,
+    defaultMessage: "Bio",
+  });
+
+  const linkText = intl.formatMessage({
+    id: `link.${cid}`,
+    defaultMessage: "Link",
+  });
+
+  const usernameAvailableText = intl.formatMessage({
+    id: `usernameAvailable.${cid}`,
+    defaultMessage: "Username is available",
+  });
+
+  const usernameUnavailableText = intl.formatMessage({
+    id: `usernameUnavailable.${cid}`,
+    defaultMessage: "Username is not available",
+  });
 
   const formItemLayout =
     screen === ScreenSize.mobile
@@ -203,7 +248,6 @@ const ProfileStylePage = () => {
       bio: values.bio,
       avatar: avatarUrl,
       link: values.link,
-      privacyMode: values.privacyMode as unknown as PrivacyModeEnum,
     });
     setShowUpdate(false);
     setIsSubmitting(false);
@@ -220,10 +264,10 @@ const ProfileStylePage = () => {
             icon={<LeftOutlined />}
             style={{ color: token.colorTextSecondary }}
           >
-            Cancel
+            {backButtonText}
           </Button>
         }
-        title="Edit Profile"
+        title={editProfileText}
         rightAction={
           <Button
             onClick={() => form.submit()}
@@ -231,7 +275,7 @@ const ProfileStylePage = () => {
             disabled={!showUpdate}
             loading={isSubmitting}
           >
-            Update
+            {updateButtonText}
           </Button>
         }
       />
@@ -271,22 +315,26 @@ const ProfileStylePage = () => {
                     <Space direction="horizontal">
                       <Spin />
                       <Spacer width="5px" />
-                      <span>{`Uploading...`}</span>
+                      <span>{uploadingText}</span>
                     </Space>
                   ) : (
-                    "Change Picture"
+                    <span>{changePictureText}</span>
                   )}
                 </Button>
               </Upload>
             </Form.Item>
             <Form.Item
-              label="Display Name"
+              label={displayNameText}
               name="displayName"
               rules={displayNameRules}
             >
               <Input placeholder="Public Display Name" />
             </Form.Item>
-            <Form.Item label="Username" name="username" rules={usernameRules}>
+            <Form.Item
+              label={usernameText}
+              name="username"
+              rules={usernameRules}
+            >
               <Input
                 placeholder="Public Username"
                 onChange={handleUsernameChange}
@@ -299,47 +347,21 @@ const ProfileStylePage = () => {
             ) : checkUsernameAvailableData.isAvailable ? (
               <Form.Item {...noLabelFieldProps} style={{ padding: "0" }}>
                 <span style={{ color: token.colorSuccessText }}>
-                  Username is available
+                  {usernameAvailableText}
                 </span>
               </Form.Item>
             ) : (
               <Form.Item {...noLabelFieldProps}>
                 <span style={{ color: token.colorErrorText }}>
-                  Username is not available
+                  {usernameUnavailableText}
                 </span>
               </Form.Item>
             )}
-            <Form.Item label="Bio" name="bio" rules={bioRules}>
+            <Form.Item label={bioText} name="bio" rules={bioRules}>
               <Input.TextArea rows={3} placeholder="Public Biography" />
             </Form.Item>
-            <Form.Item label="Link" name="link" rules={linkRules}>
+            <Form.Item label={linkText} name="link" rules={linkRules}>
               <Input placeholder="Link to Website" />
-            </Form.Item>
-            <Form.Item label="Visibility" name="privacyMode">
-              <Select
-                placeholder="Pick a privacy mode"
-                onChange={(privacyMode: privacyModeEnum) =>
-                  setPrivacyTip(PrivacySettingsExplaination[privacyMode])
-                }
-                allowClear
-              >
-                <Select.Option value={privacyModeEnum.public}>
-                  Public
-                </Select.Option>
-                <Select.Option value={privacyModeEnum.private}>
-                  Private
-                </Select.Option>
-                <Select.Option value={privacyModeEnum.hidden}>
-                  Hidden
-                </Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item
-              label=""
-              name="privacyModeExplanation"
-              {...noLabelFieldProps}
-            >
-              <i style={{ color: token.colorTextSecondary }}>{privacyTip}</i>
             </Form.Item>
           </Form>
         ) : (

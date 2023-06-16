@@ -28,10 +28,13 @@ We do this to allow i18n translation co-location with its react component. Thus 
 ### Adding a new i18n Component
 
 Use this folder as reference: `src/components/TemplateComponent/**`.
+
+Shared translations are located at: `src/i18n/shared/types.i18n.shared.ts`.
+
 To add a new component `<NewComponent>` you will need to:
 
 - copy the entire folder `src/components/TemplateComponent/**`
-- define the i18n mapping type at `src/components/TemplateComponent/i18n/types.i18n.TemplateComponent.ts`
+- update the filenames and define the i18n mapping types at `src/components/TemplateComponent/i18n/types.i18n.TemplateComponent.ts`
 - set the `cid` to match your new component name
 ```ts
 // types.i18n.NewComponent.ts
@@ -45,15 +48,15 @@ export const cid = "___NewComponent";
 
 ```ts
 // i18n.${locale}.NewComponent.ts
-export const importLanguage = (): i18n_NewComponent => {
-  const language: i18n_NewComponent = {
+export const importLanguage = (): i18n_Mapping => {
+  const language: i18n_Mapping = {
     "title.___NewComponent": "NewComponent (English™️)",
   };
   return language;
 };
 // types.i18n.NewComponent.ts
 export const cid = "___NewComponent";
-export interface i18n_NewComponent {
+export interface i18n_Mapping {
   "title.___NewComponent": string;
 }
 ```

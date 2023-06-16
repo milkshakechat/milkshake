@@ -40,6 +40,8 @@ import { LanguageEnum, PrivacyModeEnum } from "@/api/graphql/types";
 import { useUpdateProfile } from "@/hooks/useProfile";
 import { localeLabelText } from "@/i18n";
 import TemplateComponent from "@/components/TemplateComponent/TemplateComponent";
+import { cid } from "./i18n/types.i18n.ProfileSettingsPage";
+import useSharedTranslations from "@/i18n/useSharedTranslations";
 
 const formLayout = "horizontal";
 
@@ -66,6 +68,32 @@ const ProfileSettingsPage = () => {
   const [showUpdate, setShowUpdate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { screen } = useWindowSize();
+  const {
+    backButtonText,
+    updateButtonText,
+    translatePrivacyModeEnum,
+    translatePrivacyModeEnumHelpTip,
+  } = useSharedTranslations();
+
+  const titleText = intl.formatMessage({
+    id: `title.${cid}`,
+    defaultMessage: "Settings",
+  });
+
+  const languageText = intl.formatMessage({
+    id: `languageLabel.${cid}`,
+    defaultMessage: "Settings",
+  });
+
+  const themeText = intl.formatMessage({
+    id: `themeLabel.${cid}`,
+    defaultMessage: "Settings",
+  });
+
+  const privacyText = intl.formatMessage({
+    id: `privacyLabel.${cid}`,
+    defaultMessage: "Settings",
+  });
 
   const {
     data: updateProfileMutationData,
@@ -104,7 +132,6 @@ const ProfileSettingsPage = () => {
     useState<ProfileSettingsInitialFormValue>(
       PROFILE_SETTINGS_INITIAL_FORM_VALUE
     );
-
   const formItemLayout =
     screen === ScreenSize.mobile
       ? null
@@ -112,7 +139,11 @@ const ProfileSettingsPage = () => {
 
   useEffect(() => {
     if (user) {
-      setPrivacyTip(PrivacySettingsExplaination[user.privacyMode]);
+      setPrivacyTip(
+        translatePrivacyModeEnumHelpTip(
+          user.privacyMode as unknown as privacyModeEnum
+        )
+      );
       const initValues = {
         themeColor: user.themeColor,
         language: user.language as unknown as localeEnum,
@@ -158,7 +189,6 @@ const ProfileSettingsPage = () => {
     },
   ];
   const handleColorThemeMenuClick: MenuProps["onClick"] = (e) => {
-    console.log(`e.key`, e);
     message.success(`Theme color changed to ${hexToThemeColorMap[e.key]}`);
     switchColor(e.key);
     setShowUpdate(true);
@@ -190,10 +220,10 @@ const ProfileSettingsPage = () => {
             icon={<LeftOutlined />}
             style={{ color: token.colorTextSecondary }}
           >
-            Cancel
+            {backButtonText}
           </Button>
         }
-        title="Settings"
+        title={titleText}
         rightAction={
           <Button
             type="primary"
@@ -201,7 +231,7 @@ const ProfileSettingsPage = () => {
             loading={isSubmitting}
             onClick={() => form.submit()}
           >
-            Update
+            {updateButtonText}
           </Button>
         }
       />
@@ -218,7 +248,7 @@ const ProfileSettingsPage = () => {
             style={{ width: "100%", maxWidth: 600 }}
           >
             <Spacer />
-            <Form.Item label="Language" name="language">
+            <Form.Item label={languageText} name="language">
               <Select
                 onChange={handleLocaleMenuClick}
                 placeholder="Set your language"
@@ -231,7 +261,7 @@ const ProfileSettingsPage = () => {
                 ))}
               </Select>
             </Form.Item>
-            <Form.Item label="Theme" name="themeColor">
+            <Form.Item label={themeText} name="themeColor">
               <Dropdown menu={colorThemeProps} arrow>
                 <Button
                   style={{
@@ -257,22 +287,26 @@ const ProfileSettingsPage = () => {
                 </Button>
               </Dropdown>
             </Form.Item>
-            <Form.Item label="Privacy" name="privacyMode">
+            <Form.Item label={privacyText} name="privacyMode">
               <Select
                 placeholder="Pick a privacy mode"
-                onChange={(privacyMode: privacyModeEnum) =>
-                  setPrivacyTip(PrivacySettingsExplaination[privacyMode])
-                }
+                onChange={(privacyMode: privacyModeEnum) => {
+                  setPrivacyTip(
+                    translatePrivacyModeEnumHelpTip(
+                      privacyMode as unknown as privacyModeEnum
+                    )
+                  );
+                }}
                 allowClear
               >
                 <Select.Option value={privacyModeEnum.public}>
-                  Public
+                  {translatePrivacyModeEnum(privacyModeEnum.public)}
                 </Select.Option>
                 <Select.Option value={privacyModeEnum.private}>
-                  Private
+                  {translatePrivacyModeEnum(privacyModeEnum.private)}
                 </Select.Option>
                 <Select.Option value={privacyModeEnum.hidden}>
-                  Hidden
+                  {translatePrivacyModeEnum(privacyModeEnum.hidden)}
                 </Select.Option>
               </Select>
             </Form.Item>

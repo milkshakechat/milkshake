@@ -17,6 +17,8 @@ interface UserState {
     idToken: string | null;
   }) => void;
   setGQLUser: (user: User) => void;
+  triggerRefetch: () => void;
+  refetchNonce: number;
 }
 
 export const useUserState = create<UserState>()((set) => ({
@@ -31,4 +33,7 @@ export const useUserState = create<UserState>()((set) => ({
       idToken: user.idToken,
     })),
   setGQLUser: (user) => set((state) => ({ user })),
+  refetchNonce: 1,
+  triggerRefetch: () =>
+    set((state) => ({ refetchNonce: state.refetchNonce + 1 })),
 }));

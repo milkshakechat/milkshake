@@ -12,8 +12,10 @@ import useWindowSize, { ScreenSize } from "@/api/utils/screen";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import { shallow } from "zustand/shallow";
 import LogoText from "@/components/LogoText/LogoText";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import NotificationsPage from "@/pages/Notifications/NotificationsPage";
+import { LeftOutlined } from "@ant-design/icons";
+import { useUserState } from "@/state/user.state";
 const { Header, Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -120,6 +122,7 @@ interface AppLayoutProps {
 }
 const AppLayout = ({ children }: AppLayoutProps) => {
   const { screen } = useWindowSize();
+  const user = useUserState((state) => state.user);
   const [collapsed, setCollapsed] = useState(false);
   const { themeType, themeColor } = useStyleConfigGlobal(
     (state) => ({
@@ -261,19 +264,29 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               backgroundColor: token.colorBgBase,
             }}
           >
-            <Space>
-              <Avatar
-                style={{ backgroundColor: token.colorPrimaryText }}
-                icon={<UserOutlined />}
-              />
-              <Space.Compact
-                direction="vertical"
-                style={{ color: token.colorPrimaryText }}
+            {user && (
+              <NavLink
+                to="/app/profile"
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "active" : ""
+                }
               >
-                <b>Display Name</b>
-                <span>{`@username`}</span>
-              </Space.Compact>
-            </Space>
+                <Space>
+                  <Avatar
+                    style={{ backgroundColor: token.colorPrimaryText }}
+                    icon={<UserOutlined />}
+                    src={user.avatar}
+                  />
+                  <Space.Compact
+                    direction="vertical"
+                    style={{ color: token.colorPrimaryText }}
+                  >
+                    <b>{user.displayName}</b>
+                    <span>{`@${user.username}`}</span>
+                  </Space.Compact>
+                </Space>
+              </NavLink>
+            )}
           </Footer>
         </div>
       </Sider>
@@ -290,3 +303,88 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 };
 
 export default AppLayout;
+
+interface AppLayoutPaddingProps {
+  align: "center" | "flex-start" | "flex-end";
+  children: React.ReactElement;
+}
+export const AppLayoutPadding = ({
+  align = "center",
+  children,
+}: AppLayoutPaddingProps) => {
+  const { screen } = useWindowSize();
+  if (screen === ScreenSize.mobile) {
+    return <div style={{ padding: "10px" }}>{children}</div>;
+  }
+  return (
+    <div
+      style={{
+        padding: "20px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: align,
+      }}
+    >
+      {children}
+    </div>
+  );
+};
+
+interface SpacerProps {
+  width?: number | string;
+  height?: number | string;
+}
+export const Spacer = ({ width = "100%", height = "30px" }: SpacerProps) => {
+  return <div style={{ flex: 1, width, height }} />;
+};
+
+interface LayoutInteriorHeaderProps {
+  title?: React.ReactNode;
+  centerNode?: React.ReactNode;
+  leftAction?: React.ReactNode;
+  rightAction?: React.ReactNode;
+}
+export const LayoutInteriorHeader = ({
+  centerNode,
+  title = "",
+  leftAction,
+  rightAction,
+}: LayoutInteriorHeaderProps) => {
+  const { token } = theme.useToken();
+  const { screen } = useWindowSize();
+  const navigate = useNavigate();
+  return (
+    <Layout.Header
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        padding: screen === ScreenSize.mobile ? "5px 10px" : "10px 20px",
+        backgroundColor: token.colorBgElevated,
+      }}
+    >
+      {leftAction ? (
+        leftAction
+      ) : (
+        <Button
+          onClick={() => navigate(-1)}
+          type="link"
+          icon={<LeftOutlined />}
+        >
+          Back
+        </Button>
+      )}
+
+      {centerNode ? (
+        centerNode
+      ) : (
+        <span style={{ fontWeight: "bold", fontSize: "1rem" }}>{title}</span>
+      )}
+
+      {rightAction ? rightAction : null}
+    </Layout.Header>
+  );
+};

@@ -3,20 +3,10 @@ import QuickNav from "@/components/QuickNav/QuickNav";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserState } from "@/state/user.state";
 import AppLayout from "@/AppLayout";
+import TemplateComponentGQL from "@/components/TemplateComponentGQL/TemplateComponentGQL";
 
 export const SettingsPage = () => {
-  const {
-    data: profileData,
-    errors: profileErrors,
-    runQuery: getProfile,
-  } = useProfile();
-
   const user = useUserState((state) => state.user);
-
-  const executeGraphQL = () => {
-    console.log(`Executing GraphQL Operations...`);
-    getProfile();
-  };
 
   return (
     <AppLayout>
@@ -25,17 +15,17 @@ export const SettingsPage = () => {
         <h2>
           <code>{`<SettingsPage />`}</code>
         </h2>
-        <button onClick={executeGraphQL}>Run GraphQL Operations</button>
         <br />
         <br />
         <section>
           <h3>Profile</h3>
-          {profileData && <span>{profileData.user.id}</span>}
+          {user && <span>{user.id}</span>}
           <br />
           {user && <span>{user.email}</span>}
-          <ErrorLines errors={profileErrors} />
         </section>
         <br />
+        <br />
+        <TemplateComponentGQL />
       </div>
     </AppLayout>
   );

@@ -171,114 +171,112 @@ const ProfileSettingsPage = () => {
   };
 
   return (
-    <AppLayout>
-      <>
-        <LayoutInteriorHeader
-          leftAction={
-            <Button
-              onClick={() => navigate(-1)}
-              type="link"
-              icon={<LeftOutlined />}
-              style={{ color: token.colorTextSecondary }}
-            >
-              Cancel
-            </Button>
-          }
-          title="Settings"
-          rightAction={
-            <Button
-              type="primary"
-              disabled={!showUpdate}
-              loading={isSubmitting}
-              onClick={() => form.submit()}
-            >
-              Update
-            </Button>
-          }
-        />
-        <AppLayoutPadding align="center">
-          <>
-            <Form
-              {...formItemLayout}
-              layout={formLayout}
-              form={form}
-              colon={false}
-              initialValues={initialFormValues}
-              onFieldsChange={onFormLayoutChange}
-              onFinish={submitForm}
-              style={{ width: "100%", maxWidth: 600 }}
-            >
-              <Spacer />
-              <Form.Item label="Language" name="language">
-                <Select
-                  onChange={handleLocaleMenuClick}
-                  placeholder="Set your language"
-                  allowClear
+    <>
+      <LayoutInteriorHeader
+        leftAction={
+          <Button
+            onClick={() => navigate(-1)}
+            type="link"
+            icon={<LeftOutlined />}
+            style={{ color: token.colorTextSecondary }}
+          >
+            Cancel
+          </Button>
+        }
+        title="Settings"
+        rightAction={
+          <Button
+            type="primary"
+            disabled={!showUpdate}
+            loading={isSubmitting}
+            onClick={() => form.submit()}
+          >
+            Update
+          </Button>
+        }
+      />
+      <AppLayoutPadding align="center">
+        <>
+          <Form
+            {...formItemLayout}
+            layout={formLayout}
+            form={form}
+            colon={false}
+            initialValues={initialFormValues}
+            onFieldsChange={onFormLayoutChange}
+            onFinish={submitForm}
+            style={{ width: "100%", maxWidth: 600 }}
+          >
+            <Spacer />
+            <Form.Item label="Language" name="language">
+              <Select
+                onChange={handleLocaleMenuClick}
+                placeholder="Set your language"
+                allowClear
+              >
+                {Object.keys(localeEnum).map((lang) => (
+                  <Select.Option key={lang} value={lang}>
+                    {localeLabelText[lang as localeEnum]}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item label="Theme" name="themeColor">
+              <Dropdown menu={colorThemeProps} arrow>
+                <Button
+                  style={{
+                    width: "100%",
+                  }}
                 >
-                  {Object.keys(localeEnum).map((lang) => (
-                    <Select.Option key={lang} value={lang}>
-                      {localeLabelText[lang as localeEnum]}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item label="Theme" name="themeColor">
-                <Dropdown menu={colorThemeProps} arrow>
-                  <Button
+                  <Space
                     style={{
                       width: "100%",
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "space-between",
                     }}
                   >
-                    <Space
+                    {hexToThemeColorMap[themeColor] || `Custom ${themeColor}`}
+                    <DownOutlined
                       style={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
+                        color: token.colorTextPlaceholder,
+                        fontSize: "0.8rem",
                       }}
-                    >
-                      {hexToThemeColorMap[themeColor] || `Custom ${themeColor}`}
-                      <DownOutlined
-                        style={{
-                          color: token.colorTextPlaceholder,
-                          fontSize: "0.8rem",
-                        }}
-                      />
-                    </Space>
-                  </Button>
-                </Dropdown>
-              </Form.Item>
-              <Form.Item label="Privacy" name="privacyMode">
-                <Select
-                  placeholder="Pick a privacy mode"
-                  onChange={(privacyMode: privacyModeEnum) =>
-                    setPrivacyTip(PrivacySettingsExplaination[privacyMode])
-                  }
-                  allowClear
-                >
-                  <Select.Option value={privacyModeEnum.public}>
-                    Public
-                  </Select.Option>
-                  <Select.Option value={privacyModeEnum.private}>
-                    Private
-                  </Select.Option>
-                  <Select.Option value={privacyModeEnum.hidden}>
-                    Hidden
-                  </Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label=""
-                name="privacyModeExplanation"
-                {...noLabelFieldProps}
+                    />
+                  </Space>
+                </Button>
+              </Dropdown>
+            </Form.Item>
+            <Form.Item label="Privacy" name="privacyMode">
+              <Select
+                placeholder="Pick a privacy mode"
+                onChange={(privacyMode: privacyModeEnum) =>
+                  setPrivacyTip(PrivacySettingsExplaination[privacyMode])
+                }
+                allowClear
               >
-                <i style={{ color: token.colorTextSecondary }}>{privacyTip}</i>
-              </Form.Item>
-            </Form>
-          </>
-        </AppLayoutPadding>
-      </>
-    </AppLayout>
+                <Select.Option value={privacyModeEnum.public}>
+                  Public
+                </Select.Option>
+                <Select.Option value={privacyModeEnum.private}>
+                  Private
+                </Select.Option>
+                <Select.Option value={privacyModeEnum.hidden}>
+                  Hidden
+                </Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label=""
+              name="privacyModeExplanation"
+              {...noLabelFieldProps}
+            >
+              <i style={{ color: token.colorTextSecondary }}>{privacyTip}</i>
+            </Form.Item>
+          </Form>
+        </>
+      </AppLayoutPadding>
+    </>
   );
 };
 

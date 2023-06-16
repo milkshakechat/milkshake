@@ -211,144 +211,142 @@ const ProfileStylePage = () => {
   };
 
   return (
-    <AppLayout>
-      <>
-        <LayoutInteriorHeader
-          leftAction={
-            <Button
-              onClick={() => navigate(-1)}
-              type="link"
-              icon={<LeftOutlined />}
-              style={{ color: token.colorTextSecondary }}
-            >
-              Cancel
-            </Button>
-          }
-          title="Edit Profile"
-          rightAction={
-            <Button
-              onClick={() => form.submit()}
-              type="primary"
-              disabled={!showUpdate}
-              loading={isSubmitting}
-            >
-              Update
-            </Button>
-          }
-        />
-        <AppLayoutPadding align="center">
-          {user ? (
-            <Form
-              {...formItemLayout}
-              layout={formLayout}
-              form={form}
-              colon={false}
-              initialValues={initialFormValues}
-              onFieldsChange={onFormLayoutChange}
-              onFinish={submitForm}
-              style={{ width: "100%", maxWidth: 600 }}
-            >
-              <Spacer />
-              <Form.Item {...buttonItemLayout} name="avatar">
-                <Avatar size={64} src={avatarUrl} icon={<UserOutlined />} />
-                <Upload
-                  showUploadList={false}
-                  customRequest={async (options) => {
-                    try {
-                      await uploadNewAvatar(options.file);
-                      if (options && options.onSuccess) {
-                        options.onSuccess({});
-                      }
-                    } catch (e) {
-                      if (options.onError) {
-                        options.onError(e as Error);
-                      }
+    <>
+      <LayoutInteriorHeader
+        leftAction={
+          <Button
+            onClick={() => navigate(-1)}
+            type="link"
+            icon={<LeftOutlined />}
+            style={{ color: token.colorTextSecondary }}
+          >
+            Cancel
+          </Button>
+        }
+        title="Edit Profile"
+        rightAction={
+          <Button
+            onClick={() => form.submit()}
+            type="primary"
+            disabled={!showUpdate}
+            loading={isSubmitting}
+          >
+            Update
+          </Button>
+        }
+      />
+      <AppLayoutPadding align="center">
+        {user ? (
+          <Form
+            {...formItemLayout}
+            layout={formLayout}
+            form={form}
+            colon={false}
+            initialValues={initialFormValues}
+            onFieldsChange={onFormLayoutChange}
+            onFinish={submitForm}
+            style={{ width: "100%", maxWidth: 600 }}
+          >
+            <Spacer />
+            <Form.Item {...buttonItemLayout} name="avatar">
+              <Avatar size={64} src={avatarUrl} icon={<UserOutlined />} />
+              <Upload
+                showUploadList={false}
+                customRequest={async (options) => {
+                  try {
+                    await uploadNewAvatar(options.file);
+                    if (options && options.onSuccess) {
+                      options.onSuccess({});
                     }
-                  }}
-                  beforeUpload={validateFile}
-                >
-                  <Button type="link" style={{ marginLeft: 16 }}>
-                    {isUploadingFile ? (
-                      <Space direction="horizontal">
-                        <Spin />
-                        <Spacer width="5px" />
-                        <span>{`Uploading...`}</span>
-                      </Space>
-                    ) : (
-                      "Change Picture"
-                    )}
-                  </Button>
-                </Upload>
-              </Form.Item>
-              <Form.Item
-                label="Display Name"
-                name="displayName"
-                rules={displayNameRules}
-              >
-                <Input placeholder="Public Display Name" />
-              </Form.Item>
-              <Form.Item label="Username" name="username" rules={usernameRules}>
-                <Input
-                  placeholder="Public Username"
-                  onChange={handleUsernameChange}
-                  style={{ width: "100%" }}
-                />
-              </Form.Item>
-
-              {!checkUsernameAvailableData ? (
-                ""
-              ) : checkUsernameAvailableData.isAvailable ? (
-                <Form.Item {...noLabelFieldProps} style={{ padding: "0" }}>
-                  <span style={{ color: token.colorSuccessText }}>
-                    Username is available
-                  </span>
-                </Form.Item>
-              ) : (
-                <Form.Item {...noLabelFieldProps}>
-                  <span style={{ color: token.colorErrorText }}>
-                    Username is not available
-                  </span>
-                </Form.Item>
-              )}
-              <Form.Item label="Bio" name="bio" rules={bioRules}>
-                <Input.TextArea rows={3} placeholder="Public Biography" />
-              </Form.Item>
-              <Form.Item label="Link" name="link" rules={linkRules}>
-                <Input placeholder="Link to Website" />
-              </Form.Item>
-              <Form.Item label="Visibility" name="privacyMode">
-                <Select
-                  placeholder="Pick a privacy mode"
-                  onChange={(privacyMode: privacyModeEnum) =>
-                    setPrivacyTip(PrivacySettingsExplaination[privacyMode])
+                  } catch (e) {
+                    if (options.onError) {
+                      options.onError(e as Error);
+                    }
                   }
-                  allowClear
-                >
-                  <Select.Option value={privacyModeEnum.public}>
-                    Public
-                  </Select.Option>
-                  <Select.Option value={privacyModeEnum.private}>
-                    Private
-                  </Select.Option>
-                  <Select.Option value={privacyModeEnum.hidden}>
-                    Hidden
-                  </Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label=""
-                name="privacyModeExplanation"
-                {...noLabelFieldProps}
+                }}
+                beforeUpload={validateFile}
               >
-                <i style={{ color: token.colorTextSecondary }}>{privacyTip}</i>
+                <Button type="link" style={{ marginLeft: 16 }}>
+                  {isUploadingFile ? (
+                    <Space direction="horizontal">
+                      <Spin />
+                      <Spacer width="5px" />
+                      <span>{`Uploading...`}</span>
+                    </Space>
+                  ) : (
+                    "Change Picture"
+                  )}
+                </Button>
+              </Upload>
+            </Form.Item>
+            <Form.Item
+              label="Display Name"
+              name="displayName"
+              rules={displayNameRules}
+            >
+              <Input placeholder="Public Display Name" />
+            </Form.Item>
+            <Form.Item label="Username" name="username" rules={usernameRules}>
+              <Input
+                placeholder="Public Username"
+                onChange={handleUsernameChange}
+                style={{ width: "100%" }}
+              />
+            </Form.Item>
+
+            {!checkUsernameAvailableData ? (
+              ""
+            ) : checkUsernameAvailableData.isAvailable ? (
+              <Form.Item {...noLabelFieldProps} style={{ padding: "0" }}>
+                <span style={{ color: token.colorSuccessText }}>
+                  Username is available
+                </span>
               </Form.Item>
-            </Form>
-          ) : (
-            <Spin />
-          )}
-        </AppLayoutPadding>
-      </>
-    </AppLayout>
+            ) : (
+              <Form.Item {...noLabelFieldProps}>
+                <span style={{ color: token.colorErrorText }}>
+                  Username is not available
+                </span>
+              </Form.Item>
+            )}
+            <Form.Item label="Bio" name="bio" rules={bioRules}>
+              <Input.TextArea rows={3} placeholder="Public Biography" />
+            </Form.Item>
+            <Form.Item label="Link" name="link" rules={linkRules}>
+              <Input placeholder="Link to Website" />
+            </Form.Item>
+            <Form.Item label="Visibility" name="privacyMode">
+              <Select
+                placeholder="Pick a privacy mode"
+                onChange={(privacyMode: privacyModeEnum) =>
+                  setPrivacyTip(PrivacySettingsExplaination[privacyMode])
+                }
+                allowClear
+              >
+                <Select.Option value={privacyModeEnum.public}>
+                  Public
+                </Select.Option>
+                <Select.Option value={privacyModeEnum.private}>
+                  Private
+                </Select.Option>
+                <Select.Option value={privacyModeEnum.hidden}>
+                  Hidden
+                </Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label=""
+              name="privacyModeExplanation"
+              {...noLabelFieldProps}
+            >
+              <i style={{ color: token.colorTextSecondary }}>{privacyTip}</i>
+            </Form.Item>
+          </Form>
+        ) : (
+          <Spin />
+        )}
+      </AppLayoutPadding>
+    </>
   );
 };
 

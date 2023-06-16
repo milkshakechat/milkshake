@@ -14,6 +14,7 @@ export type Scalars = {
   Float: { input: number; output: number; }
   DateString: { input: any; output: any; }
   GroupChatID: { input: any; output: any; }
+  HexColorCode: { input: any; output: any; }
   SendBirdInternalUserID: { input: any; output: any; }
   UserID: { input: any; output: any; }
 };
@@ -69,11 +70,23 @@ export type GetMyProfileResponseSuccess = {
   user: User;
 };
 
+export enum LanguageEnum {
+  Arabic = 'arabic',
+  Chinese = 'chinese',
+  English = 'english',
+  Spanish = 'spanish',
+  Thai = 'thai',
+  Vietnamese = 'vietnamese'
+}
+
 export type ModifyProfileInput = {
   avatar?: InputMaybe<Scalars['String']['input']>;
   bio?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
+  language?: InputMaybe<LanguageEnum>;
   link?: InputMaybe<Scalars['String']['input']>;
+  privacyMode?: InputMaybe<PrivacyModeEnum>;
+  themeColor?: InputMaybe<Scalars['HexColorCode']['input']>;
   username?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -104,6 +117,12 @@ export type Ping = {
   __typename?: 'Ping';
   timestamp: Scalars['String']['output'];
 };
+
+export enum PrivacyModeEnum {
+  Hidden = 'hidden',
+  Private = 'private',
+  Public = 'public'
+}
 
 export type Query = {
   __typename?: 'Query';
@@ -162,8 +181,11 @@ export type User = {
   id: Scalars['UserID']['output'];
   isCreator: Scalars['Boolean']['output'];
   isPaidChat: Scalars['Boolean']['output'];
+  language: LanguageEnum;
   link: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
+  privacyMode: PrivacyModeEnum;
+  themeColor: Scalars['HexColorCode']['output'];
   username: Scalars['String']['output'];
 };
 
@@ -194,7 +216,7 @@ export type DemoPingQuery = { __typename?: 'Query', demoPing: { __typename?: 'Pi
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any } } | { __typename: 'ResponseError' } };
+export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any, privacyMode: PrivacyModeEnum, themeColor: any, language: LanguageEnum } } | { __typename: 'ResponseError' } };
 
 export type CheckUsernameAvailableQueryVariables = Exact<{
   input: CheckUsernameAvailableInput;
@@ -208,4 +230,4 @@ export type ModifyProfileMutationVariables = Exact<{
 }>;
 
 
-export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string, language: LanguageEnum, themeColor: any, privacyMode: PrivacyModeEnum } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };

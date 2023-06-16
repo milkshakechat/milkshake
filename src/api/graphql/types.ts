@@ -202,3 +202,10 @@ export type CheckUsernameAvailableQueryVariables = Exact<{
 
 
 export type CheckUsernameAvailableQuery = { __typename?: 'Query', checkUsernameAvailable: { __typename: 'CheckUsernameAvailableResponseSuccess', isAvailable: boolean } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type ModifyProfileMutationVariables = Exact<{
+  input: ModifyProfileInput;
+}>;
+
+
+export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };

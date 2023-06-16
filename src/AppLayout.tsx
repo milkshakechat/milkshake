@@ -12,32 +12,42 @@ import useWindowSize, { ScreenSize } from "@/api/utils/screen";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import { shallow } from "zustand/shallow";
 import LogoText from "@/components/LogoText/LogoText";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import NotificationsPage from "@/pages/Notifications/NotificationsPage";
 import { LeftOutlined } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
+import { ItemType } from "antd/es/menu/hooks/useItems";
 const { Header, Content, Footer, Sider } = Layout;
 
-type MenuItem = Required<MenuProps>["items"][number];
+interface MenuItem {
+  label: React.ReactNode;
+  key: React.Key;
+  route: string;
+  icon?: React.ReactNode;
+  children?: MenuItem[];
+}
 
 function getItem(
   label: React.ReactNode,
   key: React.Key,
+  route: string,
   icon?: React.ReactNode,
   children?: MenuItem[]
 ): MenuItem {
   return {
     key,
     icon,
+    route,
     children,
     label,
-  } as MenuItem;
+  };
 }
 
-const items: MenuItem[] = [
+const items = [
   getItem(
     <NavLink to="/app/story/new">New Story</NavLink>,
     "newstory",
+    "/app/story/new",
     <VideoCameraOutlined style={{ fontSize: "1rem" }} />
   ),
   getItem(
@@ -50,39 +60,49 @@ const items: MenuItem[] = [
       Messages
     </NavLink>,
     "messages",
+    "/app/sandbox",
     <MessageOutlined style={{ fontSize: "1rem" }} />
   ),
   getItem(
     <NavLink to="/app/notifications">Notifications</NavLink>,
     "notifications",
+    "/app/notifications",
     <BellOutlined style={{ fontSize: "1rem" }} />
   ),
-  getItem("Account", "account", <UserOutlined style={{ fontSize: "1rem" }} />, [
-    getItem(
-      <NavLink
-        to="/app/profile"
-        className={({ isActive, isPending }) =>
-          isPending ? "pending" : isActive ? "active" : ""
-        }
-      >
-        Profile
-      </NavLink>,
-      "profile"
-    ),
-    getItem("Contacts", "contacts"),
-    getItem("Wishlists", "wishlists"),
-    getItem(
-      <NavLink
-        to="/app/profile/settings"
-        className={({ isActive, isPending }) =>
-          isPending ? "pending" : isActive ? "active" : ""
-        }
-      >
-        Settings
-      </NavLink>,
-      "settings"
-    ),
-  ]),
+  getItem(
+    "Account",
+    "account",
+    "/app",
+    <UserOutlined style={{ fontSize: "1rem" }} />,
+    [
+      getItem(
+        <NavLink
+          to="/app/profile"
+          className={({ isActive, isPending }) =>
+            isPending ? "pending" : isActive ? "active" : ""
+          }
+        >
+          Profile
+        </NavLink>,
+        "profile",
+        "/app/profile"
+      ),
+      getItem("Contacts", "contacts", "/app/friends"),
+      getItem("Wishlists", "wishlists", "/app/wishlists"),
+      getItem(
+        <NavLink
+          to="/app/profile/settings"
+          className={({ isActive, isPending }) =>
+            isPending ? "pending" : isActive ? "active" : ""
+          }
+        >
+          Settings
+        </NavLink>,
+        "settings",
+        "/app/profile/settings"
+      ),
+    ]
+  ),
 ];
 const itemsMobile = [
   {
@@ -122,6 +142,7 @@ interface AppLayoutProps {
 }
 const AppLayout = ({ children }: AppLayoutProps) => {
   const { screen } = useWindowSize();
+  const location = useLocation();
   const user = useUserState((state) => state.user);
   const [collapsed, setCollapsed] = useState(false);
   const { themeType, themeColor } = useStyleConfigGlobal(
@@ -134,6 +155,55 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const { token } = theme.useToken();
 
   // console.log(`token`, token);
+  const matchPathToMenuKey = (
+    items: MenuItem[],
+    pathname: string
+  ): string[] => {
+    const matches: ReturnType<typeof getItem>[] = [];
+
+    const searchItems = (items: MenuItem[]) => {
+      for (let item of items) {
+        if (item && item.route === pathname) {
+          matches.push(item);
+        }
+        if (item.children) {
+          searchItems(item.children);
+        }
+      }
+    };
+
+    searchItems(items);
+
+    if (matches && matches.length > 0) {
+      return matches
+        .map((m) => m?.key?.toString())
+        .filter((m) => m) as string[];
+    }
+
+    return [];
+  };
+
+  function getParentKeysIfChildrenMatch(
+    items: MenuItem[],
+    pathname: string
+  ): string[] {
+    for (let item of items) {
+      if (item.children) {
+        for (let child of item.children) {
+          if (child.route === pathname) {
+            return [item.key.toString()]; // Return parent key as string array if child route matches
+          }
+        }
+      }
+      if (item.children) {
+        const match = getParentKeysIfChildrenMatch(item.children, pathname);
+        if (match.length) {
+          return [item.key.toString(), ...match];
+        }
+      }
+    }
+    return []; // Return empty array if no match found
+  }
 
   if (screen === ScreenSize.mobile) {
     return (
@@ -241,7 +311,11 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </Space>
           <Menu
             theme={themeType}
-            defaultSelectedKeys={["1"]}
+            selectedKeys={matchPathToMenuKey(items, location.pathname)}
+            defaultOpenKeys={getParentKeysIfChildrenMatch(
+              items,
+              location.pathname
+            )}
             mode="inline"
             items={items}
             style={{

@@ -151,30 +151,25 @@ const ConversationPage = () => {
   };
 
   return (
-    <AppLayout>
-      <div>
-        <QuickNav />
-        <h1>ConversationPage</h1>
-        <br />
-        <button onClick={() => createChat()}>List Chats</button>
-        <br />
-        <button onClick={() => stopListening()}>Stop Listening</button>
-        <br />
-        <br />
-        <br />
-        <input
-          value={inputText}
-          onChange={(e) => setInputText(e.target.value)}
-        />
-        <button onClick={() => sendMessage()}>Send Mesasge</button>
-        <br />
-        <section>
-          {messages.map((msg) => {
-            return <p>{(msg as UserMessage).message}</p>;
-          })}
-        </section>
-      </div>
-    </AppLayout>
+    <div>
+      <QuickNav />
+      <h1>ConversationPage</h1>
+      <br />
+      <button onClick={() => createChat()}>List Chats</button>
+      <br />
+      <button onClick={() => stopListening()}>Stop Listening</button>
+      <br />
+      <br />
+      <br />
+      <input value={inputText} onChange={(e) => setInputText(e.target.value)} />
+      <button onClick={() => sendMessage()}>Send Mesasge</button>
+      <br />
+      <section>
+        {messages.map((msg) => {
+          return <p>{(msg as UserMessage).message}</p>;
+        })}
+      </section>
+    </div>
   );
 };
 

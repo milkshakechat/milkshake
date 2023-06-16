@@ -1,11 +1,7 @@
 import AppLayout from "@/AppLayout";
 
 const NotificationsPage = () => {
-  return (
-    <AppLayout>
-      <div>NotificationsPage</div>
-    </AppLayout>
-  );
+  return <div>NotificationsPage</div>;
 };
 
 export default NotificationsPage;

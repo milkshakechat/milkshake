@@ -1,11 +1,7 @@
 import AppLayout from "@/AppLayout";
 
 const NewStoryPage = () => {
-  return (
-    <AppLayout>
-      <div>NewStoryPage</div>
-    </AppLayout>
-  );
+  return <div>NewStoryPage</div>;
 };
 
 export default NewStoryPage;

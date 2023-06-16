@@ -71,10 +71,7 @@ const AppRouter = () => {
   console.log(`zuzstrand locale (enum)`, locale);
   const formatJSLocale = localeEnumToFormatJSLocale[locale];
   console.log(`formatJSLocale`, formatJSLocale);
-  console.log(
-    `COMPILED_LANGUAGE_MAPPINGS[formatJSLocale]`,
-    COMPILED_LANGUAGE_MAPPINGS[formatJSLocale]
-  );
+  console.log(`COMPILED_LANGUAGE_MAPPINGS`, COMPILED_LANGUAGE_MAPPINGS);
   return (
     <GraphqlClientProvider>
       <ConfigProvider
@@ -88,7 +85,7 @@ const AppRouter = () => {
         }}
       >
         <IntlProvider
-          messages={COMPILED_LANGUAGE_MAPPINGS[formatJSLocale]}
+          messages={COMPILED_LANGUAGE_MAPPINGS}
           locale={formatJSLocale}
           key={formatJSLocale}
           defaultLocale={localeEnumToFormatJSLocale[localeEnum.english]}

@@ -23,6 +23,9 @@ export const UserInfoProvider = ({ children }: Props) => {
   );
 
   useEffect(() => {
+    console.log(`Calling to refetch...`);
+    console.log(`idToken`, idToken);
+    console.log(`refetchNonce`, refetchNonce);
     getProfile();
   }, [idToken, refetchNonce]);
 

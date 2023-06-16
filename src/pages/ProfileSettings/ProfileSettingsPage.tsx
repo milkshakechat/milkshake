@@ -39,6 +39,7 @@ import {
 import { LanguageEnum, PrivacyModeEnum } from "@/api/graphql/types";
 import { useUpdateProfile } from "@/hooks/useProfile";
 import { localeLabelText } from "@/i18n";
+import TemplateComponent from "@/components/TemplateComponent/TemplateComponent";
 
 const formLayout = "horizontal";
 
@@ -65,6 +66,13 @@ const ProfileSettingsPage = () => {
   const [showUpdate, setShowUpdate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { screen } = useWindowSize();
+
+  const {
+    data: updateProfileMutationData,
+    errors: updateProfileMutationErrors,
+    runMutation: runUpdateProfileMutation,
+  } = useUpdateProfile();
+
   const {
     themeType,
     locale,
@@ -83,20 +91,19 @@ const ProfileSettingsPage = () => {
     }),
     shallow
   );
-  const handleLocaleMenuClick = (lang: localeEnum) => {
+  const handleLocaleMenuClick = async (lang: localeEnum) => {
+    setIsSubmitting(true);
+    await runUpdateProfileMutation({
+      language: lang as unknown as LanguageEnum,
+    });
+    setShowUpdate(false);
+    setIsSubmitting(false);
     message.success(`Language changed to ${localeLabelText[lang]}`);
-    switchLocale(lang);
   };
   const [initialFormValues, setInitialFormValues] =
     useState<ProfileSettingsInitialFormValue>(
       PROFILE_SETTINGS_INITIAL_FORM_VALUE
     );
-
-  const {
-    data: updateProfileMutationData,
-    errors: updateProfileMutationErrors,
-    runMutation: runUpdateProfileMutation,
-  } = useUpdateProfile();
 
   const formItemLayout =
     screen === ScreenSize.mobile
@@ -200,6 +207,7 @@ const ProfileSettingsPage = () => {
       />
       <AppLayoutPadding align="center">
         <>
+          <TemplateComponent />
           <Form
             {...formItemLayout}
             layout={formLayout}

@@ -38,7 +38,6 @@ export const useProfile = () => {
   );
 
   const runQuery = async () => {
-    console.log(`----- calling runQuery in useProfile`);
     try {
       const result = await new Promise<GetMyProfileResponseSuccess>(
         (resolve, reject) => {
@@ -90,7 +89,6 @@ export const useProfile = () => {
       setData(result);
       setGQLUser(result.user);
       const { language, themeColor } = result.user;
-      console.log(`switching locale from useProfile()... language=${language}`);
 
       switchLocale(language as unknown as localeEnum);
       switchColor(themeColor);

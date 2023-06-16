@@ -12,7 +12,7 @@ import { localeEnum } from "@milkshakechat/helpers";
 const GLOB_PATTERN = "src/**/i18n/i18n.@(en|zh|vi|th|es).*.ts";
 const LOCALE_MATCH_PATTERN = (fileName: string) =>
   fileName.match(/i18n\.(en|zh|vi|th|es)\..*/);
-const OUTPUT_FILE = "src/i18n/output/i18n.global.messages.build.ts";
+const OUTPUT_FILE = "src/i18n/output/i18n.output.messages.ts";
 
 // build script
 export const build = async () => {
@@ -67,9 +67,7 @@ export const build = async () => {
         allMessages,
         null,
         2
-      )};\n
-      
-      export default COMPILED_LANGUAGE_MAPPINGS;
+      )};\n export default COMPILED_LANGUAGE_MAPPINGS;
       `
     );
   });

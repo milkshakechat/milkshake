@@ -5,6 +5,7 @@ export const importLanguage = (): i18n_TemplateComponent => {
     i18n_TemplateComponent: {
       title: "TemplateComponent (Tiếng Việt)",
     },
+    message: "Hello World - Tiếng Việt",
   };
   return language;
 };

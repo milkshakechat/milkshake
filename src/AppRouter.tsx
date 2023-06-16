@@ -39,7 +39,7 @@ import { useEffect } from "react";
 import { THEME_COLOR_LOCALSTORAGE } from "@/config.env";
 import { ThemeColorHex, localeEnum } from "@milkshakechat/helpers";
 import { localeEnumToFormatJSLocale } from "@/i18n";
-import COMPILED_LANGUAGE_MAPPINGS from "@/i18n/output/i18n.global.messages.build";
+import COMPILED_LANGUAGE_MAPPINGS from "@/i18n/output/i18n.output.messages";
 
 const AppRouter = () => {
   const {
@@ -85,7 +85,7 @@ const AppRouter = () => {
         }}
       >
         <IntlProvider
-          messages={COMPILED_LANGUAGE_MAPPINGS}
+          messages={COMPILED_LANGUAGE_MAPPINGS[formatJSLocale]}
           locale={formatJSLocale}
           key={formatJSLocale}
           defaultLocale={localeEnumToFormatJSLocale[localeEnum.english]}

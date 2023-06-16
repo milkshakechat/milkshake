@@ -23,7 +23,7 @@ const devConfig: ConfigEnv = {
 const stagingConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
     "wss://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
-  GRAPHQL_SERVER: "http://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
+  GRAPHQL_SERVER: "https://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
   SENDBIRD_APP_ID: "D24F8D62-B601-4978-8DFB-F17DB6CD741F",
   VERIFY_EMAIL_DOMAIN: "https://milkshake-dev-faf77.firebaseapp.com",
   FIREBASE: {
@@ -39,7 +39,7 @@ const stagingConfig: ConfigEnv = {
 const prodConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
     "wss://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
-  GRAPHQL_SERVER: "http://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
+  GRAPHQL_SERVER: "https://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
   SENDBIRD_APP_ID: "D24F8D62-B601-4978-8DFB-F17DB6CD741F",
   VERIFY_EMAIL_DOMAIN: "https://milkshake-dev-faf77.firebaseapp.com",
   FIREBASE: {

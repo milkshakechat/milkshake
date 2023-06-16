@@ -43,38 +43,43 @@ const determineAntThemeAlgorithm = (themeType: themeTypeEnum) => {
 
 export enum themeColorEnum {
   paper = "Paper",
+  moon = "Moon",
   dairy = "Dairy",
   sakura = "Sakura",
   skyblue = "Sky Blue",
-  toxic = "Toxic",
+  mission = "Mission",
   pastures = "Pastures",
 }
 export const hexToThemeColorMap: Record<ThemeColorHex, themeColorEnum> = {
-  "#292929": themeColorEnum.paper,
-  "#E4E4E4": themeColorEnum.dairy,
-  "#ea8e7f": themeColorEnum.sakura,
+  "#625F5F": themeColorEnum.paper,
+  "#E4E4E4": themeColorEnum.moon,
+  "#E85F4A": themeColorEnum.sakura,
   "#2EB8F6": themeColorEnum.skyblue,
-  "#18BF04": themeColorEnum.pastures,
-  "#684BE4": themeColorEnum.toxic,
+  "#48C0F6": themeColorEnum.dairy,
+  "#1EA50D": themeColorEnum.pastures,
+  "#AC9DF5": themeColorEnum.mission,
 };
 export const themeColorToHexMap: Record<themeColorEnum, ThemeColorHex> = {
-  [themeColorEnum.paper]: "#292929",
-  [themeColorEnum.dairy]: "#E4E4E4",
-  [themeColorEnum.sakura]: "#ea8e7f",
+  [themeColorEnum.paper]: "#625F5F",
+  [themeColorEnum.moon]: "#E4E4E4",
+  [themeColorEnum.sakura]: "#E85F4A",
   [themeColorEnum.skyblue]: "#2EB8F6",
-  [themeColorEnum.pastures]: "#18BF04",
-  [themeColorEnum.toxic]: "#684BE4",
+  [themeColorEnum.dairy]: "#48C0F6",
+  [themeColorEnum.pastures]: "#1EA50D",
+  [themeColorEnum.mission]: "#AC9DF5",
 };
 const determineThemeTypeFromHex = (hex: string) => {
   if (hexToThemeColorMap[hex] === themeColorEnum.paper) {
     return themeTypeEnum.light;
-  } else if (hexToThemeColorMap[hex] === themeColorEnum.dairy) {
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.moon) {
     return themeTypeEnum.dark;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.sakura) {
     return themeTypeEnum.light;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.skyblue) {
     return themeTypeEnum.light;
-  } else if (hexToThemeColorMap[hex] === themeColorEnum.toxic) {
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.dairy) {
+    return themeTypeEnum.dark;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.mission) {
     return themeTypeEnum.dark;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.pastures) {
     return themeTypeEnum.light;
@@ -139,13 +144,13 @@ const handleLocaleChange = (locale: localeEnum) => {
 interface StyleConfigState {
   themeType: themeTypeEnum;
   themeAlgo: MappingAlgorithm | MappingAlgorithm[];
-  themeColor: string;
+  themeColor: ThemeColorHex;
   locale: localeEnum;
   antLocale: Locale;
   textDirection: textDirectionEnum;
   switchTheme: (theme: themeTypeEnum) => void;
   switchLocale: (locale: localeEnum) => void;
-  switchColor: (hex: string) => void;
+  switchColor: (hex: ThemeColorHex) => void;
 }
 
 export const useStyleConfigGlobal = create<StyleConfigState>()((set) => ({

@@ -96,8 +96,8 @@ const StyleConfigPanel = () => {
       key: themeColorToHexMap[themeColorEnum.paper],
     },
     {
-      label: themeColorEnum.dairy,
-      key: themeColorToHexMap[themeColorEnum.dairy],
+      label: themeColorEnum.moon,
+      key: themeColorToHexMap[themeColorEnum.moon],
     },
     {
       label: themeColorEnum.sakura,
@@ -108,12 +108,16 @@ const StyleConfigPanel = () => {
       key: themeColorToHexMap[themeColorEnum.skyblue],
     },
     {
+      label: themeColorEnum.dairy,
+      key: themeColorToHexMap[themeColorEnum.dairy],
+    },
+    {
       label: themeColorEnum.pastures,
       key: themeColorToHexMap[themeColorEnum.pastures],
     },
     {
-      label: themeColorEnum.toxic,
-      key: themeColorToHexMap[themeColorEnum.toxic],
+      label: themeColorEnum.mission,
+      key: themeColorToHexMap[themeColorEnum.mission],
     },
   ];
   const handleColorThemeMenuClick: MenuProps["onClick"] = (e) => {

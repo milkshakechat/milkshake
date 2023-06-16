@@ -17,12 +17,25 @@ import {
 import { useUserState } from "@/state/user.state";
 import { Observable, FetchResult } from "@apollo/client/core";
 import { shallow } from "zustand/shallow";
+import { useStyleConfigGlobal } from "@/state/styleconfig.state";
+import { localeEnum } from "@milkshakechat/helpers";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
   const setGQLUser = useUserState((state) => state.setGQLUser);
+  const { switchLocale, switchTheme, switchColor } = useStyleConfigGlobal(
+    (state) => ({
+      themeType: state.themeType,
+      locale: state.locale,
+      themeColor: state.themeColor,
+      switchLocale: state.switchLocale,
+      switchTheme: state.switchTheme,
+      switchColor: state.switchColor,
+    }),
+    shallow
+  );
 
   const runQuery = async () => {
     try {
@@ -46,6 +59,9 @@ export const useProfile = () => {
                     isPaidChat
                     isCreator
                     createdAt
+                    privacyMode
+                    themeColor
+                    language
                   }
                 }
               }
@@ -72,6 +88,9 @@ export const useProfile = () => {
       );
       setData(result);
       setGQLUser(result.user);
+      const { language, themeColor } = result.user;
+      switchLocale(language as unknown as localeEnum);
+      switchColor(themeColor);
     } catch (e) {
       console.log(e);
     }
@@ -160,6 +179,9 @@ export const useUpdateProfile = () => {
                 displayName
                 bio
                 link
+                language
+                themeColor
+                privacyMode
               }
             }
             ... on ResponseError {

@@ -10,6 +10,7 @@ import {
   Input,
   Layout,
   Radio,
+  Select,
   Space,
   Spin,
   Upload,
@@ -31,6 +32,11 @@ import {
   useUpdateProfile,
 } from "@/hooks/useProfile";
 import { useToken } from "antd/es/theme/internal";
+import {
+  PrivacySettingsExplaination,
+  privacyModeEnum,
+} from "@milkshakechat/helpers";
+import { PrivacyModeEnum } from "@/api/graphql/types";
 
 const formLayout = "horizontal";
 
@@ -39,12 +45,14 @@ interface ProfileStyleInitialFormValue {
   username: string;
   bio: string;
   link: string;
+  privacyMode: privacyModeEnum;
 }
 const PROFILE_STYLE_INITIAL_FORM_VALUE = {
   displayName: "",
   username: "",
   bio: "",
   link: "",
+  privacyMode: privacyModeEnum.private,
 };
 
 const usernameRules: Rule[] = [
@@ -82,7 +90,7 @@ const displayNameRules: Rule[] = [
   },
 ];
 
-const usernameFeedbackProps = { wrapperCol: { span: 20, offset: 4 } };
+const noLabelFieldProps = { wrapperCol: { span: 20, offset: 4 } };
 
 const ProfileStylePage = () => {
   const [form] = Form.useForm();
@@ -95,6 +103,7 @@ const ProfileStylePage = () => {
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [privacyTip, setPrivacyTip] = useState("");
   const [usernameValue, setUsernameValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [initialFormValues, setInitialFormValues] =
@@ -125,13 +134,14 @@ const ProfileStylePage = () => {
     if (user) {
       setAvatarUrl(user.avatar);
       setUsernameValue(user.username);
+      setPrivacyTip(PrivacySettingsExplaination[user.privacyMode]);
       const initValues = {
         displayName: user.displayName,
         username: user.username,
         bio: user.bio,
         link: user.link,
+        privacyMode: user.privacyMode as unknown as privacyModeEnum,
       };
-
       setInitialFormValues(initValues);
       form.setFieldsValue(initValues);
     }
@@ -139,7 +149,7 @@ const ProfileStylePage = () => {
 
   const debouncedLog = useCallback(
     debounce((value: string) => {
-      if (value) {
+      if (value && value !== user?.username) {
         runCheckUsernameAvailableQuery({ username: value });
       }
     }, 2000),
@@ -193,6 +203,7 @@ const ProfileStylePage = () => {
       bio: values.bio,
       avatar: avatarUrl,
       link: values.link,
+      privacyMode: values.privacyMode as unknown as PrivacyModeEnum,
     });
     setShowUpdate(false);
     setIsSubmitting(false);
@@ -208,6 +219,7 @@ const ProfileStylePage = () => {
               onClick={() => navigate(-1)}
               type="link"
               icon={<LeftOutlined />}
+              style={{ color: token.colorTextSecondary }}
             >
               Cancel
             </Button>
@@ -286,13 +298,13 @@ const ProfileStylePage = () => {
               {!checkUsernameAvailableData ? (
                 ""
               ) : checkUsernameAvailableData.isAvailable ? (
-                <Form.Item {...usernameFeedbackProps} style={{ padding: "0" }}>
+                <Form.Item {...noLabelFieldProps} style={{ padding: "0" }}>
                   <span style={{ color: token.colorSuccessText }}>
                     Username is available
                   </span>
                 </Form.Item>
               ) : (
-                <Form.Item {...usernameFeedbackProps}>
+                <Form.Item {...noLabelFieldProps}>
                   <span style={{ color: token.colorErrorText }}>
                     Username is not available
                   </span>
@@ -303,6 +315,32 @@ const ProfileStylePage = () => {
               </Form.Item>
               <Form.Item label="Link" name="link" rules={linkRules}>
                 <Input placeholder="Link to Website" />
+              </Form.Item>
+              <Form.Item label="Visibility" name="privacyMode">
+                <Select
+                  placeholder="Pick a privacy mode"
+                  onChange={(privacyMode: privacyModeEnum) =>
+                    setPrivacyTip(PrivacySettingsExplaination[privacyMode])
+                  }
+                  allowClear
+                >
+                  <Select.Option value={privacyModeEnum.public}>
+                    Public
+                  </Select.Option>
+                  <Select.Option value={privacyModeEnum.private}>
+                    Private
+                  </Select.Option>
+                  <Select.Option value={privacyModeEnum.hidden}>
+                    Hidden
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item
+                label=""
+                name="privacyModeExplanation"
+                {...noLabelFieldProps}
+              >
+                <i style={{ color: token.colorTextSecondary }}>{privacyTip}</i>
               </Form.Item>
             </Form>
           ) : (

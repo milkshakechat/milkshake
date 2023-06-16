@@ -73,7 +73,7 @@ const items: MenuItem[] = [
     getItem("Wishlists", "wishlists"),
     getItem(
       <NavLink
-        to="/app/settings"
+        to="/app/profile/settings"
         className={({ isActive, isPending }) =>
           isPending ? "pending" : isActive ? "active" : ""
         }
@@ -373,6 +373,7 @@ export const LayoutInteriorHeader = ({
           onClick={() => navigate(-1)}
           type="link"
           icon={<LeftOutlined />}
+          style={{ color: token.colorTextSecondary }}
         >
           Back
         </Button>

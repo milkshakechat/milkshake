@@ -19,6 +19,7 @@ import {
   defaultThemeColorHex,
   localeEnum,
 } from "@milkshakechat/helpers";
+import { THEME_COLOR_LOCALSTORAGE } from "@/config.env";
 
 dayjs.locale("en");
 
@@ -68,7 +69,7 @@ export const themeColorToHexMap: Record<themeColorEnum, ThemeColorHex> = {
   [themeColorEnum.pastures]: "#1EA50D",
   [themeColorEnum.mission]: "#AC9DF5",
 };
-const determineThemeTypeFromHex = (hex: string) => {
+const determineThemeTypeFromHex = (hex: ThemeColorHex) => {
   if (hexToThemeColorMap[hex] === themeColorEnum.paper) {
     return themeTypeEnum.light;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.moon) {
@@ -177,8 +178,9 @@ export const useStyleConfigGlobal = create<StyleConfigState>()((set) => ({
       };
     });
   },
-  switchColor: (hex) => {
+  switchColor: (hex: ThemeColorHex) => {
     const themeType = determineThemeTypeFromHex(hex);
+    window.localStorage.setItem(THEME_COLOR_LOCALSTORAGE, hex);
     if (!themeType) {
       set((state) => ({
         themeColor: hex,

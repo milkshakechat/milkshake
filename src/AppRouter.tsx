@@ -29,18 +29,30 @@ import NotificationsPage from "@/pages/Notifications/NotificationsPage";
 import NewStoryPage from "@/pages/NewStory/NewStoryPage";
 import { UserInfoProvider } from "@/context/UserInfoProvider";
 import AppLayout from "@/AppLayout";
+import { useEffect } from "react";
+import { THEME_COLOR_LOCALSTORAGE } from "@/config.env";
+import { ThemeColorHex } from "@milkshakechat/helpers";
 
 const AppRouter = () => {
-  const { textDirection, antLocale, themeAlgo, themeColor } =
+  const { textDirection, antLocale, themeAlgo, themeColor, switchColor } =
     useStyleConfigGlobal(
       (state) => ({
         textDirection: state.textDirection,
         antLocale: state.antLocale,
         themeAlgo: state.themeAlgo,
         themeColor: state.themeColor,
+        switchColor: state.switchColor,
       }),
       shallow
     );
+  useEffect(() => {
+    const cachedThemeColor = window.localStorage.getItem(
+      THEME_COLOR_LOCALSTORAGE
+    );
+    if (cachedThemeColor) {
+      switchColor(cachedThemeColor as ThemeColorHex);
+    }
+  }, []);
   return (
     <GraphqlClientProvider>
       <ConfigProvider

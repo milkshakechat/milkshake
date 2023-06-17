@@ -144,7 +144,6 @@ const ProfileSettingsPage = () => {
     id: `privacyLabel.${cid}`,
     defaultMessage: "Privacy",
   });
-
   const logoutText = intl.formatMessage({
     id: `logout.${cid}`,
     defaultMessage: "Log Out",
@@ -490,6 +489,9 @@ const ProfileSettingsPage = () => {
             </Form.Item>
             <Form.Item name="divider" {...noLabelFieldProps}>
               <Divider />
+              {user && (
+                <i style={{ color: token.colorTextSecondary }}>{user.email}</i>
+              )}
             </Form.Item>
             <Form.Item name="logoutButton" {...noLabelFieldProps}>
               <NavLink to="/app/logout">

@@ -1,17 +1,89 @@
 import { getFirebaseCloudMessagingToken } from "@/api/firebase";
+import { ErrorLine } from "@/api/graphql/error-line";
+import {
+  Mutation,
+  UpdatePushTokenInput,
+  UpdatePushTokenResponseSuccess,
+} from "@/api/graphql/types";
+import { PUSH_TOKEN_LOCALSTORAGE } from "@/config.env";
+import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import PP from "@/i18n/PlaceholderPrint";
 import {
   permissionsKeyEnum,
   usePermissionsState,
 } from "@/state/permissions.state";
 import { message } from "antd";
+import gql from "graphql-tag";
+import { useState } from "react";
 import { shallow } from "zustand/shallow";
+import { useUserAgent } from "@oieduardorabelo/use-user-agent";
+
+export const useUpdatePushToken = () => {
+  const [data, setData] = useState<UpdatePushTokenResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: UpdatePushTokenInput) => {
+    try {
+      const UPDATE_PUSH_TOKEN = gql`
+        mutation UpdatePushToken($input: UpdatePushTokenInput!) {
+          updatePushToken(input: $input) {
+            __typename
+            ... on UpdatePushTokenResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<UpdatePushTokenResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "updatePushToken">>({
+              mutation: UPDATE_PUSH_TOKEN,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.updatePushToken.__typename ===
+                "UpdatePushTokenResponseSuccess"
+              ) {
+                resolve(data.updatePushToken);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runMutation };
+};
 
 interface UseWebPermissions {
   closeModal?: () => void;
 }
 
 const useWebPermissions = ({ closeModal }: UseWebPermissions) => {
+  const {
+    data: updatePushTokenData,
+    errors: updatePushTokenErrors,
+    runMutation: updatePushTokenMutation,
+  } = useUpdatePushToken();
+  const details = useUserAgent();
+
   const { notifications, location, camera, microphone, setPermission } =
     usePermissionsState(
       (state) => ({
@@ -84,15 +156,26 @@ const useWebPermissions = ({ closeModal }: UseWebPermissions) => {
         setPermission({ key: permissionsKeyEnum.camera, value: false });
       }
     };
-    const checkNotificationsPermission = () => {
+    const checkNotificationsPermission = async () => {
       if (Notification.permission === "granted") {
         setPermission({ key: permissionsKeyEnum.notifications, value: true });
       } else {
         setPermission({ key: permissionsKeyEnum.notifications, value: false });
       }
+      const cachedPushToken = window.localStorage.getItem(
+        PUSH_TOKEN_LOCALSTORAGE
+      );
+      if (cachedPushToken) {
+        await updatePushTokenMutation({
+          token: cachedPushToken,
+          active: true,
+        });
+      }
     };
-    checkNotificationsPermission();
-    checkCameraMicrophonePermission();
+    await Promise.all([
+      checkNotificationsPermission(),
+      checkCameraMicrophonePermission(),
+    ]);
   };
 
   const requestPushPermission = async () => {
@@ -102,13 +185,20 @@ const useWebPermissions = ({ closeModal }: UseWebPermissions) => {
     //     3
     //   );
     // }
-    getFirebaseCloudMessagingToken();
-    Notification.requestPermission()
-      .then((permission) => {
-        if (permission === "granted") {
-          console.log("Notification permission granted.");
-          setPermission({ key: permissionsKeyEnum.notifications, value: true });
+    const currentToken = await getFirebaseCloudMessagingToken();
 
+    window.localStorage.setItem(PUSH_TOKEN_LOCALSTORAGE, currentToken);
+    Notification.requestPermission()
+      .then(async (permission) => {
+        if (permission === "granted") {
+          setPermission({ key: permissionsKeyEnum.notifications, value: true });
+          await updatePushTokenMutation({
+            token: currentToken,
+            active: true,
+            title: details
+              ? `${details?.browser.name} ${details.device.type} push token`
+              : `push token`,
+          });
           message.success(<PP>Successfully enabled notifications</PP>, 5);
           if (closeModal) {
             closeModal();
@@ -117,6 +207,7 @@ const useWebPermissions = ({ closeModal }: UseWebPermissions) => {
       })
       .catch((e) => {
         console.log(e);
+        window.localStorage.removeItem(PUSH_TOKEN_LOCALSTORAGE);
         console.log(`---- PUSH ERROR`);
       });
   };
@@ -167,7 +258,7 @@ const useWebPermissions = ({ closeModal }: UseWebPermissions) => {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
-        console.log(`stream`, stream);
+
         setPermission({ key: permissionsKeyEnum.microphone, value: true });
         message.success(<PP>Successfully allowed microphone</PP>, 5);
         stream.getTracks().forEach(function (track) {
@@ -191,7 +282,6 @@ const useWebPermissions = ({ closeModal }: UseWebPermissions) => {
       return null;
     }
   };
-
   return {
     checkWebPermissions,
     allowedPermissions,

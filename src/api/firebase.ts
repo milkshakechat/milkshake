@@ -18,22 +18,8 @@ export const storage = getStorage(app);
 export const messaging = getMessaging(app);
 
 export const getFirebaseCloudMessagingToken = async () => {
-  getToken(messaging, { vapidKey: config.PUSH.VAPID_PUBLIC_KEY })
-    .then((currentToken) => {
-      if (currentToken) {
-        // Send the token to your server and update the UI if necessary
-        // ...
-        console.log("currentToken", currentToken);
-      } else {
-        // Show permission request UI
-        console.log(
-          "No registration token available. Request permission to generate one."
-        );
-        // ...
-      }
-    })
-    .catch((err) => {
-      console.log("An error occurred while retrieving token. ", err);
-      // ...
-    });
+  const currentToken = await getToken(messaging, {
+    vapidKey: config.PUSH.VAPID_PUBLIC_KEY,
+  });
+  return currentToken;
 };

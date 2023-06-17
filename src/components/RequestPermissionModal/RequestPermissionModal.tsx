@@ -21,7 +21,7 @@ const RequestPermissionModal = ({
   requestPermissions,
 }: RequestNotificationModalProps) => {
   const { screen } = useWindowSize();
-  let details = useUserAgent(); // default is `window.navigator.userAgent`
+  const details = useUserAgent(); // default is `window.navigator.userAgent`
 
   const determineDiagramToShow = () => {
     // mobile safari

@@ -46,8 +46,15 @@ import { localeLabelText } from "@/i18n";
 import TemplateComponent from "@/components/TemplateComponent/TemplateComponent";
 import { cid } from "./i18n/types.i18n.ProfileSettingsPage";
 import useSharedTranslations from "@/i18n/useSharedTranslations";
-import useWebPermissions from "@/hooks/useWebPermissions";
+import useWebPermissions, {
+  useUpdatePushToken,
+} from "@/hooks/useWebPermissions";
 import RequestPermissionModal from "@/components/RequestPermissionModal/RequestPermissionModal";
+import { PUSH_TOKEN_LOCALSTORAGE } from "@/config.env";
+import {
+  permissionsKeyEnum,
+  usePermissionsState,
+} from "@/state/permissions.state";
 
 const formLayout = "horizontal";
 
@@ -73,11 +80,22 @@ const ProfileSettingsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { screen } = useWindowSize();
   const {
+    data: updatePushTokenData,
+    errors: updatePushTokenErrors,
+    runMutation: updatePushTokenMutation,
+  } = useUpdatePushToken();
+  const {
     backButtonText,
     updateButtonText,
     translatePrivacyModeEnum,
     translatePrivacyModeEnumHelpTip,
   } = useSharedTranslations();
+  const { setPermission } = usePermissionsState(
+    (state) => ({
+      setPermission: state.setPermission,
+    }),
+    shallow
+  );
 
   const [isRequestNotificationModalOpen, setIsRequestNotificationModalOpen] =
     useState(false);
@@ -255,6 +273,10 @@ const ProfileSettingsPage = () => {
     message.success("Settings updated!");
   };
 
+  const localStoragePushToken = window.localStorage.getItem(
+    PUSH_TOKEN_LOCALSTORAGE
+  );
+
   return (
     <>
       <LayoutInteriorHeader
@@ -391,6 +413,45 @@ const ProfileSettingsPage = () => {
                       }}
                     />
                     <PP>{`Enable push notifications (recommended)`}</PP>
+                    {localStoragePushToken ? (
+                      <Button
+                        onClick={async () => {
+                          console.log(`Revoking permissions...`);
+                          const cachedPushToken = window.localStorage.getItem(
+                            PUSH_TOKEN_LOCALSTORAGE
+                          );
+                          if (cachedPushToken) {
+                            await updatePushTokenMutation({
+                              token: cachedPushToken,
+                              active: false,
+                            });
+                            window.localStorage.removeItem(
+                              PUSH_TOKEN_LOCALSTORAGE
+                            );
+                            await setPermission({
+                              key: permissionsKeyEnum.notifications,
+                              value: false,
+                            });
+                            message.info(
+                              `Successfully revoked push notification permissions`
+                            );
+                          }
+                        }}
+                        type="link"
+                      >
+                        <PP>Revoke</PP>
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={async () => {
+                          setIsRequestNotificationModalOpen(true);
+                          requestPushPermission();
+                        }}
+                        type="link"
+                      >
+                        <PP>Enable</PP>
+                      </Button>
+                    )}
                   </Space>
                   <Space direction="horizontal">
                     <Switch

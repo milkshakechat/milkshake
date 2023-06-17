@@ -86,17 +86,17 @@ const ProfileSettingsPage = () => {
 
   const languageText = intl.formatMessage({
     id: `languageLabel.${cid}`,
-    defaultMessage: "Settings",
+    defaultMessage: "Language",
   });
 
   const themeText = intl.formatMessage({
     id: `themeLabel.${cid}`,
-    defaultMessage: "Settings",
+    defaultMessage: "Theme",
   });
 
   const privacyText = intl.formatMessage({
     id: `privacyLabel.${cid}`,
-    defaultMessage: "Settings",
+    defaultMessage: "Privacy",
   });
 
   const logoutText = intl.formatMessage({

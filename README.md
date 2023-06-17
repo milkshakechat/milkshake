@@ -80,4 +80,6 @@ Make sure to also update the `zustrand` state located at `src/state/styleconfig.
 - `handleLocaleChange`
 - `determineTextDirection`
 
+And update the helper mappings at `src/i18n/index.ts`
+
 And update `@milkshakechat/dairyfarm` backend graphql enum `LanguageEnum`. You'll need to generate the graphql types again.

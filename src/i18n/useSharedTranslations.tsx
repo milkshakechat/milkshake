@@ -19,7 +19,7 @@ const useSharedTranslations = () => {
 
   const updateButtonText = intl.formatMessage({
     id: `updateButtonHeader.${shared_cid}`,
-    defaultMessage: "Back",
+    defaultMessage: "Update",
   });
 
   const translatePrivacyModeEnum = (privacyMode: privacyModeEnum) => {

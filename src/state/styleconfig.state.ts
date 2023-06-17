@@ -7,13 +7,16 @@ import thTH from "antd/locale/th_TH"; // thai
 import viVN from "antd/locale/vi_VN"; // vietnamese
 import jaJP from "antd/locale/ja_JP"; // japanese
 import koKR from "antd/locale/ko_KR"; // korean
+import arEG from "antd/locale/ar_EG"; // arabic
 import dayjs from "dayjs";
+import "dayjs/locale/en";
 import "dayjs/locale/zh";
 import "dayjs/locale/ar";
 import "dayjs/locale/es";
 import "dayjs/locale/th";
 import "dayjs/locale/vi";
 import "dayjs/locale/ja";
+import "dayjs/locale/ko";
 import { ThemeConfig, theme } from "antd";
 import { MappingAlgorithm } from "antd/lib/config-provider/context";
 import {
@@ -106,7 +109,7 @@ export enum textDirectionEnum {
 }
 
 const determineTextDirection = (locale: localeEnum) => {
-  // if (locale === localeEnum.arabic) return textDirectionEnum.rtl;
+  if (locale === localeEnum.arabic) return textDirectionEnum.rtl;
   return textDirectionEnum.ltr;
 };
 const determineAntLocale = (locale: localeEnum): Locale => {
@@ -125,6 +128,9 @@ const determineAntLocale = (locale: localeEnum): Locale => {
       return jaJP;
     case localeEnum.korean:
       return koKR;
+    case localeEnum.arabic:
+      return arEG;
+
     default:
       return enUS;
   }
@@ -146,7 +152,9 @@ const handleLocaleChange = (locale: localeEnum) => {
   } else if (locale === localeEnum.japanese) {
     dayjs.locale("ja");
   } else if (locale === localeEnum.korean) {
-    dayjs.locale("kr");
+    dayjs.locale("ko");
+  } else if (locale === localeEnum.arabic) {
+    dayjs.locale("ar");
   }
 };
 

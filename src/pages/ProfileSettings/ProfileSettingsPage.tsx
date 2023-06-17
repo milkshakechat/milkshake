@@ -86,17 +86,17 @@ const ProfileSettingsPage = () => {
 
   const languageText = intl.formatMessage({
     id: `languageLabel.${cid}`,
-    defaultMessage: "Settings",
+    defaultMessage: "Language",
   });
 
   const themeText = intl.formatMessage({
     id: `themeLabel.${cid}`,
-    defaultMessage: "Settings",
+    defaultMessage: "Theme",
   });
 
   const privacyText = intl.formatMessage({
     id: `privacyLabel.${cid}`,
-    defaultMessage: "Settings",
+    defaultMessage: "Privacy",
   });
 
   const logoutText = intl.formatMessage({
@@ -177,16 +177,20 @@ const ProfileSettingsPage = () => {
       key: themeColorToHexMap[themeColorEnum.moon],
     },
     {
-      label: themeColorEnum.dairy,
-      key: themeColorToHexMap[themeColorEnum.dairy],
-    },
-    {
       label: themeColorEnum.skyblue,
       key: themeColorToHexMap[themeColorEnum.skyblue],
     },
     {
+      label: themeColorEnum.dairy,
+      key: themeColorToHexMap[themeColorEnum.dairy],
+    },
+    {
       label: themeColorEnum.sakura,
       key: themeColorToHexMap[themeColorEnum.sakura],
+    },
+    {
+      label: themeColorEnum.volcano,
+      key: themeColorToHexMap[themeColorEnum.volcano],
     },
     {
       label: themeColorEnum.pastures,
@@ -195,6 +199,10 @@ const ProfileSettingsPage = () => {
     {
       label: themeColorEnum.mission,
       key: themeColorToHexMap[themeColorEnum.mission],
+    },
+    {
+      label: themeColorEnum.goldmine,
+      key: themeColorToHexMap[themeColorEnum.goldmine],
     },
   ];
   const handleColorThemeMenuClick: MenuProps["onClick"] = (e) => {

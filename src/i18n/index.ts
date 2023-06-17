@@ -9,6 +9,7 @@ export const localeLabelText: Record<localeEnum, string> = {
   [localeEnum.chinese]: "🇨🇳 中文",
   [localeEnum.thai]: "🇹🇭 ภาษาไทย",
   [localeEnum.vietnamese]: "🇻🇳 Tiếng Việt",
+  [localeEnum.arabic]: "🇪🇬 العربية",
 };
 
 export const localeEnumToFormatJSLocale: Record<localeEnum, string> = {
@@ -19,6 +20,7 @@ export const localeEnumToFormatJSLocale: Record<localeEnum, string> = {
   [localeEnum.thai]: "th",
   [localeEnum.japanese]: "ja",
   [localeEnum.korean]: "kr",
+  [localeEnum.arabic]: "ar",
 };
 export const formatJSLocaleToLocaleEnum: Record<string, localeEnum> = {
   en: localeEnum.english,
@@ -28,6 +30,7 @@ export const formatJSLocaleToLocaleEnum: Record<string, localeEnum> = {
   th: localeEnum.thai,
   ja: localeEnum.japanese,
   kr: localeEnum.korean,
+  ar: localeEnum.arabic,
 };
 
 export type FormatJSMessageMap =

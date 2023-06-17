@@ -7,13 +7,16 @@ import thTH from "antd/locale/th_TH"; // thai
 import viVN from "antd/locale/vi_VN"; // vietnamese
 import jaJP from "antd/locale/ja_JP"; // japanese
 import koKR from "antd/locale/ko_KR"; // korean
+import arEG from "antd/locale/ar_EG"; // arabic
 import dayjs from "dayjs";
+import "dayjs/locale/en";
 import "dayjs/locale/zh";
 import "dayjs/locale/ar";
 import "dayjs/locale/es";
 import "dayjs/locale/th";
 import "dayjs/locale/vi";
 import "dayjs/locale/ja";
+import "dayjs/locale/ko";
 import { ThemeConfig, theme } from "antd";
 import { MappingAlgorithm } from "antd/lib/config-provider/context";
 import {
@@ -49,27 +52,33 @@ export enum themeColorEnum {
   moon = "Moon",
   dairy = "Dairy",
   sakura = "Sakura",
+  volcano = "Volcano",
   skyblue = "Sky Blue",
   mission = "Mission",
   pastures = "Pastures",
+  goldmine = "Goldmine",
 }
 export const hexToThemeColorMap: Record<ThemeColorHex, themeColorEnum> = {
-  "#625F5F": themeColorEnum.paper,
+  "#2E2E2E": themeColorEnum.paper,
   "#E4E4E4": themeColorEnum.moon,
   "#E85F4A": themeColorEnum.sakura,
+  "#E8321A": themeColorEnum.volcano,
   "#2EB8F6": themeColorEnum.skyblue,
   "#48C0F6": themeColorEnum.dairy,
   "#1EA50D": themeColorEnum.pastures,
   "#AC9DF5": themeColorEnum.mission,
+  "#FFE23B": themeColorEnum.goldmine,
 };
 export const themeColorToHexMap: Record<themeColorEnum, ThemeColorHex> = {
-  [themeColorEnum.paper]: "#625F5F",
+  [themeColorEnum.paper]: "#2E2E2E",
   [themeColorEnum.moon]: "#E4E4E4",
   [themeColorEnum.sakura]: "#E85F4A",
+  [themeColorEnum.volcano]: "#E8321A",
   [themeColorEnum.skyblue]: "#2EB8F6",
   [themeColorEnum.dairy]: "#48C0F6",
   [themeColorEnum.pastures]: "#1EA50D",
   [themeColorEnum.mission]: "#AC9DF5",
+  [themeColorEnum.goldmine]: "#FFE23B",
 };
 const determineThemeTypeFromHex = (hex: ThemeColorHex) => {
   if (hexToThemeColorMap[hex] === themeColorEnum.paper) {
@@ -78,6 +87,8 @@ const determineThemeTypeFromHex = (hex: ThemeColorHex) => {
     return themeTypeEnum.dark;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.sakura) {
     return themeTypeEnum.light;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.volcano) {
+    return themeTypeEnum.dark;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.skyblue) {
     return themeTypeEnum.light;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.dairy) {
@@ -86,6 +97,8 @@ const determineThemeTypeFromHex = (hex: ThemeColorHex) => {
     return themeTypeEnum.dark;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.pastures) {
     return themeTypeEnum.light;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.goldmine) {
+    return themeTypeEnum.dark;
   }
   return null;
 };
@@ -96,7 +109,7 @@ export enum textDirectionEnum {
 }
 
 const determineTextDirection = (locale: localeEnum) => {
-  // if (locale === localeEnum.arabic) return textDirectionEnum.rtl;
+  if (locale === localeEnum.arabic) return textDirectionEnum.rtl;
   return textDirectionEnum.ltr;
 };
 const determineAntLocale = (locale: localeEnum): Locale => {
@@ -115,6 +128,9 @@ const determineAntLocale = (locale: localeEnum): Locale => {
       return jaJP;
     case localeEnum.korean:
       return koKR;
+    case localeEnum.arabic:
+      return arEG;
+
     default:
       return enUS;
   }
@@ -136,7 +152,9 @@ const handleLocaleChange = (locale: localeEnum) => {
   } else if (locale === localeEnum.japanese) {
     dayjs.locale("ja");
   } else if (locale === localeEnum.korean) {
-    dayjs.locale("kr");
+    dayjs.locale("ko");
+  } else if (locale === localeEnum.arabic) {
+    dayjs.locale("ar");
   }
 };
 

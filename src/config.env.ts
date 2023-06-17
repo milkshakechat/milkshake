@@ -20,6 +20,10 @@ const devConfig: ConfigEnv = {
     appId: "1:642004369083:web:74b7c685be091ce6b4f39e",
     measurementId: "G-N0YXCSQJ89",
   },
+  PUSH: {
+    VAPID_PUBLIC_KEY:
+      "BP5PCqDnEwC2rYGgOYraoMbetIzJe9MmjXGVys3p1rwmtucQA3IuqdINXcGqtrN8NKgavAADRZHc9mzjlRA7q7g",
+  },
 };
 const stagingConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
@@ -35,6 +39,10 @@ const stagingConfig: ConfigEnv = {
     messagingSenderId: "642004369083",
     appId: "1:642004369083:web:74b7c685be091ce6b4f39e",
     measurementId: "G-N0YXCSQJ89",
+  },
+  PUSH: {
+    VAPID_PUBLIC_KEY:
+      "BP5PCqDnEwC2rYGgOYraoMbetIzJe9MmjXGVys3p1rwmtucQA3IuqdINXcGqtrN8NKgavAADRZHc9mzjlRA7q7g",
   },
 };
 const prodConfig: ConfigEnv = {
@@ -52,6 +60,10 @@ const prodConfig: ConfigEnv = {
     appId: "1:642004369083:web:74b7c685be091ce6b4f39e",
     measurementId: "G-N0YXCSQJ89",
   },
+  PUSH: {
+    VAPID_PUBLIC_KEY:
+      "BP5PCqDnEwC2rYGgOYraoMbetIzJe9MmjXGVys3p1rwmtucQA3IuqdINXcGqtrN8NKgavAADRZHc9mzjlRA7q7g",
+  },
 };
 
 interface ConfigEnv {
@@ -67,6 +79,9 @@ interface ConfigEnv {
     messagingSenderId: string;
     appId: string;
     measurementId: string;
+  };
+  PUSH: {
+    VAPID_PUBLIC_KEY: string;
   };
 }
 

@@ -2,16 +2,18 @@ import { create } from "zustand";
 import type { Locale } from "antd/es/locale";
 import enUS from "antd/locale/en_US"; // english
 import zhCN from "antd/locale/zh_CN"; // chinese
-import arEG from "antd/locale/ar_EG"; // arabic
 import esES from "antd/locale/es_ES"; // spanish
 import thTH from "antd/locale/th_TH"; // thai
 import viVN from "antd/locale/vi_VN"; // vietnamese
+import jaJP from "antd/locale/ja_JP"; // japanese
+import koKR from "antd/locale/ko_KR"; // korean
 import dayjs from "dayjs";
 import "dayjs/locale/zh";
 import "dayjs/locale/ar";
 import "dayjs/locale/es";
 import "dayjs/locale/th";
 import "dayjs/locale/vi";
+import "dayjs/locale/ja";
 import { ThemeConfig, theme } from "antd";
 import { MappingAlgorithm } from "antd/lib/config-provider/context";
 import {
@@ -109,6 +111,10 @@ const determineAntLocale = (locale: localeEnum): Locale => {
       return thTH;
     case localeEnum.vietnamese:
       return viVN;
+    case localeEnum.japanese:
+      return jaJP;
+    case localeEnum.korean:
+      return koKR;
     default:
       return enUS;
   }
@@ -127,6 +133,10 @@ const handleLocaleChange = (locale: localeEnum) => {
     dayjs.locale("th");
   } else if (locale === localeEnum.vietnamese) {
     dayjs.locale("vi");
+  } else if (locale === localeEnum.japanese) {
+    dayjs.locale("ja");
+  } else if (locale === localeEnum.korean) {
+    dayjs.locale("kr");
   }
 };
 

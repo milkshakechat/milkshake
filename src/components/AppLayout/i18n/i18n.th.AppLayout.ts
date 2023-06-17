@@ -8,7 +8,7 @@ export const importLanguage = (): i18n_Mapping => {
     "account_sidebar.___AppLayout": "บัญชี",
     "profile_sidebar.___AppLayout": "ประวัติโดยย่อ",
     "contacts_sidebar.___AppLayout": "รายชื่อผู้ติดต่อ",
-    "wishlists_sidebar.___AppLayout": "รายการสิ่งที่อยากได้",
+    "wishlists_sidebar.___AppLayout": "ของขวัญ",
     "settings_sidebar.___AppLayout": "การตั้งค่า",
   };
   return language;

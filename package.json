@@ -18,7 +18,7 @@
     "@apollo/client": "^3.7.15",
     "@builder.io/partytown": "^0.8.0",
     "@graphql-codegen/cli": "^4.0.1",
-    "@milkshakechat/helpers": "^1.0.19",
+    "@milkshakechat/helpers": "^1.0.22",
     "@sendbird/chat": "^4.9.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

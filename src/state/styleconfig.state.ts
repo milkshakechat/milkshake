@@ -49,27 +49,33 @@ export enum themeColorEnum {
   moon = "Moon",
   dairy = "Dairy",
   sakura = "Sakura",
+  volcano = "Volcano",
   skyblue = "Sky Blue",
   mission = "Mission",
   pastures = "Pastures",
+  goldmine = "Goldmine",
 }
 export const hexToThemeColorMap: Record<ThemeColorHex, themeColorEnum> = {
-  "#625F5F": themeColorEnum.paper,
+  "#2E2E2E": themeColorEnum.paper,
   "#E4E4E4": themeColorEnum.moon,
   "#E85F4A": themeColorEnum.sakura,
+  "#E8321A": themeColorEnum.volcano,
   "#2EB8F6": themeColorEnum.skyblue,
   "#48C0F6": themeColorEnum.dairy,
   "#1EA50D": themeColorEnum.pastures,
   "#AC9DF5": themeColorEnum.mission,
+  "#FFE23B": themeColorEnum.goldmine,
 };
 export const themeColorToHexMap: Record<themeColorEnum, ThemeColorHex> = {
-  [themeColorEnum.paper]: "#625F5F",
+  [themeColorEnum.paper]: "#2E2E2E",
   [themeColorEnum.moon]: "#E4E4E4",
   [themeColorEnum.sakura]: "#E85F4A",
+  [themeColorEnum.volcano]: "#E8321A",
   [themeColorEnum.skyblue]: "#2EB8F6",
   [themeColorEnum.dairy]: "#48C0F6",
   [themeColorEnum.pastures]: "#1EA50D",
   [themeColorEnum.mission]: "#AC9DF5",
+  [themeColorEnum.goldmine]: "#FFE23B",
 };
 const determineThemeTypeFromHex = (hex: ThemeColorHex) => {
   if (hexToThemeColorMap[hex] === themeColorEnum.paper) {
@@ -78,6 +84,8 @@ const determineThemeTypeFromHex = (hex: ThemeColorHex) => {
     return themeTypeEnum.dark;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.sakura) {
     return themeTypeEnum.light;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.volcano) {
+    return themeTypeEnum.dark;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.skyblue) {
     return themeTypeEnum.light;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.dairy) {
@@ -86,6 +94,8 @@ const determineThemeTypeFromHex = (hex: ThemeColorHex) => {
     return themeTypeEnum.dark;
   } else if (hexToThemeColorMap[hex] === themeColorEnum.pastures) {
     return themeTypeEnum.light;
+  } else if (hexToThemeColorMap[hex] === themeColorEnum.goldmine) {
+    return themeTypeEnum.dark;
   }
   return null;
 };

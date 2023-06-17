@@ -43,7 +43,7 @@ const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
     "usernameAvailable.___ProfileStylePage": "Tên người dùng có sẵn",
     "usernameUnavailable.___ProfileStylePage": "Tên người dùng không khả dụng",
     "title.___ProfileSettingsPage": "Cài đặt",
-    "languageLabel.___ProfileSettingsPage": "Idioma",
+    "languageLabel.___ProfileSettingsPage": "Ngôn ngữ",
     "themeLabel.___ProfileSettingsPage": "Chủ đề",
     "privacyLabel.___ProfileSettingsPage": "Sự riêng tư",
     "logout.___ProfileSettingsPage": "Đăng xuất",

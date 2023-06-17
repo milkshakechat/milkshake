@@ -9,9 +9,9 @@ import { localeEnum } from "@milkshakechat/helpers";
  * - GLOB_PATTERN
  * - LOCALE_MATCH_PATTERN
  */
-const GLOB_PATTERN = "src/**/i18n/i18n.@(en|zh|vi|th|es).*.ts";
+const GLOB_PATTERN = "src/**/i18n/i18n.@(en|zh|vi|th|es|ja|kr).*.ts";
 const LOCALE_MATCH_PATTERN = (fileName: string) =>
-  fileName.match(/i18n\.(en|zh|vi|th|es)\..*/);
+  fileName.match(/i18n\.(en|zh|vi|th|es|ja|kr)\..*/);
 const OUTPUT_FILE = "src/i18n/output/i18n.output.messages.ts";
 
 // build script

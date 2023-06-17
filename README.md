@@ -74,3 +74,10 @@ To add a new language, you will need to update the following files:
 
 Then run the build again `$ npm run build:i18n`
 
+Make sure to also update the `zustrand` state located at `src/state/styleconfig.state.ts`. Specifically the functions:
+
+- `determineAntLocale`
+- `handleLocaleChange`
+- `determineTextDirection`
+
+And update `@milkshakechat/dairyfarm` backend graphql enum `LanguageEnum`. You'll need to generate the graphql types again.

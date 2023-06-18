@@ -4,7 +4,6 @@ import { create } from "zustand";
 
 interface UserState {
   userID: UserID | null;
-  email: EmailString | null;
   idToken: string | null;
   user: User | null;
   setFirebaseUser: ({
@@ -23,7 +22,6 @@ interface UserState {
 
 export const useUserState = create<UserState>()((set) => ({
   userID: null,
-  email: null,
   idToken: null,
   user: null,
   setFirebaseUser: (user) =>

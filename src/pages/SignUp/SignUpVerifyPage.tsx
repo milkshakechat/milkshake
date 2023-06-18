@@ -1,3 +1,4 @@
+import { refreshWebPage } from "@/api/utils/utils";
 import { useFullLoginProcedure } from "@/components/AuthProtect/AuthProtect";
 import {
   FIREBASE_AUTH_ACCESS_TOKEN_LOCALSTORAGE,
@@ -16,8 +17,9 @@ import { useNavigate } from "react-router-dom";
 
 const SignUpVerifyPage = () => {
   const userID = useUserState((state) => state.userID);
-  const email = useUserState((state) => state.email);
-  const setFirebaseUser = useUserState((state) => state.setFirebaseUser);
+  const user = useUserState((state) => state.user);
+  const email = user?.email;
+
   const navigate = useNavigate();
 
   const [canShowScreen, setCanShowScreen] = useState(false);
@@ -60,6 +62,9 @@ const SignUpVerifyPage = () => {
         // navigate elsewhere
         setTimeout(() => {
           navigate("/app/profile");
+          setTimeout(() => {
+            refreshWebPage();
+          }, 500);
         }, 1000);
         // Additional user info profile not available via:
         // result.additionalUserInfo.profile == null

@@ -69,8 +69,12 @@ export const useFullLoginProcedure = () => {
   const setFirebaseUser = useUserState((state) => state.setFirebaseUser);
 
   const fullLogin = async (user: User) => {
+    console.log(`user`, user);
+    console.log(`email`, user.email);
+    console.log(`phone`, user.phoneNumber);
     // something should be done with these tokens (maybe save refreshToken to server?)
     const idToken = await user.getIdToken();
+
     const refreshToken = user.refreshToken;
     const accessToken = (user as any).accessToken;
     window.localStorage.setItem(FIREBASE_AUTH_ID_TOKEN_LOCALSTORAGE, idToken);

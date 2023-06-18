@@ -28,11 +28,18 @@ messaging.onBackgroundMessage((payload) => {
     "[firebase-messaging-sw.js] Received background message ",
     payload
   );
-  const notificationTitle = payload.notification.title;
+  // const notificationTitle = payload.notification.title;
+  // const notificationOptions = {
+  //   body: payload.notification.body,
+  //   icon: payload.notification.icon || payload.notification.image,
+  //   data: payload.data,
+  // };
+  const notificationTitle = payload.data.title;
   const notificationOptions = {
-    body: payload.notification.body,
-    icon: payload.notification.icon || payload.notification.image,
-    data: payload.data,
+    body: payload.data.body,
+    icon: payload.data.icon || payload.data.image,
+    // data: payload.data,
+    tag: payload.data.tag,
   };
   // eslint-disable-next-line no-restricted-globals
   self.registration.showNotification(notificationTitle, notificationOptions);
@@ -40,19 +47,16 @@ messaging.onBackgroundMessage((payload) => {
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("notificationclick", (event) => {
-  console.log(`Clicked the notification! with self.addEventListener`, event);
-  console.log(`event.notification`, event.notification);
-  console.log(`event.notification.data`, event.notification.data);
-  console.log(
-    `event.notification.data.goToRoute`,
-    event.notification.data.goToRoute
-  );
-  if (
-    event.notification &&
-    event.notification.data &&
-    event.notification.data.goToRoute
-  ) {
-    clients.openWindow(event.notification.data.goToRoute);
+  console.log(`notificationclick`, event);
+  // if (
+  //   event.notification &&
+  //   event.notification.data &&
+  //   event.notification.data.goToRoute
+  // ) {
+  //   clients.openWindow(event.notification.data.goToRoute);
+  // }
+  if (event.notification && event.notification.tag) {
+    clients.openWindow(event.notification.tag);
   }
   event.notification.close();
 });

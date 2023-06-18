@@ -32,6 +32,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationOptions = {
     body: payload.notification.body,
     icon: payload.notification.icon || payload.notification.image,
+    data: payload.data,
   };
   // eslint-disable-next-line no-restricted-globals
   self.registration.showNotification(notificationTitle, notificationOptions);
@@ -40,16 +41,18 @@ messaging.onBackgroundMessage((payload) => {
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("notificationclick", (event) => {
   console.log(`Clicked the notification! with self.addEventListener`, event);
-  if (event.action) {
-    clients.openWindow(event.action);
+  console.log(`event.notification`, event.notification);
+  console.log(`event.notification.data`, event.notification.data);
+  console.log(
+    `event.notification.data.goToRoute`,
+    event.notification.data.goToRoute
+  );
+  if (
+    event.notification &&
+    event.notification.data &&
+    event.notification.data.goToRoute
+  ) {
+    clients.openWindow(event.notification.data.goToRoute);
   }
   event.notification.close();
 });
-
-onnotificationclick = (event) => {
-  console.log(`Clicked the notification! with onnotificationclick`, event);
-  if (event.action) {
-    clients.openWindow(event.action);
-  }
-  event.notification.close();
-};

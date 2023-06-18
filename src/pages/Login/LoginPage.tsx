@@ -1,8 +1,17 @@
-import { useCallback, useState } from "react";
-import { getAuth, sendSignInLinkToEmail } from "firebase/auth";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  getAuth,
+  sendSignInLinkToEmail,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  ConfirmationResult,
+} from "firebase/auth";
 import config from "@/config.env";
 import QuickNav from "@/components/QuickNav/QuickNav";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { Space } from "antd";
+import { useFullLoginProcedure } from "@/components/AuthProtect/AuthProtect";
+import { refreshWebPage } from "@/api/utils/utils";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -11,10 +20,21 @@ const LoginPage = () => {
     "signup"
   );
   const [errorMessage, setErrorMessage] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneCode, setPhoneCode] = useState("");
+  const [showPinProceed, setShowPinProceed] = useState(false);
+  const captchaRef = useRef<RecaptchaVerifier>();
+  const confirmationResultRef = useRef<ConfirmationResult>();
+  const fullLogin = useFullLoginProcedure();
+  const navigate = useNavigate();
 
   const auth = getAuth();
+  const captchaContainer = "recaptcha-container";
+  useEffect(() => {
+    captchaRef.current = new RecaptchaVerifier(captchaContainer, {}, auth);
+  }, []);
 
-  const signup = useCallback(() => {
+  const signupWithEmail = useCallback(() => {
     console.log("Signup!");
     setSubmitted(true);
     const actionCodeSettings = {
@@ -41,6 +61,49 @@ const LoginPage = () => {
       });
   }, [email]);
 
+  const signupWithPhone = () => {
+    if (captchaRef.current) {
+      signInWithPhoneNumber(auth, phoneNumber, captchaRef.current)
+        .then((confirmationResult) => {
+          // SMS sent. Prompt user to type the code from the message, then sign the
+          // user in with confirmationResult.confirm(code).
+          console.log(`confirmationResult`, confirmationResult);
+          confirmationResultRef.current = confirmationResult;
+          setShowPinProceed(true);
+          // ...
+        })
+        .catch((error) => {
+          // Error; SMS not sent
+          // ...
+        });
+    }
+  };
+
+  const verifyPhonePin = () => {
+    if (confirmationResultRef.current) {
+      confirmationResultRef.current
+        .confirm(phoneCode)
+        .then(async (result: any) => {
+          console.log(`phone code verify result`, result);
+          // You can access the new user via result.user
+          console.log(result.user);
+          await fullLogin(result.user);
+          // navigate elsewhere
+          setTimeout(() => {
+            navigate("/app/profile");
+            setTimeout(() => {
+              refreshWebPage();
+            }, 500);
+          }, 1000);
+          // ...
+        })
+        .catch((error) => {
+          // User couldn't sign in (bad verification code?)
+          // ...
+        });
+    }
+  };
+
   return (
     <div>
       <QuickNav />
@@ -48,15 +111,57 @@ const LoginPage = () => {
       <h1>Login Page</h1>
       <br />
 
-      <label>Email</label>
-      <input
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={submitted}
-      ></input>
-      <button onClick={() => signup()} disabled={submitted}>
-        Login
-      </button>
+      <Space direction="vertical">
+        <label>Email</label>
+        <input
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={submitted}
+        ></input>
+        <button onClick={() => signupWithEmail()} disabled={submitted}>
+          Login
+        </button>
+      </Space>
+      <br />
+      <br />
+      <br />
+      <br />
+      <Space direction="vertical">
+        <label>Phone</label>
+        <div id={captchaContainer} />
+        {showPinProceed && (
+          <span>{`Check your phone ${phoneNumber} for sms code`}</span>
+        )}
+        {showPinProceed ? (
+          <input
+            value={phoneCode}
+            onChange={(e) => setPhoneCode(e.target.value)}
+            disabled={submitted}
+            placeholder=""
+          ></input>
+        ) : (
+          <input
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            disabled={submitted}
+            placeholder=""
+          ></input>
+        )}
+
+        {showPinProceed ? (
+          <>
+            <button onClick={verifyPhonePin} disabled={submitted}>
+              Verify
+            </button>
+            <span onClick={() => setShowPinProceed(false)}>reset</span>
+          </>
+        ) : (
+          <button onClick={signupWithPhone} disabled={submitted}>
+            Get Code
+          </button>
+        )}
+      </Space>
+
       <br />
       <span style={{ color: "red" }}>{errorMessage}</span>
 

@@ -34,6 +34,7 @@ import {
   useStyleConfigGlobal,
 } from "@/state/styleconfig.state";
 import {
+  PWA_PERMISSIONS_DIAGRAMS,
   PrivacySettingsExplaination,
   ThemeColorHex,
   defaultThemeColorHex,
@@ -55,6 +56,7 @@ import {
   permissionsKeyEnum,
   usePermissionsState,
 } from "@/state/permissions.state";
+import { useUserAgent } from "@oieduardorabelo/use-user-agent";
 
 const formLayout = "horizontal";
 
@@ -105,6 +107,7 @@ const ProfileSettingsPage = () => {
     useState(false);
   const [isClearPermissionModalOpen, setIsClearPermissionModalOpen] =
     useState(false);
+  const [isInstallAppModalOpen, setIsInstallAppModalOpen] = useState(false);
 
   const {
     allowedPermissions,
@@ -210,6 +213,28 @@ const ProfileSettingsPage = () => {
 
   const onFormLayoutChange = () => {
     setShowUpdate(true);
+  };
+  const details = useUserAgent();
+
+  const determinePermissionsDiagramToShow = () => {
+    // mobile safari
+    if (
+      details?.browser.name === "Safari" &&
+      details.device.type === "mobile"
+    ) {
+      return PWA_PERMISSIONS_DIAGRAMS.MOBILE_SAFARI_ALL_SITE_PERMISSIONS;
+    } else if (
+      details?.browser.name === "Chrome" &&
+      details.device.type === "mobile"
+    ) {
+      // mobile chrome
+      return PWA_PERMISSIONS_DIAGRAMS.MOBILE_CHROME_ALL_SITE_PERMISSIONS;
+    } else if (details?.device.type !== "mobile") {
+      // desktop
+      return PWA_PERMISSIONS_DIAGRAMS.DESKTOP_CHROME_ALL_SITE_PERMISSIONS;
+    } else {
+      return PWA_PERMISSIONS_DIAGRAMS.MOBILE_CHROME_ALL_SITE_PERMISSIONS;
+    }
   };
 
   const colorThemeItems: MenuProps["items"] = [
@@ -383,7 +408,7 @@ const ProfileSettingsPage = () => {
             >
               <i style={{ color: token.colorTextSecondary }}>{privacyTip}</i>
             </Form.Item>
-            <Form.Item name="divider" {...noLabelFieldProps}>
+            <Form.Item {...noLabelFieldProps}>
               <Divider />
               <h3>
                 <PP>App Permissions</PP>
@@ -487,10 +512,42 @@ const ProfileSettingsPage = () => {
                 </Space>
               </Form.Item>
             </Form.Item>
+            <Form.Item {...noLabelFieldProps}>
+              <Divider />
+              <h3>
+                <PP>Install App to Device</PP>
+              </h3>
+              <i style={{ color: token.colorTextSecondary }}>
+                <PP>
+                  Add Milkshake to your iOS/Android device home screen for a
+                  better experience.
+                </PP>
+              </i>
+              <Spacer />
+              <Form.Item name="requestPermissionsButton">
+                <Button
+                  onClick={() => setIsInstallAppModalOpen(true)}
+                  type="primary"
+                >
+                  <PP>Install App</PP>
+                </Button>
+              </Form.Item>
+            </Form.Item>
             <Form.Item name="divider" {...noLabelFieldProps}>
               <Divider />
-              {user && (
-                <i style={{ color: token.colorTextSecondary }}>{user.email}</i>
+              {user && user.email && (
+                <PP>
+                  <i style={{ color: token.colorTextSecondary }}>
+                    {user.email}
+                  </i>
+                </PP>
+              )}
+              {user && user.phone && (
+                <PP>
+                  <i style={{ color: token.colorTextSecondary }}>
+                    {user.phone}
+                  </i>
+                </PP>
               )}
             </Form.Item>
             <Form.Item name="logoutButton" {...noLabelFieldProps}>
@@ -520,6 +577,7 @@ const ProfileSettingsPage = () => {
                 <PP> Follow the GIF to enable or click "Request Again"</PP>
               </>
             }
+            diagram={determinePermissionsDiagramToShow()}
           />
           <RequestPermissionModal
             isOpen={isRequestCameraModalOpen}
@@ -541,6 +599,7 @@ const ProfileSettingsPage = () => {
                 <PP> Follow the GIF to enable or click "Request Again"</PP>
               </>
             }
+            diagram={determinePermissionsDiagramToShow()}
           />
           <RequestPermissionModal
             isOpen={isRequestMicrophoneModalOpen}
@@ -560,6 +619,7 @@ const ProfileSettingsPage = () => {
                 <PP> Follow the GIF to enable or click "Request Again"</PP>
               </>
             }
+            diagram={determinePermissionsDiagramToShow()}
           />
           <RequestPermissionModal
             isOpen={isClearPermissionModalOpen}
@@ -581,6 +641,29 @@ const ProfileSettingsPage = () => {
                 <PP> Follow the GIF instructions</PP>
               </>
             }
+            diagram={determinePermissionsDiagramToShow()}
+          />
+          <RequestPermissionModal
+            isOpen={isInstallAppModalOpen}
+            setOpen={setIsInstallAppModalOpen}
+            title={
+              <PP>
+                <h3>Install App on Device</h3>
+              </PP>
+            }
+            description={
+              <>
+                <PP>
+                  <i>
+                    Get Milkshake as an iOS/Android app by adding this web page
+                    to your home screen.
+                  </i>
+                </PP>
+                <Spacer height="20px" />
+                <PP> Follow the GIF instructions</PP>
+              </>
+            }
+            diagram={PWA_PERMISSIONS_DIAGRAMS.MOBILE_SAFARI_ADD_HOME_SCREEN}
           />
         </>
       </AppLayoutPadding>

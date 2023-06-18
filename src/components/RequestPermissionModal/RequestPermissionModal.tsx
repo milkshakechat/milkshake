@@ -12,6 +12,7 @@ interface RequestNotificationModalProps {
   title: React.ReactNode;
   description: React.ReactNode;
   requestPermissions?: () => void;
+  diagram: string;
 }
 const RequestPermissionModal = ({
   isOpen,
@@ -19,30 +20,10 @@ const RequestPermissionModal = ({
   title,
   description,
   requestPermissions,
+  diagram,
 }: RequestNotificationModalProps) => {
   const { screen } = useWindowSize();
-  const details = useUserAgent(); // default is `window.navigator.userAgent`
 
-  const determineDiagramToShow = () => {
-    // mobile safari
-    if (
-      details?.browser.name === "Safari" &&
-      details.device.type === "mobile"
-    ) {
-      return PWA_PERMISSIONS_DIAGRAMS.MOBILE_SAFARI_ALL_SITE_PERMISSIONS;
-    } else if (
-      details?.browser.name === "Chrome" &&
-      details.device.type === "mobile"
-    ) {
-      // mobile chrome
-      return PWA_PERMISSIONS_DIAGRAMS.MOBILE_CHROME_ALL_SITE_PERMISSIONS;
-    } else if (details?.device.type !== "mobile") {
-      // desktop
-      return PWA_PERMISSIONS_DIAGRAMS.DESKTOP_CHROME_ALL_SITE_PERMISSIONS;
-    } else {
-      return PWA_PERMISSIONS_DIAGRAMS.MOBILE_CHROME_ALL_SITE_PERMISSIONS;
-    }
-  };
   return (
     <Modal
       open={isOpen}
@@ -60,11 +41,7 @@ const RequestPermissionModal = ({
           gap: "20px",
         }}
       >
-        <Image
-          width="100%"
-          src={determineDiagramToShow()}
-          style={{ flex: 1 }}
-        />
+        <Image width="100%" src={diagram} style={{ flex: 1 }} preview={false} />
         <div
           style={{
             display: "flex",

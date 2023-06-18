@@ -1,3 +1,5 @@
+import { Spacer } from "@/components/AppLayout/AppLayout";
+import { Layout, theme } from "antd";
 import { useEffect, useState } from "react";
 
 type detectMobileAddressBarSettingsType = {
@@ -129,6 +131,32 @@ export function useWindowSize() {
   return windowSize;
 }
 
+export function useCheckStandaloneModePWA() {
+  const [isStandalone, setIsStandalone] = useState(false);
+
+  useEffect(() => {
+    const setPWAState = () => {
+      if (window.matchMedia("(display-mode: standalone)").matches) {
+        setIsStandalone(true);
+      } else if (window.navigator && (window.navigator as any).standalone) {
+        // iOS
+        setIsStandalone(true);
+      } else {
+        setIsStandalone(false);
+      }
+    };
+
+    setPWAState();
+    window.addEventListener("resize", setPWAState);
+
+    return () => {
+      window.removeEventListener("resize", setPWAState);
+    };
+  }, []);
+
+  return { isStandalone };
+}
+
 interface StickyAdaptiveMobileFooterProps {
   children: React.ReactNode;
   footer: React.ReactNode;
@@ -137,5 +165,74 @@ export const StickyAdaptiveMobileFooter = ({
   children,
   footer,
 }: StickyAdaptiveMobileFooterProps) => {
+  const { token } = theme.useToken();
   const { addressBarHeight } = detectMobileAddressBarSettings();
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        bottom: 0,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        width: "100%",
+        left: 0,
+      }}
+    >
+      <div
+        style={{
+          // eslint-disable-next-line no-restricted-globals
+          maxHeight: screen.availHeight - addressBarHeight,
+          // eslint-disable-next-line no-restricted-globals
+          height: screen.availHeight - addressBarHeight,
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          fontFamily: "sans-serif",
+          position: "relative",
+          width: "100%",
+          alignItems: "flex-start",
+          fontSize: "10px",
+        }}
+      >
+        <Layout
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            width: "100%",
+            overflowWrap: "break-word",
+            wordWrap: "break-word",
+            whiteSpace: "normal",
+            flex: 1,
+            overflowY: "scroll",
+            backgroundColor: token.colorBgContainer,
+            color: token.colorTextBase,
+          }}
+        >
+          {children}
+        </Layout>
+        <div
+          style={{
+            backdropFilter: "blur(10px)",
+            alignSelf: "stretch",
+            display: "flex",
+            boxSizing: "border-box",
+            alignItems: "center",
+            flex: "0 0 auto" /* This will make the div have a static height */,
+            flexShrink: 0,
+            flexDirection: "column",
+            zIndex: 10,
+            justifyContent: "flex-start",
+          }}
+        >
+          {footer}
+        </div>
+      </div>
+    </div>
+  );
 };

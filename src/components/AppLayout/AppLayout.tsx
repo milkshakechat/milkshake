@@ -7,12 +7,13 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import "./AppLayout.css";
 import { Avatar, Breadcrumb, Button, Layout, Menu, Space, theme } from "antd";
 import {
   useWindowSize,
   ScreenSize,
   detectMobileAddressBarSettings,
+  StickyAdaptiveMobileFooter,
+  useCheckStandaloneModePWA,
 } from "@/api/utils/screen";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import { shallow } from "zustand/shallow";
@@ -59,7 +60,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const intl = useIntl();
   const user = useUserState((state) => state.user);
   const [collapsed, setCollapsed] = useState(false);
-  const { addressBarHeight } = detectMobileAddressBarSettings();
   const { themeType, themeColor } = useStyleConfigGlobal(
     (state) => ({
       themeType: state.themeType,
@@ -68,6 +68,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     shallow
   );
   const { token } = theme.useToken();
+  const { isStandalone } = useCheckStandaloneModePWA();
 
   const newStoryText = intl.formatMessage({
     id: `new_story_sidebar.${cid}`,
@@ -247,19 +248,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     return []; // Return empty array if no match found
   }
 
-  console.log(`
-    
-  screen.availHeight - addressBarHeight
-  = ${
-    // eslint-disable-next-line no-restricted-globals
-    screen.availHeight
-  } - ${addressBarHeight}
-  = ${
-    // eslint-disable-next-line no-restricted-globals
-    screen.availHeight - addressBarHeight
-  }
+  // token.colorFill
 
-  `);
   if (windowScreen === ScreenSize.mobile) {
     return (
       <Layout
@@ -269,53 +259,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           height: "100vh",
         }}
       >
-        <div className="sticky-mobile-layout-wrapper">
-          <div
-            className="sticky-mobile-layout-calculated-height"
-            style={{
-              // eslint-disable-next-line no-restricted-globals
-              maxHeight: screen.availHeight - addressBarHeight,
-              // eslint-disable-next-line no-restricted-globals
-              height: screen.availHeight - addressBarHeight,
-              backdropFilter: "blur(10px)",
-              WebkitBackdropFilter: "blur(10px)",
-            }}
-          >
-            <Layout
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100%",
-                overflowWrap: "break-word",
-                wordWrap: "break-word",
-                whiteSpace: "normal",
-                flex: 1,
-                overflowY: "scroll",
-                backgroundColor: token.colorBgContainer,
-                color: token.colorTextBase,
-              }}
-            >
-              {`screen.availHeight = ${
-                // eslint-disable-next-line no-restricted-globals
-                screen.availHeight
-              }`}
-              <br />
-              {`addressBarHeight = ${addressBarHeight}`}
-              <br />
-              {`maxHeight = ${
-                // eslint-disable-next-line no-restricted-globals
-                screen.availHeight - addressBarHeight
-              }`}
-              {children}
-            </Layout>
-
-            <div
-              className="sticky-mobile-layout-footer"
-              style={{
-                backgroundColor: "rgba(0,0,0,0)",
-                backdropFilter: "blur(10px)",
-              }}
-            >
+        <StickyAdaptiveMobileFooter
+          footer={
+            <>
               <Footer
                 style={{
                   position: "sticky",
@@ -341,7 +287,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                     justifyContent: "center",
                     color: token.colorPrimaryText,
                     fontWeight: 500,
-                    backgroundColor: token.colorBgBase,
+                    backgroundColor: token.colorBgSpotlight,
                   }}
                 >
                   {itemsMobile.map((item) => {
@@ -350,7 +296,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                         <Menu.Item
                           key={item.key}
                           icon={item.icon}
-                          style={{ flex: 1, textAlign: "center" }}
+                          style={{
+                            flex: 1,
+                            textAlign: "center",
+                          }}
                         >
                           <NavLink
                             to={item.route}
@@ -367,9 +316,20 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                   })}
                 </Menu>
               </Footer>
-            </div>
-          </div>
-        </div>
+              {isStandalone && (
+                <Spacer
+                  height="20px"
+                  style={{
+                    minHeight: "20px",
+                    backgroundColor: token.colorBgSpotlight,
+                  }}
+                />
+              )}
+            </>
+          }
+        >
+          {children}
+        </StickyAdaptiveMobileFooter>
       </Layout>
     );
   }
@@ -499,9 +459,14 @@ export const AppLayoutPadding = ({
 interface SpacerProps {
   width?: number | string;
   height?: number | string;
+  style?: React.CSSProperties;
 }
-export const Spacer = ({ width = "100%", height = "30px" }: SpacerProps) => {
-  return <div style={{ flex: 1, width, height }} />;
+export const Spacer = ({
+  width = "100%",
+  height = "30px",
+  style,
+}: SpacerProps) => {
+  return <div style={{ flex: 1, width, height, ...style }} />;
 };
 
 interface LayoutInteriorHeaderProps {

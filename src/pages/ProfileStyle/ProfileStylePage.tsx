@@ -18,7 +18,7 @@ import {
   theme,
 } from "antd";
 import { useUserState } from "@/state/user.state";
-import useWindowSize, { ScreenSize } from "@/api/utils/screen";
+import { useWindowSize, ScreenSize } from "@/api/utils/screen";
 import { LeftOutlined, UserOutlined } from "@ant-design/icons";
 import { RcFile } from "antd/es/upload";
 import useStorage from "@/hooks/useStorage";

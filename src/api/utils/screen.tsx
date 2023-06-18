@@ -88,7 +88,7 @@ export enum ScreenSize {
   desktop = "desktop",
 }
 
-function useWindowSize() {
+export function useWindowSize() {
   // Initialize state with undefined width/height so server and client renders match
   // Learn more here: https://joshwcomeau.com/react/the-perils-of-rehydration/
   const [windowSize, setWindowSize] = useState<{
@@ -129,4 +129,13 @@ function useWindowSize() {
   return windowSize;
 }
 
-export default useWindowSize;
+interface StickyAdaptiveMobileFooterProps {
+  children: React.ReactNode;
+  footer: React.ReactNode;
+}
+export const StickyAdaptiveMobileFooter = ({
+  children,
+  footer,
+}: StickyAdaptiveMobileFooterProps) => {
+  const { addressBarHeight } = detectMobileAddressBarSettings();
+};

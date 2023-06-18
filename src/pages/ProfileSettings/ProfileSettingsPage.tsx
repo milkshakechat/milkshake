@@ -17,7 +17,7 @@ import {
   theme,
 } from "antd";
 import { LeftOutlined, DownOutlined } from "@ant-design/icons";
-import useWindowSize, { ScreenSize } from "@/api/utils/screen";
+import { useWindowSize, ScreenSize } from "@/api/utils/screen";
 import { useNavigate, NavLink } from "react-router-dom";
 import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import { useUserState } from "@/state/user.state";

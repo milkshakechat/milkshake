@@ -1,4 +1,4 @@
-import useWindowSize, { ScreenSize } from "@/api/utils/screen";
+import { ScreenSize, useWindowSize } from "@/api/utils/screen";
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import PP from "@/i18n/PlaceholderPrint";
 import { PWA_PERMISSIONS_DIAGRAMS } from "@milkshakechat/helpers";

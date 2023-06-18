@@ -27,12 +27,13 @@ const LoginPage = () => {
   const confirmationResultRef = useRef<ConfirmationResult>();
   const fullLogin = useFullLoginProcedure();
   const navigate = useNavigate();
+  const [recaptchaNonce, setRecaptchaNonce] = useState(1);
 
   const auth = getAuth();
   const captchaContainer = "recaptcha-container";
   useEffect(() => {
     captchaRef.current = new RecaptchaVerifier(captchaContainer, {}, auth);
-  }, []);
+  }, [recaptchaNonce]);
 
   const signupWithEmail = useCallback(() => {
     console.log("Signup!");
@@ -58,6 +59,7 @@ const LoginPage = () => {
         console.log(error);
         setErrorMessage(error.message);
         setSubmitted(false);
+        setRecaptchaNonce((nonce) => nonce + 1);
       });
   }, [email]);
 
@@ -74,6 +76,7 @@ const LoginPage = () => {
         })
         .catch((error) => {
           // Error; SMS not sent
+          setRecaptchaNonce((nonce) => nonce + 1);
           // ...
         });
     }
@@ -100,6 +103,7 @@ const LoginPage = () => {
         .catch((error) => {
           // User couldn't sign in (bad verification code?)
           // ...
+          setRecaptchaNonce((nonce) => nonce + 1);
         });
     }
   };

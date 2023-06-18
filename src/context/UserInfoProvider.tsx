@@ -1,4 +1,5 @@
 import { useProfile } from "@/hooks/useProfile";
+import useWebPermissions from "@/hooks/useWebPermissions";
 import { useUserState } from "@/state/user.state";
 import { useEffect } from "react";
 import { shallow } from "zustand/shallow";
@@ -13,6 +14,7 @@ export const UserInfoProvider = ({ children }: Props) => {
     errors: profileErrors,
     runQuery: getProfile,
   } = useProfile();
+  const { checkWebPermissions } = useWebPermissions({});
 
   const { idToken, refetchNonce } = useUserState(
     (state) => ({
@@ -21,6 +23,10 @@ export const UserInfoProvider = ({ children }: Props) => {
     }),
     shallow
   );
+
+  useEffect(() => {
+    checkWebPermissions();
+  }, []);
 
   useEffect(() => {
     getProfile();

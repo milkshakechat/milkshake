@@ -82,6 +82,7 @@ export const useFullLoginProcedure = () => {
       FIREBASE_AUTH_ACCESS_TOKEN_LOCALSTORAGE,
       accessToken
     );
+
     // save to global state
     setFirebaseUser({
       userID: user.uid as UserID,

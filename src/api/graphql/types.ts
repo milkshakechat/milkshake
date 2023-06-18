@@ -15,6 +15,7 @@ export type Scalars = {
   DateString: { input: any; output: any; }
   GroupChatID: { input: any; output: any; }
   HexColorCode: { input: any; output: any; }
+  PushToken: { input: any; output: any; }
   SendBirdInternalUserID: { input: any; output: any; }
   UserID: { input: any; output: any; }
 };
@@ -103,6 +104,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   demoMutation: DemoMutationResponse;
   modifyProfile: ModifyProfileResponse;
+  updatePushToken: UpdatePushTokenResponse;
 };
 
 
@@ -113,6 +115,11 @@ export type MutationDemoMutationArgs = {
 
 export type MutationModifyProfileArgs = {
   input: ModifyProfileInput;
+};
+
+
+export type MutationUpdatePushTokenArgs = {
+  input: UpdatePushTokenInput;
 };
 
 export type Ping = {
@@ -170,6 +177,19 @@ export enum StatusCode {
 export type Subscription = {
   __typename?: 'Subscription';
   demoSubscription: DemoSubscriptionEvent;
+};
+
+export type UpdatePushTokenInput = {
+  active: Scalars['Boolean']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
+  token: Scalars['PushToken']['input'];
+};
+
+export type UpdatePushTokenResponse = ResponseError | UpdatePushTokenResponseSuccess;
+
+export type UpdatePushTokenResponseSuccess = {
+  __typename?: 'UpdatePushTokenResponseSuccess';
+  status: Scalars['String']['output'];
 };
 
 export type User = {
@@ -233,3 +253,10 @@ export type ModifyProfileMutationVariables = Exact<{
 
 
 export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string, language: LanguageEnum, themeColor: any, privacyMode: PrivacyModeEnum } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type UpdatePushTokenMutationVariables = Exact<{
+  input: UpdatePushTokenInput;
+}>;
+
+
+export type UpdatePushTokenMutation = { __typename?: 'Mutation', updatePushToken: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpdatePushTokenResponseSuccess', status: string } };

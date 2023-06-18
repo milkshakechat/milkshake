@@ -9,8 +9,10 @@ import {
   Dropdown,
   Form,
   MenuProps,
+  Modal,
   Select,
   Space,
+  Switch,
   message,
   theme,
 } from "antd";
@@ -23,6 +25,7 @@ import { useEffect, useState } from "react";
 import { shallow } from "zustand/shallow";
 import type { Color } from "antd/es/color-picker";
 import { useIntl, FormattedDate } from "react-intl";
+import PP from "@/i18n/PlaceholderPrint";
 import {
   hexToThemeColorMap,
   themeColorEnum,
@@ -43,6 +46,15 @@ import { localeLabelText } from "@/i18n";
 import TemplateComponent from "@/components/TemplateComponent/TemplateComponent";
 import { cid } from "./i18n/types.i18n.ProfileSettingsPage";
 import useSharedTranslations from "@/i18n/useSharedTranslations";
+import useWebPermissions, {
+  useUpdatePushToken,
+} from "@/hooks/useWebPermissions";
+import RequestPermissionModal from "@/components/RequestPermissionModal/RequestPermissionModal";
+import { PUSH_TOKEN_LOCALSTORAGE } from "@/config.env";
+import {
+  permissionsKeyEnum,
+  usePermissionsState,
+} from "@/state/permissions.state";
 
 const formLayout = "horizontal";
 
@@ -68,11 +80,45 @@ const ProfileSettingsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { screen } = useWindowSize();
   const {
+    data: updatePushTokenData,
+    errors: updatePushTokenErrors,
+    runMutation: updatePushTokenMutation,
+  } = useUpdatePushToken();
+  const {
     backButtonText,
     updateButtonText,
     translatePrivacyModeEnum,
     translatePrivacyModeEnumHelpTip,
   } = useSharedTranslations();
+  const { setPermission } = usePermissionsState(
+    (state) => ({
+      setPermission: state.setPermission,
+    }),
+    shallow
+  );
+
+  const [isRequestNotificationModalOpen, setIsRequestNotificationModalOpen] =
+    useState(false);
+  const [isRequestCameraModalOpen, setIsRequestCameraModalOpen] =
+    useState(false);
+  const [isRequestMicrophoneModalOpen, setIsRequestMicrophoneModalOpen] =
+    useState(false);
+  const [isClearPermissionModalOpen, setIsClearPermissionModalOpen] =
+    useState(false);
+
+  const {
+    allowedPermissions,
+    requestPushPermission,
+    requestCameraAccess,
+    requestMicrophoneAccess,
+  } = useWebPermissions({
+    closeModal: () => {
+      setIsRequestNotificationModalOpen(false);
+      setIsRequestCameraModalOpen(false);
+      setIsRequestMicrophoneModalOpen(false);
+      setIsClearPermissionModalOpen(false);
+    },
+  });
 
   const noLabelFieldProps =
     screen === ScreenSize.mobile
@@ -98,7 +144,6 @@ const ProfileSettingsPage = () => {
     id: `privacyLabel.${cid}`,
     defaultMessage: "Privacy",
   });
-
   const logoutText = intl.formatMessage({
     id: `logout.${cid}`,
     defaultMessage: "Log Out",
@@ -227,6 +272,10 @@ const ProfileSettingsPage = () => {
     message.success("Settings updated!");
   };
 
+  const localStoragePushToken = window.localStorage.getItem(
+    PUSH_TOKEN_LOCALSTORAGE
+  );
+
   return (
     <>
       <LayoutInteriorHeader
@@ -336,6 +385,113 @@ const ProfileSettingsPage = () => {
             </Form.Item>
             <Form.Item name="divider" {...noLabelFieldProps}>
               <Divider />
+              <h3>
+                <PP>App Permissions</PP>
+              </h3>
+              <i style={{ color: token.colorTextSecondary }}>
+                <PP>
+                  Click button to request permissions such as notifications,
+                  camera & microphone
+                </PP>
+              </i>
+              <Spacer />
+              <Form.Item name="requestPermissionsButton">
+                <Space direction="vertical">
+                  <Space direction="horizontal">
+                    <Switch
+                      checkedChildren={<PP>ON</PP>}
+                      unCheckedChildren={<PP>OFF</PP>}
+                      checked={allowedPermissions.notifications}
+                      onChange={(e) => {
+                        if (e) {
+                          setIsRequestNotificationModalOpen(true);
+                          requestPushPermission();
+                        } else {
+                          setIsClearPermissionModalOpen(true);
+                        }
+                      }}
+                    />
+                    <PP>{`Enable push notifications (recommended)`}</PP>
+                    {localStoragePushToken ? (
+                      <Button
+                        onClick={async () => {
+                          console.log(`Revoking permissions...`);
+                          const cachedPushToken = window.localStorage.getItem(
+                            PUSH_TOKEN_LOCALSTORAGE
+                          );
+                          if (cachedPushToken) {
+                            await updatePushTokenMutation({
+                              token: cachedPushToken,
+                              active: false,
+                            });
+                            window.localStorage.removeItem(
+                              PUSH_TOKEN_LOCALSTORAGE
+                            );
+                            await setPermission({
+                              key: permissionsKeyEnum.notifications,
+                              value: false,
+                            });
+                            message.info(
+                              `Successfully revoked push notification permissions`
+                            );
+                          }
+                        }}
+                        type="link"
+                      >
+                        <PP>Revoke</PP>
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={async () => {
+                          setIsRequestNotificationModalOpen(true);
+                          requestPushPermission();
+                        }}
+                        type="link"
+                      >
+                        <PP>Enable</PP>
+                      </Button>
+                    )}
+                  </Space>
+                  <Space direction="horizontal">
+                    <Switch
+                      checkedChildren={<PP>ON</PP>}
+                      unCheckedChildren={<PP>OFF</PP>}
+                      checked={allowedPermissions.camera}
+                      onChange={(e) => {
+                        if (e) {
+                          setIsRequestCameraModalOpen(true);
+                          requestCameraAccess();
+                        } else {
+                          setIsClearPermissionModalOpen(true);
+                        }
+                      }}
+                    />
+                    <PP>{`Enable camera`}</PP>
+                  </Space>
+                  <Space direction="horizontal">
+                    <Switch
+                      checkedChildren={<PP>ON</PP>}
+                      unCheckedChildren={<PP>OFF</PP>}
+                      checked={allowedPermissions.microphone}
+                      onChange={(e) => {
+                        if (e) {
+                          setIsRequestMicrophoneModalOpen(true);
+                          requestMicrophoneAccess();
+                        } else {
+                          setIsClearPermissionModalOpen(true);
+                        }
+                      }}
+                    />
+                    <PP>{`Enable Microphone`}</PP>
+                  </Space>
+                </Space>
+              </Form.Item>
+            </Form.Item>
+            <Form.Item name="divider" {...noLabelFieldProps}>
+              <Divider />
+              {user && (
+                <i style={{ color: token.colorTextSecondary }}>{user.email}</i>
+              )}
             </Form.Item>
             <Form.Item name="logoutButton" {...noLabelFieldProps}>
               <NavLink to="/app/logout">
@@ -343,6 +499,89 @@ const ProfileSettingsPage = () => {
               </NavLink>
             </Form.Item>
           </Form>
+          <RequestPermissionModal
+            isOpen={isRequestNotificationModalOpen}
+            setOpen={setIsRequestNotificationModalOpen}
+            requestPermissions={requestPushPermission}
+            title={
+              <PP>
+                <h3>Enable Notifications</h3>
+              </PP>
+            }
+            description={
+              <>
+                <PP>
+                  <i>
+                    Get notified when you receive a message offline
+                    (Recommended)
+                  </i>
+                </PP>
+                <Spacer height="20px" />
+                <PP> Follow the GIF to enable or click "Request Again"</PP>
+              </>
+            }
+          />
+          <RequestPermissionModal
+            isOpen={isRequestCameraModalOpen}
+            setOpen={setIsRequestCameraModalOpen}
+            requestPermissions={requestCameraAccess}
+            title={
+              <PP>
+                <h3>Allow Camera</h3>
+              </PP>
+            }
+            description={
+              <>
+                <PP>
+                  <i>
+                    Allow camera to take photos and videos to share with friends
+                  </i>
+                </PP>
+                <Spacer height="20px" />
+                <PP> Follow the GIF to enable or click "Request Again"</PP>
+              </>
+            }
+          />
+          <RequestPermissionModal
+            isOpen={isRequestMicrophoneModalOpen}
+            setOpen={setIsRequestMicrophoneModalOpen}
+            requestPermissions={requestMicrophoneAccess}
+            title={
+              <PP>
+                <h3>Allow Microphone</h3>
+              </PP>
+            }
+            description={
+              <>
+                <PP>
+                  <i>Allow microphone to send voice messages in chat</i>
+                </PP>
+                <Spacer height="20px" />
+                <PP> Follow the GIF to enable or click "Request Again"</PP>
+              </>
+            }
+          />
+          <RequestPermissionModal
+            isOpen={isClearPermissionModalOpen}
+            setOpen={setIsClearPermissionModalOpen}
+            title={
+              <PP>
+                <h3>Revoke Permissions</h3>
+              </PP>
+            }
+            description={
+              <>
+                <PP>
+                  <i>
+                    Manually revoke permissions using the site settings in your
+                    browser
+                  </i>
+                </PP>
+                <Spacer height="20px" />
+                <PP> Follow the GIF instructions</PP>
+              </>
+            }
+          />
         </>
       </AppLayoutPadding>
     </>

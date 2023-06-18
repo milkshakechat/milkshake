@@ -5,6 +5,7 @@ export const FIREBASE_AUTH_REFRESH_TOKEN_LOCALSTORAGE =
 export const FIREBASE_AUTH_ACCESS_TOKEN_LOCALSTORAGE =
   "FIREBASE_AUTH_ACCESS_TOKEN_LOCALSTORAGE";
 export const THEME_COLOR_LOCALSTORAGE = "THEME_COLOR_LOCALSTORAGE";
+export const PUSH_TOKEN_LOCALSTORAGE = "PUSH_TOKEN_LOCALSTORAGE";
 
 const devConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER: "ws://localhost:8080/graphql",
@@ -19,6 +20,10 @@ const devConfig: ConfigEnv = {
     messagingSenderId: "642004369083",
     appId: "1:642004369083:web:74b7c685be091ce6b4f39e",
     measurementId: "G-N0YXCSQJ89",
+  },
+  PUSH: {
+    VAPID_PUBLIC_KEY:
+      "BP5PCqDnEwC2rYGgOYraoMbetIzJe9MmjXGVys3p1rwmtucQA3IuqdINXcGqtrN8NKgavAADRZHc9mzjlRA7q7g",
   },
 };
 const stagingConfig: ConfigEnv = {
@@ -36,6 +41,10 @@ const stagingConfig: ConfigEnv = {
     appId: "1:642004369083:web:74b7c685be091ce6b4f39e",
     measurementId: "G-N0YXCSQJ89",
   },
+  PUSH: {
+    VAPID_PUBLIC_KEY:
+      "BP5PCqDnEwC2rYGgOYraoMbetIzJe9MmjXGVys3p1rwmtucQA3IuqdINXcGqtrN8NKgavAADRZHc9mzjlRA7q7g",
+  },
 };
 const prodConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
@@ -52,6 +61,10 @@ const prodConfig: ConfigEnv = {
     appId: "1:642004369083:web:74b7c685be091ce6b4f39e",
     measurementId: "G-N0YXCSQJ89",
   },
+  PUSH: {
+    VAPID_PUBLIC_KEY:
+      "BP5PCqDnEwC2rYGgOYraoMbetIzJe9MmjXGVys3p1rwmtucQA3IuqdINXcGqtrN8NKgavAADRZHc9mzjlRA7q7g",
+  },
 };
 
 interface ConfigEnv {
@@ -67,6 +80,9 @@ interface ConfigEnv {
     messagingSenderId: string;
     appId: string;
     measurementId: string;
+  };
+  PUSH: {
+    VAPID_PUBLIC_KEY: string;
   };
 }
 

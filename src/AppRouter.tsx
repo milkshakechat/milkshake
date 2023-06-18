@@ -1,7 +1,7 @@
 import { BrowserRouter, useLocation, Routes, Route } from "react-router-dom";
 import { shallow } from "zustand/shallow";
 import Page404 from "@/pages/404";
-import PublicUserProfilePage from "@/pages/PublicUserProfile/PublicUserProfilePage";
+import UsernamePage from "@/pages/UsernamePage/UsernamePage";
 import HomePage from "@/pages/Home/HomePage";
 import SettingsPage from "@/pages/Settings/SettingsPage";
 import SignUpPage from "@/pages/SignUp/SignUpPage";
@@ -15,7 +15,7 @@ import {
   MessageFormatElement,
 } from "react-intl";
 import {
-  AuthProvider,
+  AuthProtectProvider,
   AuthProtect,
 } from "@/components/AuthProtect/AuthProtect";
 import { GraphqlClientProvider } from "@/context/GraphQLSocketProvider";
@@ -96,25 +96,24 @@ const AppRouter = () => {
                 classNames="fade"
                 timeout={300}
               >
-                <Routes>
-                  <Route path="/" element={<HomePage />} index />
-                  <Route
-                    path="/:username"
-                    element={<PublicUserProfilePage />}
-                  />
-                  <Route path="/app" element={<div>app</div>}></Route>
-                  <Route path="/app" errorElement={<Page404 />}>
-                    {/* Public Routes */}
-                    <Route path="welcome" element={<div>welcome</div>} />
-                    <Route path="login" element={<LoginPage />} />
-                    <Route path="logout" element={<LogOutPage />} />
-                    <Route path="signup" element={<SignUpPage />} />
-                    <Route
-                      path="signup/verify"
-                      element={<SignUpVerifyPage />}
-                    />
-                  </Route>
-                </Routes>
+                <AuthProtectProvider>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} index />
+                    <Route path="/:username" element={<UsernamePage />} />
+                    <Route path="/app" element={<div>app</div>}></Route>
+                    <Route path="/app" errorElement={<Page404 />}>
+                      {/* Public Routes */}
+                      <Route path="welcome" element={<div>welcome</div>} />
+                      <Route path="login" element={<LoginPage />} />
+                      <Route path="logout" element={<LogOutPage />} />
+                      <Route path="signup" element={<SignUpPage />} />
+                      <Route
+                        path="signup/verify"
+                        element={<SignUpVerifyPage />}
+                      />
+                    </Route>
+                  </Routes>
+                </AuthProtectProvider>
               </CSSTransition>
             </TransitionGroup>
 
@@ -126,7 +125,7 @@ const AppRouter = () => {
               >
                 {/* Private Routes */}
 
-                <AuthProvider>
+                <AuthProtectProvider>
                   <SendBirdServiceProvider>
                     <UserInfoProvider>
                       <Routes>
@@ -205,7 +204,7 @@ const AppRouter = () => {
                       </Routes>
                     </UserInfoProvider>
                   </SendBirdServiceProvider>
-                </AuthProvider>
+                </AuthProtectProvider>
               </CSSTransition>
             </TransitionGroup>
           </BrowserRouter>

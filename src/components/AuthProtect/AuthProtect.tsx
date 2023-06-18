@@ -14,7 +14,11 @@ const AuthContext = React.createContext<{ token: string | null }>({
   token: null,
 });
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProtectProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const idToken = useUserState((state) => state.idToken);
   const value = {
     token:
@@ -45,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-const useAuth = () => {
+export const useAuthProtect = () => {
   return React.useContext(AuthContext);
 };
 
@@ -55,7 +59,7 @@ interface AuthProtectProps {
 export const AuthProtect = ({
   children,
 }: AuthProtectProps): React.ReactElement => {
-  const { token } = useAuth();
+  const { token } = useAuthProtect();
   const location = useLocation();
 
   if (!token) {

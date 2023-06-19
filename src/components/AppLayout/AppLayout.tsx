@@ -132,7 +132,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <BellOutlined style={{ fontSize: "1rem" }} />
     ),
     getItem(
-      accountText,
+      <NavLink to="/app/profile">{accountText}</NavLink>,
       "account",
       "/app",
       <UserOutlined style={{ fontSize: "1rem" }} />,
@@ -453,20 +453,20 @@ interface AppLayoutPaddingProps {
   align: "center" | "flex-start" | "flex-end";
   children: React.ReactElement;
   paddings?: {
-    mobile: string;
-    desktop: string;
+    mobile?: string;
+    desktop?: string;
   };
   maxWidths?: {
-    mobile: string;
-    desktop: string;
+    mobile?: string;
+    desktop?: string;
   };
 }
 export const AppLayoutPadding = ({
   align = "center",
   children,
   paddings = {
-    mobile: "10px",
-    desktop: "20px",
+    mobile: "30px 15px",
+    desktop: "50px 20px",
   },
   maxWidths = {
     mobile: "100%",
@@ -565,5 +565,66 @@ export const LayoutInteriorHeader = ({
 
       {rightAction ? rightAction : null}
     </Layout.Header>
+  );
+};
+
+interface LayoutLogoHeaderProps {
+  rightAction?: React.ReactNode;
+  paddings?: {
+    mobile: string;
+    desktop: string;
+  };
+  maxWidths?: {
+    mobile: string;
+    desktop: string;
+  };
+}
+export const LayoutLogoHeader = ({
+  rightAction,
+  paddings = {
+    mobile: "30px 15px",
+    desktop: "50px 20px",
+  },
+  maxWidths = {
+    mobile: "100%",
+    desktop: "800px",
+  },
+}: LayoutLogoHeaderProps) => {
+  const { token } = theme.useToken();
+  const { screen, isMobile } = useWindowSize();
+  const navigate = useNavigate();
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        padding:
+          screen === ScreenSize.mobile ? "0px 20px 0px 0px" : "10px 20px",
+        backgroundColor: token.colorBgElevated,
+        zIndex: 1,
+        height: isMobile ? "50px" : "auto",
+        minHeight: isMobile ? "50px" : "auto",
+        overflow: "auto",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          padding: isMobile ? paddings.mobile : paddings.desktop,
+          flex: 1,
+        }}
+      >
+        <LogoText
+          fill={token.colorPrimaryText}
+          width={isMobile ? "150px" : "200px"}
+        />
+      </div>
+      <div>{rightAction ? rightAction : null}</div>
+    </div>
   );
 };

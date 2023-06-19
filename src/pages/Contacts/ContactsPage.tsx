@@ -16,7 +16,7 @@ import {
   useSendFriendRequest,
   useViewPublicProfile,
 } from "@/hooks/useFriendship";
-import { QrcodeOutlined } from "@ant-design/icons";
+import { SearchOutlined } from "@ant-design/icons";
 import { useListContacts } from "@/hooks/useProfile";
 import {
   useDemoMutation,
@@ -661,9 +661,9 @@ export const ContactsPage = () => {
           <Button
             onClick={() => setShowAddContactModal(true)}
             type="primary"
-            icon={<QrcodeOutlined />}
+            icon={<SearchOutlined />}
           >
-            Add
+            Search
           </Button>
         }
       />
@@ -1126,7 +1126,7 @@ export const ContactsPage = () => {
             style={{ justifyContent: "space-between", width: "100%" }}
           >
             <Button onClick={() => setShowAddContactModal(false)} type="ghost">
-              Cancel
+              Close
             </Button>
             <Button
               onClick={() => {
@@ -1202,13 +1202,12 @@ export const ContactsPage = () => {
                     backgroundColor: token.colorSuccessBg,
                     color: token.colorSuccessText,
                     fontWeight: 700,
-                    whiteSpace: "nowrap",
-                    textOverflow: "ellipsis",
-                    overflow: "hidden",
+                    wordBreak: "break-all",
                   }}
                 >
                   <PP>
-                    {user && `🔒${window.location.host}/${user.username}`}
+                    {user &&
+                      `🔒${"\u00A0"}${window.location.host}/${user.username}`}
                   </PP>
                 </div>
               </$Vertical>

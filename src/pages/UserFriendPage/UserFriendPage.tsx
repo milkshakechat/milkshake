@@ -1,6 +1,9 @@
 import { ErrorLines } from "@/api/graphql/error-line";
 import { useWindowSize } from "@/api/utils/screen";
-import AppLayout, { AppLayoutPadding } from "@/components/AppLayout/AppLayout";
+import AppLayout, {
+  AppLayoutPadding,
+  LayoutLogoHeader,
+} from "@/components/AppLayout/AppLayout";
 import {
   useSendFriendRequest,
   useViewPublicProfile,
@@ -13,27 +16,52 @@ import {
   useDemoSubscription,
 } from "@/pages/UserFriendPage/useTemplate.graphql";
 import { useUserState } from "@/state/user.state";
-import { Avatar, Button, Input, Spin, message, theme } from "antd";
+import {
+  Avatar,
+  Button,
+  Dropdown,
+  Input,
+  Spin,
+  Tabs,
+  message,
+  theme,
+} from "antd";
 import {
   NavLink,
+  createSearchParams,
+  useLocation,
   useNavigate,
   useParams,
   useSearchParams,
 } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { SettingFilled, SearchOutlined } from "@ant-design/icons";
 import {
   Friendship_Firestore,
   UserID,
   User_Firestore,
+  Username,
 } from "@milkshakechat/helpers";
 import { FriendshipStatus } from "@/api/graphql/types";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
+import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
+import AboutSection from "@/components/UserPageSkeleton/AboutSection/AboutSection";
 
+enum viewModes {
+  timeline = "timeline",
+  wishlist = "wishlist",
+}
 export const UserFriendPage = () => {
   const { username: usernameFromUrl } = useParams();
   const [searchParams] = useSearchParams();
   const userID = searchParams.get("userID");
+  const view = searchParams.get("view");
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isMobile } = useWindowSize();
+  console.log(`view changed to = ${view}`);
+  const viewMode =
+    viewModes[view as keyof typeof viewModes] || viewModes.timeline;
   const user = useUserState((state) => state.user);
   const [friendRequestNote, setFriendRequestNote] = useState("");
   const [isPending, setIsPending] = useState(false);
@@ -80,59 +108,167 @@ export const UserFriendPage = () => {
         }
       }
       setIsPending(false);
+      message.success(`Friend Request Sent`);
     }
+  };
+
+  const TabFolders = [
+    {
+      key: "timeline",
+      title: "Timeline",
+      children: (
+        <TimelineGallery
+          media={[
+            { title: "Pinned", count: 2 },
+            { title: "1 day ago", count: 3 },
+            { title: "7 days ago", count: 4 },
+          ]}
+        />
+      ),
+    },
+    {
+      key: "wishlist",
+      title: "Wishlist",
+      children: (
+        <TimelineGallery
+          media={[
+            { title: "Favorites", count: 1 },
+            { title: "#hobby", count: 2 },
+            { title: "#savings", count: 4 },
+          ]}
+        />
+      ),
+    },
+  ];
+
+  const mainActionButton = () => {
+    return (
+      <div>
+        <Dropdown.Button
+          loading={isPending}
+          onClick={handleSendFriendRequest}
+          disabled={recentlySentRequest}
+          size={isMobile ? "small" : "middle"}
+          type="primary"
+          menu={{
+            items: [
+              {
+                key: "share-friend",
+                label: (
+                  <Button
+                    onClick={() => console.log(`Share friend`)}
+                    type="ghost"
+                  >
+                    Share
+                  </Button>
+                ),
+              },
+              {
+                key: "remove-friend",
+                label: (
+                  <Button
+                    onClick={() => console.log(`Remove friend`)}
+                    type="ghost"
+                  >
+                    Remove
+                  </Button>
+                ),
+              },
+              {
+                key: "block-friend",
+                label: (
+                  <Button
+                    onClick={() => console.log(`Block friend`)}
+                    type="ghost"
+                  >
+                    Block
+                  </Button>
+                ),
+              },
+            ],
+          }}
+        >
+          Add Friend
+        </Dropdown.Button>
+      </div>
+    );
   };
 
   return (
     <AppLayout>
-      <AppLayoutPadding align="center">
-        {isInitialLoading ? (
-          <Spin />
-        ) : spotlightUser ? (
-          <div>
-            <$Horizontal spacing={3}>
-              <Avatar
-                src={spotlightUser.avatar}
-                style={{ backgroundColor: token.colorPrimaryText }}
-                size="large"
-              />
-              <$Vertical
-                style={{
-                  whiteSpace: "nowrap",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                <PP>
-                  <b>{spotlightUser.displayName || spotlightUser.username}</b>
-                </PP>
-                <PP>
-                  <i>{`@${spotlightUser.username}`}</i>
-                </PP>
-              </$Vertical>
-            </$Horizontal>
-            <br />
-            <Input.TextArea
-              value={friendRequestNote}
-              onChange={(e) => setFriendRequestNote(e.target.value)}
-            />
-            <Button
-              type="primary"
-              loading={isPending}
-              onClick={handleSendFriendRequest}
-              disabled={recentlySentRequest}
-            >
-              <PP>Add Friend</PP>
-            </Button>
-            <br />
-            <PP>{`You are ${user?.username}`}</PP>
-          </div>
-        ) : (
-          <div>
-            <h1>No User Found</h1>
-            <span>{`@${usernameFromUrl}`}</span>
-          </div>
+      <>
+        {isMobile && (
+          <LayoutLogoHeader
+            rightAction={
+              <NavLink to="/app/friends">
+                <SearchOutlined
+                  style={{ color: token.colorBgSpotlight, fontSize: "1.3rem" }}
+                />
+              </NavLink>
+            }
+          />
         )}
-      </AppLayoutPadding>
+        <AppLayoutPadding
+          paddings={{
+            mobile: "15px 15px",
+            desktop: "50px 15px",
+          }}
+          align="center"
+        >
+          {isInitialLoading ? (
+            <Spin />
+          ) : spotlightUser ? (
+            <div>
+              <AboutSection
+                user={{
+                  id: spotlightUser.id,
+                  avatar: spotlightUser.avatar || "",
+                  displayName:
+                    spotlightUser.displayName || spotlightUser.username,
+                  username: spotlightUser.username as Username,
+                }}
+                glowColor={token.colorPrimaryText}
+                actionButton={mainActionButton()}
+              />
+              <Tabs
+                defaultActiveKey={
+                  viewMode && viewMode === viewModes.timeline
+                    ? viewModes.timeline
+                    : viewMode === viewModes.wishlist
+                    ? viewModes.wishlist
+                    : viewModes.timeline
+                }
+                items={TabFolders.map(({ title, key, children }) => {
+                  return {
+                    label: (
+                      <PP>
+                        {" "}
+                        <span style={{ fontSize: "1.2rem" }}>{title}</span>
+                      </PP>
+                    ),
+                    key,
+                    children,
+                  };
+                })}
+                onChange={(view) => {
+                  console.log(`Changing view... ${view}`);
+                  navigate({
+                    pathname: location.pathname,
+                    search: createSearchParams({
+                      view,
+                    }).toString(),
+                  });
+                }}
+              />
+            </div>
+          ) : (
+            <div>
+              <h1>No User Found</h1>
+              <span>{`@${usernameFromUrl}`}</span>
+            </div>
+          )}
+        </AppLayoutPadding>
+      </>
     </AppLayout>
   );
 };

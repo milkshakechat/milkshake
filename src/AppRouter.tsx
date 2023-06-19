@@ -40,6 +40,7 @@ import { THEME_COLOR_LOCALSTORAGE } from "@/config.env";
 import { ThemeColorHex, localeEnum } from "@milkshakechat/helpers";
 import { localeEnumToFormatJSLocale } from "@/i18n";
 import COMPILED_LANGUAGE_MAPPINGS from "@/i18n/output/i18n.output.messages";
+import ContactsPage from "@/pages/Contacts/ContactsPage";
 
 const AppRouter = () => {
   const {
@@ -154,6 +155,16 @@ const AppRouter = () => {
                               <AuthProtect>
                                 <AppLayout>
                                   <ProfilePage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="friends"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <ContactsPage />
                                 </AppLayout>
                               </AuthProtect>
                             }

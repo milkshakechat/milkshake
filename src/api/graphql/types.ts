@@ -31,6 +31,15 @@ export type CheckUsernameAvailableResponseSuccess = {
   isAvailable: Scalars['Boolean']['output'];
 };
 
+export type Contact = {
+  __typename?: 'Contact';
+  avatar?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  friendID: Scalars['UserID']['output'];
+  status?: Maybe<FriendshipStatus>;
+  username?: Maybe<Scalars['String']['output']>;
+};
+
 export type DemoMutatedItem = {
   __typename?: 'DemoMutatedItem';
   id: Scalars['ID']['output'];
@@ -68,8 +77,9 @@ export enum FriendshipStatus {
   Accepted = 'ACCEPTED',
   Blocked = 'BLOCKED',
   Declined = 'DECLINED',
+  GotRequest = 'GOT_REQUEST',
   None = 'NONE',
-  Requested = 'REQUESTED'
+  SentRequest = 'SENT_REQUEST'
 }
 
 export type GetMyProfileResponse = GetMyProfileResponseSuccess | ResponseError;
@@ -89,6 +99,14 @@ export enum LanguageEnum {
   Thai = 'thai',
   Vietnamese = 'vietnamese'
 }
+
+export type ListContactsResponse = ListContactsResponseSuccess | ResponseError;
+
+export type ListContactsResponseSuccess = {
+  __typename?: 'ListContactsResponseSuccess';
+  contacts: Array<Contact>;
+  globalDirectory: Array<Contact>;
+};
 
 export type ModifyProfileInput = {
   avatar?: InputMaybe<Scalars['String']['input']>;
@@ -153,6 +171,7 @@ export type Query = {
   demoPing: Ping;
   demoQuery: DemoQueryResponse;
   getMyProfile: GetMyProfileResponse;
+  listContacts: ListContactsResponse;
   ping: Ping;
   viewPublicProfile: ViewPublicProfileResponse;
 };
@@ -264,6 +283,13 @@ export type SendFriendRequestMutationVariables = Exact<{
 
 export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'SendFriendRequestResponseSuccess', status: FriendshipStatus } };
 
+export type ViewPublicProfileQueryVariables = Exact<{
+  input: ViewPublicProfileInput;
+}>;
+
+
+export type ViewPublicProfileQuery = { __typename?: 'Query', viewPublicProfile: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'ViewPublicProfileResponseSuccess', id: any, username: string, avatar?: string | null } };
+
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -282,6 +308,11 @@ export type ModifyProfileMutationVariables = Exact<{
 
 
 export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string, language: LanguageEnum, themeColor: any, privacyMode: PrivacyModeEnum } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type ListContactsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListContactsQuery = { __typename?: 'Query', listContacts: { __typename: 'ListContactsResponseSuccess', contacts: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }>, globalDirectory: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type DemoQueryQueryVariables = Exact<{
   input: DemoQueryInput;

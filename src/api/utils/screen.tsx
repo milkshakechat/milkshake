@@ -128,7 +128,10 @@ export function useWindowSize() {
     }
     return ScreenSize.desktop;
   };
-  return windowSize;
+  return {
+    ...windowSize,
+    isMobile: windowSize.screen === ScreenSize.mobile,
+  };
 }
 
 export function useCheckStandaloneModePWA() {

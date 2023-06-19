@@ -10,9 +10,11 @@ import {
   GetMyProfileQuery,
   GetMyProfileResponse,
   GetMyProfileResponseSuccess,
+  ListContactsResponseSuccess,
   ModifyProfileInput,
   ModifyProfileResponseSuccess,
   Mutation,
+  Query,
 } from "@/api/graphql/types";
 import { useUserState } from "@/state/user.state";
 import { Observable, FetchResult } from "@apollo/client/core";
@@ -224,4 +226,70 @@ export const useUpdateProfile = () => {
   };
 
   return { data, errors, runMutation };
+};
+
+export const useListContacts = () => {
+  const [data, setData] = useState<ListContactsResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const runQuery = async () => {
+    try {
+      const LIST_CONTACTS = gql`
+        query ListContacts {
+          listContacts {
+            __typename
+            ... on ListContactsResponseSuccess {
+              contacts {
+                friendID
+                username
+                displayName
+                avatar
+                status
+              }
+              globalDirectory {
+                friendID
+                username
+                displayName
+                avatar
+                status
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<ListContactsResponseSuccess>(
+        async (resolve, reject) => {
+          client
+            .query<Pick<Query, "listContacts">>({
+              query: LIST_CONTACTS,
+            })
+            .then(({ data }) => {
+              console.log(`data.listContacts GQL`, data.listContacts);
+              if (
+                data.listContacts.__typename === "ListContactsResponseSuccess"
+              ) {
+                resolve(data.listContacts);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runQuery };
 };

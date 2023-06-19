@@ -106,6 +106,7 @@ export const useViewPublicProfile = (): {
               id
               username
               avatar
+              displayName
             }
             ... on ResponseError {
               error {

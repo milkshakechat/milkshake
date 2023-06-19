@@ -13,8 +13,13 @@ import {
   useDemoSubscription,
 } from "@/pages/UserFriendPage/useTemplate.graphql";
 import { useUserState } from "@/state/user.state";
-import { Button, Input, Spin, message } from "antd";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { Avatar, Button, Input, Spin, message, theme } from "antd";
+import {
+  NavLink,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Friendship_Firestore,
@@ -22,9 +27,12 @@ import {
   User_Firestore,
 } from "@milkshakechat/helpers";
 import { FriendshipStatus } from "@/api/graphql/types";
+import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 
 export const UserFriendPage = () => {
   const { username: usernameFromUrl } = useParams();
+  const [searchParams] = useSearchParams();
+  const userID = searchParams.get("userID");
   const navigate = useNavigate();
   const user = useUserState((state) => state.user);
   const [friendRequestNote, setFriendRequestNote] = useState("");
@@ -47,13 +55,14 @@ export const UserFriendPage = () => {
     if (usernameFromUrl) {
       const run = async () => {
         // query for the user
-        await getSpotlightUser({ username: usernameFromUrl });
+        await getSpotlightUser({ username: usernameFromUrl, userID });
         setIsInitialLoading(false);
       };
       run();
       // query for the friendship
     }
-  }, [usernameFromUrl]);
+  }, [usernameFromUrl, userID]);
+  const { token } = theme.useToken();
 
   const handleSendFriendRequest = async () => {
     console.log(`handleSendFriendRequest...`);
@@ -81,12 +90,26 @@ export const UserFriendPage = () => {
           <Spin />
         ) : spotlightUser ? (
           <div>
-            <h2>
-              <code>{`User Friend Page`}</code>
-            </h2>
-            <h3>{spotlightUser && `@${spotlightUser.username}`}</h3>
-            <br />
-            <span>{spotlightUser && spotlightUser.id}</span>
+            <$Horizontal spacing={3}>
+              <Avatar
+                src={spotlightUser.avatar}
+                style={{ backgroundColor: token.colorPrimaryText }}
+                size="large"
+              />
+              <$Vertical
+                style={{
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                <PP>
+                  <b>{spotlightUser.displayName || spotlightUser.username}</b>
+                </PP>
+                <PP>
+                  <i>{`@${spotlightUser.username}`}</i>
+                </PP>
+              </$Vertical>
+            </$Horizontal>
             <br />
             <Input.TextArea
               value={friendRequestNote}

@@ -48,6 +48,7 @@ import { useUserState } from "@/state/user.state";
 import { QRCODE_LOGO, UserID } from "@milkshakechat/helpers";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import {
+  NavLink,
   createSearchParams,
   useLocation,
   useNavigate,
@@ -148,7 +149,9 @@ export const ContactsPage = () => {
   const renderRow = (fr: Contact, actions: React.ReactNode[]) => {
     return (
       <List.Item
-        actions={actions}
+        actions={actions.map((act) => {
+          return <div onClick={(e) => e.preventDefault()}>{act}</div>;
+        })}
         style={{
           backgroundColor: optimisticDisabled.includes(fr.friendID)
             ? token.colorErrorBg
@@ -158,12 +161,23 @@ export const ContactsPage = () => {
         <Skeleton avatar title={false} loading={!listContactsData} active>
           <List.Item.Meta
             avatar={
-              <Avatar
-                style={{ backgroundColor: token.colorPrimaryText }}
-                icon={<UserOutlined />}
-                src={fr.avatar}
-                size="large"
-              />
+              <div
+                onClick={() => {
+                  navigate({
+                    pathname: "/user",
+                    search: createSearchParams({
+                      userID: fr.friendID,
+                    }).toString(),
+                  });
+                }}
+              >
+                <Avatar
+                  style={{ backgroundColor: token.colorPrimaryText }}
+                  icon={<UserOutlined />}
+                  src={fr.avatar}
+                  size="large"
+                />
+              </div>
             }
             title={<PP>{fr.displayName}</PP>}
             description={
@@ -224,7 +238,11 @@ export const ContactsPage = () => {
                       items: [
                         {
                           key: "view-profile",
-                          label: <Button type="ghost">View Profile</Button>,
+                          label: (
+                            <NavLink to={`/user?userID=${item.friendID}`}>
+                              <Button type="ghost">View Profile</Button>
+                            </NavLink>
+                          ),
                         },
                         {
                           key: "remove-friend",
@@ -318,12 +336,14 @@ export const ContactsPage = () => {
                       ];
                     }
                     return [
-                      <Button
-                        onClick={() => console.log(`Go to friend page...`)}
-                        type="link"
-                      >
-                        <PP>View Profile</PP>
-                      </Button>,
+                      <NavLink to={`/user?userID=${item.friendID}`}>
+                        <Button
+                          onClick={() => console.log(`Go to friend page...`)}
+                          type="link"
+                        >
+                          <PP>View Profile</PP>
+                        </Button>
+                      </NavLink>,
                       <Button
                         type="primary"
                         ghost
@@ -342,7 +362,11 @@ export const ContactsPage = () => {
                           items: [
                             {
                               key: "view-profile",
-                              label: <Button type="ghost">View Profile</Button>,
+                              label: (
+                                <NavLink to={`/user?userID=${item.friendID}`}>
+                                  <Button type="ghost">View Profile</Button>
+                                </NavLink>
+                              ),
                             },
                             {
                               key: "block-friend",
@@ -389,7 +413,11 @@ export const ContactsPage = () => {
                           items: [
                             {
                               key: "view-profile",
-                              label: <Button type="ghost">View Profile</Button>,
+                              label: (
+                                <NavLink to={`/user?userID=${item.friendID}`}>
+                                  <Button type="ghost">View Profile</Button>
+                                </NavLink>
+                              ),
                             },
                             {
                               key: "remove-friend",
@@ -467,7 +495,9 @@ export const ContactsPage = () => {
                               {
                                 key: "view-profile",
                                 label: (
-                                  <Button type="ghost">View Profile</Button>
+                                  <NavLink to={`/user?userID=${item.friendID}`}>
+                                    <Button type="ghost">View Profile</Button>
+                                  </NavLink>
                                 ),
                               },
                             ],
@@ -538,13 +568,38 @@ export const ContactsPage = () => {
                     ];
                   }
                   return [
-                    <Button
+                    <Dropdown.Button
                       loading={loadingManageFriendships.includes(item.friendID)}
                       onClick={() => addFriend(item.friendID)}
-                      type="ghost"
+                      menu={{
+                        items: [
+                          {
+                            key: "view-profile",
+                            label: (
+                              <NavLink to={`/user?userID=${item.friendID}`}>
+                                <Button type="ghost">View Profile</Button>
+                              </NavLink>
+                            ),
+                          },
+                          {
+                            key: "block-friend",
+                            label: (
+                              <Button
+                                loading={loadingManageFriendships.includes(
+                                  item.friendID
+                                )}
+                                onClick={() => setTargetOfBlock(item)}
+                                type="ghost"
+                              >
+                                Block
+                              </Button>
+                            ),
+                          },
+                        ],
+                      }}
                     >
                       Add Friend
-                    </Button>,
+                    </Dropdown.Button>,
                   ];
                 };
                 return renderRow(item, renderActions());

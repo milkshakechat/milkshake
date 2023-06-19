@@ -180,7 +180,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const itemsMobile = [
     {
       key: "profile",
-      text: profileText,
+      text: user?.username || profileText,
+      // text: profileText,
       route: "/app/profile",
       icon: <UserOutlined style={{ fontSize: "1rem" }} />,
     },

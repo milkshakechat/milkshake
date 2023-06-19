@@ -73,6 +73,15 @@ export type DemoSubscriptionEvent = {
   message: Scalars['String']['output'];
 };
 
+export enum FriendshipAction {
+  AcceptRequest = 'ACCEPT_REQUEST',
+  Block = 'BLOCK',
+  CancelRequest = 'CANCEL_REQUEST',
+  DeclineRequest = 'DECLINE_REQUEST',
+  RemoveFriend = 'REMOVE_FRIEND',
+  Unblock = 'UNBLOCK'
+}
+
 export enum FriendshipStatus {
   Accepted = 'ACCEPTED',
   Blocked = 'BLOCKED',
@@ -108,6 +117,18 @@ export type ListContactsResponseSuccess = {
   globalDirectory: Array<Contact>;
 };
 
+export type ManageFriendshipInput = {
+  action: FriendshipAction;
+  friendID: Scalars['UserID']['input'];
+};
+
+export type ManageFriendshipResponse = ManageFriendshipResponseSuccess | ResponseError;
+
+export type ManageFriendshipResponseSuccess = {
+  __typename?: 'ManageFriendshipResponseSuccess';
+  status: FriendshipStatus;
+};
+
 export type ModifyProfileInput = {
   avatar?: InputMaybe<Scalars['String']['input']>;
   bio?: InputMaybe<Scalars['String']['input']>;
@@ -129,6 +150,7 @@ export type ModifyProfileResponseSuccess = {
 export type Mutation = {
   __typename?: 'Mutation';
   demoMutation: DemoMutationResponse;
+  manageFriendship: ManageFriendshipResponse;
   modifyProfile: ModifyProfileResponse;
   sendFriendRequest: SendFriendRequestResponse;
   updatePushToken: UpdatePushTokenResponse;
@@ -137,6 +159,11 @@ export type Mutation = {
 
 export type MutationDemoMutationArgs = {
   input: DemoMutationInput;
+};
+
+
+export type MutationManageFriendshipArgs = {
+  input: ManageFriendshipInput;
 };
 
 

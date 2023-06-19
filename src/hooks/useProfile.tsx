@@ -270,7 +270,6 @@ export const useListContacts = () => {
               query: LIST_CONTACTS,
             })
             .then(({ data }) => {
-              console.log(`data.listContacts GQL`, data.listContacts);
               if (
                 data.listContacts.__typename === "ListContactsResponseSuccess"
               ) {

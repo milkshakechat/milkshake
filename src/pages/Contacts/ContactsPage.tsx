@@ -1,5 +1,10 @@
 import { ErrorLines } from "@/api/graphql/error-line";
-import { Contact, FriendshipStatus, Maybe } from "@/api/graphql/types";
+import {
+  Contact,
+  FriendshipAction,
+  FriendshipStatus,
+  Maybe,
+} from "@/api/graphql/types";
 import {
   AppLayoutPadding,
   LayoutInteriorHeader,
@@ -7,6 +12,7 @@ import {
 } from "@/components/AppLayout/AppLayout";
 import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import {
+  useManageFriendship,
   useSendFriendRequest,
   useViewPublicProfile,
 } from "@/hooks/useFriendship";
@@ -41,7 +47,13 @@ import { UserOutlined } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
 import { QRCODE_LOGO, UserID } from "@milkshakechat/helpers";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
-import { useLocation } from "react-router-dom";
+import {
+  createSearchParams,
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { ScreenSize, useWindowSize } from "@/api/utils/screen";
 
 const subtitle = (status?: Maybe<FriendshipStatus>) => {
@@ -52,28 +64,57 @@ const subtitle = (status?: Maybe<FriendshipStatus>) => {
       return <PP>Sent a friend request</PP>;
     case FriendshipStatus.SentRequest:
       return <PP>Waiting for acceptance</PP>;
+    case FriendshipStatus.Declined:
+      return <PP>Declined request</PP>;
+    case FriendshipStatus.Blocked:
+      return <PP>Blocked user</PP>;
     default:
       return <PP>Not Friends</PP>;
   }
 };
 
+const sortStatusPriority: Record<FriendshipStatus, number> = {
+  [FriendshipStatus.GotRequest]: 1,
+  [FriendshipStatus.SentRequest]: 2,
+  [FriendshipStatus.Declined]: 3,
+  [FriendshipStatus.Blocked]: 4,
+  [FriendshipStatus.None]: 5,
+  [FriendshipStatus.Accepted]: 6,
+};
+
 export const ContactsPage = () => {
+  enum ValidTabs {
+    Friends = "friends",
+    Requests = "requests",
+  }
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get("tab");
+  const initialTab =
+    tab && Object.values(ValidTabs).includes(tab as ValidTabs)
+      ? tab
+      : ValidTabs.Friends;
+  const location = useLocation();
   const { screen, isMobile } = useWindowSize();
   const [showGlobalDirectory, setShowGlobalDirectory] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const user = useUserState((state) => state.user);
-  const location = useLocation();
-  const [isAddingFriend, setIsAddingFriend] = useState<UserID | null>(null);
+
+  const { runMutation: runManageFriendship } = useManageFriendship();
+
   const { token } = theme.useToken();
   const [searchString, setSearchString] = useState("");
   const [optimisticAccepted, setOptimisticAccepted] = useState<UserID[]>([]);
-  const [targetOfRejection, setTargetOfRejection] = useState<Contact | null>(
-    null
-  );
+  const [optimisticDisabled, setOptimisticDisabled] = useState<UserID[]>([]);
+  const [targetOfDecline, setTargetOfDecline] = useState<Contact | null>(null);
   const [showAddContactModal, setShowAddContactModal] = useState(false);
   const [targetOfBlock, setTargetOfBlock] = useState<Contact | null>(null);
+  const [targetOfUnblock, setTargetOfUnblock] = useState<Contact | null>(null);
   const [targetOfRemoval, setTargetOfRemoval] = useState<Contact | null>(null);
   const [targetOfCancel, setTargetOfCancel] = useState<Contact | null>(null);
+  const [loadingManageFriendships, setLoadingManageFriendships] = useState<
+    UserID[]
+  >([]);
   const {
     data: sendFriendRequestMutationData,
     errors: sendFriendRequestErrors,
@@ -95,18 +136,25 @@ export const ContactsPage = () => {
   };
 
   const addFriend = async (userID: UserID) => {
-    setIsAddingFriend(userID);
+    setLoadingManageFriendships((prev) => [...prev, userID]);
     await sendFriendRequestMutation({
       note: "Added from Global Directory",
       recipientID: userID,
     });
-    setIsAddingFriend(null);
+    setLoadingManageFriendships((prev) => prev.filter((id) => id !== userID));
     message.info("Friend Request Sent");
   };
 
   const renderRow = (fr: Contact, actions: React.ReactNode[]) => {
     return (
-      <List.Item actions={actions}>
+      <List.Item
+        actions={actions}
+        style={{
+          backgroundColor: optimisticDisabled.includes(fr.friendID)
+            ? token.colorErrorBg
+            : undefined,
+        }}
+      >
         <Skeleton avatar title={false} loading={!listContactsData} active>
           <List.Item.Meta
             avatar={
@@ -134,7 +182,6 @@ export const ContactsPage = () => {
   };
 
   const renderContactsList = () => {
-    console.log(`listContactsData.contacts`, listContactsData?.contacts);
     if (!listContactsData) {
       return <PP>No Contacts Yet</PP>;
     }
@@ -148,7 +195,7 @@ export const ContactsPage = () => {
     };
     const tabs = [
       {
-        key: "friends",
+        key: ValidTabs.Friends,
         label: `${
           listContactsData.contacts.filter(
             (fr) => fr.status === FriendshipStatus.Accepted
@@ -183,6 +230,9 @@ export const ContactsPage = () => {
                           key: "remove-friend",
                           label: (
                             <Button
+                              loading={loadingManageFriendships.includes(
+                                item.friendID
+                              )}
                               onClick={() => setTargetOfRemoval(item)}
                               type="ghost"
                             >
@@ -194,6 +244,9 @@ export const ContactsPage = () => {
                           key: "block-friend",
                           label: (
                             <Button
+                              loading={loadingManageFriendships.includes(
+                                item.friendID
+                              )}
                               onClick={() => setTargetOfBlock(item)}
                               type="ghost"
                             >
@@ -203,6 +256,7 @@ export const ContactsPage = () => {
                         },
                       ],
                     }}
+                    disabled={optimisticDisabled.includes(item.friendID)}
                   >
                     Chat
                   </Dropdown.Button>,
@@ -214,7 +268,7 @@ export const ContactsPage = () => {
         ),
       },
       {
-        key: "requests",
+        key: ValidTabs.Requests,
         label: (
           <$Horizontal spacing={2} alignItems="center">
             <span style={{ marginRight: "5px" }}>Requests</span>
@@ -242,10 +296,27 @@ export const ContactsPage = () => {
               itemLayout="horizontal"
               dataSource={listContactsData.contacts
                 .filter((fr) => fr.status !== FriendshipStatus.Accepted)
-                .filter(handleFilter)}
+                .filter(handleFilter)
+                .sort(
+                  (a, b) =>
+                    sortStatusPriority[a.status || FriendshipStatus.None] -
+                    sortStatusPriority[b.status || FriendshipStatus.None]
+                )}
               renderItem={(item) => {
                 const renderActions = () => {
                   if (optimisticAccepted.includes(item.friendID)) {
+                    if (isMobile) {
+                      return [
+                        <Button
+                          type="primary"
+                          ghost
+                          onClick={() => console.log(`Go to chat page...`)}
+                          style={{ minWidth: "100px" }}
+                        >
+                          <PP>Chat</PP>
+                        </Button>,
+                      ];
+                    }
                     return [
                       <Button
                         onClick={() => console.log(`Go to friend page...`)}
@@ -265,26 +336,45 @@ export const ContactsPage = () => {
                   }
                   if (item.status === FriendshipStatus.Declined) {
                     return [
-                      <Button
-                        loading={isAddingFriend === item.friendID}
-                        onClick={() => console.log("remove")}
-                        type="link"
+                      <Dropdown.Button
+                        onClick={() => addFriend(item.friendID)}
+                        menu={{
+                          items: [
+                            {
+                              key: "view-profile",
+                              label: <Button type="ghost">View Profile</Button>,
+                            },
+                            {
+                              key: "block-friend",
+                              label: (
+                                <Button
+                                  loading={loadingManageFriendships.includes(
+                                    item.friendID
+                                  )}
+                                  onClick={() => setTargetOfBlock(item)}
+                                  type="ghost"
+                                >
+                                  Block
+                                </Button>
+                              ),
+                            },
+                          ],
+                        }}
+                        loading={loadingManageFriendships.includes(
+                          item.friendID
+                        )}
                       >
-                        <PP>Remove</PP>
-                      </Button>,
-                      <Button
-                        loading={isAddingFriend === item.friendID}
-                        onClick={() => console.log("Unblock")}
-                      >
-                        <PP>Request Again</PP>
-                      </Button>,
+                        Send Again
+                      </Dropdown.Button>,
                     ];
                   }
                   if (item.status === FriendshipStatus.Blocked) {
                     return [
                       <Button
-                        loading={isAddingFriend === item.friendID}
-                        onClick={() => console.log("Unblock")}
+                        loading={loadingManageFriendships.includes(
+                          item.friendID
+                        )}
+                        onClick={() => setTargetOfUnblock(item)}
                         type="link"
                       >
                         <PP>Unblock</PP>
@@ -305,6 +395,9 @@ export const ContactsPage = () => {
                               key: "remove-friend",
                               label: (
                                 <Button
+                                  loading={loadingManageFriendships.includes(
+                                    item.friendID
+                                  )}
                                   onClick={() => setTargetOfCancel(item)}
                                   type="ghost"
                                 >
@@ -316,6 +409,9 @@ export const ContactsPage = () => {
                               key: "block-friend",
                               label: (
                                 <Button
+                                  loading={loadingManageFriendships.includes(
+                                    item.friendID
+                                  )}
                                   onClick={() => setTargetOfBlock(item)}
                                   type="ghost"
                                 >
@@ -325,6 +421,9 @@ export const ContactsPage = () => {
                             },
                           ],
                         }}
+                        loading={loadingManageFriendships.includes(
+                          item.friendID
+                        )}
                       >
                         Send Again
                       </Dropdown.Button>,
@@ -334,23 +433,30 @@ export const ContactsPage = () => {
                     if (isMobile) {
                       return [
                         <Dropdown.Button
+                          type="primary"
                           menu={{
                             items: [
                               {
-                                key: "view-profile",
+                                key: "decline-profile",
                                 label: (
                                   <Button
-                                    onClick={() => setTargetOfRejection(item)}
+                                    loading={loadingManageFriendships.includes(
+                                      item.friendID
+                                    )}
+                                    onClick={() => setTargetOfDecline(item)}
                                     type="ghost"
                                   >
-                                    Reject
+                                    Decline
                                   </Button>
                                 ),
                               },
                               {
-                                key: "view-profile",
+                                key: "block-profile",
                                 label: (
                                   <Button
+                                    loading={loadingManageFriendships.includes(
+                                      item.friendID
+                                    )}
                                     onClick={() => setTargetOfBlock(item)}
                                     type="ghost"
                                   >
@@ -366,6 +472,28 @@ export const ContactsPage = () => {
                               },
                             ],
                           }}
+                          onClick={async () => {
+                            setLoadingManageFriendships((prev) => [
+                              ...prev,
+                              item.friendID,
+                            ]);
+                            await runManageFriendship({
+                              friendID: item.friendID,
+                              action: FriendshipAction.AcceptRequest,
+                            });
+                            setLoadingManageFriendships((prev) =>
+                              prev.filter((id) => id !== item.friendID)
+                            );
+                            setOptimisticAccepted((prev) => [
+                              ...prev,
+                              item.friendID,
+                            ]);
+                            message.success(`Accepted friend request`);
+                          }}
+                          loading={loadingManageFriendships.includes(
+                            item.friendID
+                          )}
+                          disabled={optimisticDisabled.includes(item.friendID)}
                         >
                           Accept
                         </Dropdown.Button>,
@@ -373,19 +501,35 @@ export const ContactsPage = () => {
                     }
                     return [
                       <Button
-                        onClick={() => setTargetOfRejection(item)}
+                        loading={loadingManageFriendships.includes(
+                          item.friendID
+                        )}
+                        onClick={() => setTargetOfDecline(item)}
                         type="link"
                       >
-                        Reject
+                        Decline
                       </Button>,
                       <Button
-                        loading={isAddingFriend === item.friendID}
+                        loading={loadingManageFriendships.includes(
+                          item.friendID
+                        )}
                         onClick={async () => {
-                          await addFriend(item.friendID);
+                          setLoadingManageFriendships((prev) => [
+                            ...prev,
+                            item.friendID,
+                          ]);
+                          await runManageFriendship({
+                            friendID: item.friendID,
+                            action: FriendshipAction.AcceptRequest,
+                          });
+                          setLoadingManageFriendships((prev) =>
+                            prev.filter((id) => id !== item.friendID)
+                          );
                           setOptimisticAccepted((prev) => [
                             ...prev,
                             item.friendID,
                           ]);
+                          message.success(`Accepted friend request`);
                         }}
                         type="primary"
                       >
@@ -393,7 +537,15 @@ export const ContactsPage = () => {
                       </Button>,
                     ];
                   }
-                  return [];
+                  return [
+                    <Button
+                      loading={loadingManageFriendships.includes(item.friendID)}
+                      onClick={() => addFriend(item.friendID)}
+                      type="ghost"
+                    >
+                      Add Friend
+                    </Button>,
+                  ];
                 };
                 return renderRow(item, renderActions());
               }}
@@ -405,10 +557,16 @@ export const ContactsPage = () => {
     ];
     return listContactsData ? (
       <Tabs
-        defaultActiveKey="friends"
+        defaultActiveKey={initialTab ? initialTab : "friends"}
         items={tabs}
-        onChange={(e) => {
-          console.log(`e`, e);
+        onChange={(tab) => {
+          console.log(`Changing tab... ${tab}`);
+          navigate({
+            pathname: location.pathname,
+            search: createSearchParams({
+              tab,
+            }).toString(),
+          });
         }}
       />
     ) : (
@@ -427,7 +585,11 @@ export const ContactsPage = () => {
         )}
         renderItem={(item) =>
           renderRow(item, [
-            <Button onClick={() => addFriend(item.friendID)} type="link">
+            <Button
+              loading={loadingManageFriendships.includes(item.friendID)}
+              onClick={() => addFriend(item.friendID)}
+              type="link"
+            >
               <PP>Add Friend</PP>
             </Button>,
           ])
@@ -473,22 +635,25 @@ export const ContactsPage = () => {
         </>
       </AppLayoutPadding>
       <Modal
-        open={targetOfRejection ? true : false}
-        onCancel={() => setTargetOfRejection(null)}
+        open={targetOfDecline ? true : false}
+        onCancel={() => setTargetOfDecline(null)}
         footer={
           <Space
             direction="horizontal"
             style={{ justifyContent: "space-between", width: "100%" }}
           >
-            <Button onClick={() => setTargetOfRejection(null)} type="link">
+            <Button onClick={() => setTargetOfDecline(null)} type="link">
               <PP>Cancel</PP>
             </Button>
             <div>
               {!isMobile && (
                 <Button
+                  loading={loadingManageFriendships.includes(
+                    targetOfDecline?.friendID
+                  )}
                   onClick={() => {
-                    setTargetOfBlock(targetOfRejection);
-                    setTargetOfRejection(null);
+                    setTargetOfBlock(targetOfDecline);
+                    setTargetOfDecline(null);
                   }}
                   type="link"
                 >
@@ -496,8 +661,38 @@ export const ContactsPage = () => {
                 </Button>
               )}
 
-              <Button type="primary" danger>
-                <PP>Yes, Reject</PP>
+              <Button
+                loading={
+                  targetOfDecline &&
+                  loadingManageFriendships.includes(targetOfDecline.friendID)
+                    ? true
+                    : false
+                }
+                onClick={async () => {
+                  if (targetOfDecline) {
+                    setLoadingManageFriendships((prev) => [
+                      ...prev,
+                      targetOfDecline.friendID,
+                    ]);
+                    await runManageFriendship({
+                      friendID: targetOfDecline.friendID,
+                      action: FriendshipAction.DeclineRequest,
+                    });
+                    setLoadingManageFriendships((prev) =>
+                      prev.filter((id) => id !== targetOfDecline.friendID)
+                    );
+                    setOptimisticDisabled((prev) => [
+                      ...prev,
+                      targetOfDecline.friendID,
+                    ]);
+                    message.info(`Declined friend request`);
+                    setTargetOfDecline(null);
+                  }
+                }}
+                type="primary"
+                danger
+              >
+                <PP>Yes, Decline</PP>
               </Button>
             </div>
           </Space>
@@ -505,7 +700,7 @@ export const ContactsPage = () => {
       >
         <$Horizontal spacing={3}>
           <Avatar
-            src={targetOfRejection?.avatar}
+            src={targetOfDecline?.avatar}
             style={{ backgroundColor: token.colorPrimaryText }}
             size="large"
           />
@@ -516,10 +711,10 @@ export const ContactsPage = () => {
             }}
           >
             <PP>
-              <b>{targetOfRejection?.displayName}</b>
+              <b>{targetOfDecline?.displayName}</b>
             </PP>
             <PP>
-              <i>{subtitle(targetOfRejection?.status)}</i>
+              <i>{subtitle(targetOfDecline?.status)}</i>
             </PP>
           </$Vertical>
         </$Horizontal>
@@ -531,8 +726,8 @@ export const ContactsPage = () => {
           <PP>
             <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
               Are you sure you want to{" "}
-              <b style={{ color: token.colorErrorActive }}>REJECT</b> this
-              friend request?
+              <b style={{ color: token.colorErrorText }}>DECLINE</b> this friend
+              request?
             </span>
           </PP>
         </$Vertical>
@@ -548,7 +743,37 @@ export const ContactsPage = () => {
             <Button onClick={() => setTargetOfRemoval(null)} type="link">
               <PP>Cancel</PP>
             </Button>
-            <Button type="primary" danger>
+            <Button
+              loading={
+                targetOfRemoval &&
+                loadingManageFriendships.includes(targetOfRemoval.friendID)
+                  ? true
+                  : false
+              }
+              onClick={async () => {
+                if (targetOfRemoval) {
+                  setLoadingManageFriendships((prev) => [
+                    ...prev,
+                    targetOfRemoval.friendID,
+                  ]);
+                  await runManageFriendship({
+                    friendID: targetOfRemoval.friendID,
+                    action: FriendshipAction.RemoveFriend,
+                  });
+                  setLoadingManageFriendships((prev) =>
+                    prev.filter((id) => id !== targetOfRemoval.friendID)
+                  );
+                  setOptimisticDisabled((prev) => [
+                    ...prev,
+                    targetOfRemoval.friendID,
+                  ]);
+                  message.info(`Removed from friends`);
+                  setTargetOfRemoval(null);
+                }
+              }}
+              type="primary"
+              danger
+            >
               <PP>Yes, Remove</PP>
             </Button>
           </Space>
@@ -582,9 +807,8 @@ export const ContactsPage = () => {
           <PP>
             <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
               Are you sure you want to{" "}
-              <b style={{ color: token.colorErrorActive }}>REMOVE</b> this
-              friend? They will have to accept a new friend request if you want
-              to chat.
+              <b style={{ color: token.colorErrorText }}>REMOVE</b> this friend?
+              They will have to accept a new friend request if you want to chat.
             </span>
           </PP>
         </$Vertical>
@@ -600,7 +824,37 @@ export const ContactsPage = () => {
             <Button onClick={() => setTargetOfBlock(null)} type="link">
               <PP>Cancel</PP>
             </Button>
-            <Button type="primary" danger>
+            <Button
+              loading={
+                targetOfBlock &&
+                loadingManageFriendships.includes(targetOfBlock.friendID)
+                  ? true
+                  : false
+              }
+              onClick={async () => {
+                if (targetOfBlock) {
+                  setLoadingManageFriendships((prev) => [
+                    ...prev,
+                    targetOfBlock.friendID,
+                  ]);
+                  await runManageFriendship({
+                    friendID: targetOfBlock.friendID,
+                    action: FriendshipAction.Block,
+                  });
+                  setLoadingManageFriendships((prev) =>
+                    prev.filter((id) => id !== targetOfBlock.friendID)
+                  );
+                  setOptimisticDisabled((prev) => [
+                    ...prev,
+                    targetOfBlock.friendID,
+                  ]);
+                  message.info(`Blocked this person`);
+                  setTargetOfBlock(null);
+                }
+              }}
+              type="primary"
+              danger
+            >
               <PP>Yes, Block</PP>
             </Button>
           </Space>
@@ -634,9 +888,89 @@ export const ContactsPage = () => {
           <PP>
             <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
               Are you sure you want to{" "}
-              <b style={{ color: token.colorErrorActive }}>BLOCK</b> this
-              contact? They will not be able to send you messages or friend
-              requests.
+              <b style={{ color: token.colorErrorText }}>BLOCK</b> this contact?
+              They will not be able to send you messages or friend requests.
+            </span>
+          </PP>
+        </$Vertical>
+      </Modal>
+      <Modal
+        open={targetOfUnblock ? true : false}
+        onCancel={() => setTargetOfUnblock(null)}
+        footer={
+          <Space
+            direction="horizontal"
+            style={{ justifyContent: "flex-end", width: "100%" }}
+          >
+            <Button onClick={() => setTargetOfUnblock(null)} type="link">
+              <PP>Cancel</PP>
+            </Button>
+            <Button
+              loading={
+                targetOfUnblock &&
+                loadingManageFriendships.includes(targetOfUnblock.friendID)
+                  ? true
+                  : false
+              }
+              onClick={async () => {
+                if (targetOfUnblock) {
+                  setLoadingManageFriendships((prev) => [
+                    ...prev,
+                    targetOfUnblock.friendID,
+                  ]);
+                  await runManageFriendship({
+                    friendID: targetOfUnblock.friendID,
+                    action: FriendshipAction.Unblock,
+                  });
+                  setLoadingManageFriendships((prev) =>
+                    prev.filter((id) => id !== targetOfUnblock.friendID)
+                  );
+                  setOptimisticDisabled((prev) => [
+                    ...prev,
+                    targetOfUnblock.friendID,
+                  ]);
+                  message.info(`Unblocked this person`);
+                  setTargetOfUnblock(null);
+                }
+              }}
+              type="primary"
+              danger
+            >
+              <PP>Yes, Unblock</PP>
+            </Button>
+          </Space>
+        }
+      >
+        <$Horizontal spacing={3}>
+          <Avatar
+            src={targetOfUnblock?.avatar}
+            style={{ backgroundColor: token.colorPrimaryText }}
+            size="large"
+          />
+          <$Vertical
+            style={{
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+            }}
+          >
+            <PP>
+              <b>{targetOfUnblock?.displayName}</b>
+            </PP>
+            <PP>
+              <i>{subtitle(targetOfUnblock?.status)}</i>
+            </PP>
+          </$Vertical>
+        </$Horizontal>
+        <$Vertical
+          padding={isMobile ? "20px" : "50px"}
+          justifyContent="center"
+          alignItems="center"
+        >
+          <PP>
+            <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
+              Are you sure you want to{" "}
+              <b style={{ color: token.colorWarningText }}>UNBLOCK</b> this
+              contact? They will be able to see you exist.
             </span>
           </PP>
         </$Vertical>
@@ -652,7 +986,37 @@ export const ContactsPage = () => {
             <Button onClick={() => setTargetOfCancel(null)} type="link">
               <PP>No</PP>
             </Button>
-            <Button type="primary" danger>
+            <Button
+              loading={
+                targetOfCancel &&
+                loadingManageFriendships.includes(targetOfCancel.friendID)
+                  ? true
+                  : false
+              }
+              onClick={async () => {
+                if (targetOfCancel) {
+                  setLoadingManageFriendships((prev) => [
+                    ...prev,
+                    targetOfCancel.friendID,
+                  ]);
+                  await runManageFriendship({
+                    friendID: targetOfCancel.friendID,
+                    action: FriendshipAction.CancelRequest,
+                  });
+                  setLoadingManageFriendships((prev) =>
+                    prev.filter((id) => id !== targetOfCancel.friendID)
+                  );
+                  setOptimisticDisabled((prev) => [
+                    ...prev,
+                    targetOfCancel.friendID,
+                  ]);
+                  message.info(`Cancelled friend request`);
+                  setTargetOfCancel(null);
+                }
+              }}
+              type="primary"
+              danger
+            >
               <PP>Yes, Cancel</PP>
             </Button>
           </Space>
@@ -660,7 +1024,7 @@ export const ContactsPage = () => {
       >
         <$Horizontal spacing={3}>
           <Avatar
-            src={targetOfBlock?.avatar}
+            src={targetOfCancel?.avatar}
             style={{ backgroundColor: token.colorPrimaryText }}
             size="large"
           />
@@ -671,10 +1035,10 @@ export const ContactsPage = () => {
             }}
           >
             <PP>
-              <b>{targetOfBlock?.displayName}</b>
+              <b>{targetOfCancel?.displayName}</b>
             </PP>
             <PP>
-              <i>{subtitle(targetOfBlock?.status)}</i>
+              <i>{subtitle(targetOfCancel?.status)}</i>
             </PP>
           </$Vertical>
         </$Horizontal>
@@ -686,8 +1050,8 @@ export const ContactsPage = () => {
           <PP>
             <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
               Are you sure you want to{" "}
-              <b style={{ color: token.colorErrorActive }}>CANCEL</b> your
-              friend request? You can send another one later.
+              <b style={{ color: token.colorErrorText }}>CANCEL</b> your friend
+              request? You can send another one later.
             </span>
           </PP>
         </$Vertical>
@@ -697,7 +1061,7 @@ export const ContactsPage = () => {
         onCancel={() => setShowAddContactModal(false)}
         title={
           <PP>
-            <h3>Add me on Milkshake Chat</h3>
+            <h3>Add me on Milkshake.Chat</h3>
           </PP>
         }
         style={{ overflow: "hidden" }}
@@ -738,12 +1102,13 @@ export const ContactsPage = () => {
             >
               <QRCode
                 value={`${window.location}/add/${user.id}`}
+                color={token.colorText}
                 icon={QRCODE_LOGO}
                 {...{
-                  size:
-                    screen === ScreenSize.mobile
-                      ? window.innerWidth - 100
-                      : undefined,
+                  size: isMobile ? window.innerWidth - 100 : undefined,
+                  iconSize: isMobile
+                    ? (window.innerWidth - 100) / 4
+                    : undefined,
                 }}
               />
               <$Vertical alignItems="flex-start">

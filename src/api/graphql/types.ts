@@ -64,6 +64,14 @@ export type DemoSubscriptionEvent = {
   message: Scalars['String']['output'];
 };
 
+export enum FriendshipStatus {
+  Accepted = 'ACCEPTED',
+  Blocked = 'BLOCKED',
+  Declined = 'DECLINED',
+  None = 'NONE',
+  Requested = 'REQUESTED'
+}
+
 export type GetMyProfileResponse = GetMyProfileResponseSuccess | ResponseError;
 
 export type GetMyProfileResponseSuccess = {
@@ -104,6 +112,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   demoMutation: DemoMutationResponse;
   modifyProfile: ModifyProfileResponse;
+  sendFriendRequest: SendFriendRequestResponse;
   updatePushToken: UpdatePushTokenResponse;
 };
 
@@ -115,6 +124,11 @@ export type MutationDemoMutationArgs = {
 
 export type MutationModifyProfileArgs = {
   input: ModifyProfileInput;
+};
+
+
+export type MutationSendFriendRequestArgs = {
+  input: SendFriendRequestInput;
 };
 
 
@@ -140,6 +154,7 @@ export type Query = {
   demoQuery: DemoQueryResponse;
   getMyProfile: GetMyProfileResponse;
   ping: Ping;
+  viewPublicProfile: ViewPublicProfileResponse;
 };
 
 
@@ -152,9 +167,27 @@ export type QueryDemoQueryArgs = {
   input: DemoQueryInput;
 };
 
+
+export type QueryViewPublicProfileArgs = {
+  input: ViewPublicProfileInput;
+};
+
 export type ResponseError = {
   __typename?: 'ResponseError';
   error: Status;
+};
+
+export type SendFriendRequestInput = {
+  note?: InputMaybe<Scalars['String']['input']>;
+  recipientID: Scalars['UserID']['input'];
+  utmAttribution?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SendFriendRequestResponse = ResponseError | SendFriendRequestResponseSuccess;
+
+export type SendFriendRequestResponseSuccess = {
+  __typename?: 'SendFriendRequestResponseSuccess';
+  status: FriendshipStatus;
 };
 
 export type Status = {
@@ -211,6 +244,45 @@ export type User = {
   username: Scalars['String']['output'];
 };
 
+export type ViewPublicProfileInput = {
+  username: Scalars['String']['input'];
+};
+
+export type ViewPublicProfileResponse = ResponseError | ViewPublicProfileResponseSuccess;
+
+export type ViewPublicProfileResponseSuccess = {
+  __typename?: 'ViewPublicProfileResponseSuccess';
+  avatar?: Maybe<Scalars['String']['output']>;
+  id: Scalars['UserID']['output'];
+  username: Scalars['String']['output'];
+};
+
+export type SendFriendRequestMutationVariables = Exact<{
+  input: SendFriendRequestInput;
+}>;
+
+
+export type SendFriendRequestMutation = { __typename?: 'Mutation', sendFriendRequest: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'SendFriendRequestResponseSuccess', status: FriendshipStatus } };
+
+export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any, privacyMode: PrivacyModeEnum, themeColor: any, language: LanguageEnum } } | { __typename: 'ResponseError' } };
+
+export type CheckUsernameAvailableQueryVariables = Exact<{
+  input: CheckUsernameAvailableInput;
+}>;
+
+
+export type CheckUsernameAvailableQuery = { __typename?: 'Query', checkUsernameAvailable: { __typename: 'CheckUsernameAvailableResponseSuccess', isAvailable: boolean } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type ModifyProfileMutationVariables = Exact<{
+  input: ModifyProfileInput;
+}>;
+
+
+export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string, language: LanguageEnum, themeColor: any, privacyMode: PrivacyModeEnum } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
 export type DemoQueryQueryVariables = Exact<{
   input: DemoQueryInput;
 }>;
@@ -234,25 +306,6 @@ export type DemoPingQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type DemoPingQuery = { __typename?: 'Query', demoPing: { __typename?: 'Ping', timestamp: string } };
-
-export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any, privacyMode: PrivacyModeEnum, themeColor: any, language: LanguageEnum } } | { __typename: 'ResponseError' } };
-
-export type CheckUsernameAvailableQueryVariables = Exact<{
-  input: CheckUsernameAvailableInput;
-}>;
-
-
-export type CheckUsernameAvailableQuery = { __typename?: 'Query', checkUsernameAvailable: { __typename: 'CheckUsernameAvailableResponseSuccess', isAvailable: boolean } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
-
-export type ModifyProfileMutationVariables = Exact<{
-  input: ModifyProfileInput;
-}>;
-
-
-export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string, language: LanguageEnum, themeColor: any, privacyMode: PrivacyModeEnum } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type UpdatePushTokenMutationVariables = Exact<{
   input: UpdatePushTokenInput;

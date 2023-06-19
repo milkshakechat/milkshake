@@ -5,7 +5,7 @@ import {
   useDemoPing,
   useDemoQuery,
   useDemoSubscription,
-} from "@/components/TemplateComponentGQL/useTemplate.graphql";
+} from "@/hooks/useTemplateGQL";
 
 export const TemplateComponentGQL = () => {
   const {

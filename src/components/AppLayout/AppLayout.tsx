@@ -432,19 +432,27 @@ export default AppLayout;
 interface AppLayoutPaddingProps {
   align: "center" | "flex-start" | "flex-end";
   children: React.ReactElement;
+  padding?: {
+    mobile: string;
+    desktop: string;
+  };
 }
 export const AppLayoutPadding = ({
   align = "center",
   children,
+  padding = {
+    mobile: "10px",
+    desktop: "20px",
+  },
 }: AppLayoutPaddingProps) => {
   const { screen } = useWindowSize();
   if (screen === ScreenSize.mobile) {
-    return <div style={{ padding: "10px" }}>{children}</div>;
+    return <div style={{ padding: padding.mobile }}>{children}</div>;
   }
   return (
     <div
       style={{
-        padding: "20px",
+        padding: padding.desktop,
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",

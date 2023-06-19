@@ -64,6 +64,14 @@ export type DemoSubscriptionEvent = {
   message: Scalars['String']['output'];
 };
 
+export enum FriendshipStatus {
+  Accepted = 'ACCEPTED',
+  Blocked = 'BLOCKED',
+  Declined = 'DECLINED',
+  None = 'NONE',
+  Requested = 'REQUESTED'
+}
+
 export type GetMyProfileResponse = GetMyProfileResponseSuccess | ResponseError;
 
 export type GetMyProfileResponseSuccess = {
@@ -104,6 +112,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   demoMutation: DemoMutationResponse;
   modifyProfile: ModifyProfileResponse;
+  sendFriendRequest: SendFriendRequestResponse;
   updatePushToken: UpdatePushTokenResponse;
 };
 
@@ -115,6 +124,11 @@ export type MutationDemoMutationArgs = {
 
 export type MutationModifyProfileArgs = {
   input: ModifyProfileInput;
+};
+
+
+export type MutationSendFriendRequestArgs = {
+  input: SendFriendRequestInput;
 };
 
 
@@ -155,6 +169,19 @@ export type QueryDemoQueryArgs = {
 export type ResponseError = {
   __typename?: 'ResponseError';
   error: Status;
+};
+
+export type SendFriendRequestInput = {
+  note?: InputMaybe<Scalars['String']['input']>;
+  recipientID: Scalars['UserID']['input'];
+  utmAttribution?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SendFriendRequestResponse = ResponseError | SendFriendRequestResponseSuccess;
+
+export type SendFriendRequestResponseSuccess = {
+  __typename?: 'SendFriendRequestResponseSuccess';
+  status: FriendshipStatus;
 };
 
 export type Status = {

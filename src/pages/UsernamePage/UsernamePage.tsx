@@ -6,7 +6,7 @@ import {
   useDemoPing,
   useDemoQuery,
   useDemoSubscription,
-} from "@/components/TemplateComponentGQL/useTemplate.graphql";
+} from "@/hooks/useTemplateGQL";
 import PP from "@/i18n/PlaceholderPrint";
 import { useUserState } from "@/state/user.state";
 import { Button } from "antd";
@@ -19,8 +19,6 @@ export const UsernamePage = () => {
   const navigate = useNavigate();
   const user = useUserState((state) => state.user);
   const { token: isAuthenticated } = useAuthProtect();
-
-  console.log(`isAuthenticated=${isAuthenticated}`);
 
   if (!isAuthenticated) {
     return <UserPublicPage />;

@@ -9,11 +9,11 @@ import {
   Ping,
   QueryDemoQueryArgs,
   Query,
-  DemoQueryResponseSuccess,
+  ViewPublicProfileResponseSuccess,
   MutationDemoMutationArgs,
   SendFriendRequestResponse,
   SendFriendRequestInput,
-  DemoQueryInput,
+  ViewPublicProfileInput,
   Mutation,
   SendFriendRequestResponseSuccess,
 } from "@/api/graphql/types";
@@ -80,6 +80,70 @@ export const useSendFriendRequest = () => {
   };
 
   return { data, errors, runMutation };
+};
+
+export const useViewPublicProfile = (): {
+  data: ViewPublicProfileResponseSuccess | undefined;
+  errors: ErrorLine[];
+  runQuery: (
+    args: ViewPublicProfileInput
+  ) => Promise<ViewPublicProfileResponseSuccess | undefined>;
+} => {
+  const [data, setData] = useState<ViewPublicProfileResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const runQuery = async (args: ViewPublicProfileInput) => {
+    let resp: ViewPublicProfileResponseSuccess | undefined;
+    try {
+      const VIEW_PUBLIC_PROFILE = gql`
+        query ViewPublicProfile($input: ViewPublicProfileInput!) {
+          viewPublicProfile(input: $input) {
+            __typename
+            ... on ViewPublicProfileResponseSuccess {
+              id
+              username
+              avatar
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<ViewPublicProfileResponseSuccess>(
+        async (resolve, reject) => {
+          client
+            .query<Pick<Query, "viewPublicProfile">>({
+              query: VIEW_PUBLIC_PROFILE,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data.viewPublicProfile.__typename ===
+                "ViewPublicProfileResponseSuccess"
+              ) {
+                resolve(data.viewPublicProfile);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+    }
+    return resp;
+  };
+
+  return { data, errors, runQuery };
 };
 
 // export const useFriendship = () => {

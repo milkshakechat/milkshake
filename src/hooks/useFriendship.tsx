@@ -16,6 +16,8 @@ import {
   ViewPublicProfileInput,
   Mutation,
   SendFriendRequestResponseSuccess,
+  ManageFriendshipResponseSuccess,
+  ManageFriendshipInput,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { GraphQLError } from "graphql";
@@ -144,6 +146,63 @@ export const useViewPublicProfile = (): {
   };
 
   return { data, errors, runQuery };
+};
+
+export const useManageFriendship = () => {
+  const [data, setData] = useState<ManageFriendshipResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: ManageFriendshipInput) => {
+    let resp: ManageFriendshipResponseSuccess | undefined;
+    try {
+      const MANAGE_FRIENDSHIP = gql`
+        mutation ManageFriendship($input: ManageFriendshipInput!) {
+          manageFriendship(input: $input) {
+            __typename
+            ... on ManageFriendshipResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<ManageFriendshipResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "manageFriendship">>({
+              mutation: MANAGE_FRIENDSHIP,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.manageFriendship.__typename ===
+                "ManageFriendshipResponseSuccess"
+              ) {
+                resolve(data.manageFriendship);
+                resp = data.manageFriendship;
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+      return resp;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runMutation };
 };
 
 // export const useFriendship = () => {

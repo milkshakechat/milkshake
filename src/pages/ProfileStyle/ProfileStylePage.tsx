@@ -291,11 +291,16 @@ const ProfileStylePage = () => {
             initialValues={initialFormValues}
             onFieldsChange={onFormLayoutChange}
             onFinish={submitForm}
-            style={{ width: "100%", maxWidth: 600 }}
+            style={{ width: "100%" }}
           >
             <Spacer />
             <Form.Item {...buttonItemLayout} name="avatar">
-              <Avatar size={64} src={avatarUrl} icon={<UserOutlined />} />
+              <Avatar
+                size={64}
+                src={avatarUrl}
+                style={{ backgroundColor: token.colorPrimaryText }}
+                icon={<UserOutlined />}
+              />
               <Upload
                 showUploadList={false}
                 customRequest={async (options) => {

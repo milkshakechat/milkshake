@@ -336,7 +336,7 @@ const ProfileSettingsPage = () => {
             initialValues={initialFormValues}
             onFieldsChange={onFormLayoutChange}
             onFinish={submitForm}
-            style={{ width: "100%", maxWidth: 600 }}
+            style={{ width: "100%" }}
           >
             <Spacer />
             <Form.Item label={languageText} name="language">

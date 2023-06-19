@@ -4,6 +4,7 @@ import {
   VideoCameraOutlined,
   MessageOutlined,
   BellOutlined,
+  UnorderedListOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
@@ -25,6 +26,7 @@ import { useUserState } from "@/state/user.state";
 import { ItemType } from "antd/es/menu/hooks/useItems";
 import { cid } from "./i18n/types.i18n.AppLayout";
 import { useIntl } from "react-intl";
+import PP from "@/i18n/PlaceholderPrint";
 const { Header, Content, Footer, Sider } = Layout;
 
 interface MenuItem {
@@ -147,7 +149,18 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           "profile",
           "/app/profile"
         ),
-        getItem(contactsText, "contacts", "/app/friends"),
+        getItem(
+          <NavLink
+            to="/app/friends"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            {contactsText}
+          </NavLink>,
+          "contacts",
+          "/app/friends"
+        ),
         getItem(wishlistsText, "wishlists", "/app/wishlists"),
         getItem(
           <NavLink
@@ -167,7 +180,8 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const itemsMobile = [
     {
       key: "profile",
-      text: profileText,
+      text: user?.username || profileText,
+      // text: profileText,
       route: "/app/profile",
       icon: <UserOutlined style={{ fontSize: "1rem" }} />,
     },
@@ -188,6 +202,12 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       text: notificationsText,
       route: "/app/notifications",
       icon: <BellOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "contacts",
+      text: <PP>Contacts</PP>,
+      route: "/app/friends",
+      icon: <UnorderedListOutlined style={{ fontSize: "1rem" }} />,
     },
     {
       key: "settings",
@@ -432,7 +452,11 @@ export default AppLayout;
 interface AppLayoutPaddingProps {
   align: "center" | "flex-start" | "flex-end";
   children: React.ReactElement;
-  padding?: {
+  paddings?: {
+    mobile: string;
+    desktop: string;
+  };
+  maxWidths?: {
     mobile: string;
     desktop: string;
   };
@@ -440,26 +464,37 @@ interface AppLayoutPaddingProps {
 export const AppLayoutPadding = ({
   align = "center",
   children,
-  padding = {
+  paddings = {
     mobile: "10px",
     desktop: "20px",
+  },
+  maxWidths = {
+    mobile: "100%",
+    desktop: "800px",
   },
 }: AppLayoutPaddingProps) => {
   const { screen } = useWindowSize();
   if (screen === ScreenSize.mobile) {
-    return <div style={{ padding: padding.mobile }}>{children}</div>;
+    return <div style={{ padding: paddings.mobile }}>{children}</div>;
   }
   return (
     <div
       style={{
-        padding: padding.desktop,
+        padding: paddings.desktop,
         display: "flex",
         flexDirection: "column",
         justifyContent: "flex-start",
         alignItems: align,
       }}
     >
-      {children}
+      <div
+        style={{
+          maxWidth: maxWidths.desktop,
+          width: "100%",
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };
@@ -474,7 +509,9 @@ export const Spacer = ({
   height = "30px",
   style,
 }: SpacerProps) => {
-  return <div style={{ flex: 1, width, height, ...style }} />;
+  return (
+    <div style={{ flex: 1, width, height, minHeight: height, ...style }} />
+  );
 };
 
 interface LayoutInteriorHeaderProps {

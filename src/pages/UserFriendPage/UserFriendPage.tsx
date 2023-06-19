@@ -57,21 +57,21 @@ export const UserFriendPage = () => {
 
   const handleSendFriendRequest = async () => {
     console.log(`handleSendFriendRequest...`);
-    // if (spotlightUser) {
-    setIsPending(true);
-    const resp = await sendFriendRequestMutation({
-      note: friendRequestNote,
-      recipientID: "V0ITwpuen8eKKN7wxijj5glBXEg1" as UserID, // spotlightUser.id,
-      // skip utmAttribution for now
-    });
-    if (resp) {
-      if (resp.status === FriendshipStatus.Requested) {
-        message.success(<PP>Friend Request Sent!</PP>);
-        setRecentlySentRequest(true);
+    if (spotlightUser) {
+      setIsPending(true);
+      const resp = await sendFriendRequestMutation({
+        note: friendRequestNote,
+        recipientID: spotlightUser.id as UserID, // spotlightUser.id,
+        // skip utmAttribution for now
+      });
+      if (resp) {
+        if (resp.status === FriendshipStatus.SentRequest) {
+          message.success(<PP>Friend Request Sent!</PP>);
+          setRecentlySentRequest(true);
+        }
       }
+      setIsPending(false);
     }
-    setIsPending(false);
-    // }
   };
 
   return (

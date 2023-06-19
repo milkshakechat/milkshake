@@ -291,7 +291,8 @@ export type User = {
 };
 
 export type ViewPublicProfileInput = {
-  username: Scalars['String']['input'];
+  userID?: InputMaybe<Scalars['UserID']['input']>;
+  username?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ViewPublicProfileResponse = ResponseError | ViewPublicProfileResponseSuccess;
@@ -299,6 +300,7 @@ export type ViewPublicProfileResponse = ResponseError | ViewPublicProfileRespons
 export type ViewPublicProfileResponseSuccess = {
   __typename?: 'ViewPublicProfileResponseSuccess';
   avatar?: Maybe<Scalars['String']['output']>;
+  displayName?: Maybe<Scalars['String']['output']>;
   id: Scalars['UserID']['output'];
   username: Scalars['String']['output'];
 };
@@ -315,7 +317,14 @@ export type ViewPublicProfileQueryVariables = Exact<{
 }>;
 
 
-export type ViewPublicProfileQuery = { __typename?: 'Query', viewPublicProfile: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'ViewPublicProfileResponseSuccess', id: any, username: string, avatar?: string | null } };
+export type ViewPublicProfileQuery = { __typename?: 'Query', viewPublicProfile: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'ViewPublicProfileResponseSuccess', id: any, username: string, avatar?: string | null, displayName?: string | null } };
+
+export type ManageFriendshipMutationVariables = Exact<{
+  input: ManageFriendshipInput;
+}>;
+
+
+export type ManageFriendshipMutation = { __typename?: 'Mutation', manageFriendship: { __typename: 'ManageFriendshipResponseSuccess', status: FriendshipStatus } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 

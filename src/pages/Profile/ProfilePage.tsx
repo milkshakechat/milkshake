@@ -181,7 +181,7 @@ const ProfilePage = () => {
             }}
             title={
               <PP>
-                <h3>Add me on Milkshake.Chat</h3>
+                <h3>Add me on Milkshake.chat</h3>
               </PP>
             }
             style={{ overflow: "hidden", top: 20 }}
@@ -192,6 +192,18 @@ const ProfilePage = () => {
               >
                 <Button
                   onClick={() => {
+                    if (user) {
+                      navigator.clipboard.writeText(
+                        `${window.location.origin}/${user.username}`
+                      );
+                      message.success(<PP>Copied profile link!</PP>);
+                    }
+                  }}
+                >
+                  <PP>Copy</PP>
+                </Button>
+                <Button
+                  onClick={() => {
                     setShowQRCode(false);
                     navigate({
                       pathname: location.pathname,
@@ -200,22 +212,9 @@ const ProfilePage = () => {
                       }).toString(),
                     });
                   }}
-                  type="ghost"
-                >
-                  Close
-                </Button>
-                <Button
-                  onClick={() => {
-                    if (user) {
-                      navigator.clipboard.writeText(
-                        `${window.location.origin}/${user.username}`
-                      );
-                      message.success(<PP>Copied profile link!</PP>);
-                    }
-                  }}
                   type="primary"
                 >
-                  <PP>Copy URL</PP>
+                  Close
                 </Button>
               </Space>
             }

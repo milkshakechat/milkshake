@@ -4,6 +4,7 @@ import AppLayout, {
   Spacer,
 } from "@/components/AppLayout/AppLayout";
 import {
+  Avatar,
   Button,
   Divider,
   Dropdown,
@@ -57,6 +58,7 @@ import {
   usePermissionsState,
 } from "@/state/permissions.state";
 import { useUserAgent } from "@oieduardorabelo/use-user-agent";
+import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 
 const formLayout = "horizontal";
 
@@ -338,7 +340,38 @@ const ProfileSettingsPage = () => {
             onFinish={submitForm}
             style={{ width: "100%" }}
           >
-            <Spacer />
+            <Form.Item label={<PP>Profile</PP>} name="profile">
+              {user && (
+                <$Horizontal style={{ flex: 1 }}>
+                  <$Horizontal
+                    spacing={3}
+                    style={{ flex: 1, cursor: "pointer" }}
+                  >
+                    <Avatar
+                      src={user.avatar}
+                      style={{ backgroundColor: token.colorPrimaryText }}
+                      size="large"
+                    />
+                    <$Vertical
+                      style={{
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      <PP>
+                        <b>{user.displayName || user.username}</b>
+                      </PP>
+                      <PP>
+                        <i>{`@${user.username}`}</i>
+                      </PP>
+                    </$Vertical>
+                  </$Horizontal>
+                  <NavLink to="/app/profile/style">
+                    <Button type="link">Edit Profile</Button>
+                  </NavLink>
+                </$Horizontal>
+              )}
+            </Form.Item>
             <Form.Item label={languageText} name="language">
               <Select
                 onChange={handleLocaleMenuClick}

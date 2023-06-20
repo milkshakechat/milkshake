@@ -4,19 +4,33 @@ import PP from "@/i18n/PlaceholderPrint";
 import { Avatar, theme } from "antd";
 import styled from "styled-components";
 import { useWindowSize } from "@/api/utils/screen";
+import { PlusOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const StoriesHeader = () => {
   const intl = useIntl();
   const { screen, isMobile } = useWindowSize();
   const { token } = theme.useToken();
+  const navigate = useNavigate();
   return (
     <$StoriesHeader backgroundColor={token.colorBgContainer}>
       {
         // create an array from a number
-        Array.from(Array(30).keys()).map((i) => {
+        Array.from(Array(30).keys()).map((k, i) => {
           return (
-            <div>
-              <Avatar size={75} />
+            <div
+              onClick={() => {
+                navigate({
+                  pathname: "/app/story/new",
+                });
+              }}
+            >
+              <Avatar
+                size={75}
+                {...{
+                  icon: i === 0 ? <PlusOutlined /> : null,
+                }}
+              />
             </div>
           );
         })

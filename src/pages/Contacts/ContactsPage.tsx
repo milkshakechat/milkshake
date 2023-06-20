@@ -1129,7 +1129,7 @@ export const ContactsPage = () => {
         onCancel={() => setShowAddContactModal(false)}
         title={
           <PP>
-            <h3>Add me on Milkshake.Chat</h3>
+            <h3>Add me on Milkshake.chat</h3>
           </PP>
         }
         style={{ overflow: "hidden" }}
@@ -1169,6 +1169,7 @@ export const ContactsPage = () => {
               }}
             >
               <QRCode
+                bordered={false}
                 value={`${window.location}/add/${user.id}`}
                 color={token.colorText}
                 icon={QRCODE_LOGO}

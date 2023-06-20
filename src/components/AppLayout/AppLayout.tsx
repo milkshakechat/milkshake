@@ -114,7 +114,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     ),
     getItem(
       <NavLink
-        to="/app/sandbox"
+        to="/app/chats"
         className={({ isActive, isPending }) =>
           isPending ? "pending" : isActive ? "active" : ""
         }
@@ -122,7 +122,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         {messagesText}
       </NavLink>,
       "messages",
-      "/app/sandbox",
+      "/app/chats",
       <MessageOutlined style={{ fontSize: "1rem" }} />
     ),
     getItem(
@@ -188,7 +188,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     {
       key: "messages",
       text: messagesText,
-      route: "/app/sandbox",
+      route: "/app/chats",
       icon: <MessageOutlined style={{ fontSize: "1rem" }} />,
     },
     {

@@ -179,7 +179,20 @@ export const ContactsPage = () => {
                 />
               </div>
             }
-            title={<PP>{fr.displayName}</PP>}
+            title={
+              <div
+                onClick={() => {
+                  navigate({
+                    pathname: "/user",
+                    search: createSearchParams({
+                      userID: fr.friendID,
+                    }).toString(),
+                  });
+                }}
+              >
+                <PP>{fr.displayName}</PP>
+              </div>
+            }
             description={
               <span
                 style={{

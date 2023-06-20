@@ -72,3 +72,11 @@ export const $Vertical = styled.div<{
       props.spacing && `${SPACING_VALS[props.spacing - 1]}px`};
   }
 `;
+
+export const $DemoStyledComponent = styled.div<{
+  padding?: string;
+  maxWidth?: string;
+}>`
+  ${(props) => props.padding && `padding: ${props.padding};`}
+  ${(props) => props.maxWidth && `max-width: ${props.maxWidth};`}
+`;

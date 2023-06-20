@@ -26,7 +26,7 @@ import {
 import SendBirdService from "@/api/sendbird";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { ConfigProvider, RadioChangeEvent, theme } from "antd";
-import ConversationPage from "@/pages/Conversation/ConversationPage";
+
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import ProfilePage from "@/pages/Profile/ProfilePage";
 import ProfileStylePage from "@/pages/ProfileStyle/ProfileStylePage";
@@ -41,6 +41,7 @@ import { ThemeColorHex, localeEnum } from "@milkshakechat/helpers";
 import { localeEnumToFormatJSLocale } from "@/i18n";
 import COMPILED_LANGUAGE_MAPPINGS from "@/i18n/output/i18n.output.messages";
 import ContactsPage from "@/pages/Contacts/ContactsPage";
+import ChatsPage from "./pages/ChatsPage/ChatsPage";
 
 const AppRouter = () => {
   const {
@@ -132,10 +133,12 @@ const AppRouter = () => {
                       <Routes>
                         <Route path="/app" errorElement={<Page404 />}>
                           <Route
-                            path="sandbox"
+                            path="chats"
                             element={
                               <AuthProtect>
-                                <ConversationPage />
+                                <AppLayout>
+                                  <ChatsPage />
+                                </AppLayout>
                               </AuthProtect>
                             }
                           />
@@ -159,6 +162,7 @@ const AppRouter = () => {
                               </AuthProtect>
                             }
                           />
+
                           <Route
                             path="friends"
                             element={

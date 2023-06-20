@@ -243,7 +243,7 @@ export const UserFriendPage = () => {
                     label: (
                       <PP>
                         {" "}
-                        <span style={{ fontSize: "1.2rem" }}>{title}</span>
+                        <span style={{ fontSize: "1rem" }}>{title}</span>
                       </PP>
                     ),
                     key,

@@ -1,14 +1,14 @@
 import { useIntl, FormattedMessage } from "react-intl";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
-import { Affix, Avatar, Input, List } from "antd";
+import { Affix, Avatar, Button, Input, List } from "antd";
 import ChatPreview, {
   ChatPreviewData,
   ChatPreviewProps,
 } from "../ChatPreview/ChatPreview";
 import { UserID } from "@milkshakechat/helpers";
 import { useState } from "react";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, PlusSquareFilled } from "@ant-design/icons";
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import { useWindowSize } from "@/api/utils/screen";
 
@@ -97,14 +97,23 @@ const ChatsList = () => {
   return (
     <$Vertical>
       <Affix offsetTop={isMobile ? 100 : 100}>
-        <Input
-          placeholder={"Search Friend"}
-          allowClear
-          onChange={(e) => setSearchString(e.target.value)}
-          style={{ width: "100%" }}
-          prefix={<SearchOutlined />}
-          suffix={<></>}
-        />
+        <$Horizontal>
+          <Input
+            placeholder={"Search Friend"}
+            allowClear
+            onChange={(e) => setSearchString(e.target.value)}
+            style={{ width: "100%" }}
+            prefix={<SearchOutlined />}
+            suffix={<></>}
+          />
+          <Button
+            icon={<PlusSquareFilled />}
+            type="primary"
+            style={{ marginLeft: "5px" }}
+          >
+            New Chat
+          </Button>
+        </$Horizontal>
       </Affix>
       <Spacer height="10px" />
       <div style={{ overflowY: "scroll" }}>

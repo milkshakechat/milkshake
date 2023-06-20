@@ -9,11 +9,19 @@ import {
 import config from "@/config.env";
 import QuickNav from "@/components/QuickNav/QuickNav";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Space } from "antd";
+import { Button, Input, Layout, Space, theme } from "antd";
 import { useFullLoginProcedure } from "@/components/AuthProtect/AuthProtect";
 import { refreshWebPage } from "@/api/utils/utils";
+import { LayoutLogoHeader } from "@/components/AppLayout/AppLayout";
+import { SearchOutlined } from "@ant-design/icons";
+import { $Vertical } from "@/api/utils/spacing";
+import LogoText from "@/components/LogoText/LogoText";
+import { Spacer } from "../../components/AppLayout/AppLayout";
+import LogoCookie from "@/components/LogoText/LogoCookie";
+import { useWindowSize } from "@/api/utils/screen";
 
 const LoginPage = () => {
+  const { token } = theme.useToken();
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [displayStatus, setDisplayStatus] = useState<"signup" | "check_verify">(
@@ -81,6 +89,7 @@ const LoginPage = () => {
         });
     }
   };
+  const { isMobile } = useWindowSize();
 
   const verifyPhonePin = () => {
     if (confirmationResultRef.current) {
@@ -108,83 +117,199 @@ const LoginPage = () => {
     }
   };
 
-  return (
-    <div>
-      <QuickNav />
+  const renderOldLayout = () => {
+    return (
+      <div>
+        <h1>Login Page</h1>
+        <br />
 
-      <h1>Login Page</h1>
-      <br />
-
-      <Space direction="vertical">
-        <label>Email</label>
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={submitted}
-        ></input>
-        <button onClick={() => signupWithEmail()} disabled={submitted}>
-          Login
-        </button>
-      </Space>
-      <br />
-      <br />
-      <br />
-      <br />
-      <Space direction="vertical">
-        <label>Phone</label>
-        <div id={captchaContainer} />
-        {showPinProceed && (
-          <span>{`Check your phone ${phoneNumber} for sms code`}</span>
-        )}
-        {showPinProceed ? (
+        <Space direction="vertical">
+          <label>Email</label>
           <input
-            value={phoneCode}
-            onChange={(e) => setPhoneCode(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             disabled={submitted}
-            placeholder=""
           ></input>
-        ) : (
-          <input
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            disabled={submitted}
-            placeholder=""
-          ></input>
-        )}
-
-        {showPinProceed ? (
-          <>
-            <button onClick={verifyPhonePin} disabled={submitted}>
-              Verify
-            </button>
-            <span onClick={() => setShowPinProceed(false)}>reset</span>
-          </>
-        ) : (
-          <button onClick={signupWithPhone} disabled={submitted}>
-            Get Code
+          <button onClick={() => signupWithEmail()} disabled={submitted}>
+            Login
           </button>
+        </Space>
+        <br />
+        <br />
+        <br />
+        <br />
+        <Space direction="vertical">
+          <label>Phone</label>
+          <div id={captchaContainer} />
+          {showPinProceed && (
+            <span>{`Check your phone ${phoneNumber} for sms code`}</span>
+          )}
+          {showPinProceed ? (
+            <input
+              value={phoneCode}
+              onChange={(e) => setPhoneCode(e.target.value)}
+              disabled={submitted}
+              placeholder=""
+            ></input>
+          ) : (
+            <input
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              disabled={submitted}
+              placeholder=""
+            ></input>
+          )}
+
+          {showPinProceed ? (
+            <>
+              <button onClick={verifyPhonePin} disabled={submitted}>
+                Verify
+              </button>
+              <span onClick={() => setShowPinProceed(false)}>reset</span>
+            </>
+          ) : (
+            <button onClick={signupWithPhone} disabled={submitted}>
+              Get Code
+            </button>
+          )}
+        </Space>
+
+        <br />
+        <span style={{ color: "red" }}>{errorMessage}</span>
+
+        <br />
+        {displayStatus === "check_verify" && (
+          <span>Check your email to verify</span>
         )}
-      </Space>
 
-      <br />
-      <span style={{ color: "red" }}>{errorMessage}</span>
+        <br />
+        <br />
+        <NavLink
+          to="/app/signup"
+          className={({ isActive, isPending }) =>
+            isPending ? "pending" : isActive ? "active" : ""
+          }
+        >
+          Sign Up
+        </NavLink>
+      </div>
+    );
+  };
 
-      <br />
-      {displayStatus === "check_verify" && (
-        <span>Check your email to verify</span>
-      )}
-
-      <br />
-      <br />
-      <NavLink
-        to="/app/signup"
-        className={({ isActive, isPending }) =>
-          isPending ? "pending" : isActive ? "active" : ""
+  return (
+    <Layout
+      style={{
+        backgroundColor: token.colorBgContainer,
+        color: token.colorTextBase,
+      }}
+    >
+      {/* <LayoutLogoHeader
+        rightAction={
+          <NavLink to="/app/friends">
+            <SearchOutlined
+              style={{ color: token.colorBgSpotlight, fontSize: "1.3rem" }}
+            />
+          </NavLink>
         }
+      /> */}
+      <$Vertical
+        style={{
+          flex: 1,
+          padding: "30px",
+          justifyContent: "flex-start",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
       >
-        Sign Up
-      </NavLink>
-    </div>
+        <Spacer />
+        <LogoCookie width={"100px"} fill={token.colorPrimary} />
+        <$Vertical
+          style={{
+            fontWeight: 900,
+            fontSize: "2rem",
+            alignItems: "center",
+            fontStyle: "italic",
+            margin: "30px",
+            color: token.colorPrimary,
+          }}
+        >
+          <div>Milkshake</div>
+          <div>Chat</div>
+        </$Vertical>
+        <Spacer />
+
+        <$Vertical style={{ maxWidth: isMobile ? "none" : "600px" }}>
+          {showPinProceed && (
+            <span
+              style={{ fontSize: "1rem" }}
+            >{`Check ${phoneNumber} for SMS Code`}</span>
+          )}
+          <div id={captchaContainer} style={{ margin: "10px 0px" }} />
+          {showPinProceed ? (
+            <Input
+              placeholder="Code"
+              type="phone"
+              value={phoneCode}
+              onChange={(e) => setPhoneCode(e.target.value)}
+              disabled={submitted}
+              style={{ fontSize: "1.3rem" }}
+            ></Input>
+          ) : (
+            <Input
+              placeholder="Phone"
+              type="phone"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              disabled={submitted}
+              style={{ fontSize: "1.3rem" }}
+            ></Input>
+          )}
+
+          {showPinProceed ? (
+            <>
+              <Button
+                type="primary"
+                size="large"
+                onClick={verifyPhonePin}
+                disabled={submitted}
+                style={{
+                  fontWeight: "bold",
+                  width: "100%",
+                  margin: "10px 0px",
+                }}
+              >
+                VERIFY
+              </Button>
+              <span
+                onClick={() => setShowPinProceed(false)}
+                style={{
+                  color: token.colorTextDisabled,
+                  margin: "10px 0px",
+                  fontStyle: "italic",
+                }}
+              >
+                reset
+              </span>
+            </>
+          ) : (
+            <Button
+              type="primary"
+              size="large"
+              onClick={signupWithPhone}
+              disabled={submitted}
+              style={{
+                fontWeight: "bold",
+                width: "100%",
+                margin: "10px 0px",
+              }}
+            >
+              LOGIN PHONE
+            </Button>
+          )}
+        </$Vertical>
+        <Spacer />
+      </$Vertical>
+    </Layout>
   );
 };
 

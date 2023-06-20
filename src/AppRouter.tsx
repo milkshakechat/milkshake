@@ -100,7 +100,15 @@ const AppRouter = () => {
               >
                 <AuthProtectProvider>
                   <Routes>
-                    <Route path="/" element={<HomePage />} index />
+                    <Route
+                      path="/"
+                      element={
+                        <AuthProtect>
+                          <HomePage />
+                        </AuthProtect>
+                      }
+                      index
+                    />
                     <Route path="/:username" element={<UsernamePage />} />
                     <Route path="/app" element={<div>app</div>}></Route>
                     <Route path="/app" errorElement={<Page404 />}>

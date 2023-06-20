@@ -10,7 +10,6 @@ import { Spacer } from "@/components/AppLayout/AppLayout";
 
 const ConversationsPage = () => {
   const intl = useIntl();
-
   return (
     <$Vertical style={{ padding: "0px 10px" }}>
       <div

@@ -36,6 +36,7 @@ const LoginPage = () => {
   const fullLogin = useFullLoginProcedure();
   const navigate = useNavigate();
   const [recaptchaNonce, setRecaptchaNonce] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const auth = getAuth();
   const captchaContainer = "recaptcha-container";
@@ -73,6 +74,7 @@ const LoginPage = () => {
 
   const signupWithPhone = () => {
     if (captchaRef.current) {
+      setIsLoading(true);
       signInWithPhoneNumber(auth, phoneNumber, captchaRef.current)
         .then((confirmationResult) => {
           // SMS sent. Prompt user to type the code from the message, then sign the
@@ -80,12 +82,14 @@ const LoginPage = () => {
           console.log(`confirmationResult`, confirmationResult);
           confirmationResultRef.current = confirmationResult;
           setShowPinProceed(true);
+          setIsLoading(false);
           // ...
         })
         .catch((error) => {
           // Error; SMS not sent
           setRecaptchaNonce((nonce) => nonce + 1);
           // ...
+          setIsLoading(false);
         });
     }
   };
@@ -93,6 +97,7 @@ const LoginPage = () => {
 
   const verifyPhonePin = () => {
     if (confirmationResultRef.current) {
+      setIsLoading(true);
       confirmationResultRef.current
         .confirm(phoneCode)
         .then(async (result: any) => {
@@ -100,6 +105,7 @@ const LoginPage = () => {
           // You can access the new user via result.user
           console.log(result.user);
           await fullLogin(result.user);
+          setIsLoading(false);
           // navigate elsewhere
           setTimeout(() => {
             navigate("/app/profile");
@@ -113,6 +119,7 @@ const LoginPage = () => {
           // User couldn't sign in (bad verification code?)
           // ...
           setRecaptchaNonce((nonce) => nonce + 1);
+          setIsLoading(false);
         });
     }
   };
@@ -270,12 +277,14 @@ const LoginPage = () => {
               <Button
                 type="primary"
                 size="large"
+                loading={isLoading}
                 onClick={verifyPhonePin}
                 disabled={submitted}
                 style={{
                   fontWeight: "bold",
                   width: "100%",
                   margin: "10px 0px",
+                  backgroundColor: "#fcba03",
                 }}
               >
                 VERIFY
@@ -295,6 +304,7 @@ const LoginPage = () => {
             <Button
               type="primary"
               size="large"
+              loading={isLoading}
               onClick={signupWithPhone}
               disabled={submitted}
               style={{

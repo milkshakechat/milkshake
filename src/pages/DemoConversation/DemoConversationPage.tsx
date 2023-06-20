@@ -21,7 +21,7 @@ import {
 } from "@sendbird/chat/message";
 import { useRef, useState } from "react";
 
-const ConversationPage = () => {
+const DemoConversation = () => {
   const { sendbird, loading } = useSendBirdConnection();
 
   const [inputText, setInputText] = useState<string>("");
@@ -153,7 +153,7 @@ const ConversationPage = () => {
   return (
     <div>
       <QuickNav />
-      <h1>ConversationPage</h1>
+      <h1>DemoConversation</h1>
       <br />
       <button onClick={() => createChat()}>List Chats</button>
       <br />
@@ -173,4 +173,4 @@ const ConversationPage = () => {
   );
 };
 
-export default ConversationPage;
+export default DemoConversation;

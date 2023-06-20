@@ -15,7 +15,7 @@ const QuickNav = () => (
     </NavLink>
     <br />
     <NavLink
-      to="/app/sandbox"
+      to="/app/chats"
       className={({ isActive, isPending }) =>
         isPending ? "pending" : isActive ? "active" : ""
       }

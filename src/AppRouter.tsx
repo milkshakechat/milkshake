@@ -42,6 +42,8 @@ import { localeEnumToFormatJSLocale } from "@/i18n";
 import COMPILED_LANGUAGE_MAPPINGS from "@/i18n/output/i18n.output.messages";
 import ContactsPage from "@/pages/Contacts/ContactsPage";
 import ChatsPage from "./pages/ChatsPage/ChatsPage";
+import ChatPage from "./pages/ChatPage/ChatPage";
+import DemoConversation from "./pages/DemoConversation/DemoConversationPage";
 
 const AppRouter = () => {
   const {
@@ -150,6 +152,27 @@ const AppRouter = () => {
                               </AuthProtect>
                             }
                           />
+                          <Route
+                            path="chat"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <ChatPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="demo"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <DemoConversation />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+
                           <Route
                             path="settings"
                             element={

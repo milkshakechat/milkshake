@@ -208,6 +208,18 @@ export const ContactsPage = () => {
     );
   };
 
+  const goToChatPage = (participants: UserID[]) => {
+    console.log(`goToChatPage.participants`, participants);
+    const searchString = createSearchParams({
+      participants: encodeURIComponent(participants.join(",")),
+    }).toString();
+    console.log(`searchString = ${searchString}`);
+    navigate({
+      pathname: "/app/chat",
+      search: searchString,
+    });
+  };
+
   const renderContactsList = () => {
     if (!listContactsData) {
       return <PP>No Contacts Yet</PP>;
@@ -288,6 +300,11 @@ export const ContactsPage = () => {
                       ],
                     }}
                     disabled={optimisticDisabled.includes(item.friendID)}
+                    onClick={() => {
+                      if (user) {
+                        goToChatPage([user.id, item.friendID]);
+                      }
+                    }}
                   >
                     Chat
                   </Dropdown.Button>,
@@ -341,7 +358,11 @@ export const ContactsPage = () => {
                         <Button
                           type="primary"
                           ghost
-                          onClick={() => console.log(`Go to chat page...`)}
+                          onClick={() => {
+                            if (user) {
+                              goToChatPage([user.id, item.friendID]);
+                            }
+                          }}
                           style={{ minWidth: "100px" }}
                         >
                           <PP>Chat</PP>
@@ -360,7 +381,11 @@ export const ContactsPage = () => {
                       <Button
                         type="primary"
                         ghost
-                        onClick={() => console.log(`Go to chat page...`)}
+                        onClick={() => {
+                          if (user) {
+                            goToChatPage([user.id, item.friendID]);
+                          }
+                        }}
                         style={{ minWidth: "100px" }}
                       >
                         <PP>Chat</PP>

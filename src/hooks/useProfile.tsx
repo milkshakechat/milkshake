@@ -64,6 +64,7 @@ export const useProfile = () => {
                     privacyMode
                     themeColor
                     language
+                    sendBirdAccessToken
                   }
                 }
               }

@@ -588,6 +588,21 @@ const ProfileSettingsPage = () => {
                 <Button danger>{logoutText}</Button>
               </NavLink>
             </Form.Item>
+            {user && user.id && (
+              <Form.Item name="userID" {...noLabelFieldProps}>
+                <PP>
+                  <i
+                    onClick={() => {
+                      navigator.clipboard.writeText(user.id);
+                      message.info("Copied your USER ID");
+                    }}
+                    style={{ color: token.colorTextSecondary }}
+                  >
+                    {`UserID ${user.id}`}
+                  </i>
+                </PP>
+              </Form.Item>
+            )}
           </Form>
           <RequestPermissionModal
             isOpen={isRequestNotificationModalOpen}

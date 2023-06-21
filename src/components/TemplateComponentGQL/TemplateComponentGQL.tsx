@@ -1,4 +1,5 @@
 import { ErrorLines } from "@/api/graphql/error-line";
+import { useWindowSize } from "@/api/utils/screen";
 import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import {
   useDemoMutation,
@@ -6,8 +7,17 @@ import {
   useDemoQuery,
   useDemoSubscription,
 } from "@/hooks/useTemplateGQL";
+import { useUserState } from "@/state/user.state";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 export const TemplateComponentGQL = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get("tab");
+  const selfUser = useUserState((state) => state.user);
+  const { screen, isMobile } = useWindowSize();
+  const location = useLocation();
+
   const {
     data: demoQueryData,
     errors: demoQueryErrors,

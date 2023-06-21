@@ -20,7 +20,7 @@ const TimelineGallery = ({ media }: TimelineGalleryProps) => {
     count: number;
   }) => {
     return (
-      <$Vertical>
+      <$Vertical key={title}>
         <span
           style={{
             fontSize: "1rem",
@@ -35,6 +35,7 @@ const TimelineGallery = ({ media }: TimelineGalleryProps) => {
             Array.from(Array(count).keys()).map((i) => {
               return (
                 <Card
+                  key={i}
                   hoverable
                   style={{
                     minWidth: 130,

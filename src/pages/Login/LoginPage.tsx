@@ -41,7 +41,9 @@ const LoginPage = () => {
   const auth = getAuth();
   const captchaContainer = "recaptcha-container";
   useEffect(() => {
-    captchaRef.current = new RecaptchaVerifier(captchaContainer, {}, auth);
+    if (document.getElementById(captchaContainer)) {
+      captchaRef.current = new RecaptchaVerifier(captchaContainer, {}, auth);
+    }
   }, [recaptchaNonce]);
 
   const signupWithEmail = useCallback(() => {
@@ -72,6 +74,18 @@ const LoginPage = () => {
       });
   }, [email]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (document.getElementById(captchaContainer)) {
+        captchaRef.current = new RecaptchaVerifier(captchaContainer, {}, auth);
+        clearInterval(interval);
+      }
+    }, 100);
+
+    // Clear the interval when the component unmounts
+    return () => clearInterval(interval);
+  }, [auth]);
+
   const signupWithPhone = () => {
     if (captchaRef.current) {
       setIsLoading(true);
@@ -86,6 +100,7 @@ const LoginPage = () => {
           // ...
         })
         .catch((error) => {
+          console.log(error);
           // Error; SMS not sent
           setRecaptchaNonce((nonce) => nonce + 1);
           // ...

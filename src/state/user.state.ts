@@ -30,12 +30,19 @@ export const useUserState = create<UserState>()((set) => ({
   user: null,
   contacts: [],
   globalDirectory: [],
-  setFirebaseUser: (user) =>
-    set((state) => ({
-      userID: user.userID,
-      email: user.email,
-      idToken: user.idToken,
-    })),
+  setFirebaseUser: (user) => {
+    // GET USER AUTH TOKEN
+    // authorization: Bearer ....
+    console.log(`user.idToken`, user.idToken);
+    return set((state) => {
+      return {
+        userID: user.userID,
+        email: user.email,
+        idToken: user.idToken,
+      };
+    });
+  },
+
   setGQLUser: (user) => set((state) => ({ user })),
   setContacts: (contacts) => set((state) => ({ contacts })),
   setGlobalDirectory: (contacts) =>

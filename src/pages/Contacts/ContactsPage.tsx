@@ -16,7 +16,7 @@ import {
   useSendFriendRequest,
   useViewPublicProfile,
 } from "@/hooks/useFriendship";
-import { SearchOutlined } from "@ant-design/icons";
+
 import { useListContacts } from "@/hooks/useProfile";
 import {
   useDemoMutation,
@@ -43,7 +43,7 @@ import {
   theme,
 } from "antd";
 import { useEffect, useState } from "react";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, ScanOutlined } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
 import { QRCODE_LOGO, UserID } from "@milkshakechat/helpers";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
@@ -683,9 +683,9 @@ export const ContactsPage = () => {
           <Button
             onClick={() => setShowAddContactModal(true)}
             type="primary"
-            icon={<SearchOutlined />}
+            icon={<ScanOutlined />}
           >
-            Search
+            Scan
           </Button>
         }
       />

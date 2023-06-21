@@ -91,6 +91,7 @@ export type EnterChatRoomResponse = EnterChatRoomResponseSuccess | ResponseError
 export type EnterChatRoomResponseSuccess = {
   __typename?: 'EnterChatRoomResponseSuccess';
   chatRoom: ChatRoom;
+  isNew: Scalars['Boolean']['output'];
 };
 
 export enum FriendshipAction {
@@ -128,6 +129,13 @@ export enum LanguageEnum {
   Thai = 'thai',
   Vietnamese = 'vietnamese'
 }
+
+export type ListChatRoomsResponse = ListChatRoomsResponseSuccess | ResponseError;
+
+export type ListChatRoomsResponseSuccess = {
+  __typename?: 'ListChatRoomsResponseSuccess';
+  chatRooms: Array<ChatRoom>;
+};
 
 export type ListContactsResponse = ListContactsResponseSuccess | ResponseError;
 
@@ -219,6 +227,7 @@ export type Query = {
   demoQuery: DemoQueryResponse;
   enterChatRoom: EnterChatRoomResponse;
   getMyProfile: GetMyProfileResponse;
+  listChatRooms: ListChatRoomsResponse;
   listContacts: ListContactsResponse;
   ping: Ping;
   viewPublicProfile: ViewPublicProfileResponse;
@@ -332,6 +341,18 @@ export type ViewPublicProfileResponseSuccess = {
   username: Scalars['String']['output'];
 };
 
+export type ListChatRoomsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ListChatRoomsQuery = { __typename?: 'Query', listChatRooms: { __typename: 'ListChatRoomsResponseSuccess', chatRooms: Array<{ __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type EnterChatRoomQueryQueryVariables = Exact<{
+  input: EnterChatRoomInput;
+}>;
+
+
+export type EnterChatRoomQueryQuery = { __typename?: 'Query', enterChatRoom: { __typename: 'EnterChatRoomResponseSuccess', isNew: boolean, chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
 export type SendFriendRequestMutationVariables = Exact<{
   input: SendFriendRequestInput;
 }>;
@@ -352,13 +373,6 @@ export type ManageFriendshipMutationVariables = Exact<{
 
 
 export type ManageFriendshipMutation = { __typename?: 'Mutation', manageFriendship: { __typename: 'ManageFriendshipResponseSuccess', status: FriendshipStatus } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
-
-export type EnterChatRoomQueryQueryVariables = Exact<{
-  input: EnterChatRoomInput;
-}>;
-
-
-export type EnterChatRoomQueryQuery = { __typename?: 'Query', enterChatRoom: { __typename: 'EnterChatRoomResponseSuccess', chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 

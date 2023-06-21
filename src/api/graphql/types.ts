@@ -20,6 +20,14 @@ export type Scalars = {
   UserID: { input: any; output: any; }
 };
 
+export type ChatRoom = {
+  __typename?: 'ChatRoom';
+  chatRoomID: Scalars['String']['output'];
+  participants: Array<Scalars['UserID']['output']>;
+  sendBirdChannelURL?: Maybe<Scalars['String']['output']>;
+  sendBirdParticipants: Array<Scalars['UserID']['output']>;
+};
+
 export type CheckUsernameAvailableInput = {
   username: Scalars['String']['input'];
 };
@@ -71,6 +79,18 @@ export type DemoQueryResponseSuccess = {
 export type DemoSubscriptionEvent = {
   __typename?: 'DemoSubscriptionEvent';
   message: Scalars['String']['output'];
+};
+
+export type EnterChatRoomInput = {
+  chatRoomID?: InputMaybe<Scalars['String']['input']>;
+  participants?: InputMaybe<Array<Scalars['UserID']['input']>>;
+};
+
+export type EnterChatRoomResponse = EnterChatRoomResponseSuccess | ResponseError;
+
+export type EnterChatRoomResponseSuccess = {
+  __typename?: 'EnterChatRoomResponseSuccess';
+  chatRoom: ChatRoom;
 };
 
 export enum FriendshipAction {
@@ -197,6 +217,7 @@ export type Query = {
   checkUsernameAvailable: CheckUsernameAvailableResponse;
   demoPing: Ping;
   demoQuery: DemoQueryResponse;
+  enterChatRoom: EnterChatRoomResponse;
   getMyProfile: GetMyProfileResponse;
   listContacts: ListContactsResponse;
   ping: Ping;
@@ -211,6 +232,11 @@ export type QueryCheckUsernameAvailableArgs = {
 
 export type QueryDemoQueryArgs = {
   input: DemoQueryInput;
+};
+
+
+export type QueryEnterChatRoomArgs = {
+  input: EnterChatRoomInput;
 };
 
 
@@ -286,6 +312,7 @@ export type User = {
   link: Scalars['String']['output'];
   phone?: Maybe<Scalars['String']['output']>;
   privacyMode: PrivacyModeEnum;
+  sendBirdAccessToken?: Maybe<Scalars['String']['output']>;
   themeColor: Scalars['HexColorCode']['output'];
   username: Scalars['String']['output'];
 };
@@ -326,10 +353,17 @@ export type ManageFriendshipMutationVariables = Exact<{
 
 export type ManageFriendshipMutation = { __typename?: 'Mutation', manageFriendship: { __typename: 'ManageFriendshipResponseSuccess', status: FriendshipStatus } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
+export type EnterChatRoomQueryQueryVariables = Exact<{
+  input: EnterChatRoomInput;
+}>;
+
+
+export type EnterChatRoomQueryQuery = { __typename?: 'Query', enterChatRoom: { __typename: 'EnterChatRoomResponseSuccess', chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any, privacyMode: PrivacyModeEnum, themeColor: any, language: LanguageEnum } } | { __typename: 'ResponseError' } };
+export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any, privacyMode: PrivacyModeEnum, themeColor: any, language: LanguageEnum, sendBirdAccessToken?: string | null } } | { __typename: 'ResponseError' } };
 
 export type CheckUsernameAvailableQueryVariables = Exact<{
   input: CheckUsernameAvailableInput;

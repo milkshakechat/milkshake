@@ -98,7 +98,7 @@ export const ContactsPage = () => {
   const location = useLocation();
   const { screen, isMobile } = useWindowSize();
   const [showGlobalDirectory, setShowGlobalDirectory] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+
   const user = useUserState((state) => state.user);
 
   const { runMutation: runManageFriendship } = useManageFriendship();
@@ -121,20 +121,8 @@ export const ContactsPage = () => {
     errors: sendFriendRequestErrors,
     runMutation: sendFriendRequestMutation,
   } = useSendFriendRequest();
-  const {
-    data: listContactsData,
-    errors: listContactsErrors,
-    runQuery: runListContacts,
-  } = useListContacts();
-
-  useEffect(() => {
-    run();
-  }, []);
-
-  const run = async () => {
-    await runListContacts();
-    setIsLoading(false);
-  };
+  const contacts = useUserState((state) => state.contacts);
+  const globalDirectory = useUserState((state) => state.globalDirectory);
 
   const addFriend = async (userID: UserID) => {
     setLoadingManageFriendships((prev) => [...prev, userID]);
@@ -147,6 +135,7 @@ export const ContactsPage = () => {
   };
 
   const renderRow = (fr: Contact, actions: React.ReactNode[]) => {
+    // return <span>{fr.friendID}</span>;
     return (
       <List.Item
         actions={actions.map((act) => {
@@ -158,60 +147,67 @@ export const ContactsPage = () => {
             : undefined,
         }}
       >
-        <Skeleton avatar title={false} loading={!listContactsData} active>
-          <List.Item.Meta
-            avatar={
-              <div
-                onClick={() => {
-                  navigate({
-                    pathname: "/user",
-                    search: createSearchParams({
-                      userID: fr.friendID,
-                    }).toString(),
-                  });
-                }}
-              >
-                <Avatar
-                  style={{ backgroundColor: token.colorPrimaryText }}
-                  icon={<UserOutlined />}
-                  src={fr.avatar}
-                  size="large"
-                />
-              </div>
-            }
-            title={
-              <div
-                onClick={() => {
-                  navigate({
-                    pathname: "/user",
-                    search: createSearchParams({
-                      userID: fr.friendID,
-                    }).toString(),
-                  });
-                }}
-              >
-                <PP>{fr.displayName}</PP>
-              </div>
-            }
-            description={
-              <span
-                style={{
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {subtitle(fr.status)}
-              </span>
-            }
-          />
-        </Skeleton>
+        <List.Item.Meta
+          avatar={
+            <div
+              onClick={() => {
+                navigate({
+                  pathname: "/user",
+                  search: createSearchParams({
+                    userID: fr.friendID,
+                  }).toString(),
+                });
+              }}
+            >
+              <Avatar
+                style={{ backgroundColor: token.colorPrimaryText }}
+                icon={<UserOutlined />}
+                src={fr.avatar}
+                size="large"
+              />
+            </div>
+          }
+          title={
+            <div
+              onClick={() => {
+                navigate({
+                  pathname: "/user",
+                  search: createSearchParams({
+                    userID: fr.friendID,
+                  }).toString(),
+                });
+              }}
+            >
+              <PP>{fr.displayName}</PP>
+            </div>
+          }
+          description={
+            <span
+              style={{
+                textOverflow: "ellipsis",
+              }}
+            >
+              {subtitle(fr.status)}
+            </span>
+          }
+        />
       </List.Item>
     );
   };
 
+  const goToChatPage = (participants: UserID[]) => {
+    console.log(`goToChatPage.participants`, participants);
+    const searchString = createSearchParams({
+      participants: encodeURIComponent(participants.join(",")),
+    }).toString();
+    console.log(`searchString = ${searchString}`);
+    navigate({
+      pathname: "/app/chat",
+      search: searchString,
+    });
+  };
+
   const renderContactsList = () => {
-    if (!listContactsData) {
-      return <PP>No Contacts Yet</PP>;
-    }
     const searchText = "Search Contacts"; // <P>Search Contacts</P>;
     const handleFilter = (fr: Contact) => {
       return (
@@ -224,9 +220,8 @@ export const ContactsPage = () => {
       {
         key: ValidTabs.Friends,
         label: `${
-          listContactsData.contacts.filter(
-            (fr) => fr.status === FriendshipStatus.Accepted
-          ).length
+          contacts.filter((fr) => fr.status === FriendshipStatus.Accepted)
+            .length
         } Friends`,
         children: (
           <>
@@ -239,12 +234,12 @@ export const ContactsPage = () => {
             <Spacer />
             <List
               className="contacts-list"
-              loading={!listContactsData}
               itemLayout="horizontal"
-              dataSource={listContactsData.contacts
+              dataSource={contacts
                 .filter((fr) => fr.status === FriendshipStatus.Accepted)
                 .filter(handleFilter)}
               renderItem={(item) => {
+                console.log(`item`, item);
                 return renderRow(item, [
                   <Dropdown.Button
                     menu={{
@@ -288,6 +283,11 @@ export const ContactsPage = () => {
                       ],
                     }}
                     disabled={optimisticDisabled.includes(item.friendID)}
+                    onClick={() => {
+                      if (user) {
+                        goToChatPage([user.id, item.friendID]);
+                      }
+                    }}
                   >
                     Chat
                   </Dropdown.Button>,
@@ -305,7 +305,7 @@ export const ContactsPage = () => {
             <span style={{ marginRight: "5px" }}>Requests</span>
             <Badge
               count={
-                listContactsData.contacts.filter(
+                contacts.filter(
                   (fr) => fr.status === FriendshipStatus.GotRequest
                 ).length
               }
@@ -323,9 +323,8 @@ export const ContactsPage = () => {
             <Spacer />
             <List
               className="contacts-requests-list"
-              loading={!listContactsData}
               itemLayout="horizontal"
-              dataSource={listContactsData.contacts
+              dataSource={contacts
                 .filter((fr) => fr.status !== FriendshipStatus.Accepted)
                 .filter(handleFilter)
                 .sort(
@@ -341,7 +340,11 @@ export const ContactsPage = () => {
                         <Button
                           type="primary"
                           ghost
-                          onClick={() => console.log(`Go to chat page...`)}
+                          onClick={() => {
+                            if (user) {
+                              goToChatPage([user.id, item.friendID]);
+                            }
+                          }}
                           style={{ minWidth: "100px" }}
                         >
                           <PP>Chat</PP>
@@ -360,7 +363,11 @@ export const ContactsPage = () => {
                       <Button
                         type="primary"
                         ghost
-                        onClick={() => console.log(`Go to chat page...`)}
+                        onClick={() => {
+                          if (user) {
+                            goToChatPage([user.id, item.friendID]);
+                          }
+                        }}
                         style={{ minWidth: "100px" }}
                       >
                         <PP>Chat</PP>
@@ -623,7 +630,7 @@ export const ContactsPage = () => {
         ),
       },
     ];
-    return listContactsData ? (
+    return (
       <Tabs
         defaultActiveKey={initialTab ? initialTab : "friends"}
         items={tabs}
@@ -637,22 +644,20 @@ export const ContactsPage = () => {
           });
         }}
       />
-    ) : (
-      <PP>No Contacts Yet</PP>
     );
   };
 
   const renderGlobalDirectory = () => {
     return (
       <List
-        className="contacts-list"
-        loading={!listContactsData}
+        className="global-dir"
         itemLayout="horizontal"
-        dataSource={listContactsData?.globalDirectory.filter(
+        dataSource={globalDirectory.filter(
           (fr) => user && fr.friendID !== user.id
         )}
-        renderItem={(item) =>
-          renderRow(item, [
+        renderItem={(item) => {
+          console.log(`gitem`, item);
+          return renderRow(item, [
             <Button
               loading={loadingManageFriendships.includes(item.friendID)}
               onClick={() => addFriend(item.friendID)}
@@ -660,12 +665,16 @@ export const ContactsPage = () => {
             >
               <PP>Add Friend</PP>
             </Button>,
-          ])
-        }
+          ]);
+        }}
         style={{ width: "100%" }}
       />
     );
   };
+
+  console.log(`contacts`, contacts);
+  console.log(`globalDirectory`, globalDirectory);
+
   return (
     <>
       <LayoutInteriorHeader
@@ -682,13 +691,7 @@ export const ContactsPage = () => {
       />
       <AppLayoutPadding align="center">
         <>
-          {isLoading ? (
-            <Spin />
-          ) : showGlobalDirectory ? (
-            renderGlobalDirectory()
-          ) : (
-            renderContactsList()
-          )}
+          {showGlobalDirectory ? renderGlobalDirectory() : renderContactsList()}
           <Spacer />
           <Space direction="horizontal">
             <Switch

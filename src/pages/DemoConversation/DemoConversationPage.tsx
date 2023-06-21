@@ -44,7 +44,7 @@ const DemoConversation = () => {
     };
     const groupChannelCollection: GroupChannelCollection =
       await sendbird.groupChannel.createGroupChannelCollection(params);
-    console.log(groupChannelCollection);
+    console.log(`groupChannelCollection`, groupChannelCollection);
     // Call hasMore to see if there are more channels to load.
     if (groupChannelCollection.hasMore) {
       const channels: GroupChannel[] = await groupChannelCollection.loadMore();
@@ -56,7 +56,6 @@ const DemoConversation = () => {
       // loading messages
       const messageCollection = await channel.createMessageCollection();
       messageCollectionRef.current = messageCollection;
-      console.log("messageCollection", messageCollection);
       // Get the next page of messages.
       if (messageCollection.hasNext) {
         const messages: BaseMessage[] = await messageCollection.loadNext();

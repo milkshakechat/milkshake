@@ -31,7 +31,7 @@ const LoginPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
   const [showPinProceed, setShowPinProceed] = useState(false);
-  const captchaRef = useRef<RecaptchaVerifier>();
+  // const captchaRef = useRef<RecaptchaVerifier>();
   const confirmationResultRef = useRef<ConfirmationResult>();
   const fullLogin = useFullLoginProcedure();
   const navigate = useNavigate();
@@ -39,10 +39,22 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const auth = getAuth();
-  const captchaContainer = "recaptcha-container";
-  useEffect(() => {
-    captchaRef.current = new RecaptchaVerifier(captchaContainer, {}, auth);
-  }, [recaptchaNonce]);
+  const [recaptchaVerifier, setRecaptchaVerifier] =
+    useState<RecaptchaVerifier>();
+
+  const captchaRef = useCallback((node: HTMLDivElement) => {
+    if (node !== null) {
+      const verifier = new RecaptchaVerifier(node, {}, auth);
+      setRecaptchaVerifier(verifier);
+    }
+  }, []);
+
+  // const captchaContainer = "recaptcha-container";
+  // useEffect(() => {
+  //   if (document.getElementById(captchaContainer)) {
+  //     captchaRef.current = new RecaptchaVerifier(captchaContainer, {}, auth);
+  //   }
+  // }, [recaptchaNonce]);
 
   const signupWithEmail = useCallback(() => {
     console.log("Signup!");
@@ -72,10 +84,22 @@ const LoginPage = () => {
       });
   }, [email]);
 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     if (document.getElementById(captchaContainer)) {
+  //       captchaRef.current = new RecaptchaVerifier(captchaContainer, {}, auth);
+  //       clearInterval(interval);
+  //     }
+  //   }, 100);
+
+  //   // Clear the interval when the component unmounts
+  //   return () => clearInterval(interval);
+  // }, [auth]);
+
   const signupWithPhone = () => {
-    if (captchaRef.current) {
+    if (recaptchaVerifier) {
       setIsLoading(true);
-      signInWithPhoneNumber(auth, phoneNumber, captchaRef.current)
+      signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier)
         .then((confirmationResult) => {
           // SMS sent. Prompt user to type the code from the message, then sign the
           // user in with confirmationResult.confirm(code).
@@ -86,6 +110,7 @@ const LoginPage = () => {
           // ...
         })
         .catch((error) => {
+          console.log(error);
           // Error; SMS not sent
           setRecaptchaNonce((nonce) => nonce + 1);
           // ...
@@ -122,85 +147,6 @@ const LoginPage = () => {
           setIsLoading(false);
         });
     }
-  };
-
-  const renderOldLayout = () => {
-    return (
-      <div>
-        <h1>Login Page</h1>
-        <br />
-
-        <Space direction="vertical">
-          <label>Email</label>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={submitted}
-          ></input>
-          <button onClick={() => signupWithEmail()} disabled={submitted}>
-            Login
-          </button>
-        </Space>
-        <br />
-        <br />
-        <br />
-        <br />
-        <Space direction="vertical">
-          <label>Phone</label>
-          <div id={captchaContainer} />
-          {showPinProceed && (
-            <span>{`Check your phone ${phoneNumber} for sms code`}</span>
-          )}
-          {showPinProceed ? (
-            <input
-              value={phoneCode}
-              onChange={(e) => setPhoneCode(e.target.value)}
-              disabled={submitted}
-              placeholder=""
-            ></input>
-          ) : (
-            <input
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              disabled={submitted}
-              placeholder=""
-            ></input>
-          )}
-
-          {showPinProceed ? (
-            <>
-              <button onClick={verifyPhonePin} disabled={submitted}>
-                Verify
-              </button>
-              <span onClick={() => setShowPinProceed(false)}>reset</span>
-            </>
-          ) : (
-            <button onClick={signupWithPhone} disabled={submitted}>
-              Get Code
-            </button>
-          )}
-        </Space>
-
-        <br />
-        <span style={{ color: "red" }}>{errorMessage}</span>
-
-        <br />
-        {displayStatus === "check_verify" && (
-          <span>Check your email to verify</span>
-        )}
-
-        <br />
-        <br />
-        <NavLink
-          to="/app/signup"
-          className={({ isActive, isPending }) =>
-            isPending ? "pending" : isActive ? "active" : ""
-          }
-        >
-          Sign Up
-        </NavLink>
-      </div>
-    );
   };
 
   return (
@@ -251,7 +197,7 @@ const LoginPage = () => {
               style={{ fontSize: "1rem" }}
             >{`Check ${phoneNumber} for SMS Code`}</span>
           )}
-          <div id={captchaContainer} style={{ margin: "10px 0px" }} />
+          <div ref={captchaRef} style={{ margin: "10px 0px" }} />
           {showPinProceed ? (
             <Input
               placeholder="Code"

@@ -99,7 +99,7 @@ const ChatsList = () => {
       <Affix offsetTop={isMobile ? 100 : 100}>
         <$Horizontal>
           <Input
-            placeholder={"Search Friend"}
+            placeholder={"Search Chats"}
             allowClear
             onChange={(e) => setSearchString(e.target.value)}
             style={{ width: "100%" }}

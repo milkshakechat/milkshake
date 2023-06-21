@@ -1,4 +1,4 @@
-import { useProfile } from "@/hooks/useProfile";
+import { useListContacts, useProfile } from "@/hooks/useProfile";
 import useWebPermissions from "@/hooks/useWebPermissions";
 import { useUserState } from "@/state/user.state";
 import { useEffect } from "react";
@@ -9,12 +9,9 @@ interface Props {
 }
 
 export const UserInfoProvider = ({ children }: Props) => {
-  const {
-    data: profileData,
-    errors: profileErrors,
-    runQuery: getProfile,
-  } = useProfile();
+  const { runQuery: getProfile } = useProfile();
   const { checkWebPermissions } = useWebPermissions({});
+  const { runQuery: runListContacts } = useListContacts();
 
   const { idToken, refetchNonce } = useUserState(
     (state) => ({
@@ -30,6 +27,7 @@ export const UserInfoProvider = ({ children }: Props) => {
 
   useEffect(() => {
     getProfile();
+    runListContacts();
   }, [idToken, refetchNonce]);
 
   return <>{children}</>;

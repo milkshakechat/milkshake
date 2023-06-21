@@ -7,9 +7,38 @@ import StoriesHeader from "@/components/UserPageSkeleton/StoriesHeader/StoriesHe
 import ChatPreviewRow from "@/components/ChatsList/ChatPreview/ChatPreview";
 import ChatsList from "@/components/ChatsList/ChatsList/ChatsList";
 import { Spacer } from "@/components/AppLayout/AppLayout";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useUserState } from "@/state/user.state";
+import { useWindowSize } from "@/api/utils/screen";
+import { useListChatRooms } from "@/hooks/useChat";
+import { useChatsListState } from "@/state/chats.state";
+import shallow from "zustand/shallow";
 
 const ConversationsPage = () => {
   const intl = useIntl();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const tab = searchParams.get("tab");
+  const selfUser = useUserState((state) => state.user);
+  const { screen, isMobile } = useWindowSize();
+  const location = useLocation();
+
+  const { chatsList, getChatPreviews } = useChatsListState(
+    (state) => ({
+      getChatPreviews: state.getChatPreviews,
+      chatsList: state.chatsList,
+    }),
+    shallow
+  );
+  const contacts = useUserState((state) => state.contacts);
+  console.log(`chatsList`, chatsList);
+  const chatPreviews = getChatPreviews({
+    chatRooms: chatsList,
+    contacts,
+    userID: selfUser?.id,
+  });
+  console.log(`chatPreviews`, chatPreviews);
+
   return (
     <$Vertical style={{ padding: "0px 10px" }}>
       <div
@@ -22,7 +51,7 @@ const ConversationsPage = () => {
         <StoriesHeader />
       </div>
       <Spacer />
-      <ChatsList />
+      <ChatsList chatPreviews={chatPreviews} />
     </$Vertical>
   );
 };

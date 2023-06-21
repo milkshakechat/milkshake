@@ -229,65 +229,6 @@ export const useManageFriendship = () => {
   return { data, errors, runMutation };
 };
 
-export const useEnterChatRoom = () => {
-  const [data, setData] = useState<EnterChatRoomResponseSuccess>();
-  const [errors, setErrors] = useState<ErrorLine[]>([]);
-  const client = useGraphqlClient();
-
-  const runQuery = async (args: EnterChatRoomInput) => {
-    try {
-      const ENTER_CHAT_ROOM = gql`
-        query EnterChatRoomQuery($input: EnterChatRoomInput!) {
-          enterChatRoom(input: $input) {
-            __typename
-            ... on EnterChatRoomResponseSuccess {
-              chatRoom {
-                chatRoomID
-                participants
-                sendBirdParticipants
-                sendBirdChannelURL
-              }
-            }
-            ... on ResponseError {
-              error {
-                message
-              }
-            }
-          }
-        }
-      `;
-      const result = await new Promise<EnterChatRoomResponseSuccess>(
-        async (resolve, reject) => {
-          client
-            .query<Pick<Query, "enterChatRoom">>({
-              query: ENTER_CHAT_ROOM,
-              variables: { input: args },
-            })
-            .then(({ data }) => {
-              if (
-                data.enterChatRoom.__typename === "EnterChatRoomResponseSuccess"
-              ) {
-                resolve(data.enterChatRoom);
-              }
-            })
-            .catch((graphQLError: Error) => {
-              if (graphQLError) {
-                setErrors((errors) => [...errors, graphQLError.message]);
-                reject();
-              }
-            });
-        }
-      );
-      setData(result);
-    } catch (e) {
-      console.log(e);
-      setErrors(["no chat room found"]);
-    }
-  };
-
-  return { data, errors, runQuery };
-};
-
 // export const useFriendship = () => {
 
 //   const {} = useSendFriendRequest()

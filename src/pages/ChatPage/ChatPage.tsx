@@ -5,11 +5,12 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useUserState } from "@/state/user.state";
 import { useWindowSize } from "@/api/utils/screen";
 import { useEffect, useState } from "react";
-import { useEnterChatRoom } from "@/hooks/useFriendship";
+
 import { EnterChatRoomInput } from "@/api/graphql/types";
 import { useSendBirdChannel } from "@/hooks/useSendbird";
 import { UserMessage, UserMessageCreateParams } from "@sendbird/chat/message";
 import { Button, Input } from "antd";
+import { useEnterChatRoom } from "@/hooks/useChat";
 
 const ChatPage = () => {
   const intl = useIntl();
@@ -48,6 +49,10 @@ const ChatPage = () => {
   );
 
   useEffect(() => {
+    loadPageData();
+  }, []);
+
+  const loadPageData = () => {
     const args: EnterChatRoomInput = {
       chatRoomID: chat || "",
       // @ts-ignore (our graphql schema typegen is treating gql scalar as ts any)
@@ -55,7 +60,7 @@ const ChatPage = () => {
     };
     // send chat & participants to server
     enterChatRoomQuery(args);
-  }, []);
+  };
 
   const { screen, isMobile } = useWindowSize();
 

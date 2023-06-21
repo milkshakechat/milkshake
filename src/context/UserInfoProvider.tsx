@@ -1,3 +1,4 @@
+import { useListChatRooms } from "@/hooks/useChat";
 import { useListContacts, useProfile } from "@/hooks/useProfile";
 import useWebPermissions from "@/hooks/useWebPermissions";
 import { useUserState } from "@/state/user.state";
@@ -12,6 +13,7 @@ export const UserInfoProvider = ({ children }: Props) => {
   const { runQuery: getProfile } = useProfile();
   const { checkWebPermissions } = useWebPermissions({});
   const { runQuery: runListContacts } = useListContacts();
+  const { runQuery: runListChatRoomsQuery } = useListChatRooms();
 
   const { idToken, refetchNonce } = useUserState(
     (state) => ({
@@ -28,6 +30,7 @@ export const UserInfoProvider = ({ children }: Props) => {
   useEffect(() => {
     getProfile();
     runListContacts();
+    runListChatRoomsQuery();
   }, [idToken, refetchNonce]);
 
   return <>{children}</>;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   SettingOutlined,
+  ReloadOutlined,
   VideoCameraOutlined,
   MessageOutlined,
   BellOutlined,
@@ -58,8 +59,21 @@ interface AppLayoutProps {
 }
 const AppLayout = ({ children }: AppLayoutProps) => {
   const { screen: windowScreen } = useWindowSize();
-  const location = useLocation();
+  const _location = useLocation();
   const intl = useIntl();
+  const { triggerRefetch } = useUserState(
+    (state) => ({
+      triggerRefetch: state.triggerRefetch,
+    }),
+    shallow
+  );
+
+  const refreshData = () => {
+    // eslint-disable-next-line no-restricted-globals
+    location.reload();
+    // triggerRefetch();
+  };
+
   const user = useUserState((state) => state.user);
   const [collapsed, setCollapsed] = useState(false);
   const { themeType, themeColor } = useStyleConfigGlobal(
@@ -215,6 +229,15 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       route: "/app/profile/settings",
       icon: <SettingOutlined style={{ fontSize: "1rem" }} />,
     },
+    {
+      key: "refresh",
+      text: (
+        <span onClick={refreshData}>
+          <PP>Refresh</PP>
+        </span>
+      ),
+      icon: <ReloadOutlined style={{ fontSize: "1rem" }} />,
+    },
   ];
 
   // console.log(`token`, token);
@@ -321,14 +344,18 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                             textAlign: "center",
                           }}
                         >
-                          <NavLink
-                            to={item.route}
-                            className={({ isActive, isPending }) =>
-                              isPending ? "pending" : isActive ? "active" : ""
-                            }
-                          >
-                            {item.text}
-                          </NavLink>
+                          {item.route ? (
+                            <NavLink
+                              to={item.route}
+                              className={({ isActive, isPending }) =>
+                                isPending ? "pending" : isActive ? "active" : ""
+                              }
+                            >
+                              {item.text}
+                            </NavLink>
+                          ) : (
+                            item.text
+                          )}
                         </Menu.Item>
                       );
                     }
@@ -382,10 +409,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </Space>
           <Menu
             theme={themeType}
-            selectedKeys={matchPathToMenuKey(items, location.pathname)}
+            selectedKeys={matchPathToMenuKey(items, _location.pathname)}
             defaultOpenKeys={getParentKeysIfChildrenMatch(
               items,
-              location.pathname
+              _location.pathname
             )}
             mode="inline"
             items={items}

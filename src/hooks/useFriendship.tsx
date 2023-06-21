@@ -24,11 +24,20 @@ import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { GraphQLError } from "graphql";
 import { ErrorLine } from "@/api/graphql/error-line";
 import { ObservableSubscription } from "@apollo/client/core";
+import { useUserState } from "@/state/user.state";
+import { shallow } from "zustand/shallow";
 
 export const useSendFriendRequest = () => {
   const [data, setData] = useState<SendFriendRequestResponse>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
+
+  const { triggerRefetch } = useUserState(
+    (state) => ({
+      triggerRefetch: state.triggerRefetch,
+    }),
+    shallow
+  );
 
   const runMutation = async (args: SendFriendRequestInput) => {
     console.log(`runMutation...`);
@@ -76,6 +85,9 @@ export const useSendFriendRequest = () => {
       );
       setData(result);
       resp = result;
+      setTimeout(() => {
+        triggerRefetch();
+      }, 1000);
     } catch (e) {
       console.log(e);
     }
@@ -155,6 +167,13 @@ export const useManageFriendship = () => {
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
 
+  const { triggerRefetch } = useUserState(
+    (state) => ({
+      triggerRefetch: state.triggerRefetch,
+    }),
+    shallow
+  );
+
   const runMutation = async (args: ManageFriendshipInput) => {
     let resp: ManageFriendshipResponseSuccess | undefined;
     try {
@@ -198,6 +217,9 @@ export const useManageFriendship = () => {
         }
       );
       setData(result);
+      setTimeout(() => {
+        triggerRefetch();
+      }, 1000);
       return resp;
     } catch (e) {
       console.log(e);

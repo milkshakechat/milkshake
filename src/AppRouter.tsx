@@ -93,53 +93,51 @@ const AppRouter = () => {
           key={formatJSLocale}
           defaultLocale={localeEnumToFormatJSLocale[localeEnum.english]}
         >
-          <BrowserRouter>
-            <TransitionGroup>
-              <CSSTransition
-                key={window.location.pathname}
-                classNames="fade"
-                timeout={300}
-              >
-                <AuthProtectProvider>
-                  <Routes>
-                    <Route
-                      path="/"
-                      element={
-                        <AuthProtect>
-                          <HomePage />
-                        </AuthProtect>
-                      }
-                      index
-                    />
-                    <Route path="/:username" element={<UsernamePage />} />
-                    <Route path="/app" element={<div>app</div>}></Route>
-                    <Route path="/app" errorElement={<Page404 />}>
-                      {/* Public Routes */}
-                      <Route path="welcome" element={<div>welcome</div>} />
-                      <Route path="login" element={<LoginPage />} />
-                      <Route path="logout" element={<LogOutPage />} />
-                      <Route path="signup" element={<SignUpPage />} />
+          <AuthProtectProvider>
+            <UserInfoProvider>
+              <BrowserRouter>
+                <TransitionGroup>
+                  <CSSTransition
+                    key={window.location.pathname}
+                    classNames="fade"
+                    timeout={300}
+                  >
+                    <Routes>
                       <Route
-                        path="signup/verify"
-                        element={<SignUpVerifyPage />}
+                        path="/"
+                        element={
+                          <AuthProtect>
+                            <HomePage />
+                          </AuthProtect>
+                        }
+                        index
                       />
-                    </Route>
-                  </Routes>
-                </AuthProtectProvider>
-              </CSSTransition>
-            </TransitionGroup>
+                      <Route path="/:username" element={<UsernamePage />} />
+                      <Route path="/app" element={<div>app</div>}></Route>
+                      <Route path="/app" errorElement={<Page404 />}>
+                        {/* Public Routes */}
+                        <Route path="welcome" element={<div>welcome</div>} />
+                        <Route path="login" element={<LoginPage />} />
+                        <Route path="logout" element={<LogOutPage />} />
+                        <Route path="signup" element={<SignUpPage />} />
+                        <Route
+                          path="signup/verify"
+                          element={<SignUpVerifyPage />}
+                        />
+                      </Route>
+                    </Routes>
+                  </CSSTransition>
+                </TransitionGroup>
 
-            <TransitionGroup>
-              <CSSTransition
-                key={window.location.pathname}
-                classNames="fade"
-                timeout={300}
-              >
-                {/* Private Routes */}
+                <TransitionGroup>
+                  <CSSTransition
+                    key={window.location.pathname}
+                    classNames="fade"
+                    timeout={300}
+                  >
+                    {/* Private Routes */}
 
-                <AuthProtectProvider>
-                  <SendBirdServiceProvider>
-                    <UserInfoProvider>
+                    <SendBirdServiceProvider>
                       <Routes>
                         <Route path="/app" errorElement={<Page404 />}>
                           <Route
@@ -158,16 +156,6 @@ const AppRouter = () => {
                               <AuthProtect>
                                 <AppLayout>
                                   <ChatPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="demo"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <DemoConversation />
                                 </AppLayout>
                               </AuthProtect>
                             }
@@ -248,12 +236,12 @@ const AppRouter = () => {
                           {/* <Route path="*" element={<Page404 />} /> */}
                         </Route>
                       </Routes>
-                    </UserInfoProvider>
-                  </SendBirdServiceProvider>
-                </AuthProtectProvider>
-              </CSSTransition>
-            </TransitionGroup>
-          </BrowserRouter>
+                    </SendBirdServiceProvider>
+                  </CSSTransition>
+                </TransitionGroup>
+              </BrowserRouter>
+            </UserInfoProvider>
+          </AuthProtectProvider>
         </IntlProvider>
       </ConfigProvider>
     </GraphqlClientProvider>

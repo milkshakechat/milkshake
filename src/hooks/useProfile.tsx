@@ -233,6 +233,8 @@ export const useListContacts = () => {
   const [data, setData] = useState<ListContactsResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
+  const setContacts = useUserState((state) => state.setContacts);
+  const setGlobalDirectory = useUserState((state) => state.setGlobalDirectory);
 
   const runQuery = async () => {
     try {
@@ -285,7 +287,10 @@ export const useListContacts = () => {
             });
         }
       );
+      console.log(`result`, result);
       setData(result);
+      setContacts(result.contacts);
+      setGlobalDirectory(result.globalDirectory);
     } catch (e) {
       console.log(e);
     }

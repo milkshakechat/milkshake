@@ -31,13 +31,12 @@ const ConversationsPage = () => {
     shallow
   );
   const contacts = useUserState((state) => state.contacts);
-  console.log(`chatsList`, chatsList);
+
   const chatPreviews = getChatPreviews({
     chatRooms: chatsList,
     contacts,
     userID: selfUser?.id,
   });
-  console.log(`chatPreviews`, chatPreviews);
 
   return (
     <$Vertical style={{ padding: "0px 10px" }}>

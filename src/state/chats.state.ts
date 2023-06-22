@@ -72,12 +72,6 @@ export const matchContactToChatroom = (
 } | null => {
   const { userID, chatroomID, chatRooms, contacts } = args;
 
-  console.log(`matchContactToChatroom`);
-  console.log(`userID`, userID);
-  console.log(`chatroomID`, chatroomID);
-  console.log(`chatRooms`, chatRooms);
-  console.log(`contacts`, contacts);
-
   // Find the chatroom with the given ID
   const chatroom = chatRooms.find(
     (chatroom) => chatroom.chatRoomID === chatroomID

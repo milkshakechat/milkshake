@@ -3,7 +3,10 @@ import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import { cid } from "./i18n/types.i18n.TemplateComponent";
 import PP from "@/i18n/PlaceholderPrint";
 
-const TemplateComponent = () => {
+interface TemplateComponentProps {
+  children?: React.ReactNode | React.ReactNode[];
+}
+const TemplateComponent = ({ children }: TemplateComponentProps) => {
   const intl = useIntl();
 
   const title = intl.formatMessage({

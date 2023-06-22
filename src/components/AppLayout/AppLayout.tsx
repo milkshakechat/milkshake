@@ -290,8 +290,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     }
     return []; // Return empty array if no match found
   }
-
-  // token.colorFill
+  const reactRouterLocation = useLocation();
+  console.log(`location`, reactRouterLocation);
+  const showMobileFooter = reactRouterLocation.pathname !== "/app/chat";
 
   if (windowScreen === ScreenSize.mobile) {
     return (
@@ -304,75 +305,81 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       >
         <StickyAdaptiveMobileFooter
           footer={
-            <>
-              <Footer
-                style={{
-                  position: "sticky",
-                  top: 0,
-                  zIndex: 1,
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "stretch", // change center to stretch
-                  padding: 0, // reset default padding
-                  backgroundColor: token.colorBgBase,
-                  color: token.colorTextBase,
-                }}
-              >
-                <Menu
-                  theme={themeType}
-                  mode="horizontal"
-                  defaultSelectedKeys={["2"]}
+            showMobileFooter ? (
+              <>
+                <Footer
                   style={{
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 1,
                     width: "100%",
-                    height: "100%",
                     display: "flex",
-                    flex: "auto",
-                    justifyContent: "center",
-                    color: token.colorPrimaryText,
-                    fontWeight: 500,
-                    backgroundColor: token.colorBgSpotlight,
+                    alignItems: "stretch", // change center to stretch
+                    padding: 0, // reset default padding
+                    backgroundColor: token.colorBgBase,
+                    color: token.colorTextBase,
                   }}
                 >
-                  {itemsMobile.map((item) => {
-                    if (item && item.key && item.icon) {
-                      return (
-                        <Menu.Item
-                          key={item.key}
-                          icon={item.icon}
-                          style={{
-                            flex: 1,
-                            textAlign: "center",
-                          }}
-                        >
-                          {item.route ? (
-                            <NavLink
-                              to={item.route}
-                              className={({ isActive, isPending }) =>
-                                isPending ? "pending" : isActive ? "active" : ""
-                              }
-                            >
-                              {item.text}
-                            </NavLink>
-                          ) : (
-                            item.text
-                          )}
-                        </Menu.Item>
-                      );
-                    }
-                    return null;
-                  })}
-                </Menu>
-              </Footer>
-              {isStandalone && (
-                <Spacer
-                  height="20px"
-                  style={{
-                    minHeight: "20px",
-                    backgroundColor: token.colorBgSpotlight,
-                  }}
-                />
-              )}
-            </>
+                  <Menu
+                    theme={themeType}
+                    mode="horizontal"
+                    defaultSelectedKeys={["2"]}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      flex: "auto",
+                      justifyContent: "center",
+                      color: token.colorPrimaryText,
+                      fontWeight: 500,
+                      backgroundColor: token.colorBgSpotlight,
+                    }}
+                  >
+                    {itemsMobile.map((item) => {
+                      if (item && item.key && item.icon) {
+                        return (
+                          <Menu.Item
+                            key={item.key}
+                            icon={item.icon}
+                            style={{
+                              flex: 1,
+                              textAlign: "center",
+                            }}
+                          >
+                            {item.route ? (
+                              <NavLink
+                                to={item.route}
+                                className={({ isActive, isPending }) =>
+                                  isPending
+                                    ? "pending"
+                                    : isActive
+                                    ? "active"
+                                    : ""
+                                }
+                              >
+                                {item.text}
+                              </NavLink>
+                            ) : (
+                              item.text
+                            )}
+                          </Menu.Item>
+                        );
+                      }
+                      return null;
+                    })}
+                  </Menu>
+                </Footer>
+                {isStandalone && (
+                  <Spacer
+                    height="20px"
+                    style={{
+                      minHeight: "20px",
+                      backgroundColor: token.colorBgSpotlight,
+                    }}
+                  />
+                )}
+              </>
+            ) : null
           }
         >
           {children}

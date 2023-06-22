@@ -23,20 +23,13 @@ const ConversationsPage = () => {
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
 
-  const { chatsList, getChatPreviews } = useChatsListState(
+  const { chatsList } = useChatsListState(
     (state) => ({
-      getChatPreviews: state.getChatPreviews,
       chatsList: state.chatsList,
     }),
     shallow
   );
   const contacts = useUserState((state) => state.contacts);
-
-  const chatPreviews = getChatPreviews({
-    chatRooms: chatsList,
-    contacts,
-    userID: selfUser?.id,
-  });
 
   return (
     <$Vertical style={{ padding: "0px 10px" }}>
@@ -50,7 +43,7 @@ const ConversationsPage = () => {
         <StoriesHeader />
       </div>
       <Spacer />
-      <ChatsList chatPreviews={chatPreviews} />
+      <ChatsList chatPreviews={chatsList} />
     </$Vertical>
   );
 };

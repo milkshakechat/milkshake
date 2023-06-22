@@ -9,7 +9,16 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import type { MenuProps } from "antd";
-import { Avatar, Breadcrumb, Button, Layout, Menu, Space, theme } from "antd";
+import {
+  Avatar,
+  Badge,
+  Breadcrumb,
+  Button,
+  Layout,
+  Menu,
+  Space,
+  theme,
+} from "antd";
 import {
   useWindowSize,
   ScreenSize,
@@ -28,6 +37,7 @@ import { ItemType } from "antd/es/menu/hooks/useItems";
 import { cid } from "./i18n/types.i18n.AppLayout";
 import { useIntl } from "react-intl";
 import PP from "@/i18n/PlaceholderPrint";
+import { useChatsListState } from "@/state/chats.state";
 const { Header, Content, Footer, Sider } = Layout;
 
 interface MenuItem {
@@ -73,7 +83,11 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     location.reload();
     // triggerRefetch();
   };
-
+  const totalUnreadChatsCount = useChatsListState((state) =>
+    state.chatsList.reduce((acc, curr) => {
+      return acc + (curr.unreadCount ? 1 : 0);
+    }, 0)
+  );
   const user = useUserState((state) => state.user);
   const [collapsed, setCollapsed] = useState(false);
   const { themeType, themeColor } = useStyleConfigGlobal(
@@ -203,7 +217,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       key: "messages",
       text: messagesText,
       route: "/app/chats",
-      icon: <MessageOutlined style={{ fontSize: "1rem" }} />,
     },
     {
       key: "newstory",
@@ -291,7 +304,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     return []; // Return empty array if no match found
   }
   const reactRouterLocation = useLocation();
-  console.log(`location`, reactRouterLocation);
+
   const showMobileFooter = reactRouterLocation.pathname !== "/app/chat";
 
   if (windowScreen === ScreenSize.mobile) {
@@ -336,7 +349,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                     }}
                   >
                     {itemsMobile.map((item) => {
-                      if (item && item.key && item.icon) {
+                      if (item && item.key) {
                         return (
                           <Menu.Item
                             key={item.key}
@@ -357,6 +370,23 @@ const AppLayout = ({ children }: AppLayoutProps) => {
                                     : ""
                                 }
                               >
+                                {item.key === "messages" &&
+                                  totalUnreadChatsCount === 0 && (
+                                    <MessageOutlined
+                                      style={{
+                                        fontSize: "1rem",
+                                        marginRight: "10px",
+                                      }}
+                                    />
+                                  )}
+
+                                {item.key === "messages" &&
+                                totalUnreadChatsCount !== 0 ? (
+                                  <Badge
+                                    count={totalUnreadChatsCount}
+                                    style={{ marginRight: "10px" }}
+                                  />
+                                ) : null}
                                 {item.text}
                               </NavLink>
                             ) : (

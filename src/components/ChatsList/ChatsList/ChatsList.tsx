@@ -47,11 +47,14 @@ const ChatsList = ({ chatPreviews }: ChatsListProps) => {
       <div style={{ overflowY: "scroll" }}>
         <List
           itemLayout="horizontal"
-          dataSource={chatPreviews.filter((chat) => {
-            return (
-              chat.title.toLowerCase().indexOf(searchString.toLowerCase()) > -1
-            );
-          })}
+          dataSource={chatPreviews
+            .filter((chat) => {
+              return (
+                chat.title.toLowerCase().indexOf(searchString.toLowerCase()) >
+                -1
+              );
+            })
+            .sort((a, b) => b.lastTimestamp - a.lastTimestamp)}
           renderItem={(item, index) => <ChatPreview preview={item} />}
         />
       </div>

@@ -40,7 +40,6 @@ export const useSendFriendRequest = () => {
   );
 
   const runMutation = async (args: SendFriendRequestInput) => {
-    console.log(`runMutation...`);
     let resp: SendFriendRequestResponseSuccess | undefined;
     try {
       const SEND_FRIEND_REQUEST = gql`
@@ -66,7 +65,6 @@ export const useSendFriendRequest = () => {
               variables: { input: args },
             })
             .then(({ data }) => {
-              console.log(`data`, data);
               if (
                 data?.sendFriendRequest.__typename ===
                 "SendFriendRequestResponseSuccess"

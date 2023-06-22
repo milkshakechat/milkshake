@@ -138,116 +138,116 @@ const AppRouter = () => {
                   </CSSTransition>
                 </TransitionGroup>
 
-                {/* <SendBirdServiceProvider> */}
-                <TransitionGroup>
-                  <CSSTransition
-                    key={window.location.pathname}
-                    classNames="fade"
-                    timeout={300}
-                  >
-                    {/* Private Routes */}
+                <SendBirdServiceProvider>
+                  <TransitionGroup>
+                    <CSSTransition
+                      key={window.location.pathname}
+                      classNames="fade"
+                      timeout={300}
+                    >
+                      {/* Private Routes */}
 
-                    <Routes>
-                      <Route path="/app" errorElement={<Page404 />}>
-                        <Route
-                          path="chats"
-                          element={
-                            <AuthProtect>
-                              <AppLayout>
-                                <ChatsPage />
-                              </AppLayout>
-                            </AuthProtect>
-                          }
-                        />
-                        <Route
-                          path="chat"
-                          element={
-                            <AuthProtect>
-                              <AppLayout>
-                                <ChatPage />
-                              </AppLayout>
-                            </AuthProtect>
-                          }
-                        />
+                      <Routes>
+                        <Route path="/app" errorElement={<Page404 />}>
+                          <Route
+                            path="chats"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <ChatsPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="chat"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <ChatPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
 
-                        <Route
-                          path="settings"
-                          element={
-                            <AuthProtect>
-                              <AppLayout>
-                                <SettingsPage />
-                              </AppLayout>
-                            </AuthProtect>
-                          }
-                        />
-                        <Route
-                          path="profile"
-                          element={
-                            <AuthProtect>
-                              <AppLayout>
-                                <ProfilePage />
-                              </AppLayout>
-                            </AuthProtect>
-                          }
-                        />
+                          <Route
+                            path="settings"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <SettingsPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="profile"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <ProfilePage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
 
-                        <Route
-                          path="friends"
-                          element={
-                            <AuthProtect>
-                              <AppLayout>
-                                <ContactsPage />
-                              </AppLayout>
-                            </AuthProtect>
-                          }
-                        />
-                        <Route
-                          path="profile/style"
-                          element={
-                            <AuthProtect>
-                              <AppLayout>
-                                <ProfileStylePage />
-                              </AppLayout>
-                            </AuthProtect>
-                          }
-                        />
-                        <Route
-                          path="profile/settings"
-                          element={
-                            <AuthProtect>
-                              <AppLayout>
-                                <ProfileSettingsPage />
-                              </AppLayout>
-                            </AuthProtect>
-                          }
-                        />
-                        <Route
-                          path="notifications"
-                          element={
-                            <AuthProtect>
-                              <AppLayout>
-                                <NotificationsPage />
-                              </AppLayout>
-                            </AuthProtect>
-                          }
-                        />
-                        <Route
-                          path="story/new"
-                          element={
-                            <AuthProtect>
-                              <AppLayout>
-                                <NewStoryPage />
-                              </AppLayout>
-                            </AuthProtect>
-                          }
-                        />
+                          <Route
+                            path="friends"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <ContactsPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="profile/style"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <ProfileStylePage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="profile/settings"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <ProfileSettingsPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="notifications"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <NotificationsPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="story/new"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <NewStoryPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
 
-                        {/* <Route path="*" element={<Page404 />} /> */}
-                      </Route>
-                    </Routes>
-                  </CSSTransition>
-                </TransitionGroup>
-                {/* </SendBirdServiceProvider> */}
+                          {/* <Route path="*" element={<Page404 />} /> */}
+                        </Route>
+                      </Routes>
+                    </CSSTransition>
+                  </TransitionGroup>
+                </SendBirdServiceProvider>
               </BrowserRouter>
             </UserInfoProvider>
           </AuthProtectProvider>

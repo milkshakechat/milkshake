@@ -59,7 +59,7 @@ export const UserFriendPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isMobile } = useWindowSize();
-  console.log(`view changed to = ${view}`);
+
   const viewMode =
     viewModes[view as keyof typeof viewModes] || viewModes.timeline;
   const user = useUserState((state) => state.user);

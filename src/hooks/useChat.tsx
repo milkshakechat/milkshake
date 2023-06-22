@@ -1,5 +1,6 @@
 import { ErrorLine } from "@/api/graphql/error-line";
 import {
+  Contact,
   EnterChatRoomInput,
   EnterChatRoomResponseSuccess,
   ListChatRoomsResponseSuccess,
@@ -7,6 +8,8 @@ import {
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { useChatsListState } from "@/state/chats.state";
+import { useUserState } from "@/state/user.state";
+import { UserID } from "@milkshakechat/helpers";
 import gql from "graphql-tag";
 import { useState } from "react";
 
@@ -17,7 +20,13 @@ export const useListChatRooms = () => {
 
   const updateChatsList = useChatsListState((state) => state.updateChatsList);
 
-  const runQuery = async () => {
+  const runQuery = async ({
+    contacts,
+    selfUserID,
+  }: {
+    contacts: Contact[];
+    selfUserID: UserID;
+  }) => {
     try {
       const LIST_CHAT_ROOMS = gql`
         query ListChatRooms {
@@ -61,7 +70,13 @@ export const useListChatRooms = () => {
         }
       );
       setData(result);
-      updateChatsList(result.chatRooms);
+      if (result.chatRooms) {
+        updateChatsList({
+          rooms: result.chatRooms,
+          contacts,
+          userID: selfUserID,
+        });
+      }
     } catch (e) {
       console.log(e);
     }
@@ -76,6 +91,8 @@ export const useEnterChatRoom = () => {
   const client = useGraphqlClient();
   const existingChatsList = useChatsListState((state) => state.chatsList);
   const updateChatsList = useChatsListState((state) => state.updateChatsList);
+  const selfUser = useUserState((state) => state.user);
+  const contacts = useUserState((state) => state.contacts);
 
   const runQuery = async (args: EnterChatRoomInput) => {
     try {
@@ -124,9 +141,12 @@ export const useEnterChatRoom = () => {
       );
       setData(result);
       // if its a new room, then we should refetch the list of chat rooms
-      if (result.isNew) {
-        console.log(`result.isNew `, result.isNew);
-        updateChatsList([...existingChatsList, result.chatRoom]);
+      if (result.isNew && selfUser) {
+        updateChatsList({
+          rooms: [...existingChatsList, result.chatRoom],
+          contacts,
+          userID: selfUser.id,
+        });
       }
     } catch (e) {
       console.log(e);

@@ -25,6 +25,6 @@ export const getFirebaseCloudMessagingToken = async () => {
   const currentToken = await getToken(messaging, {
     vapidKey: config.PUSH.VAPID_PUBLIC_KEY,
   });
-  console.log(`token`, currentToken);
+  // console.log(`token`, currentToken);
   return currentToken;
 };

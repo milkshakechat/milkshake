@@ -142,66 +142,51 @@ const ChatPage = () => {
     },
   ];
 
-  const sendBirdColorSet = {
-    "--sendbird-light-primary-500": token.colorPrimaryActive, // "#00487c",
-    "--sendbird-light-primary-400": token.colorPrimaryActive, // "#4bb3fd",
-    "--sendbird-light-primary-300": token.colorPrimaryActive, // "#3e6680",
-    "--sendbird-light-primary-200": token.colorPrimaryActive, // "#0496ff",
-    "--sendbird-light-primary-100": token.colorPrimaryActive, // "#027bce",
-  };
-
   return (
     <div style={{ padding: isMobile ? "0px" : "20px", height: "100%" }}>
       {sendbirdChannelURL && selfUser && selfUser.sendBirdAccessToken ? (
-        <UISendBirdProvider
-          appId={config.SENDBIRD_APP_ID}
-          userId={selfUser.id}
-          accessToken={selfUser.sendBirdAccessToken}
-          colorSet={sendBirdColorSet}
-        >
-          <SBConversation
-            channelUrl={sendbirdChannelURL}
-            onBackClick={() => navigate(-1)}
-            onChatHeaderActionClick={() => {
-              console.log(`onChatHeaderActionClick`);
-            }}
-            renderChannelHeader={
-              friend
-                ? () => (
-                    <div
-                      style={{
-                        padding: isMobile ? "5px" : "0px",
-                        top: 0,
-                        position: "sticky",
+        <SBConversation
+          channelUrl={sendbirdChannelURL}
+          onBackClick={() => navigate(-1)}
+          onChatHeaderActionClick={() => {
+            console.log(`onChatHeaderActionClick`);
+          }}
+          renderChannelHeader={
+            friend
+              ? () => (
+                  <div
+                    style={{
+                      padding: isMobile ? "5px" : "0px",
+                      top: 0,
+                      position: "sticky",
+                    }}
+                  >
+                    <UserBadgeHeader
+                      user={{
+                        id: friend.userID,
+                        avatar: friend.avatar,
+                        displayName: friend.displayName,
+                        username: friend.username as Username,
                       }}
-                    >
-                      <UserBadgeHeader
-                        user={{
-                          id: friend.userID,
-                          avatar: friend.avatar,
-                          displayName: friend.displayName,
-                          username: friend.username as Username,
-                        }}
-                        glowColor={token.colorPrimaryText}
-                        backButton={true}
-                        actionButton={
-                          <div>
-                            <Dropdown.Button
-                              type="primary"
-                              menu={{ items }}
-                              arrow
-                            >
-                              Wishlist
-                            </Dropdown.Button>
-                          </div>
-                        }
-                      />
-                    </div>
-                  )
-                : undefined
-            }
-          />
-        </UISendBirdProvider>
+                      glowColor={token.colorPrimaryText}
+                      backButton={true}
+                      actionButton={
+                        <div>
+                          <Dropdown.Button
+                            type="primary"
+                            menu={{ items }}
+                            arrow
+                          >
+                            Wishlist
+                          </Dropdown.Button>
+                        </div>
+                      }
+                    />
+                  </div>
+                )
+              : undefined
+          }
+        />
       ) : (
         // <ChatFrame />
         <div>

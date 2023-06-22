@@ -9,7 +9,7 @@ import SBConversation from "@sendbird/uikit-react/Channel";
 const ChatFrame = () => {
   const intl = useIntl();
   const selfUser = useUserState((state) => state.user);
-  console.log(`selfUser`, selfUser);
+
   return (
     <div>
       {selfUser && (

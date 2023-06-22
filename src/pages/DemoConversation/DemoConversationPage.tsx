@@ -35,7 +35,7 @@ const DemoConversation = () => {
     return <div>Loading...</div>;
   }
 
-  const createChat = async () => {
+  const listChats = async () => {
     const groupChannelFilter: GroupChannelFilter = new GroupChannelFilter();
     groupChannelFilter.includeEmpty = true; // Optional.
     const params: GroupChannelCollectionParams = {
@@ -154,7 +154,7 @@ const DemoConversation = () => {
       <QuickNav />
       <h1>DemoConversation</h1>
       <br />
-      <button onClick={() => createChat()}>List Chats</button>
+      <button onClick={() => listChats()}>List Chats</button>
       <br />
       <button onClick={() => stopListening()}>Stop Listening</button>
       <br />

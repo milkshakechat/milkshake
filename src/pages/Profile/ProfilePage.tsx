@@ -47,7 +47,7 @@ const ProfilePage = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const view = searchParams.get("view");
-  console.log(`view changed to = ${view}`);
+
   const viewMode =
     viewModes[view as keyof typeof viewModes] || viewModes.timeline;
   const user = useUserState((state) => state.user);

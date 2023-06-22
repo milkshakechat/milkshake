@@ -4,7 +4,8 @@ import { UserID, Username } from "@milkshakechat/helpers";
 import { Avatar, Button, Divider } from "antd";
 import { CaretLeftOutlined } from "@ant-design/icons";
 import { useIntl, FormattedMessage } from "react-intl";
-import { useNavigate } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
+import { useUserState } from "@/state/user.state";
 
 interface UserBadgeHeaderProps {
   user: {
@@ -27,6 +28,22 @@ const UserBadgeHeader = ({
 }: UserBadgeHeaderProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
+
+  const selfUser = useUserState((state) => state.user);
+
+  const visitUser = () => {
+    console.log(`visit user!`);
+    console.log(`selfUser`, selfUser && selfUser.id);
+    console.log(`user`, user.id);
+    if (selfUser && user.id !== selfUser.id) {
+      navigate({
+        pathname: `/user`,
+        search: createSearchParams({
+          userID: user.id,
+        }).toString(),
+      });
+    }
+  };
 
   return (
     <$Vertical>
@@ -57,12 +74,14 @@ const UserBadgeHeader = ({
               src={user.avatar}
               style={{ backgroundColor: glowColor }}
               size="large"
+              onClick={visitUser}
             />
             <$Vertical
               style={{
                 whiteSpace: "nowrap",
                 textOverflow: "ellipsis",
               }}
+              onClick={visitUser}
             >
               <PP>
                 <b>{user.displayName || user.username}</b>

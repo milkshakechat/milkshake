@@ -1,5 +1,5 @@
 import { ChatRoom, Contact } from "@/api/graphql/types";
-import { UserID } from "@milkshakechat/helpers";
+import { UserID, Username, ChatRoomID } from "@milkshakechat/helpers";
 import { create } from "zustand";
 
 export interface ChatRoomFE extends ChatRoom {
@@ -53,4 +53,54 @@ const extrapolateChatPreviews = (
       thumbnail,
     };
   });
+};
+
+interface MatchContactToChatroomProps {
+  userID: UserID;
+  chatroomID: ChatRoomID;
+  chatRooms: ChatRoom[];
+  contacts: Contact[];
+}
+
+export const matchContactToChatroom = (
+  args: MatchContactToChatroomProps
+): {
+  userID: UserID;
+  avatar: string;
+  displayName: string;
+  username: Username;
+} | null => {
+  const { userID, chatroomID, chatRooms, contacts } = args;
+
+  console.log(`matchContactToChatroom`);
+  console.log(`userID`, userID);
+  console.log(`chatroomID`, chatroomID);
+  console.log(`chatRooms`, chatRooms);
+  console.log(`contacts`, contacts);
+
+  // Find the chatroom with the given ID
+  const chatroom = chatRooms.find(
+    (chatroom) => chatroom.chatRoomID === chatroomID
+  );
+
+  if (!chatroom) return null; // if chatroom is not found, return null
+
+  // Find the other participant's ID
+  const otherParticipantID = chatroom.participants.find((id) => id !== userID);
+
+  if (!otherParticipantID) return null; // if no other participant is found, return null
+
+  // Get the other participant's contact data
+  const contact = contacts.find(
+    (contact) => contact.friendID === otherParticipantID
+  );
+
+  if (!contact) return null; // if contact is not found, return null
+
+  return {
+    userID: contact.friendID,
+    avatar: contact.avatar || "",
+    displayName: contact.displayName,
+    username: (contact.username as Username) || ("" as Username),
+  };
 };

@@ -53,22 +53,11 @@ const ChatPage = () => {
     contacts,
   });
   const { token } = theme.useToken();
-  console.log(`friend`, friend);
 
   const { channel, messages } = useSendBirdChannel(
     enterChatRoomData && enterChatRoomData.chatRoom
       ? enterChatRoomData.chatRoom.sendBirdChannelURL || undefined
       : undefined
-  );
-
-  console.log(`channel`, channel);
-  console.log(
-    `messages`,
-    messages.map((m) => m)
-  );
-  console.log(
-    `messages`,
-    messages.map((m) => m.messageId)
   );
 
   useEffect(() => {
@@ -92,13 +81,11 @@ const ChatPage = () => {
     const params: UserMessageCreateParams = {
       message: inputText,
     };
-    console.log(params);
-    console.log("sending user message...");
+
     if (channel) {
       channel
         .sendUserMessage(params)
         .onSucceeded((message) => {
-          console.log("success", message);
           setInputText("");
           // ...
         })
@@ -112,24 +99,23 @@ const ChatPage = () => {
   };
 
   if (enterChatRoomErrors && enterChatRoomErrors.length > 0) {
-    console.log(`enterChatRoomErrors`, enterChatRoomErrors);
     return <PP>No Chat Room Found</PP>;
   }
 
   const items: MenuProps["items"] = [
     {
-      key: "visit-profile",
-      label: (
-        <a target="_blank" rel="noopener noreferrer">
-          View Profile
-        </a>
-      ),
-    },
-    {
       key: "view-wishlist",
       label: (
         <a target="_blank" rel="noopener noreferrer">
           View Wishlist
+        </a>
+      ),
+    },
+    {
+      key: "visit-profile",
+      label: (
+        <a target="_blank" rel="noopener noreferrer">
+          View Profile
         </a>
       ),
     },

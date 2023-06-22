@@ -28,9 +28,9 @@ export const useSendBirdConnection = () => {
   const sendbirdRef = useRef<SendbirdGroupChat>();
 
   useEffect(() => {
-    console.log("Attempting connection...");
-    console.log(`userID`, userId);
-    console.log(`accessToken`, accessToken);
+    // console.log("Attempting connection...");
+    // console.log(`userID`, userId);
+    // console.log(`accessToken`, accessToken);
     // Only proceed if sendBirdService is defined
     if (sendBirdService && userId && accessToken) {
       sendbirdRef.current = sendBirdService.sendbird;
@@ -67,14 +67,6 @@ export const useSendBirdChannel = (channelUrl?: string) => {
     if (!channelUrl || !sendbird || loading) {
       return;
     }
-    console.log(`Retrieving again...`);
-    console.log(`
-      
-      channelUrl = ${channelUrl}
-      sendbird = ${typeof sendbird}
-      loading = ${loading}
-    
-    `);
 
     const getChannel = async () => {
       try {
@@ -86,7 +78,7 @@ export const useSendBirdChannel = (channelUrl?: string) => {
         if (messageCollection.hasNext) {
           const messages: BaseMessageWithIID[] =
             await messageCollection.loadNext();
-          console.log("messages", messages);
+
           setMessages(messages);
           // listen to new messages
           const eventHandler: MessageCollectionEventHandler = {
@@ -108,10 +100,6 @@ export const useSendBirdChannel = (channelUrl?: string) => {
               messages: BaseMessage[]
             ) => {
               // ...
-              console.log(`onMessagesAdded`);
-              console.log(`context`, context);
-              console.log(`channel`, channel);
-              console.log(`messages`, messages);
               setMessages((prevMessages) => [...prevMessages, ...messages]);
             },
             onMessagesUpdated: (

@@ -23,6 +23,11 @@ class SendBirdService {
 
   // Add connect method
   public async connect(userId: UserID, accessToken: string): Promise<User> {
+    console.log(`
+    
+    connect(userId: ${userId}, accessToken: ${accessToken}})
+    
+    `);
     return this.sendbird.connect(userId, accessToken);
   }
 

@@ -15,6 +15,10 @@ import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import { matchContactToChatroom, useChatsListState } from "@/state/chats.state";
 import { ChatRoomID, Username } from "@milkshakechat/helpers";
 import shallow from "zustand/shallow";
+import SBConversation from "@sendbird/uikit-react/Channel";
+import SBChannelSettings from "@sendbird/uikit-react/ChannelSettings";
+
+import ChatFrame from "@/components/ChatFrame/ChatFrame";
 
 const ChatPage = () => {
   const intl = useIntl();
@@ -75,6 +79,13 @@ const ChatPage = () => {
   };
 
   const { screen, isMobile } = useWindowSize();
+  const sendBirdAccessToken = user?.sendBirdAccessToken || "";
+
+  const sendbirdChannelURL =
+    enterChatRoomData && enterChatRoomData.chatRoom.sendBirdChannelURL
+      ? (enterChatRoomData?.chatRoom.sendBirdChannelURL as string) || ""
+      : "";
+  console.log(`sendbirdChannelURL`, sendbirdChannelURL);
 
   const sendMessage = () => {
     // sending message
@@ -97,6 +108,10 @@ const ChatPage = () => {
         });
     }
   };
+
+  if (!sendbirdChannelURL) {
+    return <PP>Loading...</PP>;
+  }
 
   if (enterChatRoomErrors && enterChatRoomErrors.length > 0) {
     return <PP>No Chat Room Found</PP>;
@@ -154,6 +169,22 @@ const ChatPage = () => {
       <br />
       <br />
       <br />
+      {sendbirdChannelURL ? (
+        <div className="sendbird-app__wrap">
+          <div className="sendbird-app__conversation-wrap">
+            <SBConversation
+              channelUrl={sendbirdChannelURL}
+              // onChatHeaderActionClick={() => {
+              //   setShowSettings(true);
+              // }}
+            />
+          </div>
+        </div>
+      ) : (
+        // <ChatFrame />
+        <div>You are on free tier chat</div>
+      )}
+
       <ul>
         {messages.map((msg, i) => {
           return (
@@ -163,10 +194,6 @@ const ChatPage = () => {
           );
         })}
       </ul>
-
-      <br />
-      <br />
-      <br />
       <Input.TextArea
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}

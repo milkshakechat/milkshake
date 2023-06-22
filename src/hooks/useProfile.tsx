@@ -287,7 +287,7 @@ export const useListContacts = () => {
             });
         }
       );
-      console.log(`result`, result);
+
       setData(result);
       setContacts(result.contacts);
       setGlobalDirectory(result.globalDirectory);

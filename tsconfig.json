@@ -25,5 +25,5 @@
   },
   "include": [
     "src"
-, "tsconfig.scripts.json"  ]
+, "tsconfig.scripts.json","node_modules/@sendbird/uikit-react/index.d.ts"  ]
 }

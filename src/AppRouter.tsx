@@ -129,15 +129,15 @@ const AppRouter = () => {
                   </CSSTransition>
                 </TransitionGroup>
 
-                <TransitionGroup>
-                  <CSSTransition
-                    key={window.location.pathname}
-                    classNames="fade"
-                    timeout={300}
-                  >
-                    {/* Private Routes */}
+                <SendBirdServiceProvider>
+                  <TransitionGroup>
+                    <CSSTransition
+                      key={window.location.pathname}
+                      classNames="fade"
+                      timeout={300}
+                    >
+                      {/* Private Routes */}
 
-                    <SendBirdServiceProvider>
                       <Routes>
                         <Route path="/app" errorElement={<Page404 />}>
                           <Route
@@ -236,9 +236,9 @@ const AppRouter = () => {
                           {/* <Route path="*" element={<Page404 />} /> */}
                         </Route>
                       </Routes>
-                    </SendBirdServiceProvider>
-                  </CSSTransition>
-                </TransitionGroup>
+                    </CSSTransition>
+                  </TransitionGroup>
+                </SendBirdServiceProvider>
               </BrowserRouter>
             </UserInfoProvider>
           </AuthProtectProvider>

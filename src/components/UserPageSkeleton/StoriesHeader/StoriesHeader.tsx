@@ -19,6 +19,7 @@ const StoriesHeader = () => {
         Array.from(Array(30).keys()).map((k, i) => {
           return (
             <div
+              key={i}
               onClick={() => {
                 navigate({
                   pathname: "/app/story/new",

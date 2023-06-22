@@ -4,38 +4,69 @@ import { create } from "zustand";
 
 export interface ChatRoomFE extends ChatRoom {
   title: string;
-  previewText: string;
   thumbnail: string;
+  previewText?: string;
+  unreadCount?: number;
+  lastTimestamp: number;
 }
 
-interface ThemeState {
-  chatsList: ChatRoom[];
-  updateChatsList: (chats: ChatRoom[]) => void;
-  getChatPreviews: ({
-    chatRooms,
-    contacts,
-    userID,
-  }: ExtrapolateChatPreviewsProps) => ChatRoomFE[];
+export interface UpdateSendBirdChannelMetadataArgsFE {
+  sendBirdChannelURL: string;
+  unreadCount?: number;
+  previewText?: string;
+  lastTimestamp?: number;
+}
+interface ChatListsState {
+  chatsList: ChatRoomFE[];
+  updateChatsList: (args: UpdateChannelsListProps) => void;
+  updateSendBirdMetadata: (diff: UpdateSendBirdChannelMetadataArgsFE) => void;
 }
 
-export const useChatsListState = create<ThemeState>()((set) => ({
+export const useChatsListState = create<ChatListsState>()((set) => ({
   chatsList: [],
-  updateChatsList: (chats) => set((state) => ({ chatsList: chats })),
-  getChatPreviews: (args) => extrapolateChatPreviews(args),
+  updateChatsList: (args) =>
+    set((state) => {
+      const chatsFE = extrapolateChatPreviews(args);
+      return { chatsList: chatsFE };
+    }),
+  updateSendBirdMetadata: (diff) => {
+    set((state) => {
+      const chats = state.chatsList.map((ch) => {
+        if (diff.sendBirdChannelURL === ch.sendBirdChannelURL) {
+          const _ch: ChatRoomFE = {
+            ...ch,
+          };
+          if (diff.lastTimestamp) {
+            _ch.lastTimestamp = diff.lastTimestamp;
+          }
+          if (diff.previewText) {
+            _ch.previewText = diff.previewText;
+          }
+          if (diff.unreadCount !== undefined) {
+            _ch.unreadCount = diff.unreadCount;
+          }
+          return _ch;
+        }
+        return ch;
+      });
+      return { chatsList: chats };
+    });
+  },
 }));
 
-interface ExtrapolateChatPreviewsProps {
+interface UpdateChannelsListProps {
   contacts: Contact[];
-  chatRooms: ChatRoom[];
+  rooms: (ChatRoom | ChatRoomFE)[];
   userID: UserID;
 }
 
 const extrapolateChatPreviews = (
-  args: ExtrapolateChatPreviewsProps
+  args: UpdateChannelsListProps
 ): ChatRoomFE[] => {
-  const { contacts, chatRooms, userID } = args;
+  console.log(`extrapolateChatPreviews`, args);
+  const { contacts, rooms, userID } = args;
 
-  return chatRooms.map((chatRoom: ChatRoom): ChatRoomFE => {
+  return rooms.map((chatRoom): ChatRoomFE => {
     const participants = chatRoom.participants.filter((id) => id !== userID);
     const participantContacts = participants.map((participantID) =>
       contacts.find((contact) => contact.friendID === participantID)
@@ -46,12 +77,14 @@ const extrapolateChatPreviews = (
       .join(", ");
     const thumbnail = participantContacts[0]?.avatar || "";
 
-    return {
+    const chatFE: ChatRoomFE = {
+      lastTimestamp: 0,
       ...chatRoom,
       title,
       previewText: "No preview available", // Update this as needed.
       thumbnail,
     };
+    return chatFE;
   });
 };
 

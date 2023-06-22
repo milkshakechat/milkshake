@@ -117,7 +117,6 @@ const StyleConfigPanel = () => {
     },
   ];
   const handleColorThemeMenuClick: MenuProps["onClick"] = (e) => {
-    console.log(`e.key`, e);
     message.info(`Theme color changed to ${hexToThemeColorMap[e.key]}`);
     switchColor(e.key);
   };

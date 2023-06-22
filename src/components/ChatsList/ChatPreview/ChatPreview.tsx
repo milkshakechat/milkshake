@@ -1,7 +1,7 @@
 import { useIntl, FormattedMessage } from "react-intl";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
-import { Avatar, List } from "antd";
+import { Avatar, Badge, List } from "antd";
 import React from "react";
 import { UserID } from "@milkshakechat/helpers";
 import { ChatRoomFE } from "@/state/chats.state";
@@ -54,6 +54,10 @@ const ChatPreview = ({ preview }: ChatPreviewProps) => {
         title={title}
         description={previewText}
       />
+
+      {preview.unreadCount && preview.unreadCount !== 0 ? (
+        <Badge count={preview.unreadCount} />
+      ) : null}
     </List.Item>
   );
 };

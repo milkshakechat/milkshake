@@ -32,9 +32,6 @@ const UserBadgeHeader = ({
   const selfUser = useUserState((state) => state.user);
 
   const visitUser = () => {
-    console.log(`visit user!`);
-    console.log(`selfUser`, selfUser && selfUser.id);
-    console.log(`user`, user.id);
     if (selfUser && user.id !== selfUser.id) {
       navigate({
         pathname: `/user`,

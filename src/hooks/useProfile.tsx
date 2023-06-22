@@ -7,6 +7,7 @@ import { GraphQLError } from "graphql";
 import {
   CheckUsernameAvailableInput,
   CheckUsernameAvailableResponseSuccess,
+  Contact,
   GetMyProfileQuery,
   GetMyProfileResponse,
   GetMyProfileResponseSuccess,
@@ -20,7 +21,8 @@ import { useUserState } from "@/state/user.state";
 import { Observable, FetchResult } from "@apollo/client/core";
 import { shallow } from "zustand/shallow";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
-import { localeEnum } from "@milkshakechat/helpers";
+import { UserID, localeEnum } from "@milkshakechat/helpers";
+import { useListChatRooms } from "./useChat";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
@@ -236,7 +238,11 @@ export const useListContacts = () => {
   const setContacts = useUserState((state) => state.setContacts);
   const setGlobalDirectory = useUserState((state) => state.setGlobalDirectory);
 
-  const runQuery = async () => {
+  const selfUser = useUserState((state) => state.user);
+
+  const { runQuery: runListChatRoomsQuery } = useListChatRooms();
+
+  const runQuery = async (userID: UserID) => {
     try {
       const LIST_CONTACTS = gql`
         query ListContacts {
@@ -291,9 +297,27 @@ export const useListContacts = () => {
       setData(result);
       setContacts(result.contacts);
       setGlobalDirectory(result.globalDirectory);
+
+      fetchChatRooms({
+        contacts: result.contacts,
+        selfUserID: userID,
+      });
     } catch (e) {
       console.log(e);
     }
+  };
+
+  const fetchChatRooms = async ({
+    contacts,
+    selfUserID,
+  }: {
+    contacts: Contact[];
+    selfUserID: UserID;
+  }) => {
+    runListChatRoomsQuery({
+      contacts,
+      selfUserID: selfUserID,
+    });
   };
 
   return { data, errors, runQuery };

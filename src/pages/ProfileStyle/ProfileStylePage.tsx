@@ -33,7 +33,10 @@ import {
 } from "@/hooks/useProfile";
 import { useToken } from "antd/es/theme/internal";
 import {
+  BucketFolderSlug,
+  ImageResizeOption,
   PrivacySettingsExplaination,
+  getCompressedMediaUrl,
   privacyModeEnum,
 } from "@milkshakechat/helpers";
 import { PrivacyModeEnum } from "@/api/graphql/types";
@@ -103,6 +106,7 @@ const ProfileStylePage = () => {
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [compressedAvatarUrl, setCompressedAvatarUrl] = useState("");
   const [privacyTip, setPrivacyTip] = useState("");
   const [usernameValue, setUsernameValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -235,7 +239,14 @@ const ProfileStylePage = () => {
       path: `users/${userID}/avatars/${uuidv4()}.png`,
     });
     if (url) {
+      const resized = getCompressedMediaUrl(
+        url,
+        BucketFolderSlug.avatars,
+        ImageResizeOption.thumbnail
+      );
+
       setAvatarUrl(url);
+      setCompressedAvatarUrl(resized);
     }
     setIsUploadingFile(false);
     setShowUpdate(true);
@@ -248,7 +259,7 @@ const ProfileStylePage = () => {
       displayName: values.displayName,
       username: values.username,
       bio: values.bio,
-      avatar: avatarUrl,
+      avatar: compressedAvatarUrl,
       link: values.link,
     });
     setShowUpdate(false);
@@ -380,3 +391,12 @@ const ProfileStylePage = () => {
 };
 
 export default ProfileStylePage;
+
+// original
+// https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2FbpSkq4bQFuWYoj7xtGD8pr5gUdD3%2Favatars%2F306f3333-3120-475f-a43d-e0dfad4813ad.png?alt=media&token=5d142fc3-d39f-4a3d-9b96-430e7f47f902
+
+// predicted
+// https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2FbpSkq4bQFuWYoj7xtGD8pr5gUdD3%2Favatars/resized-media/%2F306f3333-3120-475f-a43d-e0dfad4813ad_768x768.jpeg?alt=media
+
+// actual
+// https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2FbpSkq4bQFuWYoj7xtGD8pr5gUdD3%2Favatars%2Fresized-media%2F306f3333-3120-475f-a43d-e0dfad4813ad_768x768.jpeg?alt=media

@@ -1,6 +1,21 @@
 import { Spacer } from "@/components/AppLayout/AppLayout";
-import { Layout, theme } from "antd";
+import { useUserState } from "@/state/user.state";
+import { Badge, Button, Layout, Menu, theme } from "antd";
+import { Footer } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
+import { useIntl } from "react-intl";
+import { NavLink, useLocation } from "react-router-dom";
+import { cid as AppLayoutCID } from "@/components/AppLayout/i18n/types.i18n.AppLayout";
+import {
+  UserOutlined,
+  BellOutlined,
+  SettingOutlined,
+  MessageOutlined,
+} from "@ant-design/icons";
+import { useStyleConfigGlobal } from "@/state/styleconfig.state";
+import shallow from "zustand/shallow";
+import { $Vertical, $Horizontal } from "@/api/utils/spacing";
+import { useChatsListState } from "@/state/chats.state";
 
 type detectMobileAddressBarSettingsType = {
   userAgent: "ios" | "android" | "other";
@@ -162,14 +177,74 @@ export function useCheckStandaloneModePWA() {
 
 interface StickyAdaptiveMobileFooterProps {
   children: React.ReactNode;
-  footer: React.ReactNode;
 }
 export const StickyAdaptiveMobileFooter = ({
   children,
-  footer,
 }: StickyAdaptiveMobileFooterProps) => {
   const { token } = theme.useToken();
+  const reactRouterLocation = useLocation();
+  const intl = useIntl();
   const { addressBarHeight } = detectMobileAddressBarSettings();
+  const { isStandalone } = useCheckStandaloneModePWA();
+  const user = useUserState((state) => state.user);
+  const showMobileFooter = reactRouterLocation.pathname !== "/app/chat";
+  const totalUnreadChatsCount = useChatsListState((state) =>
+    state.chatsList.reduce((acc, curr) => {
+      return acc + (curr.unreadCount ? 1 : 0);
+    }, 0)
+  );
+  const { themeType, themeColor } = useStyleConfigGlobal(
+    (state) => ({
+      themeType: state.themeType,
+      themeColor: state.themeColor,
+    }),
+    shallow
+  );
+
+  const profileText = intl.formatMessage({
+    id: `profile_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Profile",
+  });
+  const messagesText = intl.formatMessage({
+    id: `messages_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Messages",
+  });
+  const notificationsText = intl.formatMessage({
+    id: `notifications_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Notifications",
+  });
+  const settingsText = intl.formatMessage({
+    id: `settings_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Settings",
+  });
+
+  const itemsMobile = [
+    {
+      key: "profile",
+      text: user?.username || profileText,
+      // text: profileText,
+      route: "/app/profile",
+      icon: <UserOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "messages",
+      text: messagesText,
+      route: "/app/chats",
+      icon: <MessageOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "notifications",
+      text: notificationsText,
+      route: "/app/notifications",
+      icon: <BellOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "settings",
+      text: settingsText,
+      route: "/app/profile/settings",
+      icon: <SettingOutlined style={{ fontSize: "1rem" }} />,
+    },
+  ];
   return (
     <div
       style={{
@@ -233,9 +308,139 @@ export const StickyAdaptiveMobileFooter = ({
             justifyContent: "flex-start",
           }}
         >
-          {footer}
+          {showMobileFooter ? (
+            <>
+              <Footer
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 1,
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "stretch", // change center to stretch
+                  padding: 0, // reset default padding
+                  backgroundColor: token.colorBgBase,
+                  color: token.colorTextBase,
+                }}
+              >
+                <$Horizontal
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    display: "flex",
+                    width: "100%",
+                    backgroundColor: token.colorBgSpotlight,
+                  }}
+                >
+                  {itemsMobile.map((item) => {
+                    if (item && item.key) {
+                      return (
+                        <NavLink
+                          to={item.route}
+                          key={item.key}
+                          style={{ flex: 1 }}
+                        >
+                          <Button
+                            type="primary"
+                            ghost={reactRouterLocation.pathname !== item.route}
+                            style={{
+                              border: "0px solid white",
+                              width: "100%",
+                              borderRadius: "0px",
+                            }}
+                            size="large"
+                          >
+                            {item.icon}
+                          </Button>
+                        </NavLink>
+                      );
+                    }
+                  })}
+                </$Horizontal>
+              </Footer>
+              {isStandalone && (
+                <Spacer
+                  height="20px"
+                  style={{
+                    minHeight: "20px",
+                    backgroundColor: token.colorBgSpotlight,
+                  }}
+                />
+              )}
+            </>
+          ) : null}
         </div>
       </div>
     </div>
   );
 };
+
+{
+  /* <Menu
+                  theme={themeType}
+                  mode="horizontal"
+                  defaultSelectedKeys={["2"]}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flex: "auto",
+                    justifyContent: "center",
+                    color: token.colorPrimaryText,
+                    fontWeight: 500,
+                    backgroundColor: token.colorBgSpotlight,
+                  }}
+                >
+                  {itemsMobile.map((item) => {
+                    if (item && item.key) {
+                      return (
+                        <Menu.Item
+                          key={item.key}
+                          style={{
+                            flex: 1,
+                            textAlign: "center",
+                          }}
+                        >
+                          {item.route ? (
+                            <NavLink
+                              to={item.route}
+                              className={({ isActive, isPending }) =>
+                                isPending ? "pending" : isActive ? "active" : ""
+                              }
+                            >
+                              <$Vertical
+                                alignItems="center"
+                                justifyContent="flex-between"
+                                spacing={1}
+                              >
+                                {item.icon}
+                                {item.key === "messages" &&
+                                  totalUnreadChatsCount === 0 && (
+                                    <MessageOutlined
+                                      style={{
+                                        fontSize: "1rem",
+                                        marginRight: "10px",
+                                      }}
+                                    />
+                                  )}
+
+                                {item.key === "messages" &&
+                                totalUnreadChatsCount !== 0 ? (
+                                  <Badge
+                                    count={totalUnreadChatsCount}
+                                    style={{ marginRight: "10px" }}
+                                  />
+                                ) : null}
+                                {item.text}
+                              </$Vertical>
+                            </NavLink>
+                          ) : (
+                            item.text
+                          )}
+                        </Menu.Item>
+                      );
+                    }
+                    return null;
+                  })}
+                </Menu> */
+}

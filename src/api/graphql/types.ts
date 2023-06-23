@@ -24,6 +24,7 @@ export type ChatRoom = {
   __typename?: 'ChatRoom';
   chatRoomID: Scalars['String']['output'];
   participants: Array<Scalars['UserID']['output']>;
+  pushConfig?: Maybe<PushConfig>;
   sendBirdChannelURL?: Maybe<Scalars['String']['output']>;
   sendBirdParticipants: Array<Scalars['UserID']['output']>;
 };
@@ -181,6 +182,7 @@ export type Mutation = {
   manageFriendship: ManageFriendshipResponse;
   modifyProfile: ModifyProfileResponse;
   sendFriendRequest: SendFriendRequestResponse;
+  updateChatSettings: UpdateChatSettingsResponse;
   updatePushToken: UpdatePushTokenResponse;
 };
 
@@ -205,6 +207,11 @@ export type MutationSendFriendRequestArgs = {
 };
 
 
+export type MutationUpdateChatSettingsArgs = {
+  input: UpdateChatSettingsInput;
+};
+
+
 export type MutationUpdatePushTokenArgs = {
   input: UpdatePushTokenInput;
 };
@@ -219,6 +226,12 @@ export enum PrivacyModeEnum {
   Private = 'private',
   Public = 'public'
 }
+
+export type PushConfig = {
+  __typename?: 'PushConfig';
+  allowPush?: Maybe<Scalars['Boolean']['output']>;
+  snoozeUntil?: Maybe<Scalars['String']['output']>;
+};
 
 export type Query = {
   __typename?: 'Query';
@@ -293,6 +306,19 @@ export type Subscription = {
   demoSubscription: DemoSubscriptionEvent;
 };
 
+export type UpdateChatSettingsInput = {
+  allowPush?: InputMaybe<Scalars['Boolean']['input']>;
+  chatRoomID: Scalars['String']['input'];
+  snoozeUntil?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateChatSettingsResponse = ResponseError | UpdateChatSettingsResponseSuccess;
+
+export type UpdateChatSettingsResponseSuccess = {
+  __typename?: 'UpdateChatSettingsResponseSuccess';
+  chatRoom: ChatRoom;
+};
+
 export type UpdatePushTokenInput = {
   active: Scalars['Boolean']['input'];
   title?: InputMaybe<Scalars['String']['input']>;
@@ -344,14 +370,21 @@ export type ViewPublicProfileResponseSuccess = {
 export type ListChatRoomsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListChatRoomsQuery = { __typename?: 'Query', listChatRooms: { __typename: 'ListChatRoomsResponseSuccess', chatRooms: Array<{ __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type ListChatRoomsQuery = { __typename?: 'Query', listChatRooms: { __typename: 'ListChatRoomsResponseSuccess', chatRooms: Array<{ __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type EnterChatRoomQueryQueryVariables = Exact<{
   input: EnterChatRoomInput;
 }>;
 
 
-export type EnterChatRoomQueryQuery = { __typename?: 'Query', enterChatRoom: { __typename: 'EnterChatRoomResponseSuccess', isNew: boolean, chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type EnterChatRoomQueryQuery = { __typename?: 'Query', enterChatRoom: { __typename: 'EnterChatRoomResponseSuccess', isNew: boolean, chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type UpdateChatSettingsMutationVariables = Exact<{
+  input: UpdateChatSettingsInput;
+}>;
+
+
+export type UpdateChatSettingsMutation = { __typename?: 'Mutation', updateChatSettings: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpdateChatSettingsResponseSuccess', chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } };
 
 export type SendFriendRequestMutationVariables = Exact<{
   input: SendFriendRequestInput;

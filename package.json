@@ -12,7 +12,8 @@
     "generate": "graphql-codegen",
     "generate:prod": "graphql-codegen --config codegen.prod.yml",
     "eject": "react-scripts eject",
-    "deploy": "firebase deploy"
+    "deploy": "firebase deploy",
+    "deploy:staging": "npm run build && npm run deploy"
   },
   "dependencies": {
     "@apollo/client": "^3.7.15",

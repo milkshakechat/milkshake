@@ -16,6 +16,7 @@ import {
   Input,
   MenuProps,
   Modal,
+  Spin,
   message,
   theme,
 } from "antd";
@@ -41,6 +42,7 @@ const ChatPage = () => {
   const [searchParams] = useSearchParams();
   const selfUser = useUserState((state) => state.user);
   const chat = searchParams.get("chat");
+  const [isMuteLoading, setIsMuteLoading] = useState<boolean>(false);
   const participants = decodeURIComponent(
     searchParams.get("participants") || ""
   )
@@ -141,13 +143,14 @@ const ChatPage = () => {
     allowPush: boolean;
     snoozeUntil: SnoozeUntilEnum;
   }) => {
+    setIsMuteLoading(true);
     let snoozeUntilTime: number | undefined;
     switch (snoozeUntil) {
       case SnoozeUntilEnum["3hours"]:
-        snoozeUntilTime = Date.now() + 60 * 60 * 3;
+        snoozeUntilTime = Date.now() + 60 * 60 * 3 * 1000;
         break;
       case SnoozeUntilEnum["1day"]:
-        snoozeUntilTime = Date.now() + 60 * 60 * 24;
+        snoozeUntilTime = Date.now() + 60 * 60 * 24 * 1000;
         break;
       case SnoozeUntilEnum["indefinite"]:
         snoozeUntilTime = undefined;
@@ -164,10 +167,17 @@ const ChatPage = () => {
     message.info(allowPush ? `Notifications enabled` : `Muted notifications`);
     setIsAllowedPushLocalState(allowPush);
     setIsMuteModalOpen(false);
+    setIsMuteLoading(false);
   };
 
   return (
-    <div style={{ padding: isMobile ? "0px" : "20px", height: "100%" }}>
+    <div
+      style={{
+        padding: isMobile ? "0px" : "20px",
+        // height: `calc(100vh - 20px)`,
+        height: "100%",
+      }}
+    >
       {sendbirdChannelURL && selfUser && selfUser.sendBirdAccessToken ? (
         <SBConversation
           channelUrl={sendbirdChannelURL}
@@ -255,7 +265,11 @@ const ChatPage = () => {
       >
         <$Vertical style={{ padding: "20px", gap: "10px" }}>
           <$Vertical style={{ justifyContent: "center", alignItems: "center" }}>
-            <BellOutlined style={{ fontSize: "1.5rem" }} />
+            {isMuteLoading ? (
+              <Spin />
+            ) : (
+              <BellOutlined style={{ fontSize: "1.5rem" }} />
+            )}
             <div
               style={{
                 fontSize: "1.2rem",
@@ -281,6 +295,7 @@ const ChatPage = () => {
               type="primary"
               size="large"
               style={{ width: "100%" }}
+              disabled={isMuteLoading}
             >
               Mute for 3 hours
             </Button>
@@ -295,6 +310,7 @@ const ChatPage = () => {
               type="primary"
               size="large"
               style={{ width: "100%" }}
+              disabled={isMuteLoading}
             >
               Unmute
             </Button>
@@ -309,6 +325,7 @@ const ChatPage = () => {
             }}
             size="large"
             style={{ width: "100%" }}
+            disabled={isMuteLoading}
           >
             Mute for 1 day
           </Button>
@@ -321,6 +338,7 @@ const ChatPage = () => {
             }}
             size="large"
             style={{ width: "100%" }}
+            disabled={isMuteLoading}
           >
             Mute Indefinately
           </Button>

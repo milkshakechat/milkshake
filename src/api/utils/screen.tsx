@@ -440,7 +440,7 @@ export const StickyAdaptiveMobileFooter = ({
         footer={
           <$Horizontal style={{ width: "100%", justifyContent: "flex-end" }}>
             <Button
-              size="large"
+              type="link"
               onClick={() => setShowMobileSideMenu(false)}
               style={{ width: "100%" }}
             >
@@ -533,7 +533,7 @@ export const StickyAdaptiveMobileFooter = ({
             >
               <Button
                 size="large"
-                type="link"
+                type="primary"
                 icon={<SettingOutlined style={{ fontSize: "1rem" }} />}
                 onClick={() => setShowMobileSideMenu(false)}
                 style={{ border: "0px solid white", width: "100%" }}

@@ -1,4 +1,5 @@
 
 .sendbird-conversation {
   border: 0px solid white !important;
+  max-height: 98vh !important;
 }

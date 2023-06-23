@@ -4,7 +4,10 @@ import {
   EnterChatRoomInput,
   EnterChatRoomResponseSuccess,
   ListChatRoomsResponseSuccess,
+  Mutation,
   Query,
+  UpdateChatSettingsInput,
+  UpdateChatSettingsResponseSuccess,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { useChatsListState } from "@/state/chats.state";
@@ -38,6 +41,10 @@ export const useListChatRooms = () => {
                 participants
                 sendBirdParticipants
                 sendBirdChannelURL
+                pushConfig {
+                  snoozeUntil
+                  allowPush
+                }
               }
             }
             ... on ResponseError {
@@ -93,6 +100,7 @@ export const useEnterChatRoom = () => {
   const updateChatsList = useChatsListState((state) => state.updateChatsList);
   const selfUser = useUserState((state) => state.user);
   const contacts = useUserState((state) => state.contacts);
+  const updateChatInList = useChatsListState((state) => state.updateChatInList);
 
   const runQuery = async (args: EnterChatRoomInput) => {
     try {
@@ -106,6 +114,10 @@ export const useEnterChatRoom = () => {
                 participants
                 sendBirdParticipants
                 sendBirdChannelURL
+                pushConfig {
+                  snoozeUntil
+                  allowPush
+                }
               }
               isNew
             }
@@ -142,6 +154,7 @@ export const useEnterChatRoom = () => {
       setData(result);
       // if its a new room, then we should refetch the list of chat rooms
       if (result.isNew && selfUser) {
+        updateChatInList(result.chatRoom);
         updateChatsList({
           rooms: [...existingChatsList, result.chatRoom],
           contacts,
@@ -155,4 +168,69 @@ export const useEnterChatRoom = () => {
   };
 
   return { data, errors, runQuery };
+};
+
+export const useUpdateChatSettings = () => {
+  const [data, setData] = useState<UpdateChatSettingsResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+  const updateChatInList = useChatsListState((state) => state.updateChatInList);
+
+  const runMutation = async (args: UpdateChatSettingsInput) => {
+    try {
+      const UPDATE_CHAT_SETTINGS = gql`
+        mutation UpdateChatSettings($input: UpdateChatSettingsInput!) {
+          updateChatSettings(input: $input) {
+            __typename
+            ... on UpdateChatSettingsResponseSuccess {
+              chatRoom {
+                chatRoomID
+                participants
+                sendBirdParticipants
+                sendBirdChannelURL
+                pushConfig {
+                  snoozeUntil
+                  allowPush
+                }
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<UpdateChatSettingsResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "updateChatSettings">>({
+              mutation: UPDATE_CHAT_SETTINGS,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.updateChatSettings.__typename ===
+                "UpdateChatSettingsResponseSuccess"
+              ) {
+                resolve(data.updateChatSettings);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+      updateChatInList(result.chatRoom);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runMutation };
 };

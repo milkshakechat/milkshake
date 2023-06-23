@@ -20,6 +20,7 @@ interface ChatListsState {
   chatsList: ChatRoomFE[];
   updateChatsList: (args: UpdateChannelsListProps) => void;
   updateSendBirdMetadata: (diff: UpdateSendBirdChannelMetadataArgsFE) => void;
+  updateChatInList: (chat: ChatRoom) => void;
 }
 
 export const useChatsListState = create<ChatListsState>()((set) => ({
@@ -49,6 +50,22 @@ export const useChatsListState = create<ChatListsState>()((set) => ({
         }
         return ch;
       });
+      return { chatsList: chats };
+    });
+  },
+  updateChatInList: (chat) => {
+    set((state) => {
+      console.log(`Before update`, chat);
+      const chats = state.chatsList.map((ch) => {
+        if (ch.chatRoomID === chat.chatRoomID) {
+          return {
+            ...ch,
+            ...chat,
+          };
+        }
+        return ch;
+      });
+      console.log(`Next updated`, chats);
       return { chatsList: chats };
     });
   },

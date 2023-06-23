@@ -24,6 +24,7 @@ import {
   theme,
 } from "antd";
 import { useEffect, useState } from "react";
+import { BellOutlined } from "@ant-design/icons";
 import {
   NavLink,
   createSearchParams,
@@ -97,8 +98,8 @@ const ProfilePage = () => {
       {isMobile && (
         <LayoutLogoHeader
           rightAction={
-            <NavLink to="/app/friends">
-              <SearchOutlined
+            <NavLink to="/app/notifications">
+              <BellOutlined
                 style={{ color: token.colorBgSpotlight, fontSize: "1.3rem" }}
               />
             </NavLink>

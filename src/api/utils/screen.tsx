@@ -1,6 +1,30 @@
 import { Spacer } from "@/components/AppLayout/AppLayout";
-import { Layout, theme } from "antd";
+import { useUserState } from "@/state/user.state";
+import { Badge, Button, Layout, List, Menu, Modal, theme } from "antd";
+import { Footer } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
+import { useIntl } from "react-intl";
+import { NavLink, useLocation } from "react-router-dom";
+import { cid as AppLayoutCID } from "@/components/AppLayout/i18n/types.i18n.AppLayout";
+import {
+  UserOutlined,
+  BellOutlined,
+  SettingOutlined,
+  MenuOutlined,
+  MessageOutlined,
+} from "@ant-design/icons";
+import { useStyleConfigGlobal } from "@/state/styleconfig.state";
+import shallow from "zustand/shallow";
+import { $Vertical, $Horizontal } from "@/api/utils/spacing";
+import { useChatsListState } from "@/state/chats.state";
+import {
+  VideoCameraOutlined,
+  CameraOutlined,
+  SettingFilled,
+  ContactsOutlined,
+} from "@ant-design/icons";
+import PP from "@/i18n/PlaceholderPrint";
+import Sider from "antd/es/layout/Sider";
 
 type detectMobileAddressBarSettingsType = {
   userAgent: "ios" | "android" | "other";
@@ -162,14 +186,92 @@ export function useCheckStandaloneModePWA() {
 
 interface StickyAdaptiveMobileFooterProps {
   children: React.ReactNode;
-  footer: React.ReactNode;
 }
 export const StickyAdaptiveMobileFooter = ({
   children,
-  footer,
 }: StickyAdaptiveMobileFooterProps) => {
   const { token } = theme.useToken();
+  const reactRouterLocation = useLocation();
+  const intl = useIntl();
   const { addressBarHeight } = detectMobileAddressBarSettings();
+  const { isStandalone } = useCheckStandaloneModePWA();
+  const user = useUserState((state) => state.user);
+  const showMobileFooter = reactRouterLocation.pathname !== "/app/chat";
+  const [showMobileSideMenu, setShowMobileSideMenu] = useState(false);
+  const totalUnreadChatsCount = useChatsListState((state) =>
+    state.chatsList.reduce((acc, curr) => {
+      return acc + (curr.unreadCount ? 1 : 0);
+    }, 0)
+  );
+  const { themeType, themeColor } = useStyleConfigGlobal(
+    (state) => ({
+      themeType: state.themeType,
+      themeColor: state.themeColor,
+    }),
+    shallow
+  );
+
+  const contactsText = intl.formatMessage({
+    id: `contacts_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Contacts",
+  });
+  const profileText = intl.formatMessage({
+    id: `profile_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Profile",
+  });
+  const messagesText = intl.formatMessage({
+    id: `messages_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Messages",
+  });
+  const notificationsText = intl.formatMessage({
+    id: `notifications_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Notifications",
+  });
+  const settingsText = intl.formatMessage({
+    id: `settings_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Settings",
+  });
+  const newStoryText = intl.formatMessage({
+    id: `new_story_sidebar.${AppLayoutCID}`,
+    defaultMessage: "New Story",
+  });
+  const accountText = intl.formatMessage({
+    id: `account_sidebar.${AppLayoutCID}`,
+    defaultMessage: "Account",
+  });
+
+  const itemsMobile = [
+    {
+      key: "new-story",
+      text: newStoryText,
+      route: "/app/story/new",
+      icon: <CameraOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "profile",
+      text: user?.username || profileText,
+      // text: profileText,
+      route: "/app/profile",
+      icon: <UserOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
+      key: "messages",
+      text: messagesText,
+      route: "/app/chats",
+      icon: <MessageOutlined style={{ fontSize: "1rem" }} />,
+    },
+    // {
+    //   key: "settings",
+    //   text: settingsText,
+    //   route: "/app/profile/settings",
+    //   icon: <SettingOutlined style={{ fontSize: "1rem" }} />,
+    // },
+    {
+      key: "menu",
+      text: <PP>Menu</PP>,
+      icon: <MenuOutlined style={{ fontSize: "1rem" }} />,
+    },
+  ];
   return (
     <div
       style={{
@@ -233,9 +335,215 @@ export const StickyAdaptiveMobileFooter = ({
             justifyContent: "flex-start",
           }}
         >
-          {footer}
+          {showMobileFooter ? (
+            <>
+              <Footer
+                style={{
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 1,
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "stretch", // change center to stretch
+                  padding: 0, // reset default padding
+                  backgroundColor: token.colorBgBase,
+                  color: token.colorTextBase,
+                }}
+              >
+                <$Horizontal
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    display: "flex",
+                    width: "100%",
+                    maxWidth: "100vw",
+                    backgroundColor: token.colorBgSpotlight,
+                  }}
+                >
+                  {itemsMobile.map((item) => {
+                    if (item && item.key) {
+                      return (
+                        <NavLink
+                          to={item.route || reactRouterLocation.pathname}
+                          key={item.key}
+                          style={{ flex: 1 }}
+                        >
+                          <Button
+                            type="primary"
+                            ghost={reactRouterLocation.pathname !== item.route}
+                            style={{
+                              border: "0px solid white",
+                              width: "100%",
+                              borderRadius: "0px",
+                            }}
+                            size="large"
+                            onClick={() => {
+                              if (item.key === "menu") {
+                                setShowMobileSideMenu(true);
+                              }
+                            }}
+                          >
+                            {item.key === "messages" &&
+                              totalUnreadChatsCount === 0 && (
+                                <MessageOutlined
+                                  style={{
+                                    fontSize: "1rem",
+                                  }}
+                                />
+                              )}
+
+                            {item.key === "messages" &&
+                            totalUnreadChatsCount !== 0 ? (
+                              <$Horizontal
+                                spacing={1}
+                                style={{
+                                  width: "100%",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <MessageOutlined
+                                  style={{
+                                    fontSize: "1rem",
+                                  }}
+                                />
+                                <Badge
+                                  size="small"
+                                  count={totalUnreadChatsCount}
+                                />
+                              </$Horizontal>
+                            ) : null}
+                            {item.key !== "messages" && item.icon}
+                          </Button>
+                        </NavLink>
+                      );
+                    }
+                  })}
+                </$Horizontal>
+              </Footer>
+              {isStandalone && (
+                <Spacer
+                  height="20px"
+                  style={{
+                    minHeight: "20px",
+                    backgroundColor: token.colorBgSpotlight,
+                  }}
+                />
+              )}
+            </>
+          ) : null}
         </div>
       </div>
+      <Modal
+        open={showMobileSideMenu}
+        onCancel={() => setShowMobileSideMenu(false)}
+        footer={
+          <$Horizontal style={{ width: "100%", justifyContent: "flex-end" }}>
+            <Button
+              size="large"
+              onClick={() => setShowMobileSideMenu(false)}
+              style={{ width: "100%" }}
+            >
+              Close
+            </Button>
+          </$Horizontal>
+        }
+      >
+        <div style={{ padding: "20px 0px" }}>
+          <List size="large" grid={{ gutter: 10, column: 0 }}>
+            <NavLink
+              to="/app/profile"
+              className={({ isActive, isPending }) =>
+                isPending ? "pending" : isActive ? "active" : ""
+              }
+            >
+              <Button
+                size="large"
+                type="link"
+                icon={<UserOutlined style={{ fontSize: "1rem" }} />}
+                onClick={() => setShowMobileSideMenu(false)}
+                style={{ border: "0px solid white", width: "100%" }}
+              >
+                {profileText}
+              </Button>
+            </NavLink>
+            <NavLink to="/app/story/new">
+              <Button
+                size="large"
+                type="link"
+                icon={<CameraOutlined style={{ fontSize: "1rem" }} />}
+                onClick={() => setShowMobileSideMenu(false)}
+                style={{ border: "0px solid white", width: "100%" }}
+              >
+                {newStoryText}
+              </Button>
+            </NavLink>
+
+            <NavLink
+              to="/app/chats"
+              type="link"
+              onClick={() => setShowMobileSideMenu(false)}
+              className={({ isActive, isPending }) =>
+                isPending ? "pending" : isActive ? "active" : ""
+              }
+            >
+              <Button
+                size="large"
+                icon={<MessageOutlined style={{ fontSize: "1rem" }} />}
+                type="link"
+                onClick={() => setShowMobileSideMenu(false)}
+                style={{ border: "0px solid white", width: "100%" }}
+              >
+                {messagesText}
+              </Button>
+            </NavLink>
+            <NavLink to="/app/notifications">
+              <Button
+                size="large"
+                type="link"
+                icon={<BellOutlined style={{ fontSize: "1rem" }} />}
+                onClick={() => setShowMobileSideMenu(false)}
+                style={{ border: "0px solid white", width: "100%" }}
+              >
+                {notificationsText}
+              </Button>
+            </NavLink>
+            <NavLink
+              to="/app/friends"
+              onClick={() => setShowMobileSideMenu(false)}
+              className={({ isActive, isPending }) =>
+                isPending ? "pending" : isActive ? "active" : ""
+              }
+            >
+              <Button
+                size="large"
+                type="link"
+                icon={<ContactsOutlined style={{ fontSize: "1rem" }} />}
+                onClick={() => setShowMobileSideMenu(false)}
+                style={{ border: "0px solid white", width: "100%" }}
+              >
+                {contactsText}
+              </Button>
+            </NavLink>
+            <NavLink
+              to="/app/profile/settings"
+              className={({ isActive, isPending }) =>
+                isPending ? "pending" : isActive ? "active" : ""
+              }
+            >
+              <Button
+                size="large"
+                type="link"
+                icon={<SettingOutlined style={{ fontSize: "1rem" }} />}
+                onClick={() => setShowMobileSideMenu(false)}
+                style={{ border: "0px solid white", width: "100%" }}
+              >
+                {settingsText}
+              </Button>
+            </NavLink>
+          </List>
+        </div>
+      </Modal>
     </div>
   );
 };

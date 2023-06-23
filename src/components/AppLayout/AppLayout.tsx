@@ -38,6 +38,7 @@ import { cid } from "./i18n/types.i18n.AppLayout";
 import { useIntl } from "react-intl";
 import PP from "@/i18n/PlaceholderPrint";
 import { useChatsListState } from "@/state/chats.state";
+import { $Vertical } from "@/api/utils/spacing";
 const { Header, Content, Footer, Sider } = Layout;
 
 interface MenuItem {
@@ -98,7 +99,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     shallow
   );
   const { token } = theme.useToken();
-  const { isStandalone } = useCheckStandaloneModePWA();
 
   const newStoryText = intl.formatMessage({
     id: `new_story_sidebar.${cid}`,
@@ -205,53 +205,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       ]
     ),
   ];
-  const itemsMobile = [
-    {
-      key: "profile",
-      text: user?.username || profileText,
-      // text: profileText,
-      route: "/app/profile",
-      icon: <UserOutlined style={{ fontSize: "1rem" }} />,
-    },
-    {
-      key: "messages",
-      text: messagesText,
-      route: "/app/chats",
-    },
-    {
-      key: "newstory",
-      text: newStoryText,
-      route: "/app/story/new",
-      icon: <VideoCameraOutlined style={{ fontSize: "1rem" }} />,
-    },
-    {
-      key: "notifications",
-      text: notificationsText,
-      route: "/app/notifications",
-      icon: <BellOutlined style={{ fontSize: "1rem" }} />,
-    },
-    {
-      key: "contacts",
-      text: <PP>Contacts</PP>,
-      route: "/app/friends",
-      icon: <UnorderedListOutlined style={{ fontSize: "1rem" }} />,
-    },
-    {
-      key: "settings",
-      text: settingsText,
-      route: "/app/profile/settings",
-      icon: <SettingOutlined style={{ fontSize: "1rem" }} />,
-    },
-    {
-      key: "refresh",
-      text: (
-        <span onClick={refreshData}>
-          <PP>Refresh</PP>
-        </span>
-      ),
-      icon: <ReloadOutlined style={{ fontSize: "1rem" }} />,
-    },
-  ];
 
   // console.log(`token`, token);
   const matchPathToMenuKey = (
@@ -303,9 +256,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     }
     return []; // Return empty array if no match found
   }
-  const reactRouterLocation = useLocation();
-
-  const showMobileFooter = reactRouterLocation.pathname !== "/app/chat";
 
   if (windowScreen === ScreenSize.mobile) {
     return (
@@ -316,104 +266,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           height: "100vh",
         }}
       >
-        <StickyAdaptiveMobileFooter
-          footer={
-            showMobileFooter ? (
-              <>
-                <Footer
-                  style={{
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 1,
-                    width: "100%",
-                    display: "flex",
-                    alignItems: "stretch", // change center to stretch
-                    padding: 0, // reset default padding
-                    backgroundColor: token.colorBgBase,
-                    color: token.colorTextBase,
-                  }}
-                >
-                  <Menu
-                    theme={themeType}
-                    mode="horizontal"
-                    defaultSelectedKeys={["2"]}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      flex: "auto",
-                      justifyContent: "center",
-                      color: token.colorPrimaryText,
-                      fontWeight: 500,
-                      backgroundColor: token.colorBgSpotlight,
-                    }}
-                  >
-                    {itemsMobile.map((item) => {
-                      if (item && item.key) {
-                        return (
-                          <Menu.Item
-                            key={item.key}
-                            icon={item.icon}
-                            style={{
-                              flex: 1,
-                              textAlign: "center",
-                            }}
-                          >
-                            {item.route ? (
-                              <NavLink
-                                to={item.route}
-                                className={({ isActive, isPending }) =>
-                                  isPending
-                                    ? "pending"
-                                    : isActive
-                                    ? "active"
-                                    : ""
-                                }
-                              >
-                                {item.key === "messages" &&
-                                  totalUnreadChatsCount === 0 && (
-                                    <MessageOutlined
-                                      style={{
-                                        fontSize: "1rem",
-                                        marginRight: "10px",
-                                      }}
-                                    />
-                                  )}
-
-                                {item.key === "messages" &&
-                                totalUnreadChatsCount !== 0 ? (
-                                  <Badge
-                                    count={totalUnreadChatsCount}
-                                    style={{ marginRight: "10px" }}
-                                  />
-                                ) : null}
-                                {item.text}
-                              </NavLink>
-                            ) : (
-                              item.text
-                            )}
-                          </Menu.Item>
-                        );
-                      }
-                      return null;
-                    })}
-                  </Menu>
-                </Footer>
-                {isStandalone && (
-                  <Spacer
-                    height="20px"
-                    style={{
-                      minHeight: "20px",
-                      backgroundColor: token.colorBgSpotlight,
-                    }}
-                  />
-                )}
-              </>
-            ) : null
-          }
-        >
-          {children}
-        </StickyAdaptiveMobileFooter>
+        <StickyAdaptiveMobileFooter>{children}</StickyAdaptiveMobileFooter>
       </Layout>
     );
   }

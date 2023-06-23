@@ -6,12 +6,20 @@ import { useUserState } from "@/state/user.state";
 import { useWindowSize } from "@/api/utils/screen";
 import { useEffect, useState } from "react";
 import "@sendbird/uikit-react/dist/index.css";
-import { EllipsisOutlined } from "@ant-design/icons";
+import { BellOutlined, GiftFilled } from "@ant-design/icons";
 import { EnterChatRoomInput } from "@/api/graphql/types";
 import { useSendBirdChannel } from "@/hooks/useSendbird";
 import { UserMessage, UserMessageCreateParams } from "@sendbird/chat/message";
-import { Button, Dropdown, Input, MenuProps, theme } from "antd";
-import { useEnterChatRoom } from "@/hooks/useChat";
+import {
+  Button,
+  Dropdown,
+  Input,
+  MenuProps,
+  Modal,
+  message,
+  theme,
+} from "antd";
+import { useEnterChatRoom, useUpdateChatSettings } from "@/hooks/useChat";
 import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import { matchContactToChatroom, useChatsListState } from "@/state/chats.state";
 import { ChatRoomID, Username } from "@milkshakechat/helpers";
@@ -23,6 +31,7 @@ import SBChannelSettings from "@sendbird/uikit-react/ChannelSettings";
 import "./sendbird.custom.css";
 import ChatFrame from "@/components/ChatFrame/ChatFrame";
 import config from "@/config.env";
+import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
 
 const ChatPage = () => {
   const intl = useIntl();
@@ -44,6 +53,23 @@ const ChatPage = () => {
     runQuery: enterChatRoomQuery,
   } = useEnterChatRoom();
 
+  const [isPushAllowedLocalState, setIsAllowedPushLocalState] = useState(false);
+
+  useEffect(() => {
+    if (enterChatRoomData) {
+      setIsAllowedPushLocalState(
+        enterChatRoomData.chatRoom?.pushConfig?.allowPush || false
+      );
+    }
+  }, [enterChatRoomData]);
+
+  const { runMutation: runUpdateChatSettingsMutation } =
+    useUpdateChatSettings();
+
+  const [isMuteModalOpen, setIsMuteModalOpen] = useState<boolean>(false);
+  const [isWishlistModalOpen, setIsWishlistModalOpen] =
+    useState<boolean>(false);
+
   const { chatRooms } = useChatsListState(
     (state) => ({
       chatRooms: state.chatsList,
@@ -61,12 +87,6 @@ const ChatPage = () => {
     contacts,
   });
   const { token } = theme.useToken();
-
-  // const { channel, messages } = useSendBirdChannel(
-  //   enterChatRoomData && enterChatRoomData.chatRoom
-  //     ? enterChatRoomData.chatRoom.sendBirdChannelURL || undefined
-  //     : undefined
-  // );
 
   useEffect(() => {
     loadPageData();
@@ -90,57 +110,61 @@ const ChatPage = () => {
       ? (enterChatRoomData?.chatRoom.sendBirdChannelURL as string) || ""
       : "";
 
-  const sendMessage = () => {
-    // // sending message
-    // const params: UserMessageCreateParams = {
-    //   message: inputText,
-    // };
-    // if (channel) {
-    //   channel
-    //     .sendUserMessage(params)
-    //     .onSucceeded((message) => {
-    //       setInputText("");
-    //       // ...
-    //     })
-    //     .onPending((message) => {
-    //       console.log("pending", message);
-    //     })
-    //     .onFailed((error) => {
-    //       console.log("error", error);
-    //     });
-    // }
-  };
-
   if (enterChatRoomErrors && enterChatRoomErrors.length > 0) {
     return <PP>No Chat Room Found</PP>;
   }
 
   const items: MenuProps["items"] = [
     {
-      key: "view-wishlist",
+      key: "mute-convo",
       label: (
-        <a target="_blank" rel="noopener noreferrer">
-          View Wishlist
-        </a>
-      ),
-    },
-    {
-      key: "visit-profile",
-      label: (
-        <a target="_blank" rel="noopener noreferrer">
-          View Profile
-        </a>
+        <div onClick={() => setIsMuteModalOpen(true)}>
+          {isPushAllowedLocalState ? `Mute Chat` : `Unmute Chat`}
+        </div>
       ),
     },
     {
       key: "report-user",
-      label: (
-        <a target="_blank" rel="noopener noreferrer">
-          Report User
-        </a>
-      ),
+      label: <div onClick={() => message.info("Coming soon")}>Report Chat</div>,
     },
   ];
+
+  enum SnoozeUntilEnum {
+    "3hours" = "3hours",
+    "1day" = "1day",
+    "indefinite" = "indefinite",
+  }
+  const toggleAllowPush = async ({
+    allowPush,
+    snoozeUntil,
+  }: {
+    allowPush: boolean;
+    snoozeUntil: SnoozeUntilEnum;
+  }) => {
+    let snoozeUntilTime: number | undefined;
+    switch (snoozeUntil) {
+      case SnoozeUntilEnum["3hours"]:
+        snoozeUntilTime = Date.now() + 60 * 60 * 3;
+        break;
+      case SnoozeUntilEnum["1day"]:
+        snoozeUntilTime = Date.now() + 60 * 60 * 24;
+        break;
+      case SnoozeUntilEnum["indefinite"]:
+        snoozeUntilTime = undefined;
+        break;
+      default:
+        snoozeUntilTime = undefined;
+        break;
+    }
+    await runUpdateChatSettingsMutation({
+      chatRoomID: enterChatRoomData?.chatRoom.chatRoomID as ChatRoomID,
+      allowPush,
+      snoozeUntil: snoozeUntilTime ? snoozeUntilTime.toString() : undefined,
+    });
+    message.info(allowPush ? `Notifications enabled` : `Muted notifications`);
+    setIsAllowedPushLocalState(allowPush);
+    setIsMuteModalOpen(false);
+  };
 
   return (
     <div style={{ padding: isMobile ? "0px" : "20px", height: "100%" }}>
@@ -170,14 +194,27 @@ const ChatPage = () => {
                       }}
                       glowColor={token.colorPrimaryText}
                       backButton={true}
+                      backButtonAction={() =>
+                        navigate({
+                          pathname: `/app/friends`,
+                        })
+                      }
                       actionButton={
                         <div>
                           <Dropdown.Button
                             type="primary"
                             menu={{ items }}
                             arrow
+                            onClick={() => setIsWishlistModalOpen(true)}
                           >
-                            Wishlist
+                            <$Horizontal alignItems="center">
+                              <GiftFilled />
+                              <PP>
+                                <span style={{ marginLeft: "10px" }}>
+                                  {isMobile ? `Wishlist` : `Buy Wishlist`}
+                                </span>
+                              </PP>
+                            </$Horizontal>
                           </Dropdown.Button>
                         </div>
                       }
@@ -195,23 +232,100 @@ const ChatPage = () => {
         </div>
       )}
 
-      {/* <ul>
-        {messages.map((msg, i) => {
-          return (
-            <li key={`${i}-${msg._iid}`}>{`${
-              (msg as any).sender?.nickname || ""
-            }: ${msg.message}`}</li>
-          );
-        })}
-      </ul> */}
-      {/* <Input.TextArea
-        value={inputText}
-        onChange={(e) => setInputText(e.target.value)}
-      />
-      <Button type="primary" onClick={sendMessage}>
-        Send
-      </Button> */}
-      {/* {enterChatRoomData && enterChatRoomData.chatRoom.chatRoomID} */}
+      <Modal
+        open={isWishlistModalOpen}
+        onOk={() => setIsWishlistModalOpen(false)}
+        onCancel={() => setIsWishlistModalOpen(false)}
+        footer={null}
+        style={{ overflow: "hidden", top: 20 }}
+      >
+        <TimelineGallery
+          media={[
+            { title: "Favorites", count: 1 },
+            { title: "#hobby", count: 2 },
+            { title: "#savings", count: 4 },
+          ]}
+        />
+      </Modal>
+      <Modal
+        open={isMuteModalOpen}
+        onOk={() => setIsMuteModalOpen(false)}
+        onCancel={() => setIsMuteModalOpen(false)}
+        footer={null}
+      >
+        <$Vertical style={{ padding: "20px", gap: "10px" }}>
+          <$Vertical style={{ justifyContent: "center", alignItems: "center" }}>
+            <BellOutlined style={{ fontSize: "1.5rem" }} />
+            <div
+              style={{
+                fontSize: "1.2rem",
+                margin: "20px",
+              }}
+            >
+              {isPushAllowedLocalState ? (
+                <PP>Allowed Notifications</PP>
+              ) : (
+                <PP>Muted Notifications</PP>
+              )}
+            </div>
+          </$Vertical>
+
+          {isPushAllowedLocalState ? (
+            <Button
+              onClick={() => {
+                toggleAllowPush({
+                  allowPush: false,
+                  snoozeUntil: SnoozeUntilEnum["3hours"],
+                });
+              }}
+              type="primary"
+              size="large"
+              style={{ width: "100%" }}
+            >
+              Mute for 3 hours
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                toggleAllowPush({
+                  allowPush: true,
+                  snoozeUntil: SnoozeUntilEnum["indefinite"],
+                });
+              }}
+              type="primary"
+              size="large"
+              style={{ width: "100%" }}
+            >
+              Unmute
+            </Button>
+          )}
+
+          <Button
+            onClick={() => {
+              toggleAllowPush({
+                allowPush: false,
+                snoozeUntil: SnoozeUntilEnum["1day"],
+              });
+            }}
+            size="large"
+            style={{ width: "100%" }}
+          >
+            Mute for 1 day
+          </Button>
+          <Button
+            onClick={() => {
+              toggleAllowPush({
+                allowPush: false,
+                snoozeUntil: SnoozeUntilEnum.indefinite,
+              });
+            }}
+            size="large"
+            style={{ width: "100%" }}
+          >
+            Mute Indefinately
+          </Button>
+        </$Vertical>
+      </Modal>
     </div>
   );
 };

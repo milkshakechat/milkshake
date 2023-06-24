@@ -196,7 +196,9 @@ export const StickyAdaptiveMobileFooter = ({
   const { addressBarHeight } = detectMobileAddressBarSettings();
   const { isStandalone } = useCheckStandaloneModePWA();
   const user = useUserState((state) => state.user);
-  const showMobileFooter = reactRouterLocation.pathname !== "/app/chat";
+  const showMobileFooter =
+    reactRouterLocation.pathname !== "/app/chat" &&
+    reactRouterLocation.pathname !== "/app/story/new";
   const [showMobileSideMenu, setShowMobileSideMenu] = useState(false);
   const totalUnreadChatsCount = useChatsListState((state) =>
     state.chatsList.reduce((acc, curr) => {

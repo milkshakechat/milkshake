@@ -3,8 +3,10 @@ import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import { useUserState } from "@/state/user.state";
 import { Username } from "@milkshakechat/helpers";
 import { Button, Spin, theme } from "antd";
-import { CameraOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import { OrderedListOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { $Vertical } from "@/api/utils/spacing";
+import PP from "@/i18n/PlaceholderPrint";
+import StoryUpload from "@/components/StoryUpload/StoryUpload";
 
 const NewStoryPage = () => {
   const user = useUserState((state) => state.user);
@@ -31,8 +33,8 @@ const NewStoryPage = () => {
           glowColor={token.colorPrimaryText}
           backButton={true}
           actionButton={
-            <Button type="primary" icon={<CameraOutlined />}>
-              Upload
+            <Button icon={<OrderedListOutlined />}>
+              <PP>Audiences</PP>
             </Button>
           }
         />
@@ -55,6 +57,7 @@ const NewStoryPage = () => {
             <span style={{ fontSize: "1.5rem" }}>Upload Story</span>
           </$Vertical>
         </div>
+        <StoryUpload />
       </>
     </AppLayoutPadding>
   );

@@ -103,6 +103,7 @@ const ProfileStylePage = () => {
   const intl = useIntl();
   const { screen } = useWindowSize();
   const { uploadFile } = useStorage();
+
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");

@@ -1,3 +1,5 @@
+import { BucketDef } from "@milkshakechat/helpers";
+
 export const FIREBASE_AUTH_ID_TOKEN_LOCALSTORAGE =
   "FIREBASE_AUTH_ID_TOKEN_LOCALSTORAGE";
 export const FIREBASE_AUTH_REFRESH_TOKEN_LOCALSTORAGE =
@@ -25,6 +27,12 @@ const devConfig: ConfigEnv = {
     VAPID_PUBLIC_KEY:
       "BP5PCqDnEwC2rYGgOYraoMbetIzJe9MmjXGVys3p1rwmtucQA3IuqdINXcGqtrN8NKgavAADRZHc9mzjlRA7q7g",
   },
+  VIDEO_TRANSCODER: {
+    bucket: {
+      name: "user-stories-social",
+      location: "asia-northeast1",
+    },
+  },
 };
 const stagingConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
@@ -44,6 +52,12 @@ const stagingConfig: ConfigEnv = {
   PUSH: {
     VAPID_PUBLIC_KEY:
       "BP5PCqDnEwC2rYGgOYraoMbetIzJe9MmjXGVys3p1rwmtucQA3IuqdINXcGqtrN8NKgavAADRZHc9mzjlRA7q7g",
+  },
+  VIDEO_TRANSCODER: {
+    bucket: {
+      name: "user-stories-social",
+      location: "asia-northeast1",
+    },
   },
 };
 const prodConfig: ConfigEnv = {
@@ -65,6 +79,12 @@ const prodConfig: ConfigEnv = {
     VAPID_PUBLIC_KEY:
       "BP5PCqDnEwC2rYGgOYraoMbetIzJe9MmjXGVys3p1rwmtucQA3IuqdINXcGqtrN8NKgavAADRZHc9mzjlRA7q7g",
   },
+  VIDEO_TRANSCODER: {
+    bucket: {
+      name: "user-stories-social",
+      location: "asia-northeast1",
+    },
+  },
 };
 
 interface ConfigEnv {
@@ -83,6 +103,9 @@ interface ConfigEnv {
   };
   PUSH: {
     VAPID_PUBLIC_KEY: string;
+  };
+  VIDEO_TRANSCODER: {
+    bucket: BucketDef;
   };
 }
 

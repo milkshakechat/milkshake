@@ -21,10 +21,12 @@ import VideoPlayer from "../VideoPlayer/VideoPlayer";
 import { theme } from "antd";
 import Dragger from "antd/es/upload/Dragger";
 import { useWindowSize } from "@/api/utils/screen";
+import { useStoryCreate } from "@/hooks/useStory";
+import { StoryAttachmentType } from "@/api/graphql/types";
 
-const placeholderVideo =
+const placeholderPreviewUrl =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2Fm2fb0WWHOBesIAsevvCeNfv1w2Z2%2Fstory%2Fvideo%2Fc0b7e600-5d58-4c2e-af3c-ba714126208c.mp4?alt=media&token=a6a32b37-efe4-4010-ad0a-c1fb43b4a710";
-const placeholderStream =
+const placeholderStreamManifest =
   "https://storage.googleapis.com/user-stories-social/users/m2fb0WWHOBesIAsevvCeNfv1w2Z2/story/video/c0b7e600-5d58-4c2e-af3c-ba714126208c/video-streaming/manifest.mpd";
 
 interface StoryUploadProps {}
@@ -39,6 +41,14 @@ const StoryUpload = ({}: StoryUploadProps) => {
   const [manifestUrl, setManifestUrl] = useState("");
   const [showStream, setShowStream] = useState(false);
   const { token } = theme.useToken();
+  const [submitting, setSubmitting] = useState(false);
+  const [caption, setCaption] = useState("");
+
+  const {
+    data: createStoryData,
+    errors: createStoryErrors,
+    runMutation: runCreateStoryMutation,
+  } = useStoryCreate();
 
   const uploadProps: UploadProps = {
     beforeUpload: (file) => {
@@ -64,12 +74,12 @@ const StoryUpload = ({}: StoryUploadProps) => {
     setPreviewUrl(url);
     console.log(`local url: ${url}`);
     setUploadProgress(0);
-
-    const fileName = `${uuidv4()}.${file.name.split(".").pop()}`;
+    const assetId = uuidv4();
+    const fileName = `${assetId}.${file.name.split(".").pop()}`;
 
     await uploadFileWithProgress({
       file: file,
-      path: `/users/${user.id}/story/video/${fileName}`,
+      path: `/users/${user.id}/story/video/${assetId}/${fileName}`,
       onProgress: (progress) => {
         setUploadProgress(progress);
       },
@@ -130,12 +140,25 @@ const StoryUpload = ({}: StoryUploadProps) => {
     return <Input value="All Audiences"></Input>;
   };
 
+  const submitStory = () => {
+    setSubmitting(true);
+    runCreateStoryMutation({
+      caption,
+      media: {
+        type: StoryAttachmentType.Video,
+        url: manifestUrl,
+      },
+    });
+  };
+
   const renderSubmitButton = () => {
     return (
       <Button
         type="primary"
         size="large"
+        onClick={submitStory}
         disabled={!manifestUrl}
+        loading={submitting}
         style={{
           fontWeight: "bold",
           width: "100%",
@@ -144,6 +167,19 @@ const StoryUpload = ({}: StoryUploadProps) => {
       >
         Post Story
       </Button>
+    );
+  };
+
+  const renderCaptionsPanel = () => {
+    return (
+      <$Vertical style={{ marginBottom: "10px" }}>
+        <Input.TextArea
+          placeholder="Caption"
+          rows={2}
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+        />
+      </$Vertical>
     );
   };
 
@@ -163,6 +199,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
       >
         {renderVideoPanel()}
       </div>
+      {renderCaptionsPanel()}
       {renderAudiencePanel()}
       {renderSubmitButton()}
     </$Vertical>
@@ -195,13 +232,13 @@ export const VideoUploadingScreen = ({
         }}
       >
         <Progress type="circle" percent={parseInt(progress.toFixed(0))} />
-        <div style={{ fontSize: "1.5rem", marginTop: "20px" }}>
+        {/* <div style={{ fontSize: "1.5rem", marginTop: "20px" }}>
           {progress === 100 ? (
             <PP>Successful Upload</PP>
           ) : (
             <PP>Uploading...</PP>
           )}
-        </div>
+        </div> */}
       </$Vertical>
       <video src={previewUrl} style={{ width: "100%", height: "100%" }}></video>
     </section>

@@ -5,6 +5,7 @@ import {
   Mutation,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
+import { useStoriesState } from "@/state/stories.state";
 import gql from "graphql-tag";
 import { useState } from "react";
 
@@ -13,7 +14,11 @@ export const useStoryCreate = () => {
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
 
-  const runMutation = async (args: CreateStoryInput) => {
+  const setStories = useStoriesState((state) => state.setStories);
+
+  const runMutation = async (
+    args: CreateStoryInput
+  ): Promise<CreateStoryResponseSuccess | undefined> => {
     try {
       const CREATE_STORY = gql`
         mutation CreateStory($input: CreateStoryInput!) {
@@ -70,8 +75,11 @@ export const useStoryCreate = () => {
         }
       );
       setData(result);
+      setStories([result.story]);
+      return result;
     } catch (e) {
       console.log(e);
+      return;
     }
   };
 

@@ -50,6 +50,7 @@ import ContactsPage from "@/pages/Contacts/ContactsPage";
 import ChatsPage from "./pages/ChatsPage/ChatsPage";
 import ChatPage from "./pages/ChatPage/ChatPage";
 import DemoConversation from "./pages/DemoConversation/DemoConversationPage";
+import WatchStoryPage from "./pages/WatchStory/WatchStoryPage";
 
 const AppRouter = () => {
   const {
@@ -169,7 +170,16 @@ const AppRouter = () => {
                               </AuthProtect>
                             }
                           />
-
+                          <Route
+                            path="story/:storyID"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <WatchStoryPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
                           <Route
                             path="settings"
                             element={

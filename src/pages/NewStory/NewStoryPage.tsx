@@ -7,10 +7,12 @@ import { OrderedListOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import StoryUpload from "@/components/StoryUpload/StoryUpload";
+import { useNavigate } from "react-router-dom";
 
 const NewStoryPage = () => {
   const user = useUserState((state) => state.user);
   const { token } = theme.useToken();
+  const navigate = useNavigate();
   if (!user) {
     return <Spin />;
   }
@@ -32,6 +34,11 @@ const NewStoryPage = () => {
           }}
           glowColor={token.colorPrimaryText}
           backButton={true}
+          backButtonAction={() => {
+            navigate({
+              pathname: "/app/profile",
+            });
+          }}
           actionButton={
             <Button icon={<OrderedListOutlined />}>
               <PP>Audiences</PP>

@@ -2,6 +2,7 @@ import { useIntl, FormattedMessage } from "react-intl";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import {
+  Affix,
   Button,
   Input,
   Progress,
@@ -10,7 +11,11 @@ import {
   UploadProps,
   message,
 } from "antd";
-import { UploadOutlined, VideoCameraOutlined } from "@ant-design/icons";
+import {
+  UploadOutlined,
+  VideoCameraOutlined,
+  CheckCircleFilled,
+} from "@ant-design/icons";
 import { useState } from "react";
 import { RcFile } from "antd/es/upload";
 import useStorage from "@/hooks/useStorage";
@@ -23,6 +28,8 @@ import Dragger from "antd/es/upload/Dragger";
 import { useWindowSize } from "@/api/utils/screen";
 import { useStoryCreate } from "@/hooks/useStory";
 import { StoryAttachmentType } from "@/api/graphql/types";
+import { useNavigate } from "react-router-dom";
+import { StoryID } from "@milkshakechat/helpers";
 
 const placeholderPreviewUrl =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2Fm2fb0WWHOBesIAsevvCeNfv1w2Z2%2Fstory%2Fvideo%2Fc0b7e600-5d58-4c2e-af3c-ba714126208c.mp4?alt=media&token=a6a32b37-efe4-4010-ad0a-c1fb43b4a710";
@@ -46,6 +53,9 @@ const StoryUpload = ({}: StoryUploadProps) => {
   const { token } = theme.useToken();
   const [submitting, setSubmitting] = useState(false);
   const [caption, setCaption] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [uploadedStory, setUploadedStory] = useState<StoryID>();
+  const navigate = useNavigate();
 
   const {
     data: createStoryData,
@@ -133,24 +143,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
         </Dragger>
       );
     }
-    // // Uncomment this to show the streaming video player
-    // if (manifestUrl) {
-    // return (
-    //   <div>
-    //     <Progress
-    //       type="circle"
-    //       percent={parseInt(uploadProgress.toFixed(0))}
-    //     />
-    //     {showStream ? (
-    //       <VideoPlayer src={manifestUrl} />
-    //     ) : (
-    //       <Button onClick={() => setShowStream(true)}>
-    //         Show Video Stream
-    //       </Button>
-    //     )}
-    //   </div>
-    // );
-    // }
+
     if (mediaType) {
       return (
         <MediaUploadingScreen
@@ -167,10 +160,10 @@ const StoryUpload = ({}: StoryUploadProps) => {
     return <Input value="All Audiences"></Input>;
   };
 
-  const submitStory = () => {
+  const submitStory = async () => {
     setSubmitting(true);
     if (mediaType && assetID) {
-      runCreateStoryMutation({
+      const story = await runCreateStoryMutation({
         caption,
         media: {
           type: mediaType,
@@ -178,25 +171,48 @@ const StoryUpload = ({}: StoryUploadProps) => {
           assetID,
         },
       });
+      if (story) {
+        setUploadedStory(story.story.id as StoryID);
+        setSubmitted(true);
+      }
     }
+  };
+
+  const clearForAnotherPost = () => {
+    setFileForUpload(undefined);
+    setUploadProgress(0);
+    setPreviewUrl("");
+    setUploadedUrl("");
+    setManifestUrl("");
+    setMediaType(undefined);
+    setShowStream(false);
+    setAssetID("");
+    setSubmitting(false);
+    setCaption("");
+    setSubmitted(false);
+    setUploadedStory(undefined);
   };
 
   const renderSubmitButton = () => {
     return (
-      <Button
-        type="primary"
-        size="large"
-        onClick={submitStory}
-        disabled={!manifestUrl}
-        loading={submitting}
-        style={{
-          fontWeight: "bold",
-          width: "100%",
-          marginTop: "20px",
-        }}
-      >
-        Post Story
-      </Button>
+      <Affix offsetBottom={20}>
+        <div style={{ backgroundColor: token.colorBgBase }}>
+          <Button
+            type="primary"
+            size="large"
+            onClick={submitStory}
+            disabled={!manifestUrl}
+            loading={submitting}
+            style={{
+              fontWeight: "bold",
+              width: "100%",
+              marginTop: "20px",
+            }}
+          >
+            Post Story
+          </Button>
+        </div>
+      </Affix>
     );
   };
 
@@ -219,6 +235,66 @@ const StoryUpload = ({}: StoryUploadProps) => {
     );
   };
 
+  if (submitted) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          border: `5px dashed ${token.colorBgContainerDisabled}`,
+          margin: "20px 0px",
+          borderRadius: "20px",
+          flexDirection: "column",
+          justifyContent: "stretch",
+          alignItems: "stretch",
+          color: token.colorBgContainerDisabled,
+        }}
+      >
+        <$Vertical
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            padding: "70px 50px",
+          }}
+        >
+          <CheckCircleFilled
+            style={{ color: token.colorSuccessActive, fontSize: "3rem" }}
+          />
+          <PP>
+            <div
+              style={{
+                fontSize: "1.2rem",
+                margin: "20px 0px 50px 0px",
+                fontWeight: "bold",
+                color: token.colorTextHeading,
+              }}
+            >
+              Successful Post
+            </div>
+          </PP>
+          <Button
+            size="large"
+            onClick={clearForAnotherPost}
+            type="primary"
+            style={{ fontWeight: "bold" }}
+          >
+            Post Another
+          </Button>
+          <Button
+            type="link"
+            onClick={() => {
+              navigate({
+                pathname: `/app/story/${uploadedStory}`,
+              });
+            }}
+            style={{ marginTop: "20px" }}
+          >
+            View Story
+          </Button>
+        </$Vertical>
+      </div>
+    );
+  }
+
   return (
     <$Vertical>
       <div
@@ -235,6 +311,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
       >
         {renderMediaPanel()}
       </div>
+
       {renderCaptionsPanel()}
       {renderAudiencePanel()}
       {renderSubmitButton()}

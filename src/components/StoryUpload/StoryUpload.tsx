@@ -38,8 +38,11 @@ const StoryUpload = ({}: StoryUploadProps) => {
   const { uploadFileWithProgress } = useStorage();
   const user = useUserState((state) => state.user);
   const { screen, isMobile } = useWindowSize();
+  const [uploadedUrl, setUploadedUrl] = useState("");
   const [manifestUrl, setManifestUrl] = useState("");
+  const [mediaType, setMediaType] = useState<StoryAttachmentType>();
   const [showStream, setShowStream] = useState(false);
+  const [assetID, setAssetID] = useState("");
   const { token } = theme.useToken();
   const [submitting, setSubmitting] = useState(false);
   const [caption, setCaption] = useState("");
@@ -54,17 +57,29 @@ const StoryUpload = ({}: StoryUploadProps) => {
     beforeUpload: (file) => {
       console.log(file);
       const isVideo = file.type.indexOf("video/mp4") > -1;
-      if (!isVideo) {
-        message.error(`${file.name} is not a video MP4 file`);
+      const isImage =
+        file.type.indexOf("image/png") > -1 ||
+        file.type.indexOf("image/jpeg") > -1 ||
+        file.type.indexOf("image/jpg") > -1;
+      if (!isVideo && !isImage) {
+        message.error(
+          `${file.name} is not an PNG/JPEG image or a MP4 video file`
+        );
         return false;
       }
       setFileForUpload(file);
-      handleUpload(file);
+      if (isImage) {
+        setMediaType(StoryAttachmentType.Image);
+        handleUpload(file, StoryAttachmentType.Image);
+      } else if (isVideo) {
+        setMediaType(StoryAttachmentType.Video);
+        handleUpload(file, StoryAttachmentType.Video);
+      }
       return false;
     },
   };
 
-  const handleUpload = async (file: RcFile) => {
+  const handleUpload = async (file: RcFile, mediaType: StoryAttachmentType) => {
     console.log(`Lets handle upload`);
     console.log(`Uploading file... ${file.name}`);
     if (!user) {
@@ -79,7 +94,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
 
     await uploadFileWithProgress({
       file: file,
-      path: `/users/${user.id}/story/video/${assetId}/${fileName}`,
+      path: `/users/${user.id}/story/${mediaType}/${assetId}/${fileName}`,
       onProgress: (progress) => {
         setUploadProgress(progress);
       },
@@ -87,7 +102,9 @@ const StoryUpload = ({}: StoryUploadProps) => {
         console.log(`Upload complete!`, url);
         const manifestUrl = predictVideoTranscodedManifestRoute(url);
         console.log(`manifestUrl`, manifestUrl);
+        setUploadedUrl(url);
         setManifestUrl(manifestUrl);
+        setAssetID(assetId);
       },
       onError: (error) => {
         console.log(`Upload error!`, error);
@@ -95,7 +112,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
     });
   };
 
-  const renderVideoPanel = () => {
+  const renderMediaPanel = () => {
     if (!previewUrl) {
       return (
         <Dragger {...uploadProps}>
@@ -131,9 +148,16 @@ const StoryUpload = ({}: StoryUploadProps) => {
     //   </div>
     // );
     // }
-    return (
-      <VideoUploadingScreen progress={uploadProgress} previewUrl={previewUrl} />
-    );
+    if (mediaType) {
+      return (
+        <MediaUploadingScreen
+          progress={uploadProgress}
+          previewUrl={previewUrl}
+          mediaType={mediaType}
+        />
+      );
+    }
+    return null;
   };
 
   const renderAudiencePanel = () => {
@@ -142,13 +166,16 @@ const StoryUpload = ({}: StoryUploadProps) => {
 
   const submitStory = () => {
     setSubmitting(true);
-    runCreateStoryMutation({
-      caption,
-      media: {
-        type: StoryAttachmentType.Video,
-        url: manifestUrl,
-      },
-    });
+    if (mediaType && assetID) {
+      runCreateStoryMutation({
+        caption,
+        media: {
+          type: mediaType,
+          url: uploadedUrl,
+          assetID,
+        },
+      });
+    }
   };
 
   const renderSubmitButton = () => {
@@ -197,7 +224,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
           color: token.colorBgContainerDisabled,
         }}
       >
-        {renderVideoPanel()}
+        {renderMediaPanel()}
       </div>
       {renderCaptionsPanel()}
       {renderAudiencePanel()}
@@ -208,12 +235,14 @@ const StoryUpload = ({}: StoryUploadProps) => {
 
 export default StoryUpload;
 
-export const VideoUploadingScreen = ({
+export const MediaUploadingScreen = ({
   progress,
   previewUrl,
+  mediaType,
 }: {
   progress: number;
   previewUrl: string;
+  mediaType: StoryAttachmentType;
 }) => {
   return (
     <section
@@ -240,7 +269,14 @@ export const VideoUploadingScreen = ({
           )}
         </div> */}
       </$Vertical>
-      <video src={previewUrl} style={{ width: "100%", height: "100%" }}></video>
+      {mediaType === StoryAttachmentType.Video ? (
+        <video
+          src={previewUrl}
+          style={{ width: "100%", height: "100%" }}
+        ></video>
+      ) : (
+        <img src={previewUrl} style={{ width: "100%", height: "100%" }}></img>
+      )}
     </section>
   );
 };

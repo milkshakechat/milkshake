@@ -350,6 +350,7 @@ export enum StoryAttachmentType {
 }
 
 export type StoryMediaAttachmentInput = {
+  assetID: Scalars['String']['input'];
   type: StoryAttachmentType;
   url: Scalars['String']['input'];
 };
@@ -489,7 +490,7 @@ export type CreateStoryMutationVariables = Exact<{
 }>;
 
 
-export type CreateStoryMutation = { __typename?: 'Mutation', createStory: { __typename: 'CreateStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null }> } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type CreateStoryMutation = { __typename?: 'Mutation', createStory: { __typename: 'CreateStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string }> } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type DemoQueryQueryVariables = Exact<{
   input: DemoQueryInput;

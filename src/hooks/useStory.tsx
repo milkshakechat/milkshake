@@ -35,6 +35,7 @@ export const useStoryCreate = () => {
                   thumbnail
                   stream
                   altText
+                  url
                 }
               }
             }

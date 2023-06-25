@@ -119,7 +119,10 @@ const StoryUpload = ({}: StoryUploadProps) => {
           <$Vertical
             alignItems="center"
             justifyContent="center"
-            style={{ flex: 1, padding: isMobile ? "100px 0px" : "100px 0px" }}
+            style={{
+              flex: 1,
+              padding: isMobile ? "100px 0px" : "100px 0px",
+            }}
           >
             <VideoCameraOutlined style={{ fontSize: "3rem", margin: "20px" }} />
             <span style={{ fontSize: "1.5rem" }}>Upload Story</span>
@@ -204,7 +207,13 @@ const StoryUpload = ({}: StoryUploadProps) => {
           placeholder="Caption"
           rows={2}
           value={caption}
-          onChange={(e) => setCaption(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value.length <= 240) {
+              setCaption(e.target.value);
+            } else {
+              message.error("Caption must be less than 240 characters");
+            }
+          }}
         />
       </$Vertical>
     );
@@ -258,6 +267,8 @@ export const MediaUploadingScreen = ({
           position: "absolute",
           justifyContent: "center",
           alignItems: "center",
+          maxHeight: "50vh",
+          overflow: "hidden",
         }}
       >
         <Progress type="circle" percent={parseInt(progress.toFixed(0))} />
@@ -272,10 +283,14 @@ export const MediaUploadingScreen = ({
       {mediaType === StoryAttachmentType.Video ? (
         <video
           src={previewUrl}
-          style={{ width: "100%", height: "100%" }}
+          controls
+          style={{ width: "auto", height: "100%", maxHeight: "50vh" }}
         ></video>
       ) : (
-        <img src={previewUrl} style={{ width: "100%", height: "100%" }}></img>
+        <img
+          src={previewUrl}
+          style={{ width: "auto", height: "100%", maxHeight: "50vh" }}
+        ></img>
       )}
     </section>
   );

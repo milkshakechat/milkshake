@@ -39,7 +39,14 @@ const NewStoryPage = () => {
           }
         />
 
-        <StoryUpload />
+        <$Vertical
+          alignItems="center"
+          style={{ width: "100%", alignItems: "center" }}
+        >
+          <div style={{ maxWidth: "800px", width: "100%" }}>
+            <StoryUpload />
+          </div>
+        </$Vertical>
       </>
     </AppLayoutPadding>
   );

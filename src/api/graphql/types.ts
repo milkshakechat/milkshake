@@ -49,6 +49,18 @@ export type Contact = {
   username?: Maybe<Scalars['String']['output']>;
 };
 
+export type CreateStoryInput = {
+  caption: Scalars['String']['input'];
+  media?: InputMaybe<StoryMediaAttachmentInput>;
+};
+
+export type CreateStoryResponse = CreateStoryResponseSuccess | ResponseError;
+
+export type CreateStoryResponseSuccess = {
+  __typename?: 'CreateStoryResponseSuccess';
+  story: Story;
+};
+
 export type DemoMutatedItem = {
   __typename?: 'DemoMutatedItem';
   id: Scalars['ID']['output'];
@@ -178,12 +190,18 @@ export type ModifyProfileResponseSuccess = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createStory: CreateStoryResponse;
   demoMutation: DemoMutationResponse;
   manageFriendship: ManageFriendshipResponse;
   modifyProfile: ModifyProfileResponse;
   sendFriendRequest: SendFriendRequestResponse;
   updateChatSettings: UpdateChatSettingsResponse;
   updatePushToken: UpdatePushTokenResponse;
+};
+
+
+export type MutationCreateStoryArgs = {
+  input: CreateStoryInput;
 };
 
 
@@ -300,6 +318,42 @@ export enum StatusCode {
   Success = 'Success',
   Unauthorized = 'Unauthorized'
 }
+
+export type Story = {
+  __typename?: 'Story';
+  attachments: Array<StoryAttachment>;
+  caption?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateString']['output']>;
+  expiresAt?: Maybe<Scalars['DateString']['output']>;
+  id: Scalars['ID']['output'];
+  outboundLink?: Maybe<Scalars['String']['output']>;
+  pinned?: Maybe<Scalars['Boolean']['output']>;
+  showcaseThumbnail?: Maybe<Scalars['String']['output']>;
+  thumbnail: Scalars['String']['output'];
+  userID: Scalars['UserID']['output'];
+};
+
+export type StoryAttachment = {
+  __typename?: 'StoryAttachment';
+  altText?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  stream?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
+  type: StoryAttachmentType;
+  url: Scalars['String']['output'];
+  userID: Scalars['UserID']['output'];
+};
+
+export enum StoryAttachmentType {
+  Image = 'IMAGE',
+  Video = 'VIDEO'
+}
+
+export type StoryMediaAttachmentInput = {
+  assetID: Scalars['String']['input'];
+  type: StoryAttachmentType;
+  url: Scalars['String']['input'];
+};
 
 export type Subscription = {
   __typename?: 'Subscription';
@@ -430,6 +484,13 @@ export type ListContactsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type ListContactsQuery = { __typename?: 'Query', listContacts: { __typename: 'ListContactsResponseSuccess', contacts: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }>, globalDirectory: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type CreateStoryMutationVariables = Exact<{
+  input: CreateStoryInput;
+}>;
+
+
+export type CreateStoryMutation = { __typename?: 'Mutation', createStory: { __typename: 'CreateStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string }> } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type DemoQueryQueryVariables = Exact<{
   input: DemoQueryInput;

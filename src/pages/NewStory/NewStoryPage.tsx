@@ -38,26 +38,15 @@ const NewStoryPage = () => {
             </Button>
           }
         />
-        <div
-          style={{
-            display: "flex",
-            padding: "50px",
-            border: `5px dashed ${token.colorBgContainerDisabled}`,
-            margin: "20px 0px",
-            height: "80vh",
-            borderRadius: "20px",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            color: token.colorBgContainerDisabled,
-          }}
+
+        <$Vertical
+          alignItems="center"
+          style={{ width: "100%", alignItems: "center" }}
         >
-          <$Vertical alignItems="center" justifyContent="center">
-            <VideoCameraOutlined style={{ fontSize: "3rem", margin: "20px" }} />
-            <span style={{ fontSize: "1.5rem" }}>Upload Story</span>
-          </$Vertical>
-        </div>
-        <StoryUpload />
+          <div style={{ maxWidth: "800px", width: "100%" }}>
+            <StoryUpload />
+          </div>
+        </$Vertical>
       </>
     </AppLayoutPadding>
   );

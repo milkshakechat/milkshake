@@ -36,13 +36,15 @@ import {
   BucketFolderSlug,
   ImageResizeOption,
   PrivacySettingsExplaination,
-  getCompressedMediaUrl,
+  UserID,
+  getCompressedAvatarUrl,
   privacyModeEnum,
 } from "@milkshakechat/helpers";
 import { PrivacyModeEnum } from "@/api/graphql/types";
 import useSharedTranslations from "@/i18n/useSharedTranslations";
 import { cid } from "./i18n/types.i18n.ProfileStylePage";
 import { useIntl } from "react-intl";
+import config from "@/config.env";
 
 const formLayout = "horizontal";
 
@@ -235,17 +237,18 @@ const ProfileStylePage = () => {
 
   const uploadNewAvatar = async (file: string | Blob | RcFile) => {
     setIsUploadingFile(true);
+    const assetID = uuidv4();
     const url = await uploadFile({
       file: file as File,
-      path: `users/${userID}/avatars/${uuidv4()}.png`,
+      path: `users/${userID}/avatars/${assetID}.png`,
     });
-    if (url) {
-      const resized = getCompressedMediaUrl(
-        url,
-        BucketFolderSlug.avatars,
-        ImageResizeOption.thumbnail
-      );
-
+    console.log(`assetID`, assetID);
+    if (url && user && user.id) {
+      const resized = getCompressedAvatarUrl({
+        userID: user.id,
+        assetID,
+        bucketName: config.FIREBASE.storageBucket,
+      });
       setAvatarUrl(url);
       setCompressedAvatarUrl(resized);
     }
@@ -393,11 +396,8 @@ const ProfileStylePage = () => {
 
 export default ProfileStylePage;
 
-// original
-// https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2FbpSkq4bQFuWYoj7xtGD8pr5gUdD3%2Favatars%2F306f3333-3120-475f-a43d-e0dfad4813ad.png?alt=media&token=5d142fc3-d39f-4a3d-9b96-430e7f47f902
+// received
+// https://firebasestorage.googleapis.com/v0/b/200x200/o/users%2Fm2fb0WWHOBesIAsevvCeNfv1w2Z2%2Favatars%2Fresized-media%2Feab5fd4d-faeb-4ec5-8105-91d4178adae0_200x200.jpeg?alt=media
 
-// predicted
-// https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2FbpSkq4bQFuWYoj7xtGD8pr5gUdD3%2Favatars/resized-media/%2F306f3333-3120-475f-a43d-e0dfad4813ad_768x768.jpeg?alt=media
-
-// actual
-// https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2FbpSkq4bQFuWYoj7xtGD8pr5gUdD3%2Favatars%2Fresized-media%2F306f3333-3120-475f-a43d-e0dfad4813ad_768x768.jpeg?alt=media
+// expected
+// https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2Fm2fb0WWHOBesIAsevvCeNfv1w2Z2%2Favatars%2Fresized-media%2Feab5fd4d-faeb-4ec5-8105-91d4178adae0_200x200.jpeg?alt=media&token=1392badf-9656-4a5c-998c-5564f5fafa86

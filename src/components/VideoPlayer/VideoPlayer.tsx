@@ -18,8 +18,8 @@ const VideoPlayer = ({ src, videoControllerRef }: VideoPlayerProps) => {
       <ShakaPlayer
         ref={videoControllerRef}
         autoPlay
-        src={src}
         muted
+        src={src}
         showNativeControls={false}
       />
     </div>

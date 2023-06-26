@@ -12,18 +12,46 @@ import {
 import { useUserState } from "@/state/user.state";
 import { useWindowSize } from "@/api/utils/screen";
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { Avatar, Input, Progress, Spin, theme, Button } from "antd";
+import {
+  Avatar,
+  Input,
+  Progress,
+  Spin,
+  theme,
+  Button,
+  Dropdown,
+  message,
+} from "antd";
 import { StoryAttachmentType } from "@/api/graphql/types";
 import { useGetStory } from "@/hooks/useStory";
 import { StoryID, UserID } from "@milkshakechat/helpers";
-import { LeftOutlined, GiftFilled } from "@ant-design/icons";
+import {
+  HomeOutlined,
+  LeftOutlined,
+  RightOutlined,
+  GiftFilled,
+  GiftOutlined,
+  SoundOutlined,
+  ShareAltOutlined,
+  SoundFilled,
+  HeartOutlined,
+  HeartFilled,
+  MessageOutlined,
+  MessageFilled,
+} from "@ant-design/icons";
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import VideoPlayer, {
   ShakePlayerRef,
 } from "@/components/VideoPlayer/VideoPlayer";
 import { showOnlyStoriesOfAuthor } from "@/api/utils/stories.util";
 import { ShakaPlayerRef } from "shaka-player-react";
+import { EllipsisOutlined } from "@ant-design/icons";
 
+const EMPTY_PLAYER = {
+  player: null,
+  ui: null,
+  videoElement: null,
+};
 interface WatchStoryPageProps {
   children?: React.ReactNode | React.ReactNode[];
 }
@@ -36,22 +64,20 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
   const location = useLocation();
   const { token } = theme.useToken();
   const [showFullCaption, setShowFullCaption] = useState(false);
-  const videoControllerRef = useRef<ShakePlayerRef>({
-    player: null,
-    ui: null,
-    videoElement: null,
-  });
+  const videoControllerRef = useRef<ShakePlayerRef>(EMPTY_PLAYER);
   const localStories = useStoriesState((state) => state.stories);
   const localStory = localStories.find((story) => story.id === storyIDFromURL);
+
+  const [liked, setLiked] = useState(false);
 
   const {
     /** @type {shaka.Player} */ player,
     /** @type {shaka.ui.Overlay} */ ui,
     /** @type {HTMLVideoElement} */ videoElement,
-  } = videoControllerRef.current;
+  } = videoControllerRef.current ? videoControllerRef.current : EMPTY_PLAYER;
 
   useEffect(() => {
-    if (videoElement) {
+    if (videoElement && videoElement.removeAttribute) {
       videoElement.removeAttribute("controls");
     }
   }, [videoElement]);
@@ -67,6 +93,27 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
         firstStory: spotlightStory,
       })
     : [];
+  console.log(`authorStories`, authorStories);
+  const currentProgressOfAuthorStories =
+    (authorStories.findIndex((story) => story.id === spotlightStory?.id) + 1) /
+      authorStories.length +
+    0.01;
+
+  console.log(`currentProgressOfAuthorStories`, currentProgressOfAuthorStories);
+  console.log(
+    `authorStories.findIndex((story) => story.id === spotlightStory?.id)`,
+    authorStories.findIndex((story) => story.id === spotlightStory?.id)
+  );
+  const paginateStory = (pagesCount: number) => {
+    const currentIndex = authorStories.findIndex(
+      (story) => story.id === spotlightStory?.id
+    );
+    const nextIndex = currentIndex + pagesCount;
+    console.log(`authorStories[nextIndex]`, authorStories[nextIndex]);
+    if (nextIndex >= 0 && nextIndex < authorStories.length) {
+      setSpotlightStory(authorStories[nextIndex]);
+    }
+  };
 
   useEffect(() => {
     if (localStory) {
@@ -98,10 +145,10 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
   const primaryAttachment = spotlightStory.attachments[0];
 
   const togglePlayPauseVideo = () => {
-    console.log(`togglePlayPauseVideo()`);
-    console.log(`player`, player);
-    console.log(`ui`, ui);
-    console.log(`videoElement`, videoElement);
+    // console.log(`togglePlayPauseVideo()`);
+    // console.log(`player`, player);
+    // console.log(`ui`, ui);
+    // console.log(`videoElement`, videoElement);
     if (videoElement) {
       const isVideoPlaying = !(videoElement.paused || videoElement.ended);
       if (isVideoPlaying) {
@@ -109,6 +156,12 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
       } else {
         videoElement.play();
       }
+    }
+  };
+
+  const toggleMuteVideo = () => {
+    if (videoElement) {
+      videoElement.muted = !videoElement.muted;
     }
   };
 
@@ -185,13 +238,15 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
               style={{ overflow: "hidden", flex: 1 }}
             >
               <Button
-                icon={<LeftOutlined />}
+                icon={<HomeOutlined />}
                 onClick={() => navigate("/app/chats")}
                 style={{ flex: 1, minWidth: "30px", maxWidth: "50px" }}
               />
-              <$Vertical style={{ marginLeft: "10px", flex: 1 }}>
+              <$Vertical
+                style={{ marginLeft: "10px", flex: 1, overflow: "hidden" }}
+              >
                 <Progress
-                  percent={30}
+                  percent={currentProgressOfAuthorStories}
                   steps={authorStories.length}
                   showInfo={false}
                   strokeColor={token.colorPrimaryActive}
@@ -201,15 +256,129 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   style={{ marginTop: "5px", color: token.colorTextLabel }}
                 >{`Posted 14 mins ago`}</i>
               </$Vertical>
+              <div>
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        key: "share-story",
+                        label: (
+                          <div onClick={() => console.log("Share Story")}>
+                            Share Story
+                          </div>
+                        ),
+                      },
+                      {
+                        key: "report-user",
+                        label: (
+                          <div onClick={() => message.info("Coming soon")}>
+                            Report Chat
+                          </div>
+                        ),
+                      },
+                    ],
+                  }}
+                  arrow
+                >
+                  <Button
+                    type="link"
+                    icon={<EllipsisOutlined />}
+                    style={{
+                      border: "0px solid white",
+                      color: token.colorTextBase,
+                    }}
+                  ></Button>
+                </Dropdown>
+              </div>
             </$Horizontal>
           </div>
           <div
+            onClick={togglePlayPauseVideo}
             style={{
               flex: 1,
               width: "100%",
               backgroundColor: "rgba(0,0,0,0)", // "rgba(35, 198, 76, 0.5)",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              alignItems: "flex-end",
             }}
-          ></div>
+          >
+            <div
+              style={{
+                flex: 1,
+                width: "100%",
+                height: "100%",
+              }}
+              onClick={() => paginateStory(-1)}
+            ></div>
+
+            <div
+              style={{
+                flex: 1,
+                width: "100%",
+                height: "100%",
+              }}
+              onClick={() => paginateStory(1)}
+            ></div>
+            <$Vertical
+              spacing={3}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              style={{
+                backgroundColor: `${token.colorBgContainer}9A`,
+                padding: "10px",
+                borderRadius: "10px 0px 0px 10px",
+                zIndex: 1,
+              }}
+            >
+              {liked ? (
+                <HeartFilled
+                  onClick={() => setLiked(false)}
+                  style={{
+                    fontSize: "2rem",
+                    color: token.colorPrimaryActive,
+                  }}
+                />
+              ) : (
+                <HeartOutlined
+                  onClick={() => setLiked(true)}
+                  style={{
+                    fontSize: "2rem",
+                    color: token.colorTextPlaceholder,
+                  }}
+                />
+              )}
+
+              <MessageOutlined
+                style={{
+                  color: token.colorTextPlaceholder,
+                  fontSize: "2rem",
+                }}
+              />
+              <GiftOutlined
+                style={{
+                  color: token.colorTextPlaceholder,
+                  fontSize: "2rem",
+                }}
+              />
+              <ShareAltOutlined
+                style={{
+                  color: token.colorTextPlaceholder,
+                  fontSize: "2rem",
+                }}
+              />
+              <SoundOutlined
+                onClick={toggleMuteVideo}
+                style={{
+                  color: token.colorTextPlaceholder,
+                  fontSize: "2rem",
+                }}
+              />
+            </$Vertical>
+          </div>
           <div
             style={{
               width: "100%",
@@ -249,9 +418,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   </PP>
                 </$Vertical>
               </$Horizontal>
-              <Button onClick={togglePlayPauseVideo} icon={<GiftFilled />}>
-                Wishlist
-              </Button>
+              <Button icon={<GiftFilled />}>Wishlist</Button>
             </$Horizontal>
             <span
               onClick={() => setShowFullCaption(!showFullCaption)}
@@ -266,7 +433,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
               placeholder="Respond to Story"
               size="large"
               rows={2}
-              style={{ width: "100%" }}
+              style={{ width: "100%", resize: "none" }}
             ></Input.TextArea>
           </div>
         </div>

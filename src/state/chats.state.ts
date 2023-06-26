@@ -80,7 +80,6 @@ interface UpdateChannelsListProps {
 const extrapolateChatPreviews = (
   args: UpdateChannelsListProps
 ): ChatRoomFE[] => {
-  console.log(`extrapolateChatPreviews`, args);
   const { contacts, rooms, userID } = args;
 
   return rooms.map((chatRoom): ChatRoomFE => {

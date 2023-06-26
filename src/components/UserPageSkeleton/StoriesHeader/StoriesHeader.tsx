@@ -6,31 +6,51 @@ import styled from "styled-components";
 import { useWindowSize } from "@/api/utils/screen";
 import { PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useStoriesState } from "@/state/stories.state";
+import { showLatestStoryPerAuthor } from "@/api/utils/stories.util";
 
 const StoriesHeader = () => {
   const intl = useIntl();
   const { screen, isMobile } = useWindowSize();
   const { token } = theme.useToken();
   const navigate = useNavigate();
+  const stories = useStoriesState((state) => state.stories);
+  console.log(`stories`, stories);
+  const showcaseStories = showLatestStoryPerAuthor(stories);
+  console.log(`showcaseStories`, showcaseStories);
   return (
     <$StoriesHeader backgroundColor={token.colorBgContainer}>
+      <Avatar
+        size={75}
+        icon={<PlusOutlined />}
+        onClick={() => {
+          navigate({
+            pathname: `/app/story/new`,
+          });
+        }}
+        style={{
+          color: token.colorPrimaryActive,
+          backgroundColor: token.colorPrimaryBg,
+          border: `3px solid ${token.colorPrimaryBgHover}`,
+          cursor: "pointer",
+        }}
+      />
       {
         // create an array from a number
-        Array.from(Array(30).keys()).map((k, i) => {
+        showcaseStories.map((story) => {
           return (
             <div
-              key={i}
+              key={story.id}
               onClick={() => {
                 navigate({
-                  pathname: "/app/story/new",
+                  pathname: `/app/story/${story.id}`,
                 });
               }}
             >
               <Avatar
                 size={75}
-                {...{
-                  icon: i === 0 ? <PlusOutlined /> : null,
-                }}
+                src={story.thumbnail}
+                style={{ cursor: "pointer" }}
               />
             </div>
           );

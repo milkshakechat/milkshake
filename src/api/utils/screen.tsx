@@ -4,7 +4,7 @@ import { Badge, Button, Layout, List, Menu, Modal, theme } from "antd";
 import { Footer } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useParams } from "react-router-dom";
 import { cid as AppLayoutCID } from "@/components/AppLayout/i18n/types.i18n.AppLayout";
 import {
   UserOutlined,
@@ -190,15 +190,18 @@ interface StickyAdaptiveMobileFooterProps {
 export const StickyAdaptiveMobileFooter = ({
   children,
 }: StickyAdaptiveMobileFooterProps) => {
+  const { storyID: storyIDFromURL } = useParams();
   const { token } = theme.useToken();
   const reactRouterLocation = useLocation();
   const intl = useIntl();
   const { addressBarHeight } = detectMobileAddressBarSettings();
   const { isStandalone } = useCheckStandaloneModePWA();
   const user = useUserState((state) => state.user);
+
   const showMobileFooter =
     reactRouterLocation.pathname !== "/app/chat" &&
-    reactRouterLocation.pathname !== "/app/story/new";
+    reactRouterLocation.pathname !== "/app/story/new" &&
+    reactRouterLocation.pathname !== `/app/story/${storyIDFromURL}`;
   const [showMobileSideMenu, setShowMobileSideMenu] = useState(false);
   const totalUnreadChatsCount = useChatsListState((state) =>
     state.chatsList.reduce((acc, curr) => {

@@ -8,6 +8,7 @@ import {
   useDemoSubscription,
 } from "@/hooks/useTemplateGQL";
 import { useUserState } from "@/state/user.state";
+import { theme } from "antd";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 export const TemplateComponentGQL = () => {
@@ -17,6 +18,7 @@ export const TemplateComponentGQL = () => {
   const selfUser = useUserState((state) => state.user);
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
+  const { token } = theme.useToken();
 
   const {
     data: demoQueryData,

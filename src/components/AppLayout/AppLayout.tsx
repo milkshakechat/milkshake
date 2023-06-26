@@ -29,7 +29,7 @@ import {
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import { shallow } from "zustand/shallow";
 import LogoText from "@/components/LogoText/LogoText";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import NotificationsPage from "@/pages/Notifications/NotificationsPage";
 import { LeftOutlined } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
@@ -72,6 +72,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const { screen: windowScreen } = useWindowSize();
   const _location = useLocation();
   const intl = useIntl();
+
   const { triggerRefetch } = useUserState(
     (state) => ({
       triggerRefetch: state.triggerRefetch,

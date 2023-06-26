@@ -1,5 +1,6 @@
 import { useListChatRooms } from "@/hooks/useChat";
 import { useListContacts, useProfile } from "@/hooks/useProfile";
+import { useFetchStoryFeedQuery } from "@/hooks/useStory";
 import useWebPermissions from "@/hooks/useWebPermissions";
 import { useChatsListState } from "@/state/chats.state";
 import { useUserState } from "@/state/user.state";
@@ -15,6 +16,8 @@ export const UserInfoProvider = ({ children }: Props) => {
   const { checkWebPermissions } = useWebPermissions({});
   const { runQuery: runListContacts } = useListContacts();
   const selfUser = useUserState((state) => state.user);
+
+  const { runQuery: runFetchStoryFeedQuery } = useFetchStoryFeedQuery();
 
   const { idToken, refetchNonce } = useUserState(
     (state) => ({
@@ -32,6 +35,9 @@ export const UserInfoProvider = ({ children }: Props) => {
     getProfile();
     if (selfUser) {
       runListContacts(selfUser.id);
+      runFetchStoryFeedQuery({
+        refresh: true,
+      });
     }
   }, [idToken, refetchNonce, selfUser?.id]);
 

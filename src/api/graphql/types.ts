@@ -107,6 +107,17 @@ export type EnterChatRoomResponseSuccess = {
   isNew: Scalars['Boolean']['output'];
 };
 
+export type FetchStoryFeedInput = {
+  nonce?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type FetchStoryFeedResponse = FetchStoryFeedResponseSuccess | ResponseError;
+
+export type FetchStoryFeedResponseSuccess = {
+  __typename?: 'FetchStoryFeedResponseSuccess';
+  stories: Array<Story>;
+};
+
 export enum FriendshipAction {
   AcceptRequest = 'ACCEPT_REQUEST',
   Block = 'BLOCK',
@@ -130,6 +141,17 @@ export type GetMyProfileResponse = GetMyProfileResponseSuccess | ResponseError;
 export type GetMyProfileResponseSuccess = {
   __typename?: 'GetMyProfileResponseSuccess';
   user: User;
+};
+
+export type GetStoryInput = {
+  storyID: Scalars['ID']['input'];
+};
+
+export type GetStoryResponse = GetStoryResponseSuccess | ResponseError;
+
+export type GetStoryResponseSuccess = {
+  __typename?: 'GetStoryResponseSuccess';
+  story: Story;
 };
 
 export enum LanguageEnum {
@@ -257,7 +279,9 @@ export type Query = {
   demoPing: Ping;
   demoQuery: DemoQueryResponse;
   enterChatRoom: EnterChatRoomResponse;
+  fetchStoryFeed: FetchStoryFeedResponse;
   getMyProfile: GetMyProfileResponse;
+  getStory: GetStoryResponse;
   listChatRooms: ListChatRoomsResponse;
   listContacts: ListContactsResponse;
   ping: Ping;
@@ -277,6 +301,16 @@ export type QueryDemoQueryArgs = {
 
 export type QueryEnterChatRoomArgs = {
   input: EnterChatRoomInput;
+};
+
+
+export type QueryFetchStoryFeedArgs = {
+  input: FetchStoryFeedInput;
+};
+
+
+export type QueryGetStoryArgs = {
+  input: GetStoryInput;
 };
 
 
@@ -322,6 +356,7 @@ export enum StatusCode {
 export type Story = {
   __typename?: 'Story';
   attachments: Array<StoryAttachment>;
+  author: StoryAuthor;
   caption?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateString']['output']>;
   expiresAt?: Maybe<Scalars['DateString']['output']>;
@@ -348,6 +383,14 @@ export enum StoryAttachmentType {
   Image = 'IMAGE',
   Video = 'VIDEO'
 }
+
+export type StoryAuthor = {
+  __typename?: 'StoryAuthor';
+  avatar: Scalars['String']['output'];
+  displayName: Scalars['String']['output'];
+  id: Scalars['UserID']['output'];
+  username: Scalars['String']['output'];
+};
 
 export type StoryMediaAttachmentInput = {
   assetID: Scalars['String']['input'];
@@ -490,7 +533,21 @@ export type CreateStoryMutationVariables = Exact<{
 }>;
 
 
-export type CreateStoryMutation = { __typename?: 'Mutation', createStory: { __typename: 'CreateStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string }> } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type CreateStoryMutation = { __typename?: 'Mutation', createStory: { __typename: 'CreateStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type GetStoryQueryVariables = Exact<{
+  input: GetStoryInput;
+}>;
+
+
+export type GetStoryQuery = { __typename?: 'Query', getStory: { __typename: 'GetStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type FetchStoryFeedQueryVariables = Exact<{
+  input: FetchStoryFeedInput;
+}>;
+
+
+export type FetchStoryFeedQuery = { __typename?: 'Query', fetchStoryFeed: { __typename: 'FetchStoryFeedResponseSuccess', stories: Array<{ __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type DemoQueryQueryVariables = Exact<{
   input: DemoQueryInput;

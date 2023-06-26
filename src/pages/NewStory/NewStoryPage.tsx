@@ -36,7 +36,7 @@ const NewStoryPage = () => {
           backButton={true}
           backButtonAction={() => {
             navigate({
-              pathname: "/app/profile",
+              pathname: "/app/chats",
             });
           }}
           actionButton={

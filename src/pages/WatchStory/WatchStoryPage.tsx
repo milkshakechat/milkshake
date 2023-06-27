@@ -22,7 +22,7 @@ import {
   Dropdown,
   message,
 } from "antd";
-import { StoryAttachmentType } from "@/api/graphql/types";
+import { Story, StoryAttachmentType } from "@/api/graphql/types";
 import { useGetStory } from "@/hooks/useStory";
 import { StoryID, UserID } from "@milkshakechat/helpers";
 import {
@@ -46,12 +46,21 @@ import VideoPlayer, {
 import { showOnlyStoriesOfAuthor } from "@/api/utils/stories.util";
 import { ShakaPlayerRef } from "shaka-player-react";
 import { EllipsisOutlined } from "@ant-design/icons";
+import dayjs from "dayjs";
+import shallow from "zustand/shallow";
 
 const EMPTY_PLAYER = {
   player: null,
   ui: null,
   videoElement: null,
 };
+enum SRC_STATE_STATUS {
+  INITIAL = "INITIAL",
+  CHECKING = "CHECKING",
+  EXISTS = "EXISTS",
+  DOES_NOT_EXIST = "DOES_NOT_EXIST",
+  NO_ATTACHMENT = "NO_ATTACHMENT",
+}
 interface WatchStoryPageProps {
   children?: React.ReactNode | React.ReactNode[];
 }
@@ -64,10 +73,19 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
   const location = useLocation();
   const { token } = theme.useToken();
   const [showFullCaption, setShowFullCaption] = useState(false);
+  const [srcExistStatus, setSrcExistStatus] = useState<SRC_STATE_STATUS>(
+    SRC_STATE_STATUS.INITIAL
+  );
   const videoControllerRef = useRef<ShakePlayerRef>(EMPTY_PLAYER);
   const localStories = useStoriesState((state) => state.stories);
   const localStory = localStories.find((story) => story.id === storyIDFromURL);
-
+  const { iOSAllowedVideoPlay, setiOSAllowedVideoPlay } = useStoriesState(
+    (state) => ({
+      iOSAllowedVideoPlay: state.iOSAllowedVideoPlay,
+      setiOSAllowedVideoPlay: state.setiOSAllowedVideoPlay,
+    }),
+    shallow
+  );
   const [liked, setLiked] = useState(false);
 
   const {
@@ -86,32 +104,40 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
 
   const [spotlightStory, setSpotlightStory] = useState(localStory);
 
-  const authorStories = spotlightStory
-    ? showOnlyStoriesOfAuthor({
-        stories: localStories,
-        authorID: spotlightStory.author.id as UserID,
-        firstStory: spotlightStory,
-      })
-    : [];
-  console.log(`authorStories`, authorStories);
+  const [authorStories, setAuthorStories] = useState<Story[]>([]);
+
+  useEffect(() => {
+    const stories = spotlightStory
+      ? showOnlyStoriesOfAuthor({
+          stories: localStories,
+          authorID: spotlightStory.author.id as UserID,
+          firstStory: spotlightStory,
+        })
+      : [];
+    setAuthorStories(stories);
+  }, [localStories]);
+
   const currentProgressOfAuthorStories =
     (authorStories.findIndex((story) => story.id === spotlightStory?.id) + 1) /
-      authorStories.length +
-    0.01;
+    authorStories.length;
 
-  console.log(`currentProgressOfAuthorStories`, currentProgressOfAuthorStories);
-  console.log(
-    `authorStories.findIndex((story) => story.id === spotlightStory?.id)`,
-    authorStories.findIndex((story) => story.id === spotlightStory?.id)
-  );
-  const paginateStory = (pagesCount: number) => {
-    const currentIndex = authorStories.findIndex(
-      (story) => story.id === spotlightStory?.id
-    );
-    const nextIndex = currentIndex + pagesCount;
-    console.log(`authorStories[nextIndex]`, authorStories[nextIndex]);
-    if (nextIndex >= 0 && nextIndex < authorStories.length) {
-      setSpotlightStory(authorStories[nextIndex]);
+  const paginateStory = (step: number) => {
+    if (spotlightStory) {
+      // Find the current index
+      let currentIndex = authorStories.findIndex(
+        (story) => story.id === spotlightStory.id
+      );
+      console.log(`currentIndex`, currentIndex);
+      // Compute new position
+      const newPosition =
+        (currentIndex + step + authorStories.length) % authorStories.length;
+      console.log(`newPosition`, newPosition);
+      if (currentIndex !== newPosition) {
+        // Return new story
+        setSrcExistStatus(SRC_STATE_STATUS.INITIAL);
+        setSpotlightStory(authorStories[newPosition]);
+        return authorStories[newPosition];
+      }
     }
   };
 
@@ -122,6 +148,43 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
       runGetStoryQuery({ storyID: storyIDFromURL as StoryID });
     }
   }, [localStory]);
+
+  useEffect(() => {
+    if (spotlightStory) {
+      setSrcExistStatus(SRC_STATE_STATUS.CHECKING);
+      const checkIfSrcExists = async () => {
+        const primaryAttachment = spotlightStory?.attachments[0];
+
+        if (primaryAttachment) {
+          try {
+            if (primaryAttachment.type === StoryAttachmentType.Video) {
+              const res = await fetch(primaryAttachment.stream || "");
+
+              if (res.status === 200) {
+                setSrcExistStatus(SRC_STATE_STATUS.EXISTS);
+              } else {
+                setSrcExistStatus(SRC_STATE_STATUS.DOES_NOT_EXIST);
+              }
+            } else if (primaryAttachment.type === StoryAttachmentType.Image) {
+              const res = await fetch(primaryAttachment.url);
+
+              if (res.status === 200) {
+                setSrcExistStatus(SRC_STATE_STATUS.EXISTS);
+              } else {
+                setSrcExistStatus(SRC_STATE_STATUS.DOES_NOT_EXIST);
+              }
+            }
+          } catch (e) {
+            console.log(e);
+            setSrcExistStatus(SRC_STATE_STATUS.DOES_NOT_EXIST);
+          }
+        } else {
+          setSrcExistStatus(SRC_STATE_STATUS.NO_ATTACHMENT);
+        }
+      };
+      checkIfSrcExists();
+    }
+  }, [spotlightStory]);
 
   const visitUser = () => {
     if (
@@ -144,11 +207,14 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
 
   const primaryAttachment = spotlightStory.attachments[0];
 
+  if (videoElement) {
+    const isVideoPlaying = !(videoElement.paused || videoElement.ended);
+    if (isVideoPlaying && !iOSAllowedVideoPlay) {
+      setiOSAllowedVideoPlay(true);
+    }
+  }
+
   const togglePlayPauseVideo = () => {
-    // console.log(`togglePlayPauseVideo()`);
-    // console.log(`player`, player);
-    // console.log(`ui`, ui);
-    // console.log(`videoElement`, videoElement);
     if (videoElement) {
       const isVideoPlaying = !(videoElement.paused || videoElement.ended);
       if (isVideoPlaying) {
@@ -189,13 +255,14 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
             height: "85vh",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center",
+            justifyContent: "flex-start",
             alignItems: "center",
             position: "relative",
-            maxWidth: "800px",
+            maxWidth: isMobile ? "none" : "800px",
+            overflow: "hidden",
           }}
         >
-          {primaryAttachment && (
+          {primaryAttachment && srcExistStatus === SRC_STATE_STATUS.EXISTS && (
             <>
               {primaryAttachment.type === StoryAttachmentType.Video ? (
                 <VideoPlayer
@@ -205,12 +272,37 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
               ) : (
                 <img
                   src={primaryAttachment.url}
-                  style={{ width: "auto", height: "100%", maxHeight: "100vh" }}
+                  style={
+                    isMobile
+                      ? { width: "100%", height: "auto", maxHeight: "100vh" }
+                      : { width: "auto", height: "100%", maxHeight: "100vh" }
+                  }
                 ></img>
               )}
             </>
           )}
+          {srcExistStatus === SRC_STATE_STATUS.DOES_NOT_EXIST && (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <PP>Story is still processing. Check back later.</PP>
+              <Button
+                onClick={() => navigate("/app/chats")}
+                style={{ marginTop: "20px" }}
+              >
+                Go Back
+              </Button>
+            </div>
+          )}
         </div>
+
         <div
           id="watch-controls"
           style={{
@@ -239,14 +331,23 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
             >
               <Button
                 icon={<HomeOutlined />}
-                onClick={() => navigate("/app/chats")}
-                style={{ flex: 1, minWidth: "30px", maxWidth: "50px" }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigate("/app/chats");
+                }}
+                style={{
+                  flex: 1,
+                  minWidth: "30px",
+                  maxWidth: "50px",
+                  zIndex: 1,
+                }}
               />
               <$Vertical
                 style={{ marginLeft: "10px", flex: 1, overflow: "hidden" }}
               >
                 <Progress
-                  percent={currentProgressOfAuthorStories}
+                  percent={currentProgressOfAuthorStories * 100}
                   steps={authorStories.length}
                   showInfo={false}
                   strokeColor={token.colorPrimaryActive}
@@ -254,7 +355,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                 />
                 <i
                   style={{ marginTop: "5px", color: token.colorTextLabel }}
-                >{`Posted 14 mins ago`}</i>
+                >{`Posted ${dayjs().to(dayjs(spotlightStory.createdAt))}`}</i>
               </$Vertical>
               <div>
                 <Dropdown
@@ -283,9 +384,14 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   <Button
                     type="link"
                     icon={<EllipsisOutlined />}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
                     style={{
                       border: "0px solid white",
                       color: token.colorTextBase,
+                      zIndex: 1,
                     }}
                   ></Button>
                 </Dropdown>
@@ -293,91 +399,166 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
             </$Horizontal>
           </div>
           <div
-            onClick={togglePlayPauseVideo}
             style={{
               flex: 1,
               width: "100%",
-              backgroundColor: "rgba(0,0,0,0)", // "rgba(35, 198, 76, 0.5)",
+              height: "100%",
               display: "flex",
               flexDirection: "row",
               justifyContent: "flex-end",
               alignItems: "flex-end",
             }}
           >
-            <div
+            <$Vertical
               style={{
-                flex: 1,
-                width: "100%",
-                height: "100%",
+                zIndex: 1,
+                position: "absolute",
+                alignItems: "flex-end",
               }}
-              onClick={() => paginateStory(-1)}
-            ></div>
+            >
+              <$Vertical
+                spacing={3}
+                style={{
+                  backgroundColor: `${token.colorBgContainer}9A`,
+                  padding: "10px",
+                  borderRadius: "10px 0px 0px 0px",
+                }}
+              >
+                {liked ? (
+                  <HeartFilled
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setLiked(false);
+                      console.log(`unliked`);
+                    }}
+                    style={{
+                      fontSize: "2rem",
+                      color: token.colorPrimaryActive,
+                    }}
+                  />
+                ) : (
+                  <HeartOutlined
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setLiked(true);
+                      console.log(`like`);
+                    }}
+                    style={{
+                      fontSize: "2rem",
+                      color: token.colorTextPlaceholder,
+                    }}
+                  />
+                )}
+
+                <MessageOutlined
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  style={{
+                    color: token.colorTextPlaceholder,
+                    fontSize: "2rem",
+                  }}
+                />
+                <GiftOutlined
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  style={{
+                    color: token.colorTextPlaceholder,
+                    fontSize: "2rem",
+                  }}
+                />
+                <ShareAltOutlined
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  style={{
+                    color: token.colorTextPlaceholder,
+                    fontSize: "2rem",
+                  }}
+                />
+                <SoundOutlined
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleMuteVideo();
+                  }}
+                  style={{
+                    color: token.colorTextPlaceholder,
+                    fontSize: "2rem",
+                  }}
+                />
+              </$Vertical>
+              <$Horizontal
+                spacing={3}
+                style={{
+                  backgroundColor: `${token.colorBgContainer}9A`,
+                  padding: "10px",
+                  borderRadius: "10px 0px 0px 0px",
+                }}
+              >
+                <LeftOutlined
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    paginateStory(-1);
+                  }}
+                  style={{
+                    fontSize: "1.3rem",
+                    color: token.colorTextPlaceholder,
+                  }}
+                />
+                <RightOutlined
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    paginateStory(1);
+                  }}
+                  style={{
+                    fontSize: "1.3rem",
+                    color: token.colorTextPlaceholder,
+                  }}
+                />
+              </$Horizontal>
+            </$Vertical>
 
             <div
-              style={{
-                flex: 1,
-                width: "100%",
-                height: "100%",
-              }}
-              onClick={() => paginateStory(1)}
-            ></div>
-            <$Vertical
-              spacing={3}
               onClick={(e) => {
+                paginateStory(-1);
                 e.preventDefault();
                 e.stopPropagation();
               }}
               style={{
-                backgroundColor: `${token.colorBgContainer}9A`,
-                padding: "10px",
-                borderRadius: "10px 0px 0px 10px",
-                zIndex: 1,
+                flex: 2,
+                width: "100%",
+                height: "100%",
               }}
-            >
-              {liked ? (
-                <HeartFilled
-                  onClick={() => setLiked(false)}
-                  style={{
-                    fontSize: "2rem",
-                    color: token.colorPrimaryActive,
-                  }}
-                />
-              ) : (
-                <HeartOutlined
-                  onClick={() => setLiked(true)}
-                  style={{
-                    fontSize: "2rem",
-                    color: token.colorTextPlaceholder,
-                  }}
-                />
-              )}
+            ></div>
 
-              <MessageOutlined
-                style={{
-                  color: token.colorTextPlaceholder,
-                  fontSize: "2rem",
-                }}
-              />
-              <GiftOutlined
-                style={{
-                  color: token.colorTextPlaceholder,
-                  fontSize: "2rem",
-                }}
-              />
-              <ShareAltOutlined
-                style={{
-                  color: token.colorTextPlaceholder,
-                  fontSize: "2rem",
-                }}
-              />
-              <SoundOutlined
-                onClick={toggleMuteVideo}
-                style={{
-                  color: token.colorTextPlaceholder,
-                  fontSize: "2rem",
-                }}
-              />
-            </$Vertical>
+            <div
+              style={{
+                flex: 3,
+                width: "100%",
+                height: "100%",
+              }}
+            ></div>
+            <div
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                paginateStory(1);
+              }}
+              style={{
+                flex: 2,
+                width: "100%",
+                height: "100%",
+              }}
+            ></div>
           </div>
           <div
             style={{
@@ -387,6 +568,8 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
               flexDirection: "column",
               justifyContent: "flex-end",
               alignItems: "stretch",
+              zIndex: 1,
+              backgroundColor: `${token.colorBgContainer}9A`,
             }}
           >
             <$Horizontal
@@ -405,7 +588,11 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                     whiteSpace: "nowrap",
                     textOverflow: "ellipsis",
                   }}
-                  onClick={visitUser}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    visitUser();
+                  }}
                 >
                   <PP>
                     <b>
@@ -418,7 +605,15 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   </PP>
                 </$Vertical>
               </$Horizontal>
-              <Button icon={<GiftFilled />}>Wishlist</Button>
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                icon={<GiftFilled />}
+              >
+                Wishlist
+              </Button>
             </$Horizontal>
             <span
               onClick={() => setShowFullCaption(!showFullCaption)}
@@ -433,6 +628,10 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
               placeholder="Respond to Story"
               size="large"
               rows={2}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
               style={{ width: "100%", resize: "none" }}
             ></Input.TextArea>
           </div>

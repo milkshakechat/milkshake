@@ -64,20 +64,34 @@ const StoryUpload = ({}: StoryUploadProps) => {
   } = useStoryCreate();
 
   const uploadProps: UploadProps = {
-    beforeUpload: (file) => {
-      console.log(file);
-      const isVideo = file.type.indexOf("video/mp4") > -1;
+    beforeUpload: async (file) => {
+      const isVideo =
+        file.type.indexOf("video/mp4") > -1 ||
+        file.type.indexOf("video/quicktime") > -1;
       const isImage =
         file.type.indexOf("image/png") > -1 ||
         file.type.indexOf("image/jpeg") > -1 ||
         file.type.indexOf("image/jpg") > -1;
       if (!isVideo && !isImage) {
-        message.error(
-          `${file.name} is not an PNG/JPEG image or a MP4 video file`
-        );
+        message.error(`File is not an PNG/JPEG image or a MP4/MOV video file`);
         return false;
       }
+      if (file.type.indexOf("video") > -1) {
+        const duration = await getVideoDuration(file);
+
+        if (duration > 61) {
+          message.error("Video must be under 60 seconds");
+          return false;
+        }
+
+        if (file.size > 200000000) {
+          message.error("Video must be under 200MB");
+          return false;
+        }
+      }
+
       setFileForUpload(file);
+
       if (isImage) {
         setMediaType(StoryAttachmentType.Image);
         handleUpload(file, StoryAttachmentType.Image);
@@ -90,14 +104,12 @@ const StoryUpload = ({}: StoryUploadProps) => {
   };
 
   const handleUpload = async (file: RcFile, mediaType: StoryAttachmentType) => {
-    console.log(`Lets handle upload`);
-    console.log(`Uploading file... ${file.name}`);
     if (!user) {
       return;
     }
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
-    console.log(`local url: ${url}`);
+
     setUploadProgress(0);
     const assetId = uuidv4();
     const fileName = `${assetId}.${file.name.split(".").pop()}`;
@@ -109,9 +121,8 @@ const StoryUpload = ({}: StoryUploadProps) => {
         setUploadProgress(progress);
       },
       onComplete: (url) => {
-        console.log(`Upload complete!`, url);
         const manifestUrl = predictVideoTranscodedManifestRoute(url);
-        console.log(`manifestUrl`, manifestUrl);
+
         setUploadedUrl(url);
         setManifestUrl(manifestUrl);
         setAssetID(assetId);
@@ -372,3 +383,40 @@ export const MediaUploadingScreen = ({
     </section>
   );
 };
+
+const getVideoDuration = (file: any): Promise<number> =>
+  // new Promise((resolve, reject) => {
+  //   const reader = new FileReader();
+  //   console.log(`Getting it`);
+  //   reader.onload = () => {
+  //     console.log(`onload it`);
+  //     console.log(`reader.result`, reader.result);
+  //     // @ts-ignore
+  //     const media = new Audio(reader.result);
+  //     console.log(`media`, media);
+  //     media.onloadedmetadata = () => {
+  //       console.log(`media.onloadedmetadata`, media.duration);
+  //       resolve(media.duration);
+  //     };
+  //   };
+  //   reader.readAsDataURL(file);
+  //   reader.onerror = (error) => {
+  //     console.log(`mediareader error`, error);
+  //     reject(error);
+  //   };
+  new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const video = document.createElement("video");
+
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(url);
+      resolve(video.duration);
+    };
+
+    video.onerror = (error) => {
+      URL.revokeObjectURL(url);
+      reject(error);
+    };
+
+    video.src = url;
+  });

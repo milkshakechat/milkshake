@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import duration from "dayjs/plugin/duration";
 import "dayjs/locale/en";
 import "dayjs/locale/zh";
 import "dayjs/locale/ar";
@@ -33,6 +34,7 @@ dayjs.locale("en");
 dayjs.extend(relativeTime);
 dayjs.extend(weekOfYear);
 dayjs.extend(isSameOrBefore);
+dayjs.extend(duration);
 
 export enum themeTypeEnum {
   dark = "dark",

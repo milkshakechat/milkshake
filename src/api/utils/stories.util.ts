@@ -66,6 +66,7 @@ export const groupUserStoriesByDateRange = (stories: Story[]) => {
   const now = dayjs();
   let groupedStories: Record<string, Story[]> = {};
 
+  console.log(`stories`, stories);
   for (let story of stories) {
     let date = dayjs(story.createdAt);
     let label: string;
@@ -101,3 +102,23 @@ export const groupUserStoriesByDateRange = (stories: Story[]) => {
   }
   return res;
 };
+
+export function getTimeRemaining(expiryDate: Date) {
+  const now = dayjs();
+  const expiry = dayjs(expiryDate);
+
+  if (!expiry.isValid()) {
+    throw new Error("Invalid expiry date");
+  }
+
+  const diff = expiry.diff(now);
+  const durationObject = dayjs.duration(diff);
+
+  if (durationObject.asSeconds() < 0) {
+    return "Expired";
+  } else {
+    const hours = durationObject.hours();
+    const minutes = durationObject.minutes();
+    return `Disappears in ${hours} hours ${minutes} mins`;
+  }
+}

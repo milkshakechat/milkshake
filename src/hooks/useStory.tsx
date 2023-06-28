@@ -293,6 +293,7 @@ export const useModifyStory = () => {
                 userID
                 caption
                 pinned
+                showcase
                 thumbnail
                 showcaseThumbnail
                 outboundLink

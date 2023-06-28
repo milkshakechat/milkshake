@@ -123,6 +123,7 @@ export const useViewPublicProfile = (): {
                 userID
                 caption
                 pinned
+                showcase
                 thumbnail
                 showcaseThumbnail
                 outboundLink

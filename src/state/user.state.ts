@@ -55,14 +55,10 @@ export const useUserState = create<UserState>()((set) => ({
     set((state) => {
       if (state.user) {
         console.log(`UPDATING WITH NEW STORY`, story);
-        let stories = [...state.user.stories];
-        const index = stories.findIndex((s) => s.id === story.id);
-        if (index !== -1) {
-          // stories[index] = story;
-          stories = stories.filter((s) => s.id !== story.id).concat([story]);
-        } else {
-          stories.push(story);
-        }
+        const stories = [...state.user.stories]
+          .filter((s) => s.id !== story.id)
+          .concat([story]);
+        console.log(`New user.stories`, stories);
         return {
           user: {
             ...state.user,

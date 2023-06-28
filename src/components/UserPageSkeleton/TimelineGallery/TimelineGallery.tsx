@@ -1,14 +1,19 @@
 import { useIntl, FormattedMessage } from "react-intl";
 import { $Vertical, $Horizontal } from "@/api/utils/spacing";
-import { Button, Card, Dropdown, message, theme } from "antd";
+import { Button, Card, Dropdown, Popconfirm, message, theme } from "antd";
 import { useWindowSize } from "@/api/utils/screen";
 import { Story } from "@/api/graphql/types";
 import { groupUserStoriesByDateRange } from "@/api/utils/stories.util";
-import { EllipsisOutlined } from "@ant-design/icons";
+import {
+  EllipsisOutlined,
+  SettingOutlined,
+  EyeInvisibleOutlined,
+} from "@ant-design/icons";
 import { NavLink } from "react-router-dom";
 import { useModifyStory } from "@/hooks/useStory";
 import { StoryID } from "@milkshakechat/helpers";
 import { useMemo, useState } from "react";
+import { useUserState } from "@/state/user.state";
 
 interface TimelineGalleryProps {
   stories: Story[];
@@ -17,17 +22,14 @@ interface TimelineGalleryProps {
 const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
   const { screen, isMobile } = useWindowSize();
   const intl = useIntl();
+  const user = useUserState((state) => state.user);
   const { token } = theme.useToken();
   const [updatingStories, setUpdatingStories] = useState<StoryID[]>([]);
-
-  console.log(`stories`, stories);
-
-  const myStories = useMemo(
-    () => groupUserStoriesByDateRange(stories.filter((s) => s.showcase)),
-    [stories]
+  const [showHidden, setShowHidden] = useState(false);
+  const myStories = groupUserStoriesByDateRange(
+    stories.filter((s) => (showHidden ? true : s.showcase))
   );
-
-  console.log(`myStories`, myStories);
+  const viewingOwnProfile = stories.every((s) => user && s.userID === user.id);
   const { runMutation: runModifyStoryMutation } = useModifyStory();
 
   const renderTimelineRow = ({
@@ -75,79 +77,95 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
                         alt={story.caption || ""}
                         src={story.showcaseThumbnail || story.thumbnail}
                         style={{
-                          filter: "brightness(70%)",
+                          filter: story.showcase
+                            ? "brightness(70%)"
+                            : "brightness(20%)",
                           width: "100%",
                           height: "auto",
                         }}
                       />
-                      <div style={{ position: "absolute", top: 5, right: 5 }}>
-                        <Dropdown
-                          menu={{
-                            items: [
-                              {
-                                key: "pin-story",
-                                label: (
-                                  <Button
-                                    type="ghost"
-                                    loading={updatingStories.includes(
-                                      story.id as StoryID
-                                    )}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      togglePinStory(story);
-                                    }}
-                                  >
-                                    {label === "Pinned"
-                                      ? `Remove Pin`
-                                      : `Pin Story`}
-                                  </Button>
-                                ),
-                              },
-                              {
-                                key: "showcase-story",
-                                label: (
-                                  <Button
-                                    type="ghost"
-                                    loading={updatingStories.includes(
-                                      story.id as StoryID
-                                    )}
-                                    onClick={(e) => {
-                                      e.preventDefault();
-                                      e.stopPropagation();
-                                      toggleShowcaseStory(story);
-                                    }}
-                                  >
-                                    Hide Story
-                                  </Button>
-                                ),
-                              },
-                            ],
+                      {story.showcase ? null : (
+                        <EyeInvisibleOutlined
+                          style={{
+                            fontWeight: "bold",
+                            fontSize: "1.5rem",
+                            position: "absolute",
+                            color: token.colorBgBase,
                           }}
-                          arrow
-                        >
-                          <Button
-                            type="link"
-                            icon={
-                              <EllipsisOutlined
-                                style={{
-                                  fontWeight: "bold",
-                                  fontSize: "1.2rem",
-                                }}
-                              />
-                            }
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
+                        />
+                      )}
+                      {viewingOwnProfile && (
+                        <div style={{ position: "absolute", top: 5, right: 5 }}>
+                          <Dropdown
+                            menu={{
+                              items: [
+                                {
+                                  key: "pin-story",
+                                  label: (
+                                    <Button
+                                      type="ghost"
+                                      loading={updatingStories.includes(
+                                        story.id as StoryID
+                                      )}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        togglePinStory(story);
+                                      }}
+                                    >
+                                      {story.pinned
+                                        ? `Remove Pin`
+                                        : `Pin Story`}
+                                    </Button>
+                                  ),
+                                },
+                                {
+                                  key: "hide-story",
+                                  label: (
+                                    <Button
+                                      type="ghost"
+                                      loading={updatingStories.includes(
+                                        story.id as StoryID
+                                      )}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        toggleHideStory(story);
+                                      }}
+                                    >
+                                      {story.showcase
+                                        ? `Hide Story`
+                                        : `Show Story`}
+                                    </Button>
+                                  ),
+                                },
+                              ],
                             }}
-                            style={{
-                              border: "0px solid white",
-                              color: token.colorBgContainer,
-                              zIndex: 1,
-                            }}
-                          ></Button>
-                        </Dropdown>
-                      </div>
+                            arrow
+                          >
+                            <Button
+                              type="link"
+                              icon={
+                                <EllipsisOutlined
+                                  style={{
+                                    fontWeight: "bold",
+                                    fontSize: "1.2rem",
+                                  }}
+                                />
+                              }
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }}
+                              style={{
+                                border: "0px solid white",
+                                color: token.colorBgContainer,
+                                zIndex: 1,
+                              }}
+                            ></Button>
+                          </Dropdown>
+                        </div>
+                      )}
                     </div>
                   </NavLink>
                 }
@@ -177,17 +195,66 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
     });
     setUpdatingStories(updatingStories.filter((id) => id !== story.id));
   };
-  const toggleShowcaseStory = async (story: Story) => {
+  const toggleHideStory = async (story: Story) => {
     setUpdatingStories([...updatingStories, story.id as StoryID]);
     await runModifyStoryMutation({
       storyID: story.id,
-      showcase: !story.pinned,
+      showcase: !story.showcase,
     });
     setUpdatingStories(updatingStories.filter((id) => id !== story.id));
   };
 
   return (
     <$Vertical>
+      {viewingOwnProfile && (
+        <$Horizontal justifyContent="flex-end">
+          <Dropdown
+            menu={{
+              items: [
+                {
+                  key: "show-hidden",
+                  label: (
+                    <Button
+                      type="ghost"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowHidden(!showHidden);
+                      }}
+                    >
+                      {showHidden ? `Hide Hidden` : `Show Hidden`}
+                    </Button>
+                  ),
+                },
+              ],
+            }}
+            arrow
+          >
+            <Button
+              type="link"
+              icon={
+                <SettingOutlined
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "1.2em",
+                  }}
+                />
+              }
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              style={{
+                border: "0px solid white",
+                color: token.colorTextBase,
+                zIndex: 1,
+                position: "absolute",
+                right: "10px",
+              }}
+            ></Button>
+          </Dropdown>
+        </$Horizontal>
+      )}
       {myStories.map((row) => {
         return renderTimelineRow(row);
       })}

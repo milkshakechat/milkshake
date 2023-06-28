@@ -57,6 +57,8 @@ const ProfilePage = () => {
   const { screen, isMobile } = useWindowSize();
   const [showQRCode, setShowQRCode] = useState(false);
 
+  console.log(`user`, user);
+
   useEffect(() => {
     if (viewMode === viewModes.qrCode) {
       setShowQRCode(true);
@@ -71,7 +73,7 @@ const ProfilePage = () => {
     {
       key: "timeline",
       title: "Timeline",
-      children: <TimelineGallery stories={user ? user.stories : []} />,
+      children: <TimelineGallery stories={user.stories} />,
     },
     {
       key: "wishlist",

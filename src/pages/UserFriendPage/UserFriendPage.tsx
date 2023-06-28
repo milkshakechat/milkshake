@@ -111,12 +111,17 @@ export const UserFriendPage = () => {
       message.success(`Friend Request Sent`);
     }
   };
+  console.log(`spotlightUser`, spotlightUser);
+
+  if (!spotlightUser) {
+    return <Spin />;
+  }
 
   const TabFolders = [
     {
       key: "timeline",
       title: "Timeline",
-      children: <div>Timeline</div>,
+      children: <TimelineGallery stories={spotlightUser.stories} />,
     },
     {
       key: "wishlist",

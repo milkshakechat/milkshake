@@ -324,7 +324,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
       </div>
 
       {renderCaptionsPanel()}
-      {renderAudiencePanel()}
+      {/* {renderAudiencePanel()} */}
       {renderSubmitButton()}
     </$Vertical>
   );

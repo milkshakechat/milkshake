@@ -7,11 +7,14 @@ import {
   GetStoryInput,
   GetStoryResponse,
   GetStoryResponseSuccess,
+  ModifyStoryInput,
+  ModifyStoryResponseSuccess,
   Mutation,
   Query,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { useStoriesState } from "@/state/stories.state";
+import { useUserState } from "@/state/user.state";
 import gql from "graphql-tag";
 import { useState } from "react";
 
@@ -270,4 +273,84 @@ export const useFetchStoryFeedQuery = () => {
   };
 
   return { data, errors, runQuery };
+};
+
+export const useModifyStory = () => {
+  const [data, setData] = useState<ModifyStoryResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+  const updateOrPushStory = useUserState((state) => state.updateOrPushStory);
+
+  const runMutation = async (args: ModifyStoryInput) => {
+    try {
+      const MODIFY_STORY = gql`
+        mutation ModifyStory($input: ModifyStoryInput!) {
+          modifyStory(input: $input) {
+            __typename
+            ... on ModifyStoryResponseSuccess {
+              story {
+                id
+                userID
+                caption
+                pinned
+                showcase
+                thumbnail
+                showcaseThumbnail
+                outboundLink
+                createdAt
+                expiresAt
+                attachments {
+                  id
+                  thumbnail
+                  stream
+                  altText
+                  url
+                  type
+                }
+                author {
+                  id
+                  username
+                  avatar
+                  displayName
+                }
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<ModifyStoryResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "modifyStory">>({
+              mutation: MODIFY_STORY,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.modifyStory.__typename === "ModifyStoryResponseSuccess"
+              ) {
+                resolve(data.modifyStory);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+      updateOrPushStory(result.story);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runMutation };
 };

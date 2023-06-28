@@ -118,6 +118,33 @@ export const useViewPublicProfile = (): {
               username
               avatar
               displayName
+              stories {
+                id
+                userID
+                caption
+                pinned
+                showcase
+                thumbnail
+                showcaseThumbnail
+                outboundLink
+                createdAt
+                expiresAt
+                attachments {
+                  id
+                  userID
+                  thumbnail
+                  stream
+                  altText
+                  url
+                  type
+                }
+                author {
+                  id
+                  username
+                  avatar
+                  displayName
+                }
+              }
             }
             ... on ResponseError {
               error {

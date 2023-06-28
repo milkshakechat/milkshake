@@ -1,5 +1,6 @@
 import { UserID } from "@milkshakechat/helpers";
 import { Story } from "../graphql/types";
+import dayjs from "dayjs";
 
 export const showLatestStoryPerAuthor = (listOfStories: Story[]): Story[] => {
   const stories = [...listOfStories];
@@ -60,3 +61,64 @@ export const showOnlyStoriesOfAuthor = ({
 
   return filteredStories;
 };
+
+export const groupUserStoriesByDateRange = (stories: Story[]) => {
+  const now = dayjs();
+  let groupedStories: Record<string, Story[]> = {};
+
+  console.log(`stories`, stories);
+  for (let story of stories) {
+    let date = dayjs(story.createdAt);
+    let label: string;
+
+    if (date.isSame(now, "day")) {
+      label = "today";
+    } else if (date.isAfter(now.subtract(1, "day"), "day")) {
+      label = `${now.diff(date, "day") + 1} day ago`;
+    } else if (date.isAfter(now.subtract(7, "day"), "day")) {
+      label = `${now.diff(date, "day") + 1} days ago`;
+    } else if (date.isAfter(now.subtract(1, "month"), "day")) {
+      label = `${Math.ceil((now.diff(date, "day") + 1) / 7)} week ago`;
+    } else {
+      label = date.format("MMMM YYYY");
+    }
+
+    if (!groupedStories[label]) {
+      groupedStories[label] = [];
+    }
+    groupedStories[label].push(story);
+  }
+
+  const pinnedStories = stories.filter((s) => s.pinned);
+
+  const res = [
+    ...Object.keys(groupedStories).map((label) => ({
+      label,
+      stories: groupedStories[label],
+    })),
+  ];
+  if (pinnedStories.length > 0) {
+    res.unshift({ label: "Pinned", stories: pinnedStories });
+  }
+  return res;
+};
+
+export function getTimeRemaining(expiryDate: Date) {
+  const now = dayjs();
+  const expiry = dayjs(expiryDate);
+
+  if (!expiry.isValid()) {
+    throw new Error("Invalid expiry date");
+  }
+
+  const diff = expiry.diff(now);
+  const durationObject = dayjs.duration(diff);
+
+  if (durationObject.asSeconds() < 0) {
+    return "Expired";
+  } else {
+    const hours = durationObject.hours();
+    const minutes = durationObject.minutes();
+    return `Disappears in ${hours} hours ${minutes} mins`;
+  }
+}

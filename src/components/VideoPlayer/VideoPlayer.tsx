@@ -26,8 +26,9 @@ const VideoPlayer = ({
         ref={videoControllerRef}
         autoPlay
         muted
+        playsInline
         src={src}
-        showNativeControls={false}
+        shownativecontrols={false}
         style={
           isMobile
             ? { width: "100%", height: "auto" }

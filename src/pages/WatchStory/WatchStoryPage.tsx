@@ -43,7 +43,10 @@ import { Spacer } from "@/components/AppLayout/AppLayout";
 import VideoPlayer, {
   ShakePlayerRef,
 } from "@/components/VideoPlayer/VideoPlayer";
-import { showOnlyStoriesOfAuthor } from "@/api/utils/stories.util";
+import {
+  getTimeRemaining,
+  showOnlyStoriesOfAuthor,
+} from "@/api/utils/stories.util";
 import { ShakaPlayerRef } from "shaka-player-react";
 import { EllipsisOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
@@ -226,6 +229,12 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
   };
 
   const toggleMuteVideo = () => {
+    const {
+      /** @type {shaka.Player} */ player,
+      /** @type {shaka.ui.Overlay} */ ui,
+      /** @type {HTMLVideoElement} */ videoElement,
+    } = videoControllerRef.current;
+    console.log(`toggleMuteVideo`, videoElement);
     if (videoElement) {
       videoElement.muted = !videoElement.muted;
     }
@@ -355,7 +364,9 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                 />
                 <i
                   style={{ marginTop: "5px", color: token.colorTextLabel }}
-                >{`Posted ${dayjs().to(dayjs(spotlightStory.createdAt))}`}</i>
+                >{`Posted ${dayjs().to(
+                  dayjs(spotlightStory.createdAt)
+                )} (${getTimeRemaining(spotlightStory.expiresAt)})`}</i>
               </$Vertical>
               <div>
                 <Dropdown

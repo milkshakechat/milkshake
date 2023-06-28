@@ -9,6 +9,7 @@ import jaJP from "antd/locale/ja_JP"; // japanese
 import koKR from "antd/locale/ko_KR"; // korean
 import arEG from "antd/locale/ar_EG"; // arabic
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/en";
 import "dayjs/locale/zh";
 import "dayjs/locale/ar";
@@ -27,6 +28,7 @@ import {
 import { THEME_COLOR_LOCALSTORAGE } from "@/config.env";
 
 dayjs.locale("en");
+dayjs.extend(relativeTime);
 
 export enum themeTypeEnum {
   dark = "dark",

@@ -49,7 +49,7 @@ export const SendBirdServiceProvider = ({
 
   const { token } = theme.useToken();
   if (!selfUser) {
-    return <div>Loading Sendbird...</div>;
+    return <div>{children}</div>;
   }
 
   // console.log(`------ From context sendBirdService: `, sendBirdService);

@@ -1,4 +1,5 @@
 import config from "@/config.env";
+import { getVideoFileExtension } from "@milkshakechat/helpers";
 
 /**
  * const input = "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2FbpSkq4bQFuWYoj7xtGD8pr5gUdD3%2Fstory%2Fvideo%2F258f75b5-9bb0-431e-9da8-b40df2c418b8.mp4?alt=media&token=2dce18f4-aaff-4891-8569-f23b837370c1";
@@ -20,11 +21,13 @@ export const predictVideoTranscodedManifestRoute = (url: string) => {
   // Extract the relevant part of the path
   let relevantPath = decodedPath.slice(usersPos);
 
+  const extensionType = getVideoFileExtension(url);
+
   // Remove the .mp4 from the relevant path and add the video streaming path
-  let newPath = relevantPath.replace(".mp4", "");
+  let newPath = relevantPath.replace(`.${extensionType}`, "");
 
   // Create the new URL
-  let translatedUrl = `https://storage.googleapis.com/${config.VIDEO_TRANSCODER.bucket.name}${newPath}/video-streaming/manifest.mpd`;
+  let translatedUrl = `https://storage.googleapis.com/${config.VIDEO_TRANSCODER.bucket.name}${newPath}/video-streaming/manifest.m3u8`;
 
   return translatedUrl;
 };

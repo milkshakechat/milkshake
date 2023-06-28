@@ -72,6 +72,7 @@ export const useProfile = () => {
                       userID
                       caption
                       pinned
+                      showcase
                       thumbnail
                       showcaseThumbnail
                       outboundLink

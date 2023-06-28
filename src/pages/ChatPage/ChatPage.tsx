@@ -249,13 +249,7 @@ const ChatPage = () => {
         footer={null}
         style={{ overflow: "hidden", top: 20 }}
       >
-        <TimelineGallery
-          media={[
-            { title: "Favorites", count: 1 },
-            { title: "#hobby", count: 2 },
-            { title: "#savings", count: 4 },
-          ]}
-        />
+        <div>Wishlist</div>
       </Modal>
       <Modal
         open={isMuteModalOpen}

@@ -210,12 +210,27 @@ export type ModifyProfileResponseSuccess = {
   user: User;
 };
 
+export type ModifyStoryInput = {
+  pinned?: InputMaybe<Scalars['Boolean']['input']>;
+  previewable?: InputMaybe<Scalars['Boolean']['input']>;
+  showcase?: InputMaybe<Scalars['Boolean']['input']>;
+  storyID: Scalars['ID']['input'];
+};
+
+export type ModifyStoryResponse = ModifyStoryResponseSuccess | ResponseError;
+
+export type ModifyStoryResponseSuccess = {
+  __typename?: 'ModifyStoryResponseSuccess';
+  story: Story;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createStory: CreateStoryResponse;
   demoMutation: DemoMutationResponse;
   manageFriendship: ManageFriendshipResponse;
   modifyProfile: ModifyProfileResponse;
+  modifyStory: ModifyStoryResponse;
   sendFriendRequest: SendFriendRequestResponse;
   updateChatSettings: UpdateChatSettingsResponse;
   updatePushToken: UpdatePushTokenResponse;
@@ -239,6 +254,11 @@ export type MutationManageFriendshipArgs = {
 
 export type MutationModifyProfileArgs = {
   input: ModifyProfileInput;
+};
+
+
+export type MutationModifyStoryArgs = {
+  input: ModifyStoryInput;
 };
 
 
@@ -363,6 +383,7 @@ export type Story = {
   id: Scalars['ID']['output'];
   outboundLink?: Maybe<Scalars['String']['output']>;
   pinned?: Maybe<Scalars['Boolean']['output']>;
+  showcase?: Maybe<Scalars['Boolean']['output']>;
   showcaseThumbnail?: Maybe<Scalars['String']['output']>;
   thumbnail: Scalars['String']['output'];
   userID: Scalars['UserID']['output'];
@@ -509,7 +530,7 @@ export type ManageFriendshipMutation = { __typename?: 'Mutation', manageFriendsh
 export type GetMyProfileQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any, privacyMode: PrivacyModeEnum, themeColor: any, language: LanguageEnum, sendBirdAccessToken?: string | null, stories: Array<{ __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, userID: any, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } }> } } | { __typename: 'ResponseError' } };
+export type GetMyProfileQuery = { __typename?: 'Query', getMyProfile: { __typename: 'GetMyProfileResponseSuccess', user: { __typename?: 'User', id: any, email: string, username: string, phone?: string | null, displayName: string, bio: string, avatar: string, link: string, disabled: boolean, isPaidChat: boolean, isCreator: boolean, createdAt: any, privacyMode: PrivacyModeEnum, themeColor: any, language: LanguageEnum, sendBirdAccessToken?: string | null, stories: Array<{ __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, showcase?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, userID: any, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } }> } } | { __typename: 'ResponseError' } };
 
 export type CheckUsernameAvailableQueryVariables = Exact<{
   input: CheckUsernameAvailableInput;
@@ -550,6 +571,13 @@ export type FetchStoryFeedQueryVariables = Exact<{
 
 
 export type FetchStoryFeedQuery = { __typename?: 'Query', fetchStoryFeed: { __typename: 'FetchStoryFeedResponseSuccess', stories: Array<{ __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type ModifyStoryMutationVariables = Exact<{
+  input: ModifyStoryInput;
+}>;
+
+
+export type ModifyStoryMutation = { __typename?: 'Mutation', modifyStory: { __typename: 'ModifyStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type DemoQueryQueryVariables = Exact<{
   input: DemoQueryInput;

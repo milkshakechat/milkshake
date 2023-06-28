@@ -37,6 +37,7 @@ import {
   SettingFilled,
   SearchOutlined,
 } from "@ant-design/icons";
+import { groupUserStoriesByDateRange } from "@/api/utils/stories.util";
 
 enum viewModes {
   qrCode = "qrCode",
@@ -55,6 +56,7 @@ const ProfilePage = () => {
   const { token } = theme.useToken();
   const { screen, isMobile } = useWindowSize();
   const [showQRCode, setShowQRCode] = useState(false);
+
   useEffect(() => {
     if (viewMode === viewModes.qrCode) {
       setShowQRCode(true);
@@ -69,28 +71,12 @@ const ProfilePage = () => {
     {
       key: "timeline",
       title: "Timeline",
-      children: (
-        <TimelineGallery
-          media={[
-            { title: "Pinned", count: 2 },
-            { title: "1 day ago", count: 3 },
-            { title: "7 days ago", count: 4 },
-          ]}
-        />
-      ),
+      children: <TimelineGallery stories={user ? user.stories : []} />,
     },
     {
       key: "wishlist",
       title: "Wishlist",
-      children: (
-        <TimelineGallery
-          media={[
-            { title: "Favorites", count: 1 },
-            { title: "#hobby", count: 2 },
-            { title: "#savings", count: 4 },
-          ]}
-        />
-      ),
+      children: <div>Wishlist</div>,
     },
   ];
   return (

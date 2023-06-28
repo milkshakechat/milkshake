@@ -1,4 +1,4 @@
-import { Contact, User } from "@/api/graphql/types";
+import { Contact, Story, User } from "@/api/graphql/types";
 import { EmailString, UserID } from "@milkshakechat/helpers";
 import { create } from "zustand";
 
@@ -22,6 +22,7 @@ interface UserState {
   setGlobalDirectory: (contacts: Contact[]) => void;
   triggerRefetch: () => void;
   refetchNonce: number;
+  updateOrPushStory: (story: Story) => void;
 }
 
 export const useUserState = create<UserState>()((set) => ({
@@ -50,4 +51,25 @@ export const useUserState = create<UserState>()((set) => ({
   refetchNonce: 1,
   triggerRefetch: () =>
     set((state) => ({ refetchNonce: state.refetchNonce + 1 })),
+  updateOrPushStory: (story) =>
+    set((state) => {
+      if (state.user) {
+        console.log(`UPDATING WITH NEW STORY`, story);
+        let stories = [...state.user.stories];
+        const index = stories.findIndex((s) => s.id === story.id);
+        if (index !== -1) {
+          // stories[index] = story;
+          stories = stories.filter((s) => s.id !== story.id).concat([story]);
+        } else {
+          stories.push(story);
+        }
+        return {
+          user: {
+            ...state.user,
+            stories,
+          },
+        };
+      }
+      return {};
+    }),
 }));

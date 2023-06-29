@@ -11,12 +11,15 @@ import { Username } from "@milkshakechat/helpers";
 import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import { useNotificationsState } from "@/state/notifications.state";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const NotificationsPage = () => {
   const user = useUserState((state) => state.user);
   const { token } = theme.useToken();
-
+  const navigate = useNavigate();
   const notifications = useNotificationsState((state) => state.notifications);
+
+  console.log(`notifications`, notifications);
 
   if (!user) {
     return <Spin />;
@@ -61,7 +64,14 @@ const NotificationsPage = () => {
             })}
             renderItem={(notif, index) => {
               return (
-                <List.Item style={{ width: "100%" }}>
+                <List.Item
+                  onClick={() => {
+                    if (notif.route) {
+                      navigate(notif.route);
+                    }
+                  }}
+                  style={{ width: "100%", cursor: "pointer" }}
+                >
                   <List.Item.Meta
                     avatar={
                       <Avatar

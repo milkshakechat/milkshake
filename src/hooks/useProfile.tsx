@@ -396,6 +396,7 @@ export const useFetchRecentNotifications = () => {
               query: FETCH_RECENT_NOTIFICATIONS,
             })
             .then(({ data }) => {
+              console.log(`resulting data`, data);
               if (
                 data.fetchRecentNotifications.__typename ===
                 "FetchRecentNotificationsResponseSuccess"
@@ -412,6 +413,7 @@ export const useFetchRecentNotifications = () => {
         }
       );
       setData(result);
+      console.log(`result.notifications`, result.notifications);
       setInitialNotifications(result.notifications);
     } catch (e) {
       console.log(e);

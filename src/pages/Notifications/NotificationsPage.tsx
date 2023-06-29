@@ -10,17 +10,13 @@ import { CameraOutlined, BellFilled } from "@ant-design/icons";
 import { Username } from "@milkshakechat/helpers";
 import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
+import { useNotificationsState } from "@/state/notifications.state";
 
 const NotificationsPage = () => {
   const user = useUserState((state) => state.user);
   const { token } = theme.useToken();
-  const notification = {
-    id: "1",
-    title: "Notification",
-    body: "Lorem ipsum solar descartes",
-    icon: "",
-    route: "",
-  };
+
+  const notifications = useNotificationsState((state) => state.notifications);
 
   if (!user) {
     return <Spin />;
@@ -54,10 +50,13 @@ const NotificationsPage = () => {
         >
           <List
             itemLayout="horizontal"
-            dataSource={Array.from(Array(30).keys()).map((i) => {
+            dataSource={notifications.map((notif) => {
               return {
-                ...notification,
-                id: i,
+                id: notif.id,
+                title: notif.title,
+                body: notif.description,
+                icon: notif.thumbnail,
+                route: notif.route,
               };
             })}
             renderItem={(notif, index) => {

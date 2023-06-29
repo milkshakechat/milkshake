@@ -8,6 +8,8 @@ import {
   CheckUsernameAvailableInput,
   CheckUsernameAvailableResponseSuccess,
   Contact,
+  FetchRecentNotificationsResponse,
+  FetchRecentNotificationsResponseSuccess,
   GetMyProfileQuery,
   GetMyProfileResponse,
   GetMyProfileResponseSuccess,
@@ -23,6 +25,7 @@ import { shallow } from "zustand/shallow";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import { UserID, localeEnum } from "@milkshakechat/helpers";
 import { useListChatRooms } from "./useChat";
+import { useNotificationsState } from "@/state/notifications.state";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
@@ -345,6 +348,74 @@ export const useListContacts = () => {
       contacts,
       selfUserID: selfUserID,
     });
+  };
+
+  return { data, errors, runQuery };
+};
+
+export const useFetchRecentNotifications = () => {
+  const [data, setData] = useState<FetchRecentNotificationsResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const setInitialNotifications = useNotificationsState(
+    (state) => state.setInitialNotifications
+  );
+
+  const runQuery = async () => {
+    try {
+      const FETCH_RECENT_NOTIFICATIONS = gql`
+        query FetchRecentNotifications {
+          fetchRecentNotifications {
+            __typename
+            ... on FetchRecentNotificationsResponseSuccess {
+              notifications {
+                id
+                title
+                description
+                route
+                thumbnail
+                relatedChatRoomID
+                createdAt
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<FetchRecentNotificationsResponseSuccess>(
+        async (resolve, reject) => {
+          client
+            .query<{
+              fetchRecentNotifications: FetchRecentNotificationsResponse;
+            }>({
+              query: FETCH_RECENT_NOTIFICATIONS,
+            })
+            .then(({ data }) => {
+              if (
+                data.fetchRecentNotifications.__typename ===
+                "FetchRecentNotificationsResponseSuccess"
+              ) {
+                resolve(data.fetchRecentNotifications);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+      setInitialNotifications(result.notifications);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return { data, errors, runQuery };

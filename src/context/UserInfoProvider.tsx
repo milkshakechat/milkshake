@@ -1,5 +1,9 @@
 import { useListChatRooms } from "@/hooks/useChat";
-import { useListContacts, useProfile } from "@/hooks/useProfile";
+import {
+  useFetchRecentNotifications,
+  useListContacts,
+  useProfile,
+} from "@/hooks/useProfile";
 import { useFetchStoryFeedQuery } from "@/hooks/useStory";
 import useWebPermissions from "@/hooks/useWebPermissions";
 import { useChatsListState } from "@/state/chats.state";
@@ -18,6 +22,9 @@ export const UserInfoProvider = ({ children }: Props) => {
   const selfUser = useUserState((state) => state.user);
 
   const { runQuery: runFetchStoryFeedQuery } = useFetchStoryFeedQuery();
+
+  const { runQuery: runFetchRecentNotificationsQuery } =
+    useFetchRecentNotifications();
 
   const { idToken, refetchNonce } = useUserState(
     (state) => ({
@@ -38,6 +45,7 @@ export const UserInfoProvider = ({ children }: Props) => {
       runFetchStoryFeedQuery({
         refresh: true,
       });
+      runFetchRecentNotificationsQuery();
     }
   }, [idToken, refetchNonce, selfUser?.id]);
 

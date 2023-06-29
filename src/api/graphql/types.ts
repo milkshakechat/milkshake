@@ -107,6 +107,13 @@ export type EnterChatRoomResponseSuccess = {
   isNew: Scalars['Boolean']['output'];
 };
 
+export type FetchRecentNotificationsResponse = FetchRecentNotificationsResponseSuccess | ResponseError;
+
+export type FetchRecentNotificationsResponseSuccess = {
+  __typename?: 'FetchRecentNotificationsResponseSuccess';
+  notifications: Array<NotificationGql>;
+};
+
 export type FetchStoryFeedInput = {
   nonce?: InputMaybe<Scalars['String']['input']>;
 };
@@ -277,6 +284,17 @@ export type MutationUpdatePushTokenArgs = {
   input: UpdatePushTokenInput;
 };
 
+export type NotificationGql = {
+  __typename?: 'NotificationGQL';
+  createdAt: Scalars['DateString']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  relatedChatRoomID?: Maybe<Scalars['ID']['output']>;
+  route?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
 export type Ping = {
   __typename?: 'Ping';
   timestamp: Scalars['String']['output'];
@@ -300,6 +318,7 @@ export type Query = {
   demoPing: Ping;
   demoQuery: DemoQueryResponse;
   enterChatRoom: EnterChatRoomResponse;
+  fetchRecentNotifications: FetchRecentNotificationsResponse;
   fetchStoryFeed: FetchStoryFeedResponse;
   getMyProfile: GetMyProfileResponse;
   getStory: GetStoryResponse;
@@ -558,6 +577,11 @@ export type ListContactsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type ListContactsQuery = { __typename?: 'Query', listContacts: { __typename: 'ListContactsResponseSuccess', contacts: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }>, globalDirectory: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type FetchRecentNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type FetchRecentNotificationsQuery = { __typename?: 'Query', fetchRecentNotifications: { __typename: 'FetchRecentNotificationsResponseSuccess', notifications: Array<{ __typename?: 'NotificationGQL', id: string, title: string, description?: string | null, route?: string | null, thumbnail?: string | null, relatedChatRoomID?: string | null, createdAt: any }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type CreateStoryMutationVariables = Exact<{
   input: CreateStoryInput;

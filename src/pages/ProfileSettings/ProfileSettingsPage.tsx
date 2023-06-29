@@ -49,6 +49,7 @@ import TemplateComponent from "@/components/TemplateComponent/TemplateComponent"
 import { cid } from "./i18n/types.i18n.ProfileSettingsPage";
 import useSharedTranslations from "@/i18n/useSharedTranslations";
 import useWebPermissions, {
+  useRevokeAllPushTokens,
   useUpdatePushToken,
 } from "@/hooks/useWebPermissions";
 import RequestPermissionModal from "@/components/RequestPermissionModal/RequestPermissionModal";
@@ -83,11 +84,8 @@ const ProfileSettingsPage = () => {
   const [showUpdate, setShowUpdate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { screen } = useWindowSize();
-  const {
-    data: updatePushTokenData,
-    errors: updatePushTokenErrors,
-    runMutation: updatePushTokenMutation,
-  } = useUpdatePushToken();
+  const { runMutation: updatePushTokenMutation } = useUpdatePushToken();
+  const { runMutation: revokePushTokensMutation } = useRevokeAllPushTokens();
   const {
     backButtonText,
     updateButtonText,
@@ -478,10 +476,11 @@ const ProfileSettingsPage = () => {
                             PUSH_TOKEN_LOCALSTORAGE
                           );
                           if (cachedPushToken) {
-                            await updatePushTokenMutation({
-                              token: cachedPushToken,
-                              active: false,
-                            });
+                            // await updatePushTokenMutation({
+                            //   token: cachedPushToken,
+                            //   active: false,
+                            // });
+                            await revokePushTokensMutation();
                             window.localStorage.removeItem(
                               PUSH_TOKEN_LOCALSTORAGE
                             );
@@ -490,7 +489,7 @@ const ProfileSettingsPage = () => {
                               value: false,
                             });
                             message.info(
-                              `Successfully revoked push notification permissions`
+                              `Successfully revoked push notification permissions for all devices`
                             );
                           }
                         }}

@@ -4,7 +4,7 @@ import { create } from "zustand";
 interface NotificationsState {
   notifications: NotificationGql[];
   setInitialNotifications: (notifications: NotificationGql[]) => void;
-  addNotification: (notification: NotificationGql) => void;
+  addNotifications: (notifs: NotificationGql[]) => void;
 }
 
 export const useNotificationsState = create<NotificationsState>()((set) => ({
@@ -20,9 +20,14 @@ export const useNotificationsState = create<NotificationsState>()((set) => ({
             )
           : notifications,
     })),
-  addNotification: (notification) => {
+  addNotifications: (notifs) => {
     set((state) => {
-      const notifications = [...state.notifications].concat([notification]);
+      const notifications = notifs.reduce(
+        (acc, curr) => {
+          return [...acc].filter((n) => n.id !== curr.id).concat([curr]);
+        },
+        [...state.notifications]
+      );
       return {
         notifications:
           notifications.length > 1

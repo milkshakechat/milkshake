@@ -14,6 +14,8 @@ import {
   GetMyProfileResponse,
   GetMyProfileResponseSuccess,
   ListContactsResponseSuccess,
+  MarkNotificationsAsReadInput,
+  MarkNotificationsAsReadResponseSuccess,
   ModifyProfileInput,
   ModifyProfileResponseSuccess,
   Mutation,
@@ -377,6 +379,7 @@ export const useFetchRecentNotifications = () => {
                 thumbnail
                 relatedChatRoomID
                 createdAt
+                markedRead
               }
             }
             ... on ResponseError {
@@ -421,4 +424,74 @@ export const useFetchRecentNotifications = () => {
   };
 
   return { data, errors, runQuery };
+};
+
+export const useMarkNotificationsAsRead = () => {
+  const [data, setData] = useState<MarkNotificationsAsReadResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const addNotifications = useNotificationsState(
+    (state) => state.addNotifications
+  );
+
+  const runMutation = async (args: MarkNotificationsAsReadInput) => {
+    try {
+      const MARK_NOTIFICATIONS_AS_READ = gql`
+        mutation MarkNotificationsAsRead(
+          $input: MarkNotificationsAsReadInput!
+        ) {
+          markNotificationsAsRead(input: $input) {
+            __typename
+            ... on MarkNotificationsAsReadResponseSuccess {
+              notifications {
+                id
+                title
+                description
+                route
+                thumbnail
+                relatedChatRoomID
+                createdAt
+                markedRead
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<MarkNotificationsAsReadResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "markNotificationsAsRead">>({
+              mutation: MARK_NOTIFICATIONS_AS_READ,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.markNotificationsAsRead.__typename ===
+                "MarkNotificationsAsReadResponseSuccess"
+              ) {
+                resolve(data.markNotificationsAsRead);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+      addNotifications(result.notifications);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runMutation };
 };

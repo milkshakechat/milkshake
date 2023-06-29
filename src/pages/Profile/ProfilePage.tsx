@@ -24,7 +24,7 @@ import {
   theme,
 } from "antd";
 import { useEffect, useState } from "react";
-import { BellOutlined } from "@ant-design/icons";
+import { BellOutlined, BellFilled } from "@ant-design/icons";
 import {
   NavLink,
   createSearchParams,
@@ -38,6 +38,8 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { groupUserStoriesByDateRange } from "@/api/utils/stories.util";
+import { Badge } from "antd";
+import { useNotificationsState } from "@/state/notifications.state";
 
 enum viewModes {
   qrCode = "qrCode",
@@ -56,7 +58,7 @@ const ProfilePage = () => {
   const { token } = theme.useToken();
   const { screen, isMobile } = useWindowSize();
   const [showQRCode, setShowQRCode] = useState(false);
-
+  const notifications = useNotificationsState((state) => state.notifications);
   console.log(`user`, user);
 
   useEffect(() => {
@@ -87,9 +89,15 @@ const ProfilePage = () => {
         <LayoutLogoHeader
           rightAction={
             <NavLink to="/app/notifications">
-              <BellOutlined
-                style={{ color: token.colorBgSpotlight, fontSize: "1.3rem" }}
-              />
+              <$Horizontal>
+                <BellFilled
+                  style={{ color: token.colorBgSpotlight, fontSize: "1rem" }}
+                />
+                <Badge
+                  count={notifications.filter((n) => !n.markedRead).length}
+                  style={{ margin: "0px 5px" }}
+                />
+              </$Horizontal>
             </NavLink>
           }
         />

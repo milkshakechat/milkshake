@@ -5,19 +5,31 @@ import AppLayout, {
 } from "@/components/AppLayout/AppLayout";
 import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import { useUserState } from "@/state/user.state";
-import { Avatar, Badge, Button, List, Spin, theme } from "antd";
-import { CameraOutlined, BellFilled } from "@ant-design/icons";
-import { Username } from "@milkshakechat/helpers";
+import { Avatar, Badge, Button, List, Popconfirm, Spin, theme } from "antd";
+import {
+  CameraOutlined,
+  BellFilled,
+  CheckCircleFilled,
+  CheckCircleOutlined,
+  LoadingOutlined,
+} from "@ant-design/icons";
+import { NotificationID, Username } from "@milkshakechat/helpers";
 import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import { useNotificationsState } from "@/state/notifications.state";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useMarkNotificationsAsRead } from "@/hooks/useProfile";
+import { useState } from "react";
+import dayjs from "dayjs";
 
 const NotificationsPage = () => {
   const user = useUserState((state) => state.user);
   const { token } = theme.useToken();
   const navigate = useNavigate();
   const notifications = useNotificationsState((state) => state.notifications);
+  const [loadingNotifs, setLoadingNotifs] = useState<NotificationID[]>([]);
+  const { runMutation: runMarkNotificationsAsReadMutation } =
+    useMarkNotificationsAsRead();
 
   console.log(`notifications`, notifications);
 
@@ -29,10 +41,40 @@ const NotificationsPage = () => {
       <LayoutInteriorHeader
         title={<PP>Notifications</PP>}
         rightAction={
-          <$Horizontal>
-            <BellFilled />
-            <Badge count={12} style={{ margin: "0px 5px" }} />
-          </$Horizontal>
+          notifications.filter((n) => !n.markedRead).length > 0 ? (
+            <Popconfirm
+              title="Mark all as read?"
+              description=""
+              onConfirm={async () => {
+                setLoadingNotifs(
+                  notifications.map((n) => n.id as NotificationID)
+                );
+                await runMarkNotificationsAsReadMutation({
+                  read: notifications.map((n) => n.id),
+                  unread: [],
+                });
+                setLoadingNotifs([]);
+              }}
+              okText="Yes"
+              cancelText="No"
+            >
+              <$Horizontal>
+                <BellFilled />
+                <Badge
+                  count={notifications.filter((n) => !n.markedRead).length}
+                  style={{ margin: "0px 5px" }}
+                />
+              </$Horizontal>
+            </Popconfirm>
+          ) : (
+            <$Horizontal>
+              <BellFilled />
+              <Badge
+                count={notifications.filter((n) => !n.markedRead).length}
+                style={{ margin: "0px 5px" }}
+              />
+            </$Horizontal>
+          )
         }
       />
       <AppLayoutPadding
@@ -53,15 +95,20 @@ const NotificationsPage = () => {
         >
           <List
             itemLayout="horizontal"
-            dataSource={notifications.map((notif) => {
-              return {
-                id: notif.id,
-                title: notif.title,
-                body: notif.description,
-                icon: notif.thumbnail,
-                route: notif.route,
-              };
-            })}
+            dataSource={notifications
+              .slice()
+              .sort((a, b) => (a.markedRead ? 1 : -1))
+              .map((notif) => {
+                return {
+                  id: notif.id,
+                  title: notif.title,
+                  body: notif.description,
+                  icon: notif.thumbnail,
+                  route: notif.route,
+                  markedRead: notif.markedRead,
+                  createdAt: notif.createdAt,
+                };
+              })}
             renderItem={(notif, index) => {
               return (
                 <List.Item
@@ -82,8 +129,64 @@ const NotificationsPage = () => {
                       />
                     }
                     title={notif.title}
-                    description={notif.body}
+                    description={`${dayjs().to(dayjs(notif.createdAt))}`}
                   />
+                  {loadingNotifs.includes(notif.id as NotificationID) ? (
+                    <LoadingOutlined
+                      style={{
+                        fontSize: "1.2rem",
+                        color: token.colorTextPlaceholder,
+                      }}
+                    />
+                  ) : notif.markedRead ? (
+                    <CheckCircleFilled
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setLoadingNotifs((prev) => [
+                          ...prev,
+                          notif.id as NotificationID,
+                        ]);
+                        await runMarkNotificationsAsReadMutation({
+                          read: [],
+                          unread: [notif.id],
+                        });
+                        setLoadingNotifs((prev) =>
+                          prev.filter((n) => n !== notif.id)
+                        );
+                      }}
+                      style={{
+                        fontSize: "1.2rem",
+                        color: token.colorTextPlaceholder,
+                      }}
+                    />
+                  ) : (
+                    <$Horizontal>
+                      <Badge dot>
+                        <CheckCircleOutlined
+                          onClick={async (e) => {
+                            setLoadingNotifs((prev) => [
+                              ...prev,
+                              notif.id as NotificationID,
+                            ]);
+                            e.preventDefault();
+                            e.stopPropagation();
+                            await runMarkNotificationsAsReadMutation({
+                              read: [notif.id],
+                              unread: [],
+                            });
+                            setLoadingNotifs((prev) =>
+                              prev.filter((n) => n !== notif.id)
+                            );
+                          }}
+                          style={{
+                            fontSize: "1.2rem",
+                            color: token.colorTextPlaceholder,
+                          }}
+                        />
+                      </Badge>
+                    </$Horizontal>
+                  )}
                 </List.Item>
               );
             }}

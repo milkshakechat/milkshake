@@ -31,14 +31,15 @@ import { shallow } from "zustand/shallow";
 import LogoText from "@/components/LogoText/LogoText";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import NotificationsPage from "@/pages/Notifications/NotificationsPage";
-import { LeftOutlined } from "@ant-design/icons";
+import { LeftOutlined, BellFilled } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
 import { ItemType } from "antd/es/menu/hooks/useItems";
 import { cid } from "./i18n/types.i18n.AppLayout";
 import { useIntl } from "react-intl";
 import PP from "@/i18n/PlaceholderPrint";
 import { useChatsListState } from "@/state/chats.state";
-import { $Vertical } from "@/api/utils/spacing";
+import { $Horizontal, $Vertical } from "@/api/utils/spacing";
+import { useNotificationsState } from "@/state/notifications.state";
 const { Header, Content, Footer, Sider } = Layout;
 
 interface MenuItem {
@@ -72,7 +73,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const { screen: windowScreen } = useWindowSize();
   const _location = useLocation();
   const intl = useIntl();
-
+  const notifications = useNotificationsState((state) => state.notifications);
   const { triggerRefetch } = useUserState(
     (state) => ({
       triggerRefetch: state.triggerRefetch,
@@ -148,14 +149,25 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           isPending ? "pending" : isActive ? "active" : ""
         }
       >
-        {messagesText}
+        <$Horizontal alignItems="center">
+          {messagesText}
+          <Badge count={totalUnreadChatsCount} style={{ margin: "0px 5px" }} />
+        </$Horizontal>
       </NavLink>,
       "messages",
       "/app/chats",
       <MessageOutlined style={{ fontSize: "1rem" }} />
     ),
     getItem(
-      <NavLink to="/app/notifications">{notificationsText}</NavLink>,
+      <NavLink to="/app/notifications">
+        <$Horizontal alignItems="center">
+          {notificationsText}
+          <Badge
+            count={notifications.filter((n) => !n.markedRead).length}
+            style={{ margin: "0px 5px" }}
+          />
+        </$Horizontal>
+      </NavLink>,
       "notifications",
       "/app/notifications",
       <BellOutlined style={{ fontSize: "1rem" }} />

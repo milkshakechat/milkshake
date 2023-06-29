@@ -2,6 +2,7 @@ import { getFirebaseCloudMessagingToken } from "@/api/firebase";
 import { ErrorLine } from "@/api/graphql/error-line";
 import {
   Mutation,
+  RevokePushTokensResponse,
   UpdatePushTokenInput,
   UpdatePushTokenResponseSuccess,
 } from "@/api/graphql/types";
@@ -53,6 +54,59 @@ export const useUpdatePushToken = () => {
                 "UpdatePushTokenResponseSuccess"
               ) {
                 resolve(data.updatePushToken);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runMutation };
+};
+
+export const useRevokeAllPushTokens = () => {
+  const [data, setData] = useState<RevokePushTokensResponse>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const runMutation = async () => {
+    try {
+      const REVOKE_ALL_PUSH_TOKENS = gql`
+        mutation RevokePushTokens {
+          revokePushTokens {
+            __typename
+            ... on RevokePushTokensResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<RevokePushTokensResponse>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "revokePushTokens">>({
+              mutation: REVOKE_ALL_PUSH_TOKENS,
+            })
+            .then(({ data }) => {
+              if (
+                data?.revokePushTokens.__typename ===
+                "RevokePushTokensResponseSuccess"
+              ) {
+                resolve(data.revokePushTokens);
               }
             })
             .catch((graphQLError: Error) => {

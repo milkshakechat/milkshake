@@ -107,6 +107,17 @@ export type EnterChatRoomResponseSuccess = {
   isNew: Scalars['Boolean']['output'];
 };
 
+export type FetchRecentNotificationsInput = {
+  nonce?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type FetchRecentNotificationsResponse = FetchRecentNotificationsResponseSuccess | ResponseError;
+
+export type FetchRecentNotificationsResponseSuccess = {
+  __typename?: 'FetchRecentNotificationsResponseSuccess';
+  notifications: Array<NotificationGql>;
+};
+
 export type FetchStoryFeedInput = {
   nonce?: InputMaybe<Scalars['String']['input']>;
 };
@@ -172,6 +183,10 @@ export type ListChatRoomsResponseSuccess = {
   chatRooms: Array<ChatRoom>;
 };
 
+export type ListContactsInput = {
+  nonce?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ListContactsResponse = ListContactsResponseSuccess | ResponseError;
 
 export type ListContactsResponseSuccess = {
@@ -190,6 +205,18 @@ export type ManageFriendshipResponse = ManageFriendshipResponseSuccess | Respons
 export type ManageFriendshipResponseSuccess = {
   __typename?: 'ManageFriendshipResponseSuccess';
   status: FriendshipStatus;
+};
+
+export type MarkNotificationsAsReadInput = {
+  read: Array<Scalars['ID']['input']>;
+  unread: Array<Scalars['ID']['input']>;
+};
+
+export type MarkNotificationsAsReadResponse = MarkNotificationsAsReadResponseSuccess | ResponseError;
+
+export type MarkNotificationsAsReadResponseSuccess = {
+  __typename?: 'MarkNotificationsAsReadResponseSuccess';
+  notifications: Array<NotificationGql>;
 };
 
 export type ModifyProfileInput = {
@@ -229,6 +256,7 @@ export type Mutation = {
   createStory: CreateStoryResponse;
   demoMutation: DemoMutationResponse;
   manageFriendship: ManageFriendshipResponse;
+  markNotificationsAsRead: MarkNotificationsAsReadResponse;
   modifyProfile: ModifyProfileResponse;
   modifyStory: ModifyStoryResponse;
   revokePushTokens: RevokePushTokensResponse;
@@ -250,6 +278,11 @@ export type MutationDemoMutationArgs = {
 
 export type MutationManageFriendshipArgs = {
   input: ManageFriendshipInput;
+};
+
+
+export type MutationMarkNotificationsAsReadArgs = {
+  input: MarkNotificationsAsReadInput;
 };
 
 
@@ -277,6 +310,18 @@ export type MutationUpdatePushTokenArgs = {
   input: UpdatePushTokenInput;
 };
 
+export type NotificationGql = {
+  __typename?: 'NotificationGql';
+  createdAt: Scalars['DateString']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  markedRead: Scalars['Boolean']['output'];
+  relatedChatRoomID?: Maybe<Scalars['ID']['output']>;
+  route?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
 export type Ping = {
   __typename?: 'Ping';
   timestamp: Scalars['String']['output'];
@@ -300,6 +345,7 @@ export type Query = {
   demoPing: Ping;
   demoQuery: DemoQueryResponse;
   enterChatRoom: EnterChatRoomResponse;
+  fetchRecentNotifications: FetchRecentNotificationsResponse;
   fetchStoryFeed: FetchStoryFeedResponse;
   getMyProfile: GetMyProfileResponse;
   getStory: GetStoryResponse;
@@ -325,6 +371,11 @@ export type QueryEnterChatRoomArgs = {
 };
 
 
+export type QueryFetchRecentNotificationsArgs = {
+  input: FetchRecentNotificationsInput;
+};
+
+
 export type QueryFetchStoryFeedArgs = {
   input: FetchStoryFeedInput;
 };
@@ -332,6 +383,11 @@ export type QueryFetchStoryFeedArgs = {
 
 export type QueryGetStoryArgs = {
   input: GetStoryInput;
+};
+
+
+export type QueryListContactsArgs = {
+  input: ListContactsInput;
 };
 
 
@@ -554,10 +610,26 @@ export type ModifyProfileMutationVariables = Exact<{
 
 export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string, language: LanguageEnum, themeColor: any, privacyMode: PrivacyModeEnum } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
-export type ListContactsQueryVariables = Exact<{ [key: string]: never; }>;
+export type ListContactsQueryVariables = Exact<{
+  input: ListContactsInput;
+}>;
 
 
 export type ListContactsQuery = { __typename?: 'Query', listContacts: { __typename: 'ListContactsResponseSuccess', contacts: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }>, globalDirectory: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type FetchRecentNotificationsQueryVariables = Exact<{
+  input: FetchRecentNotificationsInput;
+}>;
+
+
+export type FetchRecentNotificationsQuery = { __typename?: 'Query', fetchRecentNotifications: { __typename: 'FetchRecentNotificationsResponseSuccess', notifications: Array<{ __typename?: 'NotificationGql', id: string, title: string, description?: string | null, route?: string | null, thumbnail?: string | null, relatedChatRoomID?: string | null, createdAt: any, markedRead: boolean }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type MarkNotificationsAsReadMutationVariables = Exact<{
+  input: MarkNotificationsAsReadInput;
+}>;
+
+
+export type MarkNotificationsAsReadMutation = { __typename?: 'Mutation', markNotificationsAsRead: { __typename: 'MarkNotificationsAsReadResponseSuccess', notifications: Array<{ __typename?: 'NotificationGql', id: string, title: string, description?: string | null, route?: string | null, thumbnail?: string | null, relatedChatRoomID?: string | null, createdAt: any, markedRead: boolean }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type CreateStoryMutationVariables = Exact<{
   input: CreateStoryInput;

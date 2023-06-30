@@ -8,10 +8,14 @@ import {
   CheckUsernameAvailableInput,
   CheckUsernameAvailableResponseSuccess,
   Contact,
+  FetchRecentNotificationsResponse,
+  FetchRecentNotificationsResponseSuccess,
   GetMyProfileQuery,
   GetMyProfileResponse,
   GetMyProfileResponseSuccess,
   ListContactsResponseSuccess,
+  MarkNotificationsAsReadInput,
+  MarkNotificationsAsReadResponseSuccess,
   ModifyProfileInput,
   ModifyProfileResponseSuccess,
   Mutation,
@@ -23,6 +27,7 @@ import { shallow } from "zustand/shallow";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import { UserID, localeEnum } from "@milkshakechat/helpers";
 import { useListChatRooms } from "./useChat";
+import { useNotificationsState } from "@/state/notifications.state";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
@@ -264,16 +269,23 @@ export const useListContacts = () => {
   const client = useGraphqlClient();
   const setContacts = useUserState((state) => state.setContacts);
   const setGlobalDirectory = useUserState((state) => state.setGlobalDirectory);
-
+  const [lastRequestTimestamp, setLastRequestTimestamp] = useState<string>(
+    new Date().toISOString()
+  );
   const selfUser = useUserState((state) => state.user);
 
   const { runQuery: runListChatRoomsQuery } = useListChatRooms();
 
-  const runQuery = async (userID: UserID) => {
+  const runQuery = async ({ refresh }: { refresh: boolean }) => {
+    const now = new Date().toISOString();
+    const nonce = refresh ? now : lastRequestTimestamp;
+    if (refresh) {
+      setLastRequestTimestamp(now);
+    }
     try {
       const LIST_CONTACTS = gql`
-        query ListContacts {
-          listContacts {
+        query ListContacts($input: ListContactsInput!) {
+          listContacts(input: $input) {
             __typename
             ... on ListContactsResponseSuccess {
               contacts {
@@ -304,6 +316,9 @@ export const useListContacts = () => {
           client
             .query<Pick<Query, "listContacts">>({
               query: LIST_CONTACTS,
+              variables: { input: { nonce } },
+              // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
+              fetchPolicy: refresh ? "network-only" : "cache-first",
             })
             .then(({ data }) => {
               if (
@@ -325,10 +340,12 @@ export const useListContacts = () => {
       setContacts(result.contacts);
       setGlobalDirectory(result.globalDirectory);
 
-      fetchChatRooms({
-        contacts: result.contacts,
-        selfUserID: userID,
-      });
+      if (selfUser) {
+        fetchChatRooms({
+          contacts: result.contacts,
+          selfUserID: selfUser.id,
+        });
+      }
     } catch (e) {
       console.log(e);
     }
@@ -348,4 +365,155 @@ export const useListContacts = () => {
   };
 
   return { data, errors, runQuery };
+};
+
+export const useFetchRecentNotifications = () => {
+  const [data, setData] = useState<FetchRecentNotificationsResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+  const [lastRequestTimestamp, setLastRequestTimestamp] = useState<string>(
+    new Date().toISOString()
+  );
+  const setInitialNotifications = useNotificationsState(
+    (state) => state.setInitialNotifications
+  );
+
+  const runQuery = async ({ refresh }: { refresh: boolean }) => {
+    const now = new Date().toISOString();
+    const nonce = refresh ? now : lastRequestTimestamp;
+    if (refresh) {
+      setLastRequestTimestamp(now);
+    }
+    try {
+      const FETCH_RECENT_NOTIFICATIONS = gql`
+        query FetchRecentNotifications($input: FetchRecentNotificationsInput!) {
+          fetchRecentNotifications(input: $input) {
+            __typename
+            ... on FetchRecentNotificationsResponseSuccess {
+              notifications {
+                id
+                title
+                description
+                route
+                thumbnail
+                relatedChatRoomID
+                createdAt
+                markedRead
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<FetchRecentNotificationsResponseSuccess>(
+        async (resolve, reject) => {
+          client
+            .query<{
+              fetchRecentNotifications: FetchRecentNotificationsResponse;
+            }>({
+              query: FETCH_RECENT_NOTIFICATIONS,
+              variables: { input: { nonce } },
+              // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
+              fetchPolicy: refresh ? "network-only" : "cache-first",
+            })
+            .then(({ data }) => {
+              console.log(`resulting data`, data);
+              if (
+                data.fetchRecentNotifications.__typename ===
+                "FetchRecentNotificationsResponseSuccess"
+              ) {
+                resolve(data.fetchRecentNotifications);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+      console.log(`result.notifications`, result.notifications);
+      setInitialNotifications(result.notifications);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runQuery };
+};
+
+export const useMarkNotificationsAsRead = () => {
+  const [data, setData] = useState<MarkNotificationsAsReadResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const addNotifications = useNotificationsState(
+    (state) => state.addNotifications
+  );
+
+  const runMutation = async (args: MarkNotificationsAsReadInput) => {
+    try {
+      const MARK_NOTIFICATIONS_AS_READ = gql`
+        mutation MarkNotificationsAsRead(
+          $input: MarkNotificationsAsReadInput!
+        ) {
+          markNotificationsAsRead(input: $input) {
+            __typename
+            ... on MarkNotificationsAsReadResponseSuccess {
+              notifications {
+                id
+                title
+                description
+                route
+                thumbnail
+                relatedChatRoomID
+                createdAt
+                markedRead
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<MarkNotificationsAsReadResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "markNotificationsAsRead">>({
+              mutation: MARK_NOTIFICATIONS_AS_READ,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.markNotificationsAsRead.__typename ===
+                "MarkNotificationsAsReadResponseSuccess"
+              ) {
+                resolve(data.markNotificationsAsRead);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+      addNotifications(result.notifications);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runMutation };
 };

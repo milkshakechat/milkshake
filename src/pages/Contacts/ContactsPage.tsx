@@ -196,11 +196,10 @@ export const ContactsPage = () => {
   };
 
   const goToChatPage = (participants: UserID[]) => {
-    console.log(`goToChatPage.participants`, participants);
     const searchString = createSearchParams({
       participants: encodeURIComponent(participants.join(",")),
     }).toString();
-    console.log(`searchString = ${searchString}`);
+
     navigate({
       pathname: "/app/chat",
       search: searchString,
@@ -239,7 +238,6 @@ export const ContactsPage = () => {
                 .filter((fr) => fr.status === FriendshipStatus.Accepted)
                 .filter(handleFilter)}
               renderItem={(item) => {
-                console.log(`item`, item);
                 return renderRow(item, [
                   <Dropdown.Button
                     menu={{
@@ -656,7 +654,6 @@ export const ContactsPage = () => {
           (fr) => user && fr.friendID !== user.id
         )}
         renderItem={(item) => {
-          console.log(`gitem`, item);
           return renderRow(item, [
             <Button
               loading={loadingManageFriendships.includes(item.friendID)}
@@ -671,9 +668,6 @@ export const ContactsPage = () => {
       />
     );
   };
-
-  console.log(`contacts`, contacts);
-  console.log(`globalDirectory`, globalDirectory);
 
   return (
     <>

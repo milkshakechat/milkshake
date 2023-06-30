@@ -9,9 +9,11 @@ import {
 } from "@/hooks/useTemplateGQL";
 import { useUserState } from "@/state/user.state";
 import { theme } from "antd";
+import { useIntl } from "react-intl";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 export const TemplateComponentGQL = () => {
+  const intl = useIntl();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const tab = searchParams.get("tab");

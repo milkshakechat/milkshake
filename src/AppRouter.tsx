@@ -51,6 +51,7 @@ import ChatsPage from "./pages/ChatsPage/ChatsPage";
 import ChatPage from "./pages/ChatPage/ChatPage";
 import DemoConversation from "./pages/DemoConversation/DemoConversationPage";
 import WatchStoryPage from "./pages/WatchStory/WatchStoryPage";
+import NewStickerPage from "./pages/NewSticker/NewStickerPage";
 
 const AppRouter = () => {
   const {
@@ -176,6 +177,16 @@ const AppRouter = () => {
                               <AuthProtect>
                                 <AppLayout>
                                   <WatchStoryPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="wishlist/new"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <NewStickerPage />
                                 </AppLayout>
                               </AuthProtect>
                             }

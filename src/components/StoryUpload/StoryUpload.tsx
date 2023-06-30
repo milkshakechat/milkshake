@@ -241,6 +241,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
               message.error("Caption must be less than 240 characters");
             }
           }}
+          style={{ resize: "none" }}
         />
       </$Vertical>
     );

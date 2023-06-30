@@ -72,7 +72,7 @@ export const groupUserStoriesByDateRange = (stories: Story[]) => {
     let label: string;
 
     if (date.isSame(now, "day")) {
-      label = "today";
+      label = "Today";
     } else if (date.isAfter(now.subtract(1, "day"), "day")) {
       label = `${now.diff(date, "day") + 1} day ago`;
     } else if (date.isAfter(now.subtract(7, "day"), "day")) {

@@ -40,6 +40,7 @@ import {
 import { groupUserStoriesByDateRange } from "@/api/utils/stories.util";
 import { Badge } from "antd";
 import { useNotificationsState } from "@/state/notifications.state";
+import WishlistGallery from "@/components/WishlistGallery/WishlistGallery";
 
 enum viewModes {
   qrCode = "qrCode",
@@ -80,7 +81,7 @@ const ProfilePage = () => {
     {
       key: "wishlist",
       title: "Wishlist",
-      children: <div>Wishlist</div>,
+      children: <WishlistGallery />,
     },
   ];
   return (

@@ -6,6 +6,7 @@ import { Button, Dropdown, Input, theme } from "antd";
 import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 export enum WishlistSortByEnum {
   favorite = "Favorite",
@@ -141,18 +142,16 @@ const WishlistGallery = ({ children }: WishlistGalleryProps) => {
         />
 
         {viewingOwnProfile && (
-          <Button
-            type="primary"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            style={{
-              marginLeft: "10px",
-            }}
-          >
-            <PP>New Wish</PP>
-          </Button>
+          <NavLink to="/app/wishlist/new">
+            <Button
+              type="primary"
+              style={{
+                marginLeft: "10px",
+              }}
+            >
+              <PP>New Wish</PP>
+            </Button>
+          </NavLink>
         )}
       </$Horizontal>
     </$Vertical>

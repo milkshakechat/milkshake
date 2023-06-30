@@ -380,7 +380,11 @@ const ProfileStylePage = () => {
               </Form.Item>
             )}
             <Form.Item label={bioText} name="bio" rules={bioRules}>
-              <Input.TextArea rows={3} placeholder="Public Biography" />
+              <Input.TextArea
+                rows={3}
+                placeholder="Public Biography"
+                style={{ resize: "none" }}
+              />
             </Form.Item>
             <Form.Item label={linkText} name="link" rules={linkRules}>
               <Input placeholder="Link to Website" />

@@ -201,7 +201,8 @@ export const StickyAdaptiveMobileFooter = ({
   const showMobileFooter =
     reactRouterLocation.pathname !== "/app/chat" &&
     reactRouterLocation.pathname !== "/app/story/new" &&
-    reactRouterLocation.pathname !== `/app/story/${storyIDFromURL}`;
+    reactRouterLocation.pathname !== `/app/story/${storyIDFromURL}` &&
+    reactRouterLocation.pathname !== "/app/wishlist/new";
   const [showMobileSideMenu, setShowMobileSideMenu] = useState(false);
   const totalUnreadChatsCount = useChatsListState((state) =>
     state.chatsList.reduce((acc, curr) => {

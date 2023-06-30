@@ -80,8 +80,10 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
                           filter: story.showcase
                             ? "brightness(70%)"
                             : "brightness(20%)",
+                          position: "absolute",
+                          objectFit: "cover",
                           width: "100%",
-                          height: "auto",
+                          height: "100%",
                         }}
                       />
                       {story.showcase ? null : (

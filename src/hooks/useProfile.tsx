@@ -269,16 +269,23 @@ export const useListContacts = () => {
   const client = useGraphqlClient();
   const setContacts = useUserState((state) => state.setContacts);
   const setGlobalDirectory = useUserState((state) => state.setGlobalDirectory);
-
+  const [lastRequestTimestamp, setLastRequestTimestamp] = useState<string>(
+    new Date().toISOString()
+  );
   const selfUser = useUserState((state) => state.user);
 
   const { runQuery: runListChatRoomsQuery } = useListChatRooms();
 
-  const runQuery = async (userID: UserID) => {
+  const runQuery = async ({ refresh }: { refresh: boolean }) => {
+    const now = new Date().toISOString();
+    const nonce = refresh ? now : lastRequestTimestamp;
+    if (refresh) {
+      setLastRequestTimestamp(now);
+    }
     try {
       const LIST_CONTACTS = gql`
-        query ListContacts {
-          listContacts {
+        query ListContacts($input: ListContactsInput!) {
+          listContacts(input: $input) {
             __typename
             ... on ListContactsResponseSuccess {
               contacts {
@@ -309,6 +316,9 @@ export const useListContacts = () => {
           client
             .query<Pick<Query, "listContacts">>({
               query: LIST_CONTACTS,
+              variables: { input: { nonce } },
+              // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
+              fetchPolicy: refresh ? "network-only" : "cache-first",
             })
             .then(({ data }) => {
               if (
@@ -330,10 +340,12 @@ export const useListContacts = () => {
       setContacts(result.contacts);
       setGlobalDirectory(result.globalDirectory);
 
-      fetchChatRooms({
-        contacts: result.contacts,
-        selfUserID: userID,
-      });
+      if (selfUser) {
+        fetchChatRooms({
+          contacts: result.contacts,
+          selfUserID: selfUser.id,
+        });
+      }
     } catch (e) {
       console.log(e);
     }
@@ -359,16 +371,23 @@ export const useFetchRecentNotifications = () => {
   const [data, setData] = useState<FetchRecentNotificationsResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
-
+  const [lastRequestTimestamp, setLastRequestTimestamp] = useState<string>(
+    new Date().toISOString()
+  );
   const setInitialNotifications = useNotificationsState(
     (state) => state.setInitialNotifications
   );
 
-  const runQuery = async () => {
+  const runQuery = async ({ refresh }: { refresh: boolean }) => {
+    const now = new Date().toISOString();
+    const nonce = refresh ? now : lastRequestTimestamp;
+    if (refresh) {
+      setLastRequestTimestamp(now);
+    }
     try {
       const FETCH_RECENT_NOTIFICATIONS = gql`
-        query FetchRecentNotifications {
-          fetchRecentNotifications {
+        query FetchRecentNotifications($input: FetchRecentNotificationsInput!) {
+          fetchRecentNotifications(input: $input) {
             __typename
             ... on FetchRecentNotificationsResponseSuccess {
               notifications {
@@ -397,6 +416,9 @@ export const useFetchRecentNotifications = () => {
               fetchRecentNotifications: FetchRecentNotificationsResponse;
             }>({
               query: FETCH_RECENT_NOTIFICATIONS,
+              variables: { input: { nonce } },
+              // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
+              fetchPolicy: refresh ? "network-only" : "cache-first",
             })
             .then(({ data }) => {
               console.log(`resulting data`, data);

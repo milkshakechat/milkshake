@@ -107,6 +107,10 @@ export type EnterChatRoomResponseSuccess = {
   isNew: Scalars['Boolean']['output'];
 };
 
+export type FetchRecentNotificationsInput = {
+  nonce?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type FetchRecentNotificationsResponse = FetchRecentNotificationsResponseSuccess | ResponseError;
 
 export type FetchRecentNotificationsResponseSuccess = {
@@ -177,6 +181,10 @@ export type ListChatRoomsResponse = ListChatRoomsResponseSuccess | ResponseError
 export type ListChatRoomsResponseSuccess = {
   __typename?: 'ListChatRoomsResponseSuccess';
   chatRooms: Array<ChatRoom>;
+};
+
+export type ListContactsInput = {
+  nonce?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ListContactsResponse = ListContactsResponseSuccess | ResponseError;
@@ -363,6 +371,11 @@ export type QueryEnterChatRoomArgs = {
 };
 
 
+export type QueryFetchRecentNotificationsArgs = {
+  input: FetchRecentNotificationsInput;
+};
+
+
 export type QueryFetchStoryFeedArgs = {
   input: FetchStoryFeedInput;
 };
@@ -370,6 +383,11 @@ export type QueryFetchStoryFeedArgs = {
 
 export type QueryGetStoryArgs = {
   input: GetStoryInput;
+};
+
+
+export type QueryListContactsArgs = {
+  input: ListContactsInput;
 };
 
 
@@ -592,12 +610,16 @@ export type ModifyProfileMutationVariables = Exact<{
 
 export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string, language: LanguageEnum, themeColor: any, privacyMode: PrivacyModeEnum } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
-export type ListContactsQueryVariables = Exact<{ [key: string]: never; }>;
+export type ListContactsQueryVariables = Exact<{
+  input: ListContactsInput;
+}>;
 
 
 export type ListContactsQuery = { __typename?: 'Query', listContacts: { __typename: 'ListContactsResponseSuccess', contacts: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }>, globalDirectory: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
-export type FetchRecentNotificationsQueryVariables = Exact<{ [key: string]: never; }>;
+export type FetchRecentNotificationsQueryVariables = Exact<{
+  input: FetchRecentNotificationsInput;
+}>;
 
 
 export type FetchRecentNotificationsQuery = { __typename?: 'Query', fetchRecentNotifications: { __typename: 'FetchRecentNotificationsResponseSuccess', notifications: Array<{ __typename?: 'NotificationGql', id: string, title: string, description?: string | null, route?: string | null, thumbnail?: string | null, relatedChatRoomID?: string | null, createdAt: any, markedRead: boolean }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };

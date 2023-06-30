@@ -31,8 +31,6 @@ const NotificationsPage = () => {
   const { runMutation: runMarkNotificationsAsReadMutation } =
     useMarkNotificationsAsRead();
 
-  console.log(`notifications`, notifications);
-
   if (!user) {
     return <Spin />;
   }
@@ -120,14 +118,7 @@ const NotificationsPage = () => {
                   style={{ width: "100%", cursor: "pointer" }}
                 >
                   <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        src={
-                          notif.icon ||
-                          `https://xsgames.co/randomusers/avatar.php?g=pixel&key=`
-                        }
-                      />
-                    }
+                    avatar={<Avatar src={notif.icon} />}
                     title={notif.title}
                     description={`${dayjs().to(dayjs(notif.createdAt))}`}
                   />

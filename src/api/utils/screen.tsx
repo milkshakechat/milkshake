@@ -12,6 +12,7 @@ import {
   SettingOutlined,
   MenuOutlined,
   MessageOutlined,
+  GiftOutlined,
 } from "@ant-design/icons";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import shallow from "zustand/shallow";
@@ -531,6 +532,24 @@ export const StickyAdaptiveMobileFooter = ({
                 {contactsText}
               </Button>
             </NavLink>
+            <NavLink
+              to="/app/profile?view=wishlist"
+              onClick={() => setShowMobileSideMenu(false)}
+              className={({ isActive, isPending }) =>
+                isPending ? "pending" : isActive ? "active" : ""
+              }
+            >
+              <Button
+                size="large"
+                type="link"
+                icon={<GiftOutlined style={{ fontSize: "1rem" }} />}
+                onClick={() => setShowMobileSideMenu(false)}
+                style={{ border: "0px solid white", width: "100%" }}
+              >
+                <PP>Wishlist</PP>
+              </Button>
+            </NavLink>
+
             <NavLink
               to="/app/profile/settings"
               className={({ isActive, isPending }) =>

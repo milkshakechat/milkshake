@@ -61,6 +61,22 @@ export type CreateStoryResponseSuccess = {
   story: Story;
 };
 
+export type CreateWishInput = {
+  cookiePrice: Scalars['Int']['input'];
+  description?: InputMaybe<Scalars['String']['input']>;
+  stickerGraphic?: InputMaybe<Scalars['String']['input']>;
+  stickerTitle?: InputMaybe<Scalars['String']['input']>;
+  wishGraphics?: InputMaybe<Array<Scalars['String']['input']>>;
+  wishTitle: Scalars['String']['input'];
+};
+
+export type CreateWishResponse = CreateWishResponseSuccess | ResponseError;
+
+export type CreateWishResponseSuccess = {
+  __typename?: 'CreateWishResponseSuccess';
+  wish: Wish;
+};
+
 export type DemoMutatedItem = {
   __typename?: 'DemoMutatedItem';
   id: Scalars['ID']['output'];
@@ -219,6 +235,13 @@ export type MarkNotificationsAsReadResponseSuccess = {
   notifications: Array<NotificationGql>;
 };
 
+export type MediaSet = {
+  __typename?: 'MediaSet';
+  large?: Maybe<Scalars['String']['output']>;
+  medium: Scalars['String']['output'];
+  small: Scalars['String']['output'];
+};
+
 export type ModifyProfileInput = {
   avatar?: InputMaybe<Scalars['String']['input']>;
   bio?: InputMaybe<Scalars['String']['input']>;
@@ -254,6 +277,7 @@ export type ModifyStoryResponseSuccess = {
 export type Mutation = {
   __typename?: 'Mutation';
   createStory: CreateStoryResponse;
+  createWish: CreateWishResponse;
   demoMutation: DemoMutationResponse;
   manageFriendship: ManageFriendshipResponse;
   markNotificationsAsRead: MarkNotificationsAsReadResponse;
@@ -268,6 +292,11 @@ export type Mutation = {
 
 export type MutationCreateStoryArgs = {
   input: CreateStoryInput;
+};
+
+
+export type MutationCreateWishArgs = {
+  input: CreateWishInput;
 };
 
 
@@ -551,6 +580,20 @@ export type ViewPublicProfileResponseSuccess = {
   username: Scalars['String']['output'];
 };
 
+export type Wish = {
+  __typename?: 'Wish';
+  cookiePrice: Scalars['Int']['output'];
+  creatorID: Scalars['ID']['output'];
+  description: Scalars['String']['output'];
+  galleryMediaSet: Array<MediaSet>;
+  id: Scalars['ID']['output'];
+  isFavorite: Scalars['Boolean']['output'];
+  stickerMediaSet: MediaSet;
+  stickerTitle: Scalars['String']['output'];
+  thumbnail: Scalars['String']['output'];
+  wishTitle: Scalars['String']['output'];
+};
+
 export type ListChatRoomsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -694,3 +737,10 @@ export type RevokePushTokensMutationVariables = Exact<{ [key: string]: never; }>
 
 
 export type RevokePushTokensMutation = { __typename?: 'Mutation', revokePushTokens: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'RevokePushTokensResponseSuccess', status: string } };
+
+export type CreateWishMutationVariables = Exact<{
+  input: CreateWishInput;
+}>;
+
+
+export type CreateWishMutation = { __typename?: 'Mutation', createWish: { __typename: 'CreateWishResponseSuccess', wish: { __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, isFavorite: boolean, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };

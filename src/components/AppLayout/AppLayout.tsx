@@ -202,7 +202,19 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           "contacts",
           "/app/friends"
         ),
-        getItem(wishlistsText, "wishlists", "/app/wishlists"),
+        getItem(
+          <NavLink
+            to="/app/profile?view=wishlist"
+            reloadDocument={_location.pathname === "/app/profile"}
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            {wishlistsText}
+          </NavLink>,
+          "wishlists",
+          "/app/profile?view=wishlist"
+        ),
         getItem(
           <NavLink
             to="/app/profile/settings"

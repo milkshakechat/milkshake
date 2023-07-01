@@ -41,6 +41,7 @@ import { groupUserStoriesByDateRange } from "@/api/utils/stories.util";
 import { Badge } from "antd";
 import { useNotificationsState } from "@/state/notifications.state";
 import WishlistGallery from "@/components/WishlistGallery/WishlistGallery";
+import { useWishState } from "@/state/wish.state";
 
 enum viewModes {
   qrCode = "qrCode",
@@ -61,6 +62,7 @@ const ProfilePage = () => {
   const [showQRCode, setShowQRCode] = useState(false);
   const notifications = useNotificationsState((state) => state.notifications);
   console.log(`user`, user);
+  const myWishlist = useWishState((state) => state.myWishlist);
 
   useEffect(() => {
     if (viewMode === viewModes.qrCode) {
@@ -81,7 +83,7 @@ const ProfilePage = () => {
     {
       key: "wishlist",
       title: "Wishlist",
-      children: <WishlistGallery />,
+      children: <WishlistGallery wishlist={myWishlist} />,
     },
   ];
   return (

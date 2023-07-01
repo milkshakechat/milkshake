@@ -211,6 +211,17 @@ export type ListContactsResponseSuccess = {
   globalDirectory: Array<Contact>;
 };
 
+export type ListWishlistInput = {
+  userID: Scalars['UserID']['input'];
+};
+
+export type ListWishlistResponse = ListWishlistResponseSuccess | ResponseError;
+
+export type ListWishlistResponseSuccess = {
+  __typename?: 'ListWishlistResponseSuccess';
+  wishlist: Array<Wish>;
+};
+
 export type ManageFriendshipInput = {
   action: FriendshipAction;
   friendID: Scalars['UserID']['input'];
@@ -380,6 +391,7 @@ export type Query = {
   getStory: GetStoryResponse;
   listChatRooms: ListChatRoomsResponse;
   listContacts: ListContactsResponse;
+  listWishlist: ListWishlistResponse;
   ping: Ping;
   viewPublicProfile: ViewPublicProfileResponse;
 };
@@ -417,6 +429,11 @@ export type QueryGetStoryArgs = {
 
 export type QueryListContactsArgs = {
   input: ListContactsInput;
+};
+
+
+export type QueryListWishlistArgs = {
+  input: ListWishlistInput;
 };
 
 

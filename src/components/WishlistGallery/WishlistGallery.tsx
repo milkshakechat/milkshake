@@ -7,6 +7,7 @@ import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import { Wish } from "@/api/graphql/types";
 
 export enum WishlistSortByEnum {
   favorite = "Favorite",
@@ -15,9 +16,9 @@ export enum WishlistSortByEnum {
   recent = "Recent",
 }
 interface WishlistGalleryProps {
-  children?: React.ReactNode | React.ReactNode[];
+  wishlist: Wish[];
 }
-const WishlistGallery = ({ children }: WishlistGalleryProps) => {
+const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
   const intl = useIntl();
   const { token } = theme.useToken();
   const [sortBy, setSortBy] = useState<WishlistSortByEnum>(
@@ -154,6 +155,10 @@ const WishlistGallery = ({ children }: WishlistGalleryProps) => {
           </NavLink>
         )}
       </$Horizontal>
+
+      {wishlist.map((w) => (
+        <p>{w.wishTitle}</p>
+      ))}
     </$Vertical>
   );
 };

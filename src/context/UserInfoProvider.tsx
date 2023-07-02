@@ -11,6 +11,7 @@ import { useUserState } from "@/state/user.state";
 import { useEffect } from "react";
 import { shallow } from "zustand/shallow";
 import { useGraphqlClient } from "./GraphQLSocketProvider";
+import { useListWishlist } from "@/hooks/useWish";
 
 interface Props {
   children: React.ReactNode;
@@ -26,6 +27,8 @@ export const UserInfoProvider = ({ children }: Props) => {
 
   const { runQuery: runFetchRecentNotificationsQuery } =
     useFetchRecentNotifications();
+
+  const { runQuery: runListWishlistQuery } = useListWishlist();
 
   const { idToken, refetchNonce } = useUserState(
     (state) => ({
@@ -65,6 +68,9 @@ export const UserInfoProvider = ({ children }: Props) => {
         });
         runFetchRecentNotificationsQuery({
           refresh,
+        });
+        runListWishlistQuery({
+          userID: selfUser.id,
         });
       }
     };

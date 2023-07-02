@@ -318,7 +318,8 @@ export const useListContacts = () => {
               query: LIST_CONTACTS,
               variables: { input: { nonce } },
               // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
-              fetchPolicy: refresh ? "network-only" : "cache-first",
+              // fetchPolicy: refresh ? "network-only" : "cache-first",
+              fetchPolicy: "cache-first",
             })
             .then(({ data }) => {
               if (
@@ -418,7 +419,8 @@ export const useFetchRecentNotifications = () => {
               query: FETCH_RECENT_NOTIFICATIONS,
               variables: { input: { nonce } },
               // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
-              fetchPolicy: refresh ? "network-only" : "cache-first",
+              // fetchPolicy: refresh ? "network-only" : "cache-first",
+              fetchPolicy: "cache-first",
             })
             .then(({ data }) => {
               console.log(`resulting data`, data);

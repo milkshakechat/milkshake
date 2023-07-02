@@ -46,6 +46,8 @@ import { FriendshipStatus } from "@/api/graphql/types";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
 import AboutSection from "@/components/UserPageSkeleton/AboutSection/AboutSection";
+import WishlistGallery from "@/components/WishlistGallery/WishlistGallery";
+import { useListWishlist } from "@/hooks/useWish";
 
 enum viewModes {
   timeline = "timeline",
@@ -74,10 +76,23 @@ export const UserFriendPage = () => {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { screen } = useWindowSize();
   const {
+    data: listWishlistData,
+    errors: listWishlistErrors,
+    runQuery: runListWishlistQuery,
+  } = useListWishlist();
+  const {
     data: sendFriendRequestMutationData,
     errors: sendFriendRequestErrors,
     runMutation: sendFriendRequestMutation,
   } = useSendFriendRequest();
+
+  useEffect(() => {
+    if (spotlightUser) {
+      runListWishlistQuery({
+        userID: spotlightUser.id,
+      });
+    }
+  }, [spotlightUser]);
 
   useEffect(() => {
     if (usernameFromUrl) {
@@ -126,7 +141,7 @@ export const UserFriendPage = () => {
     {
       key: "wishlist",
       title: "Wishlist",
-      children: <div>Wishlist</div>,
+      children: <WishlistGallery wishlist={listWishlistData?.wishlist || []} />,
     },
   ];
 
@@ -240,13 +255,15 @@ export const UserFriendPage = () => {
                   };
                 })}
                 onChange={(view) => {
-                  console.log(`Changing view... ${view}`);
-                  navigate({
-                    pathname: location.pathname,
-                    search: createSearchParams({
-                      view,
-                    }).toString(),
-                  });
+                  if (userID) {
+                    navigate({
+                      pathname: location.pathname,
+                      search: createSearchParams({
+                        view,
+                        userID,
+                      }).toString(),
+                    });
+                  }
                 }}
               />
             </div>

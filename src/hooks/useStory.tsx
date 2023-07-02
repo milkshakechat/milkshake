@@ -248,7 +248,8 @@ export const useFetchStoryFeedQuery = () => {
               query: FETCH_STORY_FEED,
               variables: { input: { nonce } },
               // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
-              fetchPolicy: refresh ? "network-only" : "cache-first",
+              // fetchPolicy: refresh ? "network-only" : "cache-first",
+              fetchPolicy: "cache-first",
             })
             .then(({ data }) => {
               console.log(`Got response from fetchStoryFeed`, data);

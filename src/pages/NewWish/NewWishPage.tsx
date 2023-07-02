@@ -5,6 +5,7 @@ import {
   createSearchParams,
   useLocation,
   useNavigate,
+  useParams,
   useSearchParams,
 } from "react-router-dom";
 import { useUserState } from "@/state/user.state";
@@ -21,6 +22,7 @@ import {
   Popconfirm,
   Space,
   Spin,
+  Switch,
   Upload,
   message,
   theme,
@@ -33,10 +35,12 @@ import {
 import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import {
   Username,
+  WishID,
+  Wish_Firestore,
   getCompressedStickerUrl,
   getCompressedWishlistGraphicUrl,
 } from "@milkshakechat/helpers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   LeftOutlined,
   HeartFilled,
@@ -49,7 +53,9 @@ import { Rule } from "antd/es/form";
 import { RcFile } from "antd/es/upload";
 import useStorage from "@/hooks/useStorage";
 import config from "@/config.env";
-import { useCreateWish } from "@/hooks/useWish";
+import { useCreateWish, useGetWish, useUpdateWish } from "@/hooks/useWish";
+import { useWishState } from "@/state/wish.state";
+import { UpdateWishInput } from "@/api/graphql/types";
 
 const formLayout = "horizontal";
 
@@ -58,11 +64,6 @@ interface StickerInitialFormValue {
   description: string;
   cookiePrice: number;
 }
-const STICKER_FORM_VALUE = {
-  wishTitle: "",
-  description: "",
-  cookiePrice: 0,
-};
 
 const MAX_WISH_NAME_CHARS = 40;
 const wishNameRules: Rule[] = [
@@ -90,11 +91,12 @@ const contentStyle: React.CSSProperties = {
   background: "#364d79",
 };
 
-interface NewStickerPageProps {}
-const NewStickerPage = ({}: NewStickerPageProps) => {
+interface NewWishPageProps {}
+const NewWishPage = ({}: NewWishPageProps) => {
   const [form] = Form.useForm();
   const intl = useIntl();
   const navigate = useNavigate();
+  const { wishID: wishIDFromURL } = useParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchParams] = useSearchParams();
   const { uploadFile } = useStorage();
@@ -104,14 +106,14 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
     []
   );
   const [stickerUrl, setStickerUrl] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false);
   const [compressedStickerUrl, setCompressedStickerUrl] = useState("");
   const tab = searchParams.get("tab");
   const [submitted, setSubmitted] = useState(false);
-  const [initialFormValues, setInitialFormValues] =
-    useState<StickerInitialFormValue>(STICKER_FORM_VALUE);
   const selfUser = useUserState((state) => state.user);
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
+  const [finishedLoadingEdit, setFinishedLoadingEdit] = useState(false);
   const [wishName, setWishName] = useState("");
   const [wishAbout, setWishAbout] = useState("");
   const [stickerTitle, setStickerTitle] = useState("");
@@ -119,6 +121,34 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
   const [isUploadingGraphics, setIsUploadingGraphics] = useState(false);
   const { backButtonText, updateButtonText } = useSharedTranslations();
   const [priceInCookies, setPriceInCookies] = useState(20);
+
+  const { runMutation: runUpdateWishMutation } = useUpdateWish();
+
+  const { data: getWishData, runQuery: runGetWishQuery } = useGetWish();
+
+  useEffect(() => {
+    if (wishIDFromURL && !wishName) {
+      const run = async () => {
+        const wish = await runGetWishQuery({
+          wishID: wishIDFromURL,
+        });
+        if (wish) {
+          const { wishTitle, description, cookiePrice, stickerTitle } = wish;
+          setWishName(wishTitle);
+          setWishAbout(description);
+          setPriceInCookies(cookiePrice);
+          setStickerTitle(stickerTitle);
+          setGraphicsUrl(wish.galleryMediaSet.map((g) => g.medium));
+          setCompressedGraphicsUrl(wish.galleryMediaSet.map((g) => g.medium));
+          setStickerUrl(wish.stickerMediaSet.medium);
+          setCompressedStickerUrl(wish.stickerMediaSet.medium);
+          setIsFavorite(wish.isFavorite);
+          setFinishedLoadingEdit(true);
+        }
+      };
+      run();
+    }
+  }, [wishIDFromURL]);
 
   const {
     data: createWishData,
@@ -135,10 +165,55 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
       cookiePrice: priceInCookies,
       wishGraphics: graphicsUrl,
       stickerGraphic: stickerUrl,
+      isFavorite: isFavorite,
     });
     setIsSubmitting(false);
     setSubmitted(true);
     message.success("Wish created!");
+  };
+
+  const updateForm = async () => {
+    if (!wishIDFromURL || !getWishData) return;
+    setIsSubmitting(true);
+    const updateParams: UpdateWishInput = {
+      wishID: wishIDFromURL as WishID,
+    };
+    if (getWishData.wish.wishTitle !== wishName) {
+      updateParams.wishTitle = wishName;
+    }
+    if (getWishData.wish.stickerTitle !== stickerTitle) {
+      updateParams.stickerTitle = stickerTitle;
+    }
+
+    if (getWishData.wish.cookiePrice !== priceInCookies) {
+      updateParams.cookiePrice = priceInCookies;
+    }
+
+    if (getWishData.wish.description !== wishAbout) {
+      updateParams.description = wishAbout;
+    }
+
+    if (getWishData.wish.isFavorite !== isFavorite) {
+      updateParams.isFavorite = isFavorite;
+    }
+    if (getWishData.wish.stickerMediaSet.medium !== stickerUrl) {
+      updateParams.stickerGraphic = stickerUrl;
+    }
+    if (
+      getWishData.wish.galleryMediaSet
+        .map((m) => m.medium)
+        .slice()
+        .sort() != graphicsUrl.slice().sort()
+    ) {
+      updateParams.wishGraphics = graphicsUrl;
+    }
+    await runUpdateWishMutation(updateParams);
+    setIsSubmitting(false);
+    setSubmitted(true);
+    message.success("Wish updated!");
+    navigate({
+      pathname: `/app/wish/${wishIDFromURL}`,
+    });
   };
 
   const validateFile = (file: File) => {
@@ -168,19 +243,35 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
             padding: isMobile ? "20px" : undefined,
           }}
         >
-          <Button
-            type="primary"
-            size="large"
-            loading={isSubmitting}
-            onClick={submitForm}
-            disabled={!maySubmitForm}
-            style={{
-              fontWeight: "bold",
-              width: "100%",
-            }}
-          >
-            Create Wish
-          </Button>
+          {wishIDFromURL ? (
+            <Button
+              type="primary"
+              size="large"
+              loading={isSubmitting}
+              onClick={updateForm}
+              disabled={!maySubmitForm}
+              style={{
+                fontWeight: "bold",
+                width: "100%",
+              }}
+            >
+              Update Wish
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              size="large"
+              loading={isSubmitting}
+              onClick={submitForm}
+              disabled={!maySubmitForm}
+              style={{
+                fontWeight: "bold",
+                width: "100%",
+              }}
+            >
+              Create Wish
+            </Button>
+          )}
         </div>
       </Affix>
     );
@@ -237,14 +328,22 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
       return url;
     }
   };
+  console.log(`graphicsUrl`, graphicsUrl);
   const removeGraphic = () => {
+    console.log(`currentSlide`, currentSlide);
     const url = graphicsUrl[currentSlide];
-
+    console.log(`url`, url);
+    if (url.indexOf("default_gift.jpeg") > -1) {
+      setGraphicsUrl((prev) => prev.filter((u) => u !== url));
+      setCompressedGraphicsUrl((prev) => prev.filter((u) => u !== url));
+      return;
+    }
     const extractAssetID = (url: string) => {
       return url.split("wishlist%2F").pop()?.split(".").shift();
     };
 
     const assetID = extractAssetID(url);
+    console.log(`assetID`, assetID);
     if (assetID) {
       setGraphicsUrl((prev) => prev.filter((u) => u.indexOf(assetID) === -1));
       setCompressedGraphicsUrl((prev) =>
@@ -274,7 +373,7 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
       return url;
     }
   };
-  if (!selfUser) {
+  if (!selfUser || (wishIDFromURL && !finishedLoadingEdit)) {
     return <Spin />;
   }
   return (
@@ -292,9 +391,14 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
         }
         title={<PP>New Wish</PP>}
         rightAction={
-          <Button type="ghost" style={{ color: token.colorTextDisabled }}>
-            Tutorial
-          </Button>
+          <Switch
+            checkedChildren="Favorite"
+            unCheckedChildren="Regular"
+            checked={isFavorite}
+            onChange={(v) => {
+              setIsFavorite(v);
+            }}
+          />
         }
       />
       {submitted ? (
@@ -353,7 +457,12 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
               layout={formLayout}
               form={form}
               colon={false}
-              initialValues={initialFormValues}
+              initialValues={{
+                wishName: wishName,
+                about: wishAbout,
+                price: priceInCookies,
+                stickerTitle: stickerTitle,
+              }}
               onFieldsChange={onFormLayoutChange}
               style={{ width: "100%" }}
             >
@@ -492,10 +601,15 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
                 <InputNumber
                   min={1}
                   max={9999}
-                  defaultValue={priceInCookies}
+                  value={parseInt(priceInCookies.toFixed(0))}
                   step={1}
+                  precision={0}
                   // @ts-ignore
-                  onChange={setPriceInCookies}
+                  onChange={(v) => {
+                    if (v) {
+                      setPriceInCookies(parseInt(v.toFixed(0)));
+                    }
+                  }}
                   addonAfter={<PP>{`~$${priceInCookies || 0} USD`}</PP>}
                   style={{ flex: 1, width: "100%" }}
                 />
@@ -579,4 +693,4 @@ const NewStickerPage = ({}: NewStickerPageProps) => {
   );
 };
 
-export default NewStickerPage;
+export default NewWishPage;

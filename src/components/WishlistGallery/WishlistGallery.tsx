@@ -32,19 +32,47 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
   const [searchString, setSearchString] = useState("");
   const { screen, isMobile } = useWindowSize();
   const [sortBy, setSortBy] = useState<WishlistSortByEnum>(
-    WishlistSortByEnum.favorite
+    WishlistSortByEnum.highToLow
   );
-  const user = useUserState((state) => state.user);
-  const viewingOwnProfile = true;
+  const selfUser = useUserState((state) => state.user);
+  const viewingOwnProfile =
+    selfUser && wishlist.every((w) => w.creatorID === selfUser.id);
 
-  const sortByRecent = (wishlist: Wish[]) => {};
+  const sortByRecent = (wishlist: Wish[]) => {
+    return wishlist.slice().sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  };
 
-  const sortByPrice = (wishlist: Wish[]) => {};
+  const sortByPrice = (wishlist: Wish[], lowToHigh: boolean) => {
+    return wishlist.slice().sort((a, b) => {
+      return lowToHigh
+        ? a.cookiePrice - b.cookiePrice
+        : b.cookiePrice - a.cookiePrice;
+    });
+  };
 
-  const sortByFavorite = (wishlist: Wish[]) => {};
+  const sortByFavorite = (wishlist: Wish[]) => {
+    return wishlist.slice().sort((a, b) => {
+      return a.isFavorite ? -1 : 1;
+    });
+  };
 
-  const filterSortedWishlist = wishlist.filter((w) =>
-    w.wishTitle.toLowerCase().includes(searchString.toLowerCase())
+  const sortWishlist = (wishlist: Wish[]) => {
+    if (sortBy === WishlistSortByEnum.recent) {
+      return sortByRecent(wishlist);
+    } else if (sortBy === WishlistSortByEnum.lowToHigh) {
+      return sortByPrice(wishlist, true);
+    } else if (sortBy === WishlistSortByEnum.highToLow) {
+      return sortByPrice(wishlist, false);
+    }
+    return sortByFavorite(wishlist);
+  };
+
+  const filterSortedWishlist = sortWishlist(
+    wishlist.filter((w) =>
+      w.wishTitle.toLowerCase().includes(searchString.toLowerCase())
+    )
   );
 
   return (
@@ -166,7 +194,7 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
         />
 
         {viewingOwnProfile && (
-          <NavLink to="/app/wishlist/new">
+          <NavLink to="/app/wish/new">
             <Button
               type="primary"
               style={{
@@ -183,7 +211,7 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
         itemLayout="horizontal"
         dataSource={filterSortedWishlist}
         renderItem={(item, index) => (
-          <NavLink to="/app/">
+          <NavLink to={`/app/wish/${item.id}`}>
             <List.Item
               style={{
                 borderBottom: `1px solid ${token.colorBgContainerDisabled}`,
@@ -198,7 +226,9 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
                 description={
                   <$Horizontal alignItems="center">
                     {item.description && !isMobile
-                      ? `${item.description.slice(0, 40)}...`
+                      ? `${item.description.slice(0, 40)}${
+                          item.description.length > 40 ? "..." : ""
+                        }`
                       : ""}
                   </$Horizontal>
                 }
@@ -215,24 +245,32 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
                 >{`${item.cookiePrice}`}</span>
               </$Horizontal>
 
-              <Button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-              >
-                Buy
-              </Button>
+              {viewingOwnProfile ? (
+                <NavLink to={`/app/wish/${item.id}/edit`}>
+                  <Button>Edit</Button>
+                </NavLink>
+              ) : (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  Buy
+                </Button>
+              )}
 
-              <div
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                }}
-                style={{ marginLeft: "10px", width: "16px" }}
-              >
-                <BookmarkIcon fill={`${token.colorPrimaryActive}AA`} />
-              </div>
+              {!viewingOwnProfile && (
+                <div
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  style={{ marginLeft: "10px", width: "16px" }}
+                >
+                  <BookmarkIcon fill={`${token.colorPrimaryActive}AA`} />
+                </div>
+              )}
             </List.Item>
           </NavLink>
         )}

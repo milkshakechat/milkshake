@@ -51,7 +51,8 @@ import ChatsPage from "./pages/ChatsPage/ChatsPage";
 import ChatPage from "./pages/ChatPage/ChatPage";
 import DemoConversation from "./pages/DemoConversation/DemoConversationPage";
 import WatchStoryPage from "./pages/WatchStory/WatchStoryPage";
-import NewStickerPage from "./pages/NewSticker/NewStickerPage";
+import NewWishPage from "./pages/NewWish/NewWishPage";
+import WishPage from "./pages/WishPage/WishPage";
 
 const AppRouter = () => {
   const {
@@ -182,11 +183,31 @@ const AppRouter = () => {
                             }
                           />
                           <Route
-                            path="wishlist/new"
+                            path="wish/new"
                             element={
                               <AuthProtect>
                                 <AppLayout>
-                                  <NewStickerPage />
+                                  <NewWishPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="wish/:wishID"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <WishPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="wish/:wishID/edit"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <NewWishPage />
                                 </AppLayout>
                               </AuthProtect>
                             }

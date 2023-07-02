@@ -2,8 +2,12 @@ import { ErrorLine } from "@/api/graphql/error-line";
 import {
   CreateWishInput,
   CreateWishResponseSuccess,
+  GetWishInput,
+  GetWishResponseSuccess,
   Mutation,
   Query,
+  UpdateWishInput,
+  UpdateWishResponseSuccess,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import gql from "graphql-tag";
@@ -19,7 +23,7 @@ export const useCreateWish = () => {
   const [data, setData] = useState<CreateWishResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
-
+  const upsertWish = useWishState((state) => state.upsertWish);
   const runMutation = async (args: CreateWishInput) => {
     try {
       const CREATE_WISH = gql`
@@ -46,6 +50,7 @@ export const useCreateWish = () => {
                   large
                 }
                 isFavorite
+                createdAt
               }
             }
             ... on ResponseError {
@@ -77,6 +82,9 @@ export const useCreateWish = () => {
         }
       );
       setData(result);
+      if (result.wish) {
+        upsertWish(result.wish);
+      }
     } catch (e) {
       console.log(e);
     }
@@ -119,6 +127,7 @@ export const useListWishlist = () => {
                   large
                 }
                 isFavorite
+                createdAt
               }
             }
             ... on ResponseError {
@@ -164,4 +173,157 @@ export const useListWishlist = () => {
   };
 
   return { data, errors, runQuery };
+};
+
+export const useGetWish = () => {
+  const [data, setData] = useState<GetWishResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+
+  const runQuery = async (args: GetWishInput) => {
+    try {
+      const GET_WISH = gql`
+        query GetWish($input: GetWishInput!) {
+          getWish(input: $input) {
+            __typename
+            ... on GetWishResponseSuccess {
+              wish {
+                id
+                creatorID
+                wishTitle
+                stickerTitle
+                description
+                thumbnail
+                cookiePrice
+                galleryMediaSet {
+                  small
+                  medium
+                  large
+                }
+                stickerMediaSet {
+                  small
+                  medium
+                  large
+                }
+                isFavorite
+                createdAt
+                author {
+                  id
+                  username
+                  avatar
+                  displayName
+                }
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<GetWishResponseSuccess>(
+        async (resolve, reject) => {
+          client
+            .query<{ getWish: Query["getWish"] }>({
+              query: GET_WISH,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (data.getWish.__typename === "GetWishResponseSuccess") {
+                resolve(data.getWish);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+      return result.wish;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runQuery };
+};
+
+export const useUpdateWish = () => {
+  const [data, setData] = useState<UpdateWishResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const client = useGraphqlClient();
+  const upsertWish = useWishState((state) => state.upsertWish);
+
+  const runMutation = async (args: UpdateWishInput) => {
+    try {
+      const UPDATE_WISH = gql`
+        mutation UpdateWish($input: UpdateWishInput!) {
+          updateWish(input: $input) {
+            __typename
+            ... on UpdateWishResponseSuccess {
+              wish {
+                id
+                creatorID
+                wishTitle
+                stickerTitle
+                description
+                thumbnail
+                cookiePrice
+                galleryMediaSet {
+                  small
+                  medium
+                  large
+                }
+                stickerMediaSet {
+                  small
+                  medium
+                  large
+                }
+                isFavorite
+                createdAt
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<UpdateWishResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "updateWish">>({
+              mutation: UPDATE_WISH,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (data?.updateWish.__typename === "UpdateWishResponseSuccess") {
+                resolve(data.updateWish);
+              }
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+            });
+        }
+      );
+      setData(result);
+      if (result.wish) {
+        upsertWish(result.wish);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  return { data, errors, runMutation };
 };

@@ -2,12 +2,20 @@ import { useIntl, FormattedMessage } from "react-intl";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import { useUserState } from "@/state/user.state";
-import { Button, Dropdown, Input, theme } from "antd";
-import { FilterOutlined, SearchOutlined } from "@ant-design/icons";
+import { Avatar, Button, Dropdown, Input, List, Tag, theme, Badge } from "antd";
+import {
+  FilterOutlined,
+  SearchOutlined,
+  SketchOutlined,
+} from "@ant-design/icons";
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Wish } from "@/api/graphql/types";
+import { useWindowSize } from "@/api/utils/screen";
+import { HeartFilled } from "@ant-design/icons";
+import BookmarkIcon from "../BookmarkIcon/BookmarkIcon";
+import LogoCookie from "../LogoText/LogoCookie";
 
 export enum WishlistSortByEnum {
   favorite = "Favorite",
@@ -21,15 +29,30 @@ interface WishlistGalleryProps {
 const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
   const intl = useIntl();
   const { token } = theme.useToken();
+  const [searchString, setSearchString] = useState("");
+  const { screen, isMobile } = useWindowSize();
   const [sortBy, setSortBy] = useState<WishlistSortByEnum>(
     WishlistSortByEnum.favorite
   );
   const user = useUserState((state) => state.user);
   const viewingOwnProfile = true;
+
+  const sortByRecent = (wishlist: Wish[]) => {};
+
+  const sortByPrice = (wishlist: Wish[]) => {};
+
+  const sortByFavorite = (wishlist: Wish[]) => {};
+
+  const filterSortedWishlist = wishlist.filter((w) =>
+    w.wishTitle.toLowerCase().includes(searchString.toLowerCase())
+  );
+
   return (
     <$Vertical>
       <$Horizontal justifyContent="space-between">
         <Input
+          value={searchString}
+          onChange={(e) => setSearchString(e.target.value)}
           addonBefore={<SearchOutlined />}
           placeholder="Search"
           suffix={
@@ -155,12 +178,87 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
           </NavLink>
         )}
       </$Horizontal>
+      <Spacer />
+      <List
+        itemLayout="horizontal"
+        dataSource={filterSortedWishlist}
+        renderItem={(item, index) => (
+          <NavLink to="/app/">
+            <List.Item
+              style={{
+                borderBottom: `1px solid ${token.colorBgContainerDisabled}`,
+              }}
+            >
+              <List.Item.Meta
+                title={
+                  <Badge dot={item.isFavorite} offset={[5, 0]}>
+                    {item.wishTitle}
+                  </Badge>
+                }
+                description={
+                  <$Horizontal alignItems="center">
+                    {item.description && !isMobile
+                      ? `${item.description.slice(0, 40)}...`
+                      : ""}
+                  </$Horizontal>
+                }
+              />
 
-      {wishlist.map((w) => (
-        <p>{w.wishTitle}</p>
-      ))}
+              <$Horizontal alignItems="center" style={{ marginRight: "20px " }}>
+                <LogoCookie width={"16px"} fill={`${token.colorPrimary}9A`} />
+                <span
+                  style={{
+                    marginLeft: "10px",
+                    fontSize: "1rem",
+                    color: `${token.colorPrimary}`,
+                  }}
+                >{`${item.cookiePrice}`}</span>
+              </$Horizontal>
+
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                Buy
+              </Button>
+
+              <div
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                style={{ marginLeft: "10px", width: "16px" }}
+              >
+                <BookmarkIcon fill={`${token.colorPrimaryActive}AA`} />
+              </div>
+            </List.Item>
+          </NavLink>
+        )}
+      />
     </$Vertical>
   );
 };
 
 export default WishlistGallery;
+
+{
+  /* <$Horizontal alignItems="center">
+                    {!item.isFavorite && (
+                      <HeartFilled
+                        style={{
+                          color: token.colorErrorActive,
+                          marginRight: "5px",
+                        }}
+                      />
+                    )}
+                    {item.wishTitle}
+                  </$Horizontal> */
+}
+
+// avatar={
+//   <Badge dot>
+//     <Avatar src={item.thumbnail} />
+//   </Badge>
+// }

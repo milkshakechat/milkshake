@@ -50,6 +50,7 @@ export const useCreateWish = () => {
                   large
                 }
                 isFavorite
+                buyFrequency
                 createdAt
               }
             }
@@ -127,6 +128,7 @@ export const useListWishlist = () => {
                   large
                 }
                 isFavorite
+                buyFrequency
                 createdAt
               }
             }
@@ -206,6 +208,7 @@ export const useGetWish = () => {
                   large
                 }
                 isFavorite
+                buyFrequency
                 createdAt
                 author {
                   id
@@ -285,6 +288,7 @@ export const useUpdateWish = () => {
                   large
                 }
                 isFavorite
+                buyFrequency
                 createdAt
               }
             }

@@ -20,6 +20,7 @@ import {
   Input,
   InputNumber,
   Popconfirm,
+  Select,
   Space,
   Spin,
   Switch,
@@ -55,7 +56,7 @@ import useStorage from "@/hooks/useStorage";
 import config from "@/config.env";
 import { useCreateWish, useGetWish, useUpdateWish } from "@/hooks/useWish";
 import { useWishState } from "@/state/wish.state";
-import { UpdateWishInput } from "@/api/graphql/types";
+import { UpdateWishInput, WishBuyFrequency } from "@/api/graphql/types";
 
 const formLayout = "horizontal";
 
@@ -102,6 +103,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
   const { uploadFile } = useStorage();
   const [isUploadingSticker, setIsUploadingSticker] = useState(false);
   const [graphicsUrl, setGraphicsUrl] = useState<string[]>([]);
+  const [buyFrequency, setBuyFrequency] = useState(WishBuyFrequency.OneTime);
   const [compressedGraphicsUrl, setCompressedGraphicsUrl] = useState<string[]>(
     []
   );
@@ -143,6 +145,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
           setStickerUrl(wish.stickerMediaSet.medium);
           setCompressedStickerUrl(wish.stickerMediaSet.medium);
           setIsFavorite(wish.isFavorite);
+          setBuyFrequency(wish.buyFrequency);
           setFinishedLoadingEdit(true);
         }
       };
@@ -166,6 +169,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
       wishGraphics: graphicsUrl,
       stickerGraphic: stickerUrl,
       isFavorite: isFavorite,
+      buyFrequency: buyFrequency,
     });
     setIsSubmitting(false);
     setSubmitted(true);
@@ -195,6 +199,9 @@ const NewWishPage = ({}: NewWishPageProps) => {
 
     if (getWishData.wish.isFavorite !== isFavorite) {
       updateParams.isFavorite = isFavorite;
+    }
+    if (getWishData.wish.buyFrequency !== buyFrequency) {
+      updateParams.buyFrequency = buyFrequency;
     }
     if (getWishData.wish.stickerMediaSet.medium !== stickerUrl) {
       updateParams.stickerGraphic = stickerUrl;
@@ -328,7 +335,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
       return url;
     }
   };
-  console.log(`graphicsUrl`, graphicsUrl);
+
   const removeGraphic = () => {
     console.log(`currentSlide`, currentSlide);
     const url = graphicsUrl[currentSlide];
@@ -389,7 +396,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
             {backButtonText}
           </Button>
         }
-        title={<PP>New Wish</PP>}
+        title={wishIDFromURL ? <PP>Edit Wish</PP> : <PP>New Wish</PP>}
         rightAction={
           <Switch
             checkedChildren="Favorite"
@@ -462,6 +469,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
                 about: wishAbout,
                 price: priceInCookies,
                 stickerTitle: stickerTitle,
+                buyFrequency: buyFrequency,
               }}
               onFieldsChange={onFormLayoutChange}
               style={{ width: "100%" }}
@@ -612,6 +620,37 @@ const NewWishPage = ({}: NewWishPageProps) => {
                   }}
                   addonAfter={<PP>{`~$${priceInCookies || 0} USD`}</PP>}
                   style={{ flex: 1, width: "100%" }}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<PP>Frequency</PP>}
+                name="buyFrequency"
+                tooltip={
+                  <PP>
+                    {`How often this wish price will be charged to the customer fan.`}
+                  </PP>
+                }
+              >
+                <Select
+                  value={buyFrequency}
+                  style={{ width: "100%" }}
+                  onChange={(v) => {
+                    setBuyFrequency(v);
+                  }}
+                  options={[
+                    {
+                      value: WishBuyFrequency.OneTime,
+                      label: "Once Time Payment",
+                    },
+                    {
+                      value: WishBuyFrequency.Weekly,
+                      label: "Weekly Recurring",
+                    },
+                    {
+                      value: WishBuyFrequency.Monthly,
+                      label: "Monthly Recurring",
+                    },
+                  ]}
                 />
               </Form.Item>
               <Form.Item

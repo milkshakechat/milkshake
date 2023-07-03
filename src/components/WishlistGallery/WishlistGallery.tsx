@@ -280,23 +280,3 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
 };
 
 export default WishlistGallery;
-
-{
-  /* <$Horizontal alignItems="center">
-                    {!item.isFavorite && (
-                      <HeartFilled
-                        style={{
-                          color: token.colorErrorActive,
-                          marginRight: "5px",
-                        }}
-                      />
-                    )}
-                    {item.wishTitle}
-                  </$Horizontal> */
-}
-
-// avatar={
-//   <Badge dot>
-//     <Avatar src={item.thumbnail} />
-//   </Badge>
-// }

@@ -191,7 +191,7 @@ interface StickyAdaptiveMobileFooterProps {
 export const StickyAdaptiveMobileFooter = ({
   children,
 }: StickyAdaptiveMobileFooterProps) => {
-  const { storyID: storyIDFromURL } = useParams();
+  const { storyID: storyIDFromURL, wishID: wishIDFromURL } = useParams();
   const { token } = theme.useToken();
   const reactRouterLocation = useLocation();
   const intl = useIntl();
@@ -203,7 +203,9 @@ export const StickyAdaptiveMobileFooter = ({
     reactRouterLocation.pathname !== "/app/chat" &&
     reactRouterLocation.pathname !== "/app/story/new" &&
     reactRouterLocation.pathname !== `/app/story/${storyIDFromURL}` &&
-    reactRouterLocation.pathname !== "/app/wishlist/new";
+    reactRouterLocation.pathname !== "/app/wish/new" &&
+    reactRouterLocation.pathname !== `/app/wish/${wishIDFromURL}` &&
+    reactRouterLocation.pathname !== `/app/wish/${wishIDFromURL}/edit`;
   const [showMobileSideMenu, setShowMobileSideMenu] = useState(false);
   const totalUnreadChatsCount = useChatsListState((state) =>
     state.chatsList.reduce((acc, curr) => {

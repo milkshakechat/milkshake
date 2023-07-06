@@ -40,7 +40,7 @@ import {
   getCompressedAvatarUrl,
   privacyModeEnum,
 } from "@milkshakechat/helpers";
-import { PrivacyModeEnum } from "@/api/graphql/types";
+import { ModifyProfileInput, PrivacyModeEnum } from "@/api/graphql/types";
 import useSharedTranslations from "@/i18n/useSharedTranslations";
 import { cid } from "./i18n/types.i18n.ProfileStylePage";
 import { useIntl } from "react-intl";
@@ -259,13 +259,16 @@ const ProfileStylePage = () => {
 
   const submitForm = async (values: ProfileStyleInitialFormValue) => {
     setIsSubmitting(true);
-    await runUpdateProfileMutation({
+    const data: ModifyProfileInput = {
       displayName: values.displayName,
       username: values.username,
       bio: values.bio,
-      avatar: compressedAvatarUrl,
       link: values.link,
-    });
+    };
+    if (compressedAvatarUrl) {
+      data.avatar = compressedAvatarUrl;
+    }
+    await runUpdateProfileMutation(data);
     setShowUpdate(false);
     setIsSubmitting(false);
     message.success("Profile updated!");

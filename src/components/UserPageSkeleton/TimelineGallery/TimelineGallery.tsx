@@ -29,7 +29,8 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
   const myStories = groupUserStoriesByDateRange(
     stories.filter((s) => (showHidden ? true : s.showcase))
   );
-  const viewingOwnProfile = stories.every((s) => user && s.userID === user.id);
+  const viewingOwnProfile =
+    user && stories.every((s) => user && s.userID === user.id);
   const { runMutation: runModifyStoryMutation } = useModifyStory();
 
   const renderTimelineRow = ({

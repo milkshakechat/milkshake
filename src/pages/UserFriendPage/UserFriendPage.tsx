@@ -230,6 +230,7 @@ export const UserFriendPage = () => {
                   displayName:
                     spotlightUser.displayName || spotlightUser.username,
                   username: spotlightUser.username as Username,
+                  bio: spotlightUser.bio || "",
                 }}
                 glowColor={token.colorPrimaryText}
                 actionButton={mainActionButton()}

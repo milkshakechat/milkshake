@@ -11,7 +11,7 @@ import AboutSection from "@/components/UserPageSkeleton/AboutSection/AboutSectio
 import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
 import PP from "@/i18n/PlaceholderPrint";
 import { useUserState } from "@/state/user.state";
-import { QRCODE_LOGO, Username } from "@milkshakechat/helpers";
+import { QRCODE_LOGO, Username, privacyModeEnum } from "@milkshakechat/helpers";
 import {
   Avatar,
   Button,
@@ -20,6 +20,7 @@ import {
   Space,
   Spin,
   Tabs,
+  Tag,
   message,
   theme,
 } from "antd";
@@ -42,6 +43,7 @@ import { Badge } from "antd";
 import { useNotificationsState } from "@/state/notifications.state";
 import WishlistGallery from "@/components/WishlistGallery/WishlistGallery";
 import { useWishState } from "@/state/wish.state";
+import { PrivacyModeEnum } from "@/api/graphql/types";
 
 enum viewModes {
   qrCode = "qrCode",
@@ -119,6 +121,7 @@ const ProfilePage = () => {
               avatar: user.avatar,
               displayName: user.displayName,
               username: user.username as Username,
+              bio: user.bio,
             }}
             glowColor={token.colorPrimaryText}
             actionButton={
@@ -194,7 +197,9 @@ const ProfilePage = () => {
                   onClick={() => {
                     if (user) {
                       navigator.clipboard.writeText(
-                        `${window.location.origin}/${user.username}`
+                        user.privacyMode === PrivacyModeEnum.Hidden
+                          ? `${window.location.origin}/user?userID=${user.id}`
+                          : `${window.location.origin}/${user.username}`
                       );
                       message.success(<PP>Copied profile link!</PP>);
                     }
@@ -230,17 +235,23 @@ const ProfilePage = () => {
                     gap: isMobile ? "15px" : "30px",
                   }}
                 >
-                  <QRCode
-                    value={`${window.location}/add/${user.id}`}
-                    color={token.colorText}
-                    icon={QRCODE_LOGO}
-                    {...{
-                      size: isMobile ? window.innerWidth - 100 : undefined,
-                      iconSize: isMobile
-                        ? (window.innerWidth - 100) / 4
-                        : undefined,
-                    }}
-                  />
+                  <div>
+                    <QRCode
+                      value={
+                        user.privacyMode === PrivacyModeEnum.Hidden
+                          ? `${window.location.origin}/user?userID=${user.id}`
+                          : `${window.location.origin}/${user.username}`
+                      }
+                      color={token.colorText}
+                      icon={QRCODE_LOGO}
+                      {...{
+                        size: isMobile ? window.innerWidth - 100 : undefined,
+                        iconSize: isMobile
+                          ? (window.innerWidth - 100) / 4
+                          : undefined,
+                      }}
+                    />
+                  </div>
                   <$Vertical alignItems="flex-start">
                     <$Horizontal
                       justifyContent="flex-start"
@@ -282,13 +293,23 @@ const ProfilePage = () => {
                         wordBreak: "break-all",
                       }}
                     >
-                      <PP>
-                        {user &&
-                          `🔒${"\u00A0"}${window.location.host}/${
-                            user.username
-                          }`}
-                      </PP>
+                      {user && (
+                        <PP>
+                          {user.privacyMode === PrivacyModeEnum.Hidden
+                            ? `🔒${"\u00A0"}${
+                                window.location.host
+                              }/user?userID=${user.id}`
+                            : `🔒${"\u00A0"}${window.location.host}/${
+                                user.username
+                              }`}
+                        </PP>
+                      )}
                     </div>
+                    {user && user.privacyMode === PrivacyModeEnum.Hidden && (
+                      <Tag color="red">
+                        <PP>{`Hidden profiles can't be found by username`}</PP>
+                      </Tag>
+                    )}
                   </$Vertical>
                 </div>
               )}

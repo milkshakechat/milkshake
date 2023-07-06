@@ -14,6 +14,7 @@ interface AboutSectionProps {
     avatar: string;
     displayName: string;
     username: Username;
+    bio: string;
   };
   glowColor?: string;
   actionButton?: React.ReactNode;
@@ -98,7 +99,7 @@ const AboutSection = ({ user, glowColor, actionButton }: AboutSectionProps) => {
       </$Horizontal>
       <$Horizontal style={{ padding: isMobile ? "10px 0px" : "20px 0px" }}>
         <div style={{ fontSize: "1rem", color: token.colorTextDescription }}>
-          <PP>{`lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.`}</PP>
+          {user.bio}
         </div>
       </$Horizontal>
     </$Vertical>

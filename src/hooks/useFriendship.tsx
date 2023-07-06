@@ -118,6 +118,8 @@ export const useViewPublicProfile = (): {
               username
               avatar
               displayName
+              bio
+              privacyMode
               stories {
                 id
                 userID

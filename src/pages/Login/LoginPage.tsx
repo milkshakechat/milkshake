@@ -193,7 +193,7 @@ const LoginPage = () => {
           minHeight: "100vh",
         }}
       >
-        <Spacer height="20vh" flexOff />
+        <Spacer height="15vh" flexOff />
         <LogoCookie width={"100px"} fill={token.colorPrimary} />
         <$Vertical
           style={{
@@ -208,7 +208,7 @@ const LoginPage = () => {
           <div>Milkshake</div>
           <div>Chat</div>
         </$Vertical>
-        <Spacer height="20vh" flexOff />
+        <Spacer height="10vh" flexOff />
 
         <$Vertical style={{ maxWidth: isMobile ? "none" : "600px" }}>
           {showPinProceed && (

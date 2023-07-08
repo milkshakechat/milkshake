@@ -46,7 +46,7 @@ const AboutSection = ({ user, glowColor, actionButton }: AboutSectionProps) => {
             minWidth: avatarSize,
             marginRight: isMobile ? "10px" : "20px",
           }}
-          size={isMobile ? window.innerWidth / 6 : 100}
+          size={avatarSize}
         />
         <$Vertical
           style={{

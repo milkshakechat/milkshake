@@ -31,6 +31,7 @@ import { Affix } from "antd";
 import VideoPlayer, {
   ShakePlayerRef,
 } from "@/components/VideoPlayer/VideoPlayer";
+import { WATCH_STORY_BACK_HOME_ROUTE } from "@/config.env";
 
 interface TimelineGalleryProps {
   stories: Story[];
@@ -99,6 +100,11 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
                             story: story.id,
                           }).toString(),
                         });
+                      } else {
+                        window.localStorage.setItem(
+                          WATCH_STORY_BACK_HOME_ROUTE,
+                          location.pathname
+                        );
                       }
                     }}
                   >

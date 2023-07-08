@@ -1,0 +1,27 @@
+@keyframes moving-logo-animation {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.moving-logo {
+  animation: moving-logo-animation 3s infinite;
+  width: 300px;
+}
+
+@keyframes rotating-logo-animation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+.rotating-logo {
+  animation: rotating-logo-animation 3s infinite linear;
+  width: 75px;
+}

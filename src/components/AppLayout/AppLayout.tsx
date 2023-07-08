@@ -16,6 +16,7 @@ import {
   Button,
   Layout,
   Menu,
+  Popconfirm,
   Space,
   theme,
 } from "antd";
@@ -80,7 +81,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     }),
     shallow
   );
-
+  const navigate = useNavigate();
   const refreshData = () => {
     // eslint-disable-next-line no-restricted-globals
     location.reload();
@@ -226,6 +227,21 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </NavLink>,
           "settings",
           "/app/profile/settings"
+        ),
+        getItem(
+          <Popconfirm
+            title="Confirm Logout"
+            description="Are you sure you want to log out?"
+            onConfirm={async () => {
+              navigate("/app/logout");
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
+            Log Out
+          </Popconfirm>,
+          "logout",
+          "/app/logout"
         ),
       ]
     ),
@@ -445,14 +461,24 @@ interface SpacerProps {
   width?: number | string;
   height?: number | string;
   style?: React.CSSProperties;
+  flexOff?: boolean;
 }
 export const Spacer = ({
   width = "100%",
   height = "30px",
   style,
+  flexOff = false,
 }: SpacerProps) => {
   return (
-    <div style={{ flex: 1, width, height, minHeight: height, ...style }} />
+    <div
+      style={{
+        flex: flexOff ? undefined : 1,
+        width,
+        height,
+        minHeight: height,
+        ...style,
+      }}
+    />
   );
 };
 

@@ -8,6 +8,7 @@ import {
   Carousel,
   Input,
   Result,
+  Select,
   message,
   theme,
 } from "antd";
@@ -25,7 +26,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { CarouselRef } from "antd/es/carousel";
 import { countries, Country } from "countries-list";
 import { ADD_FRIEND_ONBOARDING_FIRST_TIME } from "@/config.env";
-import { ViewPublicProfileResponseSuccess } from "@/api/graphql/types";
+import {
+  GenderEnum,
+  ViewPublicProfileResponseSuccess,
+} from "@/api/graphql/types";
 import {
   ConfirmationResult,
   RecaptchaVerifier,
@@ -43,6 +47,7 @@ import {
 } from "@/state/styleconfig.state";
 import shallow from "zustand/shallow";
 import SUGAR_DADDY_IMAGE_LOCAL from "./sugardaddy.jpg";
+import { useUpdateProfile } from "@/hooks/useProfile";
 
 const ONBOARDING_BACKGROUND_COLOR = "#f7fcff";
 const ONBOARDING_TITLE_COLOR = "#1a1a1a";
@@ -72,6 +77,8 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
   const [onboardingFriend, setOnboardingFriend] =
     useState<ViewPublicProfileResponseSuccess>();
   const selfUser = useUserState((state) => state.user);
+  const [loadingClaimUsername, setLoadingClaimUsername] = useState(false);
+  const userIDToken = useUserState((state) => state.idToken);
   const [focusedSlide, setFocusedSlide] = useState(0);
   const {
     themeType,
@@ -91,8 +98,15 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
     }),
     shallow
   );
-  const location = useLocation();
+  const {
+    data: updateProfileMutationData,
+    errors: updateProfileMutationErrors,
+    runMutation: runUpdateProfileMutation,
+  } = useUpdateProfile();
+  const rrLocation = useLocation();
   const { token } = theme.useToken();
+  const [gender, setGender] = useState<GenderEnum>();
+  const [interestedIn, setInterestedIn] = useState<GenderEnum[]>([]);
   const onChange = (currentSlide: number) => {
     console.log(currentSlide);
     setFocusedSlide(currentSlide);
@@ -121,7 +135,8 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
   const contentStyle: React.CSSProperties = {
     margin: 0,
     backgroundColor: ONBOARDING_BACKGROUND_COLOR,
-    minHeight: "100vh",
+    height: "100%",
+    minHeight: "80vh",
     minWidth: "100vw",
     display: "flex",
     flexDirection: "column",
@@ -130,8 +145,14 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
     paddingTop: "10vh",
   };
   return (
-    <div>
-      <Carousel ref={carouselRef} afterChange={onChange}>
+    <div
+      style={{ height: "100vh", backgroundColor: ONBOARDING_BACKGROUND_COLOR }}
+    >
+      <Carousel
+        ref={carouselRef}
+        afterChange={onChange}
+        style={{ height: "100%", backgroundColor: ONBOARDING_BACKGROUND_COLOR }}
+      >
         <div>
           <Alert
             message={
@@ -197,18 +218,58 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
               >{`No Ai girlfriends. Only REAL people sharing their everyday lives.`}</span>
             }
             extra={
-              <Button
-                onClick={() => {
-                  if (carouselRef.current) {
-                    carouselRef.current.next();
-                  }
+              <$Vertical
+                spacing={2}
+                style={{
+                  width: "250px",
+                  color: ONBOARDING_SUBTITLE_COLOR,
+                  fontSize: "1rem",
                 }}
-                type="primary"
-                size="large"
-                style={{ marginTop: "25px", fontWeight: "bold" }}
               >
-                Continue
-              </Button>
+                <$Vertical spacing={2} alignItems="flex-start">
+                  <label>I am a...</label>
+                  <Select
+                    onChange={(gender) => {
+                      setGender(gender);
+                    }}
+                    options={[
+                      { value: "male", label: "Man" },
+                      { value: "female", label: "Woman" },
+                      { value: "other", label: "Other" },
+                    ]}
+                  />
+                </$Vertical>
+                <$Vertical spacing={2} alignItems="flex-start">
+                  <label>Interested in...</label>
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    showSearch={false}
+                    onChange={(genders) => {
+                      setInterestedIn(genders);
+                    }}
+                    options={[
+                      { value: "female", label: "Women" },
+                      { value: "male", label: "Men" },
+                      { value: "other", label: "Other" },
+                    ]}
+                    style={{ textAlign: "center" }}
+                  />
+                </$Vertical>
+                <Button
+                  onClick={() => {
+                    if (carouselRef.current) {
+                      carouselRef.current.next();
+                    }
+                  }}
+                  type="primary"
+                  size="large"
+                  disabled={gender && interestedIn.length > 0 ? false : true}
+                  style={{ marginTop: "25px", fontWeight: "bold" }}
+                >
+                  Continue
+                </Button>
+              </$Vertical>
             }
             style={contentStyle}
           />
@@ -260,15 +321,27 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
             extra={
               <Button
                 onClick={() => {
+                  setLoadingClaimUsername(true);
                   setTimeout(() => {
                     navigate("/app/profile");
                     setTimeout(() => {
-                      refreshWebPage();
+                      const run = async () => {
+                        if (gender && interestedIn.length > 0) {
+                          await runUpdateProfileMutation({
+                            gender,
+                            interestedIn,
+                          });
+                        }
+                        refreshWebPage();
+                      };
+                      run();
                     }, 500);
                   }, 1000);
                 }}
                 type="primary"
                 size="large"
+                disabled={!userIDToken}
+                loading={loadingClaimUsername}
                 style={{ marginTop: "10px", fontWeight: "bold" }}
               >
                 Claim Username
@@ -294,6 +367,7 @@ const BareBonesPhoneLogin = ({
   const [displayStatus, setDisplayStatus] = useState<"signup" | "check_verify">(
     "signup"
   );
+  const rrLocation = useLocation();
   const { token } = theme.useToken();
   const [errorMessage, setErrorMessage] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -458,20 +532,31 @@ const BareBonesPhoneLogin = ({
           </span>
         </>
       ) : (
-        <Button
-          type="primary"
-          size="large"
-          loading={isLoading}
-          onClick={signupWithPhone}
-          disabled={submitted || phoneNumber.length < 9}
-          style={{
-            fontWeight: "bold",
-            width: "100%",
-            margin: "10px 0px",
-          }}
-        >
-          SIGNUP PHONE
-        </Button>
+        <$Vertical>
+          <Button
+            type="primary"
+            size="large"
+            loading={isLoading}
+            onClick={signupWithPhone}
+            disabled={submitted || phoneNumber.length < 9}
+            style={{
+              fontWeight: "bold",
+              width: "100%",
+              margin: "10px 0px",
+            }}
+          >
+            SIGNUP PHONE
+          </Button>
+
+          <i
+            onClick={() => {
+              window.location.replace(`${window.location.origin}/app/login`);
+            }}
+            style={{ marginTop: "20px", color: token.colorInfoHover }}
+          >
+            Existing User
+          </i>
+        </$Vertical>
       )}
     </$Vertical>
   );

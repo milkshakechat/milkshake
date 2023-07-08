@@ -21,6 +21,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useMarkNotificationsAsRead } from "@/hooks/useProfile";
 import { useState } from "react";
 import dayjs from "dayjs";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const NotificationsPage = () => {
   const user = useUserState((state) => state.user);
@@ -32,7 +33,7 @@ const NotificationsPage = () => {
     useMarkNotificationsAsRead();
 
   if (!user) {
-    return <Spin />;
+    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
   return (
     <div>

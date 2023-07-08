@@ -14,7 +14,16 @@ const StoriesHeader = () => {
   const { screen, isMobile } = useWindowSize();
   const { token } = theme.useToken();
   const navigate = useNavigate();
-  const stories = useStoriesState((state) => state.stories);
+  const stories = useStoriesState((state) =>
+    state.stories.filter((story) => {
+      // filter to show only stories less than 48 hours
+      const now = new Date();
+      const storyDate = new Date(story.createdAt);
+      const diff = now.getTime() - storyDate.getTime();
+      const diffHours = diff / (1000 * 3600);
+      return diffHours < 48;
+    })
+  );
   console.log(`stories`, stories);
   const showcaseStories = showLatestStoryPerAuthor(stories);
   console.log(`showcaseStories`, showcaseStories);

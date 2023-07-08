@@ -51,6 +51,8 @@ import { ShakaPlayerRef } from "shaka-player-react";
 import { EllipsisOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import shallow from "zustand/shallow";
+import { WATCH_STORY_BACK_HOME_ROUTE } from "@/config.env";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const EMPTY_PLAYER = {
   player: null,
@@ -125,6 +127,9 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
     authorStories.length;
 
   const paginateStory = (step: number) => {
+    if (authorStories.length <= 1) {
+      return;
+    }
     if (spotlightStory) {
       // Find the current index
       let currentIndex = authorStories.findIndex(
@@ -205,7 +210,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
   };
 
   if (!spotlightStory) {
-    return <Spin />;
+    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
 
   const primaryAttachment = spotlightStory.attachments[0];
@@ -248,11 +253,28 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
     >
       <div
         style={{
+          position: "absolute",
+          backgroundImage:
+            primaryAttachment &&
+            srcExistStatus === SRC_STATE_STATUS.EXISTS &&
+            primaryAttachment.type === StoryAttachmentType.Image
+              ? `url(${primaryAttachment.url})`
+              : "none",
+          backgroundSize: "cover",
+          /* Add the blur effect */
+          filter: "blur(15px)",
+          WebkitFilter: "blur(15px)",
+          height: "100vh",
+          width: "100vw",
+        }}
+      />
+      <div
+        style={{
           width: "100%",
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "flex-start",
+          justifyContent: "center",
           alignItems: "center",
           position: "relative",
           maxWidth: "800px",
@@ -343,7 +365,14 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  navigate("/app/chats");
+                  const watchStoryBackHomeRoute = window.localStorage.getItem(
+                    WATCH_STORY_BACK_HOME_ROUTE
+                  );
+                  if (watchStoryBackHomeRoute) {
+                    navigate(watchStoryBackHomeRoute);
+                  } else {
+                    navigate("/app/chats");
+                  }
                 }}
                 style={{
                   flex: 1,
@@ -505,37 +534,39 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   }}
                 />
               </$Vertical>
-              <$Horizontal
-                spacing={3}
-                style={{
-                  backgroundColor: `${token.colorBgContainer}9A`,
-                  padding: "10px",
-                  borderRadius: "10px 0px 0px 0px",
-                }}
-              >
-                <LeftOutlined
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    paginateStory(-1);
-                  }}
+              {authorStories.length > 1 && (
+                <$Horizontal
+                  spacing={3}
                   style={{
-                    fontSize: "1.3rem",
-                    color: token.colorTextPlaceholder,
+                    backgroundColor: `${token.colorBgContainer}9A`,
+                    padding: "10px",
+                    borderRadius: "10px 0px 0px 0px",
                   }}
-                />
-                <RightOutlined
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    paginateStory(1);
-                  }}
-                  style={{
-                    fontSize: "1.3rem",
-                    color: token.colorTextPlaceholder,
-                  }}
-                />
-              </$Horizontal>
+                >
+                  <LeftOutlined
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      paginateStory(-1);
+                    }}
+                    style={{
+                      fontSize: "1.3rem",
+                      color: token.colorTextPlaceholder,
+                    }}
+                  />
+                  <RightOutlined
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      paginateStory(1);
+                    }}
+                    style={{
+                      fontSize: "1.3rem",
+                      color: token.colorTextPlaceholder,
+                    }}
+                  />
+                </$Horizontal>
+              )}
             </$Vertical>
 
             <div

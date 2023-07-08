@@ -33,6 +33,7 @@ import "./sendbird.custom.css";
 import ChatFrame from "@/components/ChatFrame/ChatFrame";
 import config from "@/config.env";
 import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const ChatPage = () => {
   const intl = useIntl();
@@ -236,10 +237,11 @@ const ChatPage = () => {
         />
       ) : (
         // <ChatFrame />
-        <div>
-          This is a free tier chat, no direct messaging. Show notifications here
-          instead.
-        </div>
+        // <div>
+        //   This is a free tier chat, no direct messaging. Show notifications here
+        //   instead.
+        // </div>
+        <LoadingAnimation width="100vw" height="100vh" type="cookie" />
       )}
 
       <Modal
@@ -260,7 +262,7 @@ const ChatPage = () => {
         <$Vertical style={{ padding: "20px", gap: "10px" }}>
           <$Vertical style={{ justifyContent: "center", alignItems: "center" }}>
             {isMuteLoading ? (
-              <Spin />
+              <LoadingAnimation width="100vw" height="100vh" type="cookie" />
             ) : (
               <BellOutlined style={{ fontSize: "1.5rem" }} />
             )}

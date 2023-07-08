@@ -44,6 +44,7 @@ import { useNotificationsState } from "@/state/notifications.state";
 import WishlistGallery from "@/components/WishlistGallery/WishlistGallery";
 import { useWishState } from "@/state/wish.state";
 import { PrivacyModeEnum } from "@/api/graphql/types";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 enum viewModes {
   qrCode = "qrCode",
@@ -74,7 +75,7 @@ const ProfilePage = () => {
     }
   }, [viewMode]);
   if (!user) {
-    return <Spin />;
+    return <LoadingAnimation width="100%" height="100%" type="cookie" />;
   }
   const TabFolders = [
     {

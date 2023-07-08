@@ -40,6 +40,7 @@ import {
 } from "react-router-dom";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import LogoCookie from "@/components/LogoText/LogoCookie";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 export const WishPage = () => {
   const intl = useIntl();
@@ -73,7 +74,7 @@ export const WishPage = () => {
   }, [wishIDFromURL]);
 
   if (!spotlightWish) {
-    return <Spin />;
+    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
 
   const renderImageGallery = () => {

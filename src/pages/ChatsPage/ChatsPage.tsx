@@ -20,6 +20,7 @@ import { useChatsListState } from "@/state/chats.state";
 import shallow from "zustand/shallow";
 import { useStoriesState } from "@/state/stories.state";
 import { showLatestStoryPerAuthor } from "@/api/utils/stories.util";
+import useWebPermissions from "@/hooks/useWebPermissions";
 
 const ConversationsPage = () => {
   const intl = useIntl();
@@ -29,6 +30,15 @@ const ConversationsPage = () => {
   const selfUser = useUserState((state) => state.user);
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
+
+  const {
+    allowedPermissions,
+    requestPushPermission,
+    requestCameraAccess,
+    requestMicrophoneAccess,
+  } = useWebPermissions({
+    closeModal: () => {},
+  });
 
   const { chatsList } = useChatsListState(
     (state) => ({
@@ -40,20 +50,22 @@ const ConversationsPage = () => {
 
   return (
     <div>
-      <Alert
-        message={
-          <$Horizontal justifyContent="space-between">
-            <span>Upgrade to Premium for VIP benefits</span>
-            <NavLink to="/app/premium">
-              <Button type="link" size="small">
-                View
-              </Button>
-            </NavLink>
-          </$Horizontal>
-        }
-        type="info"
-        banner
-      />
+      {!allowedPermissions.notifications && (
+        <Alert
+          message={
+            <$Horizontal justifyContent="space-between">
+              <span>Please enable push notifications</span>
+              <NavLink to="/app/profile/settings">
+                <Button type="link" size="small">
+                  Settings
+                </Button>
+              </NavLink>
+            </$Horizontal>
+          }
+          type="warning"
+          banner
+        />
+      )}
       <$Vertical style={{ padding: "0px 10px" }}>
         <div
           style={{

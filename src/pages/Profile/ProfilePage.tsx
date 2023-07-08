@@ -13,6 +13,7 @@ import PP from "@/i18n/PlaceholderPrint";
 import { useUserState } from "@/state/user.state";
 import { QRCODE_LOGO, Username, privacyModeEnum } from "@milkshakechat/helpers";
 import {
+  Alert,
   Avatar,
   Button,
   Modal,
@@ -91,6 +92,20 @@ const ProfilePage = () => {
   ];
   return (
     <>
+      <Alert
+        message={
+          <$Horizontal justifyContent="space-between">
+            <span>Upgrade to Premium for VIP benefits</span>
+            <NavLink to="/app/premium">
+              <Button type="link" size="small">
+                View
+              </Button>
+            </NavLink>
+          </$Horizontal>
+        }
+        type="info"
+        banner
+      />
       {isMobile && (
         <LayoutLogoHeader
           rightAction={

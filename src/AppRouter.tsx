@@ -54,6 +54,8 @@ import WatchStoryPage from "./pages/WatchStory/WatchStoryPage";
 import NewWishPage from "./pages/NewWish/NewWishPage";
 import WishPage from "./pages/WishPage/WishPage";
 import OnboardingPage from "./pages/Onboarding/OnboardingPage";
+import SubscribePremium from "./components/SubscribePremium/SubscribePremium";
+import SubscribePremiumSuccess from "./components/SubscribePremium/SubscribePremiumSuccess";
 
 const AppRouter = () => {
   const {
@@ -268,6 +270,28 @@ const AppRouter = () => {
                               </AuthProtect>
                             }
                           />
+
+                          <Route
+                            path="premium"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <SubscribePremium />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="premium/success"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <SubscribePremiumSuccess />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+
                           <Route
                             path="notifications"
                             element={

@@ -41,6 +41,8 @@ const LogOutPage = () => {
   );
   const setFirebaseUser = useUserState((state) => state.setFirebaseUser);
   useEffect(() => {
+    switchTheme(themeTypeEnum.light);
+    switchColor(themeColorToHexMap[themeColorEnum.skyblue]);
     signOut(auth)
       .then(() => {
         // Sign-out successful.
@@ -59,8 +61,6 @@ const LogOutPage = () => {
           email: null,
           idToken: null,
         });
-        switchTheme(themeTypeEnum.light);
-        switchColor(themeColorToHexMap[themeColorEnum.skyblue]);
         navigate("/app/login");
       })
       .catch((error) => {

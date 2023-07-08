@@ -45,6 +45,7 @@ import useSharedTranslations from "@/i18n/useSharedTranslations";
 import { cid } from "./i18n/types.i18n.ProfileStylePage";
 import { useIntl } from "react-intl";
 import config from "@/config.env";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const formLayout = "horizontal";
 
@@ -394,7 +395,7 @@ const ProfileStylePage = () => {
             </Form.Item>
           </Form>
         ) : (
-          <Spin />
+          <LoadingAnimation width="100vw" height="100vh" type="cookie" />
         )}
       </AppLayoutPadding>
     </>

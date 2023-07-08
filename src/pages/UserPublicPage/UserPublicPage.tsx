@@ -31,6 +31,7 @@ import { Username } from "@milkshakechat/helpers";
 import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
 import { PrivacyModeEnum } from "@/api/graphql/types";
 import { ADD_FRIEND_ONBOARDING_FIRST_TIME } from "@/config.env";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 export const UserPublicPage = () => {
   const { username: usernameFromUrl } = useParams();
@@ -71,7 +72,7 @@ export const UserPublicPage = () => {
   }, [spotlightUser]);
 
   if (!spotlightUser) {
-    return <Spin />;
+    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
   const privacyTag = () => {
     if (
@@ -136,7 +137,7 @@ export const UserPublicPage = () => {
         >
           <>
             {isInitialLoading ? (
-              <Spin />
+              <LoadingAnimation width="100vw" height="100vh" type="cookie" />
             ) : spotlightUser ? (
               <div>
                 <AboutSection

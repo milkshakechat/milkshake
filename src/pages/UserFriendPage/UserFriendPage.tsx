@@ -48,6 +48,7 @@ import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/Timel
 import AboutSection from "@/components/UserPageSkeleton/AboutSection/AboutSection";
 import WishlistGallery from "@/components/WishlistGallery/WishlistGallery";
 import { useListWishlist } from "@/hooks/useWish";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 enum viewModes {
   timeline = "timeline",
@@ -129,7 +130,7 @@ export const UserFriendPage = () => {
   console.log(`spotlightUser`, spotlightUser);
 
   if (!spotlightUser) {
-    return <Spin />;
+    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
 
   const TabFolders = [
@@ -220,7 +221,7 @@ export const UserFriendPage = () => {
           align="center"
         >
           {isInitialLoading ? (
-            <Spin />
+            <LoadingAnimation width="100vw" height="100vh" type="cookie" />
           ) : spotlightUser ? (
             <div>
               <AboutSection

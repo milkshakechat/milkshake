@@ -57,6 +57,7 @@ import config from "@/config.env";
 import { useCreateWish, useGetWish, useUpdateWish } from "@/hooks/useWish";
 import { useWishState } from "@/state/wish.state";
 import { UpdateWishInput, WishBuyFrequency } from "@/api/graphql/types";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const formLayout = "horizontal";
 
@@ -381,7 +382,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
     }
   };
   if (!selfUser || (wishIDFromURL && !finishedLoadingEdit)) {
-    return <Spin />;
+    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
   return (
     <>

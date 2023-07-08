@@ -8,13 +8,14 @@ import { $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import StoryUpload from "@/components/StoryUpload/StoryUpload";
 import { useNavigate } from "react-router-dom";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const NewStoryPage = () => {
   const user = useUserState((state) => state.user);
   const { token } = theme.useToken();
   const navigate = useNavigate();
   if (!user) {
-    return <Spin />;
+    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
   return (
     <AppLayoutPadding

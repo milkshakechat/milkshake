@@ -67,7 +67,13 @@ export const groupUserStoriesByDateRange = (stories: Story[]) => {
   let groupedStories: Record<string, Story[]> = {};
 
   console.log(`stories`, stories);
-  for (let story of stories) {
+  const chronologicalStories = stories
+    .slice()
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  for (let story of chronologicalStories) {
     let date = dayjs(story.createdAt);
     let label: string;
 

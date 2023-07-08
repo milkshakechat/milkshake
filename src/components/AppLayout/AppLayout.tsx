@@ -227,6 +227,18 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           "settings",
           "/app/profile/settings"
         ),
+        getItem(
+          <NavLink
+            to="/app/logout"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            Log Out
+          </NavLink>,
+          "logout",
+          "/app/logout"
+        ),
       ]
     ),
   ];

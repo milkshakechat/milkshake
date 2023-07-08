@@ -13,6 +13,7 @@ import {
   NormalizedCacheObject,
   HttpLink,
 } from "@apollo/client/core";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const GRAPHQL_SOCKET_SERVER = config.GRAPHQL_SOCKET_SERVER;
 const GRAPHQL_SERVER = config.GRAPHQL_SERVER;
@@ -98,7 +99,7 @@ export const GraphqlClientProvider = ({ children }: Props) => {
   }, []);
 
   if (isLoading) {
-    return <span>Loading GraphQL...</span>;
+    return <LoadingAnimation width="100vw" height="100vh" type="text" />;
   }
 
   return (

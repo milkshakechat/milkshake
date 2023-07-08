@@ -71,6 +71,8 @@ export const useProfile = () => {
                     privacyMode
                     themeColor
                     language
+                    gender
+                    interestedIn
                     sendBirdAccessToken
                     stories {
                       id

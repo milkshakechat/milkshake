@@ -1,6 +1,6 @@
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import { useUserState } from "@/state/user.state";
-import { Badge, Button, Layout, List, Menu, Modal, theme } from "antd";
+import { Badge, Button, Drawer, Layout, List, Menu, Modal, theme } from "antd";
 import { Footer } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
@@ -26,6 +26,7 @@ import {
 } from "@ant-design/icons";
 import PP from "@/i18n/PlaceholderPrint";
 import Sider from "antd/es/layout/Sider";
+import LogoText from "@/components/LogoText/LogoText";
 
 type detectMobileAddressBarSettingsType = {
   userAgent: "ios" | "android" | "other";
@@ -443,23 +444,22 @@ export const StickyAdaptiveMobileFooter = ({
           ) : null}
         </div>
       </div>
-      <Modal
-        open={showMobileSideMenu}
-        onCancel={() => setShowMobileSideMenu(false)}
-        footer={
-          <$Horizontal style={{ width: "100%", justifyContent: "flex-end" }}>
-            <Button
-              type="link"
-              onClick={() => setShowMobileSideMenu(false)}
-              style={{ width: "100%" }}
-            >
-              Close
-            </Button>
-          </$Horizontal>
+
+      <Drawer
+        title={
+          <div style={{ width: "100%" }}>
+            <NavLink to="/">
+              <LogoText fill={token.colorPrimaryText} />
+            </NavLink>
+          </div>
         }
+        placement="right"
+        open={showMobileSideMenu}
+        onClose={() => setShowMobileSideMenu(false)}
+        width={window.innerWidth / 1.5}
       >
-        <div style={{ padding: "20px 0px" }}>
-          <List size="large" grid={{ gutter: 10, column: 0 }}>
+        <$Vertical justifyContent="space-between" style={{ height: "100%" }}>
+          <List size="large" grid={{ gutter: 20, column: 0 }}>
             <NavLink
               to="/app/profile"
               className={({ isActive, isPending }) =>
@@ -471,7 +471,12 @@ export const StickyAdaptiveMobileFooter = ({
                 type="link"
                 icon={<UserOutlined style={{ fontSize: "1rem" }} />}
                 onClick={() => setShowMobileSideMenu(false)}
-                style={{ border: "0px solid white", width: "100%" }}
+                style={{
+                  border: "0px solid white",
+                  width: "100%",
+                  textAlign: "left",
+                  marginBottom: "10px",
+                }}
               >
                 {profileText}
               </Button>
@@ -482,7 +487,12 @@ export const StickyAdaptiveMobileFooter = ({
                 type="link"
                 icon={<CameraOutlined style={{ fontSize: "1rem" }} />}
                 onClick={() => setShowMobileSideMenu(false)}
-                style={{ border: "0px solid white", width: "100%" }}
+                style={{
+                  border: "0px solid white",
+                  width: "100%",
+                  textAlign: "left",
+                  marginBottom: "10px",
+                }}
               >
                 {newStoryText}
               </Button>
@@ -501,7 +511,12 @@ export const StickyAdaptiveMobileFooter = ({
                 icon={<MessageOutlined style={{ fontSize: "1rem" }} />}
                 type="link"
                 onClick={() => setShowMobileSideMenu(false)}
-                style={{ border: "0px solid white", width: "100%" }}
+                style={{
+                  border: "0px solid white",
+                  width: "100%",
+                  textAlign: "left",
+                  marginBottom: "10px",
+                }}
               >
                 {messagesText}
               </Button>
@@ -512,7 +527,12 @@ export const StickyAdaptiveMobileFooter = ({
                 type="link"
                 icon={<BellOutlined style={{ fontSize: "1rem" }} />}
                 onClick={() => setShowMobileSideMenu(false)}
-                style={{ border: "0px solid white", width: "100%" }}
+                style={{
+                  border: "0px solid white",
+                  width: "100%",
+                  textAlign: "left",
+                  marginBottom: "10px",
+                }}
               >
                 {notificationsText}
               </Button>
@@ -529,7 +549,12 @@ export const StickyAdaptiveMobileFooter = ({
                 type="link"
                 icon={<ContactsOutlined style={{ fontSize: "1rem" }} />}
                 onClick={() => setShowMobileSideMenu(false)}
-                style={{ border: "0px solid white", width: "100%" }}
+                style={{
+                  border: "0px solid white",
+                  width: "100%",
+                  textAlign: "left",
+                  marginBottom: "10px",
+                }}
               >
                 {contactsText}
               </Button>
@@ -546,7 +571,12 @@ export const StickyAdaptiveMobileFooter = ({
                 type="link"
                 icon={<GiftOutlined style={{ fontSize: "1rem" }} />}
                 onClick={() => setShowMobileSideMenu(false)}
-                style={{ border: "0px solid white", width: "100%" }}
+                style={{
+                  border: "0px solid white",
+                  width: "100%",
+                  textAlign: "left",
+                  marginBottom: "10px",
+                }}
               >
                 <PP>Wishlist</PP>
               </Button>
@@ -563,14 +593,25 @@ export const StickyAdaptiveMobileFooter = ({
                 type="primary"
                 icon={<SettingOutlined style={{ fontSize: "1rem" }} />}
                 onClick={() => setShowMobileSideMenu(false)}
-                style={{ border: "0px solid white", width: "100%" }}
+                style={{
+                  border: "0px solid white",
+                  width: "100%",
+                  textAlign: "left",
+                  marginBottom: "10px",
+                }}
               >
                 {settingsText}
               </Button>
             </NavLink>
           </List>
-        </div>
-      </Modal>
+
+          <NavLink to="/app/logout">
+            <Button danger style={{ width: "100%" }}>
+              Log Out
+            </Button>
+          </NavLink>
+        </$Vertical>
+      </Drawer>
     </div>
   );
 };

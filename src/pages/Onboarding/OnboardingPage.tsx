@@ -77,6 +77,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
   const [onboardingFriend, setOnboardingFriend] =
     useState<ViewPublicProfileResponseSuccess>();
   const selfUser = useUserState((state) => state.user);
+  const [loadingClaimUsername, setLoadingClaimUsername] = useState(false);
   const userIDToken = useUserState((state) => state.idToken);
   const [focusedSlide, setFocusedSlide] = useState(0);
   const {
@@ -243,6 +244,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                   <Select
                     mode="multiple"
                     allowClear
+                    showSearch={false}
                     onChange={(genders) => {
                       setInterestedIn(genders);
                     }}
@@ -319,6 +321,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
             extra={
               <Button
                 onClick={() => {
+                  setLoadingClaimUsername(true);
                   setTimeout(() => {
                     navigate("/app/profile");
                     setTimeout(() => {
@@ -338,6 +341,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                 type="primary"
                 size="large"
                 disabled={!userIDToken}
+                loading={loadingClaimUsername}
                 style={{ marginTop: "10px", fontWeight: "bold" }}
               >
                 Claim Username

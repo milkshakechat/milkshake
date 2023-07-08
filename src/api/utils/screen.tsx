@@ -1,10 +1,20 @@
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import { useUserState } from "@/state/user.state";
-import { Badge, Button, Drawer, Layout, List, Menu, Modal, theme } from "antd";
+import {
+  Badge,
+  Button,
+  Drawer,
+  Layout,
+  List,
+  Menu,
+  Modal,
+  Popconfirm,
+  theme,
+} from "antd";
 import { Footer } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { NavLink, useLocation, useParams } from "react-router-dom";
+import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import { cid as AppLayoutCID } from "@/components/AppLayout/i18n/types.i18n.AppLayout";
 import {
   UserOutlined,
@@ -199,6 +209,8 @@ export const StickyAdaptiveMobileFooter = ({
   const { addressBarHeight } = detectMobileAddressBarSettings();
   const { isStandalone } = useCheckStandaloneModePWA();
   const user = useUserState((state) => state.user);
+
+  const navigate = useNavigate();
 
   const showMobileFooter =
     reactRouterLocation.pathname !== "/app/chat" &&
@@ -605,11 +617,19 @@ export const StickyAdaptiveMobileFooter = ({
             </NavLink>
           </List>
 
-          <NavLink to="/app/logout">
+          <Popconfirm
+            title="Confirm Logout"
+            description="Are you sure you want to log out?"
+            onConfirm={async () => {
+              navigate("/app/logout");
+            }}
+            okText="Yes"
+            cancelText="No"
+          >
             <Button danger style={{ width: "100%" }}>
               Log Out
             </Button>
-          </NavLink>
+          </Popconfirm>
         </$Vertical>
       </Drawer>
     </div>

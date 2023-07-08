@@ -127,6 +127,9 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
     authorStories.length;
 
   const paginateStory = (step: number) => {
+    if (authorStories.length <= 1) {
+      return;
+    }
     if (spotlightStory) {
       // Find the current index
       let currentIndex = authorStories.findIndex(
@@ -531,37 +534,39 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   }}
                 />
               </$Vertical>
-              <$Horizontal
-                spacing={3}
-                style={{
-                  backgroundColor: `${token.colorBgContainer}9A`,
-                  padding: "10px",
-                  borderRadius: "10px 0px 0px 0px",
-                }}
-              >
-                <LeftOutlined
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    paginateStory(-1);
-                  }}
+              {authorStories.length > 1 && (
+                <$Horizontal
+                  spacing={3}
                   style={{
-                    fontSize: "1.3rem",
-                    color: token.colorTextPlaceholder,
+                    backgroundColor: `${token.colorBgContainer}9A`,
+                    padding: "10px",
+                    borderRadius: "10px 0px 0px 0px",
                   }}
-                />
-                <RightOutlined
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    paginateStory(1);
-                  }}
-                  style={{
-                    fontSize: "1.3rem",
-                    color: token.colorTextPlaceholder,
-                  }}
-                />
-              </$Horizontal>
+                >
+                  <LeftOutlined
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      paginateStory(-1);
+                    }}
+                    style={{
+                      fontSize: "1.3rem",
+                      color: token.colorTextPlaceholder,
+                    }}
+                  />
+                  <RightOutlined
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      paginateStory(1);
+                    }}
+                    style={{
+                      fontSize: "1.3rem",
+                      color: token.colorTextPlaceholder,
+                    }}
+                  />
+                </$Horizontal>
+              )}
             </$Vertical>
 
             <div

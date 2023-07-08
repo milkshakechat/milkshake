@@ -237,10 +237,11 @@ const ChatPage = () => {
         />
       ) : (
         // <ChatFrame />
-        <div>
-          This is a free tier chat, no direct messaging. Show notifications here
-          instead.
-        </div>
+        // <div>
+        //   This is a free tier chat, no direct messaging. Show notifications here
+        //   instead.
+        // </div>
+        <LoadingAnimation width="100vw" height="100vh" type="cookie" />
       )}
 
       <Modal

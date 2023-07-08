@@ -193,7 +193,7 @@ const LoginPage = () => {
           minHeight: "100vh",
         }}
       >
-        <Spacer />
+        <Spacer height="20vh" flexOff />
         <LogoCookie width={"100px"} fill={token.colorPrimary} />
         <$Vertical
           style={{
@@ -208,7 +208,7 @@ const LoginPage = () => {
           <div>Milkshake</div>
           <div>Chat</div>
         </$Vertical>
-        <Spacer />
+        <Spacer height="20vh" flexOff />
 
         <$Vertical style={{ maxWidth: isMobile ? "none" : "600px" }}>
           {showPinProceed && (
@@ -311,7 +311,8 @@ const LoginPage = () => {
             </Button>
           )}
         </$Vertical>
-        <Spacer />
+
+        <Spacer height="20px" flexOff />
         <NavLink to="/app/signup/onboarding">
           <i
             style={{

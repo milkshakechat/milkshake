@@ -30,6 +30,7 @@ import LogoCookie from "@/components/LogoText/LogoCookie";
 import { useWindowSize } from "@/api/utils/screen";
 import PP from "@/i18n/PlaceholderPrint";
 import "../Onboarding/sugardaddy.jpg";
+import { SUGARBABY_IMAGE } from "../Onboarding/OnboardingPage";
 
 const LoginPage = () => {
   const { token } = theme.useToken();
@@ -193,22 +194,25 @@ const LoginPage = () => {
           minHeight: "100vh",
         }}
       >
-        <Spacer height="15vh" flexOff />
-        <LogoCookie width={"100px"} fill={token.colorPrimary} />
+        <Spacer height="5vh" flexOff />
+        <img
+          src={SUGARBABY_IMAGE}
+          style={{ width: isMobile ? "270px" : "450px" }}
+        />
         <$Vertical
           style={{
             fontWeight: 900,
             fontSize: "2rem",
             alignItems: "center",
             fontStyle: "italic",
-            margin: "30px",
+            margin: "30px 0px 0px 0px",
             color: token.colorPrimary,
           }}
         >
           <div>Milkshake</div>
           <div>Chat</div>
         </$Vertical>
-        <Spacer height="10vh" flexOff />
+        <Spacer height="5vh" flexOff />
 
         <$Vertical style={{ maxWidth: isMobile ? "none" : "600px" }}>
           {showPinProceed && (

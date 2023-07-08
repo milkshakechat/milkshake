@@ -56,7 +56,7 @@ const ONBOARDING_BUTTON_COLOR = "#0b94e3";
 
 const SUGARDADDY_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fsugardaddy.png?alt=media";
-const SUGARBABY_IMAGE =
+export const SUGARBABY_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fsugarbaby.png?alt=media";
 const HONIES_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fhonies.png?alt=media";
@@ -72,14 +72,17 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
   const navigate = useNavigate();
   const carouselRef = useRef<CarouselRef>(null);
   const [searchParams] = useSearchParams();
-  const tab = searchParams.get("tab");
+  const urlParamTab = searchParams.get("tab");
+  console.log(`urlParamTab`, urlParamTab);
+  const currentTab = urlParamTab ? parseInt(urlParamTab) : 0;
+  console.log(`currentTab`, currentTab);
   const { screen, isMobile } = useWindowSize();
   const [onboardingFriend, setOnboardingFriend] =
     useState<ViewPublicProfileResponseSuccess>();
   const selfUser = useUserState((state) => state.user);
   const [loadingClaimUsername, setLoadingClaimUsername] = useState(false);
   const userIDToken = useUserState((state) => state.idToken);
-  const [focusedSlide, setFocusedSlide] = useState(0);
+  const [focusedSlide, setFocusedSlide] = useState(currentTab);
   const {
     themeType,
     locale,
@@ -110,9 +113,18 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
   const onChange = (currentSlide: number) => {
     console.log(currentSlide);
     setFocusedSlide(currentSlide);
+    navigate({
+      search: `?tab=${currentSlide}`,
+    });
   };
 
   useEffect(() => {
+    navigate({
+      search: `?tab=${focusedSlide}`,
+    });
+    if (carouselRef.current) {
+      carouselRef.current.goTo(focusedSlide, true);
+    }
     switchTheme(themeTypeEnum.light);
     switchColor(themeColorToHexMap[themeColorEnum.skyblue]);
     const cachedFriend = window.localStorage.getItem(
@@ -179,7 +191,11 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
             subTitle={
               <span
                 style={{ color: ONBOARDING_SUBTITLE_COLOR, fontSize: "1rem" }}
-              >{`A private chat app for sugar daddies & high net worth individuals`}</span>
+              >
+                {`A private chat app for online dating.`}
+                <br />
+                {`100% refund protection from bad dates.`}
+              </span>
             }
             extra={
               <Button
@@ -210,7 +226,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
             title={
               <b
                 style={{ color: ONBOARDING_TITLE_COLOR, fontSize: "1.7rem" }}
-              >{`Care for someone REAL`}</b>
+              >{`Care for someone real`}</b>
             }
             subTitle={
               <span
@@ -224,38 +240,51 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                   width: "250px",
                   color: ONBOARDING_SUBTITLE_COLOR,
                   fontSize: "1rem",
+                  marginTop: "20px",
                 }}
               >
-                <$Vertical spacing={2} alignItems="flex-start">
-                  <label>I am a...</label>
-                  <Select
-                    onChange={(gender) => {
-                      setGender(gender);
-                    }}
-                    options={[
-                      { value: "male", label: "Man" },
-                      { value: "female", label: "Woman" },
-                      { value: "other", label: "Other" },
-                    ]}
-                  />
-                </$Vertical>
-                <$Vertical spacing={2} alignItems="flex-start">
-                  <label>Interested in...</label>
-                  <Select
-                    mode="multiple"
-                    allowClear
-                    showSearch={false}
-                    onChange={(genders) => {
-                      setInterestedIn(genders);
-                    }}
-                    options={[
-                      { value: "female", label: "Women" },
-                      { value: "male", label: "Men" },
-                      { value: "other", label: "Other" },
-                    ]}
-                    style={{ textAlign: "center" }}
-                  />
-                </$Vertical>
+                <$Horizontal spacing={2}>
+                  <$Vertical
+                    spacing={2}
+                    alignItems="flex-start"
+                    style={{ flex: 1 }}
+                  >
+                    <label style={{ textAlign: "left" }}>I am a...</label>
+                    <Select
+                      onChange={(gender) => {
+                        setGender(gender);
+                      }}
+                      options={[
+                        { value: "male", label: "Man" },
+                        { value: "female", label: "Woman" },
+                        { value: "other", label: "Other" },
+                      ]}
+                    />
+                  </$Vertical>
+                  <$Vertical
+                    spacing={2}
+                    alignItems="flex-start"
+                    style={{ flex: 1 }}
+                  >
+                    <label style={{ textAlign: "left" }}>
+                      Interested in...
+                    </label>
+                    <Select
+                      mode="multiple"
+                      allowClear
+                      showSearch={false}
+                      onChange={(genders) => {
+                        setInterestedIn(genders);
+                      }}
+                      options={[
+                        { value: "female", label: "Women" },
+                        { value: "male", label: "Men" },
+                        { value: "other", label: "Other" },
+                      ]}
+                      style={{ textAlign: "center" }}
+                    />
+                  </$Vertical>
+                </$Horizontal>
                 <Button
                   onClick={() => {
                     if (carouselRef.current) {
@@ -265,7 +294,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                   type="primary"
                   size="large"
                   disabled={gender && interestedIn.length > 0 ? false : true}
-                  style={{ marginTop: "25px", fontWeight: "bold" }}
+                  style={{ marginTop: "0px", fontWeight: "bold" }}
                 >
                   Continue
                 </Button>
@@ -316,7 +345,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
             subTitle={
               <span
                 style={{ color: ONBOARDING_SUBTITLE_COLOR, fontSize: "1rem" }}
-              >{`Milkshake privacy features show your best sides. Claim your username to get started.`}</span>
+              >{`Milkshake privacy only shows your best sides. Claim your hidden username to get started.`}</span>
             }
             extra={
               <Button

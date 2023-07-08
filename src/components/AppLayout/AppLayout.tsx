@@ -540,7 +540,7 @@ export const LayoutLogoHeader = ({
       style={{
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-between",
+        justifyContent: "center",
         alignItems: "center",
         width: "100%",
         padding:
@@ -558,6 +558,7 @@ export const LayoutLogoHeader = ({
           flexDirection: "column",
           justifyContent: "center",
           padding: isMobile ? paddings.mobile : paddings.desktop,
+          maxWidth: isMobile ? maxWidths.mobile : maxWidths.desktop,
           flex: 1,
         }}
       >

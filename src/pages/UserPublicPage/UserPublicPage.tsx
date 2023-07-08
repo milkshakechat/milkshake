@@ -1,5 +1,8 @@
 import { ErrorLines } from "@/api/graphql/error-line";
-import { useWindowSize } from "@/api/utils/screen";
+import {
+  detectMobileAddressBarSettings,
+  useWindowSize,
+} from "@/api/utils/screen";
 import AppLayout, {
   AppLayoutPadding,
   LayoutLogoHeader,
@@ -13,7 +16,7 @@ import {
   useDemoSubscription,
 } from "@/pages/UserPublicPage/useTemplate.graphql";
 import { useUserState } from "@/state/user.state";
-import { Button, Spin, theme, Tag, Result } from "antd";
+import { Button, Spin, theme, Tag, Result, Affix } from "antd";
 import { useEffect, useState } from "react";
 import { UserAddOutlined, UserOutlined } from "@ant-design/icons";
 import {
@@ -27,6 +30,7 @@ import AboutSection from "@/components/UserPageSkeleton/AboutSection/AboutSectio
 import { Username } from "@milkshakechat/helpers";
 import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
 import { PrivacyModeEnum } from "@/api/graphql/types";
+import { ADD_FRIEND_ONBOARDING_FIRST_TIME } from "@/config.env";
 
 export const UserPublicPage = () => {
   const { username: usernameFromUrl } = useParams();
@@ -35,12 +39,14 @@ export const UserPublicPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isMobile } = useWindowSize();
+
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const {
     data: spotlightUser,
     errors: spotlightUserErrors,
     runQuery: getSpotlightUser,
   } = useViewPublicProfile();
+  const { addressBarHeight } = detectMobileAddressBarSettings();
 
   useEffect(() => {
     if (usernameFromUrl) {
@@ -54,6 +60,15 @@ export const UserPublicPage = () => {
     }
   }, [usernameFromUrl, userID]);
   const { token } = theme.useToken();
+
+  useEffect(() => {
+    if (spotlightUser) {
+      window.localStorage.setItem(
+        ADD_FRIEND_ONBOARDING_FIRST_TIME,
+        JSON.stringify(spotlightUser)
+      );
+    }
+  }, [spotlightUser]);
 
   if (!spotlightUser) {
     return <Spin />;
@@ -74,76 +89,134 @@ export const UserPublicPage = () => {
   };
 
   return (
-    <>
-      {isMobile && <LayoutLogoHeader rightAction={null} />}
-      <AppLayoutPadding
-        paddings={{
-          mobile: "15px 15px",
-          desktop: "50px 15px",
+    <div
+      style={{
+        height: "100vh",
+        width: "100vw",
+        overflowX: "hidden",
+      }}
+    >
+      <div
+        style={{
+          maxHeight: isMobile
+            ? // eslint-disable-next-line no-restricted-globals
+              screen.availHeight - addressBarHeight - 80
+            : "85vh",
+          height: isMobile
+            ? // eslint-disable-next-line no-restricted-globals
+              screen.availHeight - addressBarHeight - 80
+            : "85vh",
+          overflowY: "scroll",
+          overflowX: "hidden",
         }}
-        align="center"
       >
-        {isInitialLoading ? (
-          <Spin />
-        ) : spotlightUser ? (
-          <div>
-            <AboutSection
-              user={{
-                id: spotlightUser.id,
-                avatar: spotlightUser.avatar || "",
-                displayName:
-                  spotlightUser.displayName || spotlightUser.username,
-                username: spotlightUser.username as Username,
-                bio: spotlightUser.bio || "",
-              }}
-              glowColor={token.colorPrimaryText}
-              actionButton={
-                <NavLink to={`/app/login`}>
-                  {spotlightUser.id === "notfound" ? (
-                    <Button>Login</Button>
-                  ) : (
-                    <Button>Message</Button>
-                  )}
-                </NavLink>
-              }
-            />
-            {privacyTag()}
-            {spotlightUser.stories.length > 0 ? (
-              <TimelineGallery stories={spotlightUser.stories} />
-            ) : (
-              <div style={{ padding: "30px 0px" }}>
-                {spotlightUser.id === "notfound" ? (
-                  <Result
-                    icon={<UserOutlined />}
-                    title={`Sign up for Milkshake`}
-                    extra={
-                      <Button type="primary" size="large">
-                        CREATE ACCOUNT
-                      </Button>
-                    }
-                  />
+        {isMobile && (
+          <LayoutLogoHeader
+            rightAction={null}
+            paddings={{
+              mobile: "30px 15px",
+              desktop: "10px 20px",
+            }}
+            maxWidths={{
+              mobile: "100%",
+              desktop: "800px",
+            }}
+          />
+        )}
+        <AppLayoutPadding
+          paddings={{
+            mobile: "15px 15px",
+            desktop: "50px 15px",
+          }}
+          maxWidths={{
+            mobile: "100%",
+            desktop: "800px",
+          }}
+          align="center"
+        >
+          <>
+            {isInitialLoading ? (
+              <Spin />
+            ) : spotlightUser ? (
+              <div>
+                <AboutSection
+                  user={{
+                    id: spotlightUser.id,
+                    avatar: spotlightUser.avatar || "",
+                    displayName:
+                      spotlightUser.displayName || spotlightUser.username,
+                    username:
+                      spotlightUser.id === "notfound"
+                        ? (usernameFromUrl as Username)
+                        : (spotlightUser.username as Username),
+                    bio: spotlightUser.bio || "",
+                  }}
+                  glowColor={token.colorPrimaryText}
+                  actionButton={
+                    spotlightUser.id !== "notfound" ? (
+                      <NavLink to={`/app/login`}>
+                        <Button>Message</Button>
+                      </NavLink>
+                    ) : null
+                  }
+                />
+                {privacyTag()}
+                {spotlightUser.stories.length > 0 ? (
+                  <TimelineGallery stories={spotlightUser.stories} />
                 ) : (
-                  <Result
-                    icon={<UserAddOutlined />}
-                    title={`Login to Add Friend`}
-                    extra={
-                      <Button type="primary" size="large">
-                        LOGIN
-                      </Button>
-                    }
-                  />
+                  <div style={{ padding: "30px 0px" }}>
+                    <Result
+                      icon={<UserAddOutlined />}
+                      title={`Join Milkshake Today`}
+                      extra={
+                        <NavLink to={`/app/signup/onboarding`}>
+                          <Button>Create Account</Button>
+                        </NavLink>
+                      }
+                    />
+                  </div>
                 )}
               </div>
+            ) : (
+              <div>
+                <h1>No User Found</h1>
+                <span>{`@${usernameFromUrl}`}</span>
+              </div>
             )}
-          </div>
-        ) : (
-          <div>
-            <h1>No User Found</h1>
-            <span>{`@${usernameFromUrl}`}</span>
-          </div>
-        )}
-      </AppLayoutPadding>
-    </>
+          </>
+        </AppLayoutPadding>
+      </div>
+
+      <div
+        style={{
+          height: isMobile ? 80 : "15vh",
+          backgroundColor: token.colorPrimaryActive,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "0px 20px",
+        }}
+      >
+        <NavLink
+          to={
+            spotlightUser.stories.length > 0
+              ? `/app/signup/onboarding`
+              : `/app/login`
+          }
+          style={{ width: "100%" }}
+        >
+          <Button
+            type="primary"
+            size="large"
+            block
+            style={{ fontWeight: "bold", fontSize: "1rem" }}
+          >
+            {spotlightUser.stories.length > 0 ? `JOIN MILKSHAKE` : `LOGIN`}
+          </Button>
+        </NavLink>
+      </div>
+    </div>
   );
 };
 export default UserPublicPage;

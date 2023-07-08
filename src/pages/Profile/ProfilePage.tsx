@@ -63,7 +63,7 @@ const ProfilePage = () => {
   const { screen, isMobile } = useWindowSize();
   const [showQRCode, setShowQRCode] = useState(false);
   const notifications = useNotificationsState((state) => state.notifications);
-  console.log(`user`, user);
+
   const myWishlist = useWishState((state) => state.myWishlist);
 
   useEffect(() => {

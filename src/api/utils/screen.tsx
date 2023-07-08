@@ -214,6 +214,7 @@ export const StickyAdaptiveMobileFooter = ({
 
   const showMobileFooter =
     reactRouterLocation.pathname !== "/app/chat" &&
+    reactRouterLocation.pathname !== "/app/premium" &&
     reactRouterLocation.pathname !== "/app/story/new" &&
     reactRouterLocation.pathname !== `/app/story/${storyIDFromURL}` &&
     reactRouterLocation.pathname !== "/app/wish/new" &&
@@ -270,17 +271,17 @@ export const StickyAdaptiveMobileFooter = ({
       icon: <CameraOutlined style={{ fontSize: "1rem" }} />,
     },
     {
+      key: "messages",
+      text: messagesText,
+      route: "/app/chats",
+      icon: <MessageOutlined style={{ fontSize: "1rem" }} />,
+    },
+    {
       key: "profile",
       text: user?.username || profileText,
       // text: profileText,
       route: "/app/profile",
       icon: <UserOutlined style={{ fontSize: "1rem" }} />,
-    },
-    {
-      key: "messages",
-      text: messagesText,
-      route: "/app/chats",
-      icon: <MessageOutlined style={{ fontSize: "1rem" }} />,
     },
     // {
     //   key: "settings",

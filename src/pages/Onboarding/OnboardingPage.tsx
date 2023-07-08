@@ -54,11 +54,11 @@ const ONBOARDING_TITLE_COLOR = "#1a1a1a";
 const ONBOARDING_SUBTITLE_COLOR = "#262727";
 const ONBOARDING_BUTTON_COLOR = "#0b94e3";
 
-const SUGARDADDY_IMAGE =
+export const SUGARDADDY_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fsugardaddy.png?alt=media";
 export const SUGARBABY_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fsugarbaby.png?alt=media";
-const HONIES_IMAGE =
+export const HONIES_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fhonies.png?alt=media";
 const DATING_APPS_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fdatingapps.png?alt=media";

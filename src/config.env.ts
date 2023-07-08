@@ -36,6 +36,14 @@ const devConfig: ConfigEnv = {
       location: "asia-northeast1",
     },
   },
+  STRIPE: {
+    publishableKey:
+      "pk_test_51McyYLBbKljWimkIXSUthxZbeFzHxJL1QO1GDA0b4zStYlejvk0y2QX24P4uUnkVNjFc0SNXhm2aoDHA1IHZD2wC0093cTeYnO",
+    PREMIUM_SUBSCRIPTION: {
+      priceInUSDCents: 1299,
+      paymentLink: "https://buy.stripe.com/test_00g6picv61pv1FK144",
+    },
+  },
 };
 const stagingConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
@@ -60,6 +68,14 @@ const stagingConfig: ConfigEnv = {
     bucket: {
       name: "user-stories-social",
       location: "asia-northeast1",
+    },
+  },
+  STRIPE: {
+    publishableKey:
+      "pk_test_51McyYLBbKljWimkIXSUthxZbeFzHxJL1QO1GDA0b4zStYlejvk0y2QX24P4uUnkVNjFc0SNXhm2aoDHA1IHZD2wC0093cTeYnO",
+    PREMIUM_SUBSCRIPTION: {
+      priceInUSDCents: 1299,
+      paymentLink: "https://buy.stripe.com/test_00g6picv61pv1FK144",
     },
   },
 };
@@ -88,6 +104,14 @@ const prodConfig: ConfigEnv = {
       location: "asia-northeast1",
     },
   },
+  STRIPE: {
+    publishableKey:
+      "pk_test_51McyYLBbKljWimkIXSUthxZbeFzHxJL1QO1GDA0b4zStYlejvk0y2QX24P4uUnkVNjFc0SNXhm2aoDHA1IHZD2wC0093cTeYnO",
+    PREMIUM_SUBSCRIPTION: {
+      priceInUSDCents: 1299,
+      paymentLink: "https://buy.stripe.com/test_00g6picv61pv1FK144",
+    },
+  },
 };
 
 interface ConfigEnv {
@@ -109,6 +133,13 @@ interface ConfigEnv {
   };
   VIDEO_TRANSCODER: {
     bucket: BucketDef;
+  };
+  STRIPE: {
+    publishableKey: string;
+    PREMIUM_SUBSCRIPTION: {
+      priceInUSDCents: 1299;
+      paymentLink: string;
+    };
   };
 }
 

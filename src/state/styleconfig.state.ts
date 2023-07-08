@@ -77,6 +77,7 @@ export const hexToThemeColorMap: Record<ThemeColorHex, themeColorEnum> = {
   "#AC9DF5": themeColorEnum.mission,
   "#FFE23B": themeColorEnum.goldmine,
 };
+
 export const themeColorToHexMap: Record<themeColorEnum, ThemeColorHex> = {
   [themeColorEnum.paper]: "#2E2E2E",
   [themeColorEnum.moon]: "#E4E4E4",

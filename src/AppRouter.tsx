@@ -53,6 +53,7 @@ import DemoConversation from "./pages/DemoConversation/DemoConversationPage";
 import WatchStoryPage from "./pages/WatchStory/WatchStoryPage";
 import NewWishPage from "./pages/NewWish/NewWishPage";
 import WishPage from "./pages/WishPage/WishPage";
+import OnboardingPage from "./pages/Onboarding/OnboardingPage";
 
 const AppRouter = () => {
   const {
@@ -135,6 +136,10 @@ const AppRouter = () => {
                         <Route
                           path="signup/verify"
                           element={<SignUpVerifyPage />}
+                        />
+                        <Route
+                          path="signup/onboarding"
+                          element={<OnboardingPage />}
                         />
                       </Route>
                     </Routes>

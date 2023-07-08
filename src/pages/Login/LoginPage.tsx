@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  Ref,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   getAuth,
   sendSignInLinkToEmail,
@@ -6,19 +13,23 @@ import {
   signInWithPhoneNumber,
   ConfirmationResult,
 } from "firebase/auth";
-import config from "@/config.env";
+import config, { ADD_FRIEND_ONBOARDING_FIRST_TIME } from "@/config.env";
 import QuickNav from "@/components/QuickNav/QuickNav";
+import { countries, Country } from "countries-list";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Button, Input, Layout, Space, theme } from "antd";
+import { Button, Input, InputRef, Layout, Space, theme } from "antd";
 import { useFullLoginProcedure } from "@/components/AuthProtect/AuthProtect";
 import { refreshWebPage } from "@/api/utils/utils";
 import { LayoutLogoHeader } from "@/components/AppLayout/AppLayout";
 import { SearchOutlined } from "@ant-design/icons";
-import { $Vertical } from "@/api/utils/spacing";
+import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import LogoText from "@/components/LogoText/LogoText";
+import ReactFlagsSelect, { Us } from "react-flags-select";
 import { Spacer } from "../../components/AppLayout/AppLayout";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import { useWindowSize } from "@/api/utils/screen";
+import PP from "@/i18n/PlaceholderPrint";
+import "../Onboarding/sugardaddy.jpg";
 
 const LoginPage = () => {
   const { token } = theme.useToken();
@@ -31,13 +42,13 @@ const LoginPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
   const [showPinProceed, setShowPinProceed] = useState(false);
-  // const captchaRef = useRef<RecaptchaVerifier>();
+
   const confirmationResultRef = useRef<ConfirmationResult>();
   const fullLogin = useFullLoginProcedure();
   const navigate = useNavigate();
   const [recaptchaNonce, setRecaptchaNonce] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [selectedCountry, setSelectedCountry] = useState("US");
   const auth = getAuth();
   const [recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier>();
@@ -95,11 +106,19 @@ const LoginPage = () => {
   //   // Clear the interval when the component unmounts
   //   return () => clearInterval(interval);
   // }, [auth]);
-
+  const computedPhone = `+${
+    // @ts-ignore
+    countries[selectedCountry as string]?.phone
+  }${phoneNumber.replace("-", "").replace(" ", "").replace(
+    // replace any non-numeric characters with empty string
+    /\D/g,
+    ""
+  )}`;
   const signupWithPhone = () => {
+    console.log(`computedPhone`, computedPhone);
     if (recaptchaVerifier) {
       setIsLoading(true);
-      signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier)
+      signInWithPhoneNumber(auth, computedPhone, recaptchaVerifier)
         .then((confirmationResult) => {
           // SMS sent. Prompt user to type the code from the message, then sign the
           // user in with confirmationResult.confirm(code).
@@ -194,28 +213,57 @@ const LoginPage = () => {
         <$Vertical style={{ maxWidth: isMobile ? "none" : "600px" }}>
           {showPinProceed && (
             <span
-              style={{ fontSize: "1rem" }}
-            >{`Check ${phoneNumber} for SMS Code`}</span>
+              style={{ fontSize: "1rem", marginBottom: "10px" }}
+            >{`Check ${computedPhone} for SMS Code`}</span>
           )}
-          <div ref={captchaRef} style={{ margin: "10px 0px" }} />
+          {!showPinProceed && (
+            <div ref={captchaRef} style={{ margin: "10px 0px" }} />
+          )}
           {showPinProceed ? (
             <Input
               placeholder="Code"
-              type="phone"
+              type="tel"
               value={phoneCode}
               onChange={(e) => setPhoneCode(e.target.value)}
               disabled={submitted}
               style={{ fontSize: "1.3rem" }}
             ></Input>
           ) : (
-            <Input
-              placeholder="Phone"
-              type="phone"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              disabled={submitted}
-              style={{ fontSize: "1.3rem" }}
-            ></Input>
+            <$Horizontal spacing={1} alignItems="center">
+              <ReactFlagsSelect
+                selected={selectedCountry}
+                onSelect={(code) => {
+                  console.log(`code`, code);
+                  setSelectedCountry(code);
+                  const phoneInput = document.getElementById("phone-input");
+                  if (phoneInput) {
+                    phoneInput.focus();
+                  }
+                }}
+                selectedSize={14}
+                fullWidth={false}
+                showSecondaryOptionLabel={false}
+                showSelectedLabel={false}
+                placeholder={<Us />}
+              />
+              <Input
+                id="phone-input"
+                placeholder="Phone"
+                type="tel"
+                value={phoneNumber}
+                onChange={(e) =>
+                  setPhoneNumber(
+                    e.target.value.replace("-", "").replace(" ", "").replace(
+                      // replace any non-numeric characters with empty string
+                      /\D/g,
+                      ""
+                    )
+                  )
+                }
+                disabled={submitted}
+                style={{ fontSize: "1.3rem" }}
+              ></Input>
+            </$Horizontal>
           )}
 
           {showPinProceed ? (
@@ -225,7 +273,7 @@ const LoginPage = () => {
                 size="large"
                 loading={isLoading}
                 onClick={verifyPhonePin}
-                disabled={submitted}
+                disabled={submitted || phoneCode.length < 6}
                 style={{
                   fontWeight: "bold",
                   width: "100%",
@@ -252,7 +300,7 @@ const LoginPage = () => {
               size="large"
               loading={isLoading}
               onClick={signupWithPhone}
-              disabled={submitted}
+              disabled={submitted || phoneNumber.length < 9}
               style={{
                 fontWeight: "bold",
                 width: "100%",
@@ -264,6 +312,16 @@ const LoginPage = () => {
           )}
         </$Vertical>
         <Spacer />
+        <NavLink to="/app/signup/onboarding">
+          <i
+            style={{
+              color: token.colorPrimaryActive,
+              fontSize: "1.1rem",
+            }}
+          >
+            New User
+          </i>
+        </NavLink>
       </$Vertical>
     </Layout>
   );

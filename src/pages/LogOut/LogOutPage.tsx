@@ -6,14 +6,39 @@ import {
   PUSH_TOKEN_LOCALSTORAGE,
   THEME_COLOR_LOCALSTORAGE,
 } from "@/config.env";
+import {
+  themeColorEnum,
+  themeColorToHexMap,
+  themeTypeEnum,
+  useStyleConfigGlobal,
+} from "@/state/styleconfig.state";
 import { useUserState } from "@/state/user.state";
 import { getAuth, signOut } from "firebase/auth";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import shallow from "zustand/shallow";
 
 const LogOutPage = () => {
   const auth = getAuth();
   const navigate = useNavigate();
+  const {
+    themeType,
+    locale,
+    switchLocale,
+    switchTheme,
+    themeColor,
+    switchColor,
+  } = useStyleConfigGlobal(
+    (state) => ({
+      themeType: state.themeType,
+      locale: state.locale,
+      themeColor: state.themeColor,
+      switchLocale: state.switchLocale,
+      switchTheme: state.switchTheme,
+      switchColor: state.switchColor,
+    }),
+    shallow
+  );
   const setFirebaseUser = useUserState((state) => state.setFirebaseUser);
   useEffect(() => {
     signOut(auth)
@@ -34,6 +59,8 @@ const LogOutPage = () => {
           email: null,
           idToken: null,
         });
+        switchTheme(themeTypeEnum.light);
+        switchColor(themeColorToHexMap[themeColorEnum.skyblue]);
         navigate("/app/login");
       })
       .catch((error) => {

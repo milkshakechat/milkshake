@@ -19,7 +19,7 @@ import {
 } from "@/hooks/useTemplateGQL";
 import { useListWishlist } from "@/hooks/useWish";
 import { useUserState } from "@/state/user.state";
-import { Username } from "@milkshakechat/helpers";
+import { Username, WishID } from "@milkshakechat/helpers";
 import {
   Avatar,
   Card,
@@ -35,7 +35,7 @@ import {
   Affix,
 } from "antd";
 import Meta from "antd/es/card/Meta";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 import {
   NavLink,
@@ -49,6 +49,8 @@ import PP from "@/i18n/PlaceholderPrint";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import { WishlistSortByEnum } from "@/components/WishlistGallery/WishlistGallery";
 import { Wish } from "@/api/graphql/types";
+import { useWishState } from "@/state/wish.state";
+import shallow from "zustand/shallow";
 
 export const ShoppingPage = () => {
   const intl = useIntl();
@@ -60,22 +62,66 @@ export const ShoppingPage = () => {
   const location = useLocation();
   const [searchString, setSearchString] = useState("");
   const { token } = theme.useToken();
+  const observer = useRef<IntersectionObserver | null>(null);
+  const wishRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const { lastFocusedScrollPosition, setLastFocusedScrollPosition } =
+    useWishState(
+      (state) => ({
+        lastFocusedScrollPosition: state.lastFocusedScrollPosition,
+        setLastFocusedScrollPosition: state.setLastFocusedScrollPosition,
+      }),
+      shallow
+    );
+
+  const [lastIntersectedId, setLastIntersectedId] = useState<string | null>(
+    lastFocusedScrollPosition
+  );
+
+  useEffect(() => {
+    console.log(`lastFocusedScrollPosition`, lastFocusedScrollPosition);
+    if (lastFocusedScrollPosition) {
+      setLastFocusedScrollPosition(lastFocusedScrollPosition);
+    }
+
+    observer.current = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          console.log(`Found an intersection!`, entry);
+          setLastIntersectedId(entry.target.id);
+        }
+      });
+    });
+
+    return () => {
+      if (observer.current) {
+        observer.current.disconnect();
+        observer.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (lastIntersectedId) {
+      setLastFocusedScrollPosition(lastIntersectedId as WishID);
+    }
+  }, [lastIntersectedId]);
+
+  // Effect for initial page load
+  useEffect(() => {
+    const ref = wishRefs.current.find((ref) => ref?.id === lastIntersectedId);
+    if (ref) {
+      ref.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
   const [sortBy, setSortBy] = useState<WishlistSortByEnum>(
     WishlistSortByEnum.highToLow
   );
   const notifications = useNotificationsState((state) => state.notifications);
-
-  const {
-    data: listWishlistData,
-    errors: listWishlistErrors,
-    runQuery: runListWishlistQuery,
-  } = useListWishlist();
-
-  useEffect(() => {
-    runListWishlistQuery({});
-  }, []);
-
-  const marketplaceWishes = listWishlistData?.wishlist || [];
+  const marketplaceWishlist = useWishState(
+    (state) => state.marketplaceWishlist
+  );
 
   const sortByRecent = (wishlist: Wish[]) => {
     return wishlist.slice().sort((a, b) => {
@@ -109,16 +155,19 @@ export const ShoppingPage = () => {
   };
 
   const filterSortedWishlist = sortWishlist(
-    marketplaceWishes.filter(
-      (wish) =>
-        wish.wishTitle.toLowerCase().indexOf(searchString.toLowerCase()) > -1 ||
-        (wish.author?.displayName || "")
-          .toLowerCase()
-          .indexOf(searchString.toLowerCase()) > -1 ||
-        (wish.author?.username || "")
-          .toLowerCase()
-          .indexOf(searchString.toLowerCase()) > -1
-    )
+    marketplaceWishlist
+      .filter((wish) => wish.creatorID !== selfUser?.id)
+      .filter(
+        (wish) =>
+          wish.wishTitle.toLowerCase().indexOf(searchString.toLowerCase()) >
+            -1 ||
+          (wish.author?.displayName || "")
+            .toLowerCase()
+            .indexOf(searchString.toLowerCase()) > -1 ||
+          (wish.author?.username || "")
+            .toLowerCase()
+            .indexOf(searchString.toLowerCase()) > -1
+      )
   );
 
   if (!selfUser) {
@@ -181,7 +230,7 @@ export const ShoppingPage = () => {
                 margin: isMobile ? "0px 0px 30px 0px" : "0px",
               }}
             >
-              Find Your Next Date
+              Find Something to Do
             </span>
           </$Horizontal>
           <$Horizontal
@@ -308,23 +357,18 @@ export const ShoppingPage = () => {
           <Row gutter={0}>
             {filterSortedWishlist.map((wish, index) => (
               <Col xs={24} sm={12} md={8} lg={6} xl={6} key={wish.id}>
-                <NavLink to={`/app/wish/${wish.id}`}>
-                  <div style={{ padding: "10px" }}>
-                    <Badge.Ribbon
-                      text={
-                        <$Horizontal style={{ padding: "2px" }}>
-                          <LogoCookie width="12px" fill={token.colorWhite} />
-                          <span
-                            style={{ marginLeft: "5px", fontWeight: "bold" }}
-                          >
-                            {wish.cookiePrice}
-                          </span>
-                        </$Horizontal>
-                      }
-                      color={
-                        wish.isFavorite ? token.colorError : token.colorPrimary
-                      }
-                    >
+                <div
+                  key={wish.id}
+                  id={wish.id}
+                  ref={(el) => {
+                    wishRefs.current[index] = el;
+                    if (el && observer.current) {
+                      observer.current.observe(el);
+                    }
+                  }}
+                >
+                  <NavLink to={`/app/wish/${wish.id}`}>
+                    <div style={{ padding: "10px" }}>
                       <Card
                         bordered={false}
                         hoverable
@@ -359,9 +403,9 @@ export const ShoppingPage = () => {
                           description={`With ${wish.author?.displayName}`}
                         />
                       </Card>
-                    </Badge.Ribbon>
-                  </div>
-                </NavLink>
+                    </div>
+                  </NavLink>
+                </div>
               </Col>
             ))}
           </Row>
@@ -371,3 +415,21 @@ export const ShoppingPage = () => {
   );
 };
 export default ShoppingPage;
+
+{
+  /* <Badge.Ribbon
+                      text={
+                        <$Horizontal style={{ padding: "2px" }}>
+                          <LogoCookie width="12px" fill={token.colorWhite} />
+                          <span
+                            style={{ marginLeft: "5px", fontWeight: "bold" }}
+                          >
+                            {wish.cookiePrice}
+                          </span>
+                        </$Horizontal>
+                      }
+                      color={
+                        wish.isFavorite ? token.colorError : token.colorPrimary
+                      }
+                    ></Badge.Ribbon> */
+}

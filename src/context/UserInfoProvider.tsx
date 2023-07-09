@@ -69,8 +69,13 @@ export const UserInfoProvider = ({ children }: Props) => {
         runFetchRecentNotificationsQuery({
           refresh,
         });
+        // personal wishlist
         runListWishlistQuery({
           userID: selfUser.id,
+        });
+
+        runListWishlistQuery({
+          // marketplace
         });
       }
     };

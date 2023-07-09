@@ -42,6 +42,7 @@ import {
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import ConfirmPurchase from "@/components/ConfirmPurchase/ConfirmPurchase";
 
 export const WishPage = () => {
   const intl = useIntl();
@@ -52,6 +53,8 @@ export const WishPage = () => {
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
   const { token } = theme.useToken();
+  const [confirmPurchaseModalOpen, setConfirmPurchaseModalOpen] =
+    useState(false);
   const { wishID: wishIDFromURL } = useParams();
   const { data: getWishData, runQuery: runGetWishQuery } = useGetWish();
   const [spotlightWish, setSpotlightWish] = useState<Wish>();
@@ -234,6 +237,7 @@ export const WishPage = () => {
                     type="primary"
                     size="large"
                     style={{ fontWeight: "bold", flex: 1 }}
+                    onClick={() => setConfirmPurchaseModalOpen(true)}
                   >
                     {spotlightWish.buyFrequency !== WishBuyFrequency.OneTime
                       ? `SUBSCRIBE GIFT`
@@ -258,6 +262,11 @@ export const WishPage = () => {
           </section>
         </>
       </AppLayoutPadding>
+      <ConfirmPurchase
+        isOpen={confirmPurchaseModalOpen}
+        onClose={() => setConfirmPurchaseModalOpen(false)}
+        wish={spotlightWish}
+      />
     </>
   );
 };

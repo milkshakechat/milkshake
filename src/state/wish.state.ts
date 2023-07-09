@@ -1,14 +1,20 @@
 import { Wish } from "@/api/graphql/types";
+import { WishID } from "@milkshakechat/helpers";
 import { create } from "zustand";
 
 interface WishState {
   myWishlist: Wish[];
   setMyWishlist: (wishlist: Wish[]) => void;
   upsertWish: (wish: Wish) => void;
+  marketplaceWishlist: Wish[];
+  setMarketplaceWishlist: (wishlist: Wish[]) => void;
+  setLastFocusedScrollPosition: (wishID: WishID) => void;
+  lastFocusedScrollPosition: WishID | null;
 }
 
 export const useWishState = create<WishState>()((set) => ({
   myWishlist: [],
+  marketplaceWishlist: [],
   setMyWishlist: (wishlist) => set((state) => ({ myWishlist: wishlist })),
   upsertWish: (wish) => {
     set((state) => {
@@ -26,4 +32,9 @@ export const useWishState = create<WishState>()((set) => ({
       }
     });
   },
+  setMarketplaceWishlist: (wishlist) =>
+    set((state) => ({ marketplaceWishlist: wishlist })),
+  setLastFocusedScrollPosition: (wishID) =>
+    set((state) => ({ lastFocusedScrollPosition: wishID })),
+  lastFocusedScrollPosition: null,
 }));

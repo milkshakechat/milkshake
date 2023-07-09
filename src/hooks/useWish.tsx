@@ -101,6 +101,9 @@ export const useListWishlist = () => {
   const client = useGraphqlClient();
 
   const setMyWishlist = useWishState((state) => state.setMyWishlist);
+  const setMarketplaceWishlist = useWishState(
+    (state) => state.setMarketplaceWishlist
+  );
   const selfUser = useUserState((state) => state.user);
 
   const runQuery = async (args: ListWishlistInput) => {
@@ -176,6 +179,10 @@ export const useListWishlist = () => {
         result.wishlist.every((w) => w.creatorID === selfUser.id)
       ) {
         setMyWishlist(result.wishlist);
+      }
+      if (!args.userID) {
+        // assumes no userID means all public marketplace wishlists
+        setMarketplaceWishlist(result.wishlist);
       }
     } catch (e) {
       console.log(e);

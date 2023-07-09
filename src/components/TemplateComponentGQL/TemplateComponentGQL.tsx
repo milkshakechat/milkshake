@@ -11,6 +11,7 @@ import { useUserState } from "@/state/user.state";
 import { theme } from "antd";
 import { useIntl } from "react-intl";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import PP from "@/i18n/PlaceholderPrint";
 
 export const TemplateComponentGQL = () => {
   const intl = useIntl();

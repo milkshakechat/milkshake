@@ -12,6 +12,7 @@ import { theme } from "antd";
 import { useIntl } from "react-intl";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import PP from "@/i18n/PlaceholderPrint";
+import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 
 export const TemplateComponentGQL = () => {
   const intl = useIntl();
@@ -54,6 +55,10 @@ export const TemplateComponentGQL = () => {
     runDemoSubscription();
     runPingQuery();
   };
+
+  if (!selfUser) {
+    return <LoadingAnimation width="100%" height="100%" type="cookie" />;
+  }
 
   return (
     <div>

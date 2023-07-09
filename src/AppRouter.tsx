@@ -58,6 +58,8 @@ import SubscribePremium from "./components/SubscribePremium/SubscribePremium";
 import SubscribePremiumSuccess from "./components/SubscribePremium/SubscribePremiumSuccess";
 import { usePreloadImages } from "./hooks/usePreloadImages";
 import ShoppingPage from "./pages/Shopping/ShoppingPage";
+import MerchantBankingRegistrationRefreshPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationRefreshPage";
+import MerchantBankingRegistrationInitPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationInitPage";
 
 const AppRouter = () => {
   const {
@@ -280,6 +282,27 @@ const AppRouter = () => {
                               <AuthProtect>
                                 <AppLayout>
                                   <ProfileSettingsPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+
+                          <Route
+                            path="profile/settings/merchant/banking-registration-init"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <MerchantBankingRegistrationInitPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="profile/settings/merchant/banking-registration-refresh"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <MerchantBankingRegistrationRefreshPage />
                                 </AppLayout>
                               </AuthProtect>
                             }

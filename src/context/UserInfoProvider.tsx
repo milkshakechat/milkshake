@@ -47,18 +47,27 @@ export const UserInfoProvider = ({ children }: Props) => {
       }
     }
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    /**
+     * ⚠️ WARNING : MAJOR BUG
+     * this will ddos our server with requests
+     * because the onResetStore callback is called exponentially every time the store is reset
+     * currently it happens when you move from tab to back into view
+     * the bug is coming from: document.addEventListener("visibilitychange", handleVisibilityChange);
+     * and flows down to client.onResetStore()
+     */
 
-    // Cleanup function to remove event listener
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
+    // document.addEventListener("visibilitychange", handleVisibilityChange);
+    // // Cleanup function to remove event listener
+    // return () => {
+    //   document.removeEventListener("visibilitychange", handleVisibilityChange);
+    // };
   }, []);
 
   // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
   const initialStartupQueries = ({ refresh }: { refresh: boolean }) => {
     console.log(`initialStartupQueries...`);
     const run = () => {
+      console.log(`Running...`);
       if (selfUser) {
         runListContacts({
           refresh,
@@ -80,11 +89,21 @@ export const UserInfoProvider = ({ children }: Props) => {
       }
     };
     if (refresh) {
-      client.resetStore();
-      client.onResetStore(() => {
-        run();
-        return Promise.resolve();
-      });
+      /**
+       * ⚠️ WARNING : MAJOR BUG
+       * this will ddos our server with requests
+       * because the onResetStore callback is called exponentially every time the store is reset
+       * currently it happens when you move from tab to back into view
+       * the bug is coming from: document.addEventListener("visibilitychange", handleVisibilityChange);
+       * and flows down to client.onResetStore()
+       */
+      // client.resetStore();
+      // client.onResetStore(() => {
+      //   runFetchRecentNotificationsQuery({
+      //     refresh,
+      //   });
+      //   return Promise.resolve();
+      // });
     } else {
       if (selfUser) {
         run();

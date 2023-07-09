@@ -565,8 +565,42 @@ const ProfileSettingsPage = () => {
                 </Button>
               </Form.Item>
             </Form.Item>
+            <Form.Item {...noLabelFieldProps}>
+              <Divider />
+              <h3>
+                <PP>Banking & Payouts</PP>
+              </h3>
+              <i style={{ color: token.colorTextSecondary }}>
+                <PP>
+                  Connect your bank to receive payouts from your Milkshake when
+                  you cash out cookies.
+                </PP>
+              </i>
+              <Spacer />
+              <Form.Item name="setupBanking">
+                <NavLink to="/app/profile/settings/merchant/banking-registration-init">
+                  <Button>
+                    <PP>Manage Banking</PP>
+                  </Button>
+                </NavLink>
+              </Form.Item>
+            </Form.Item>
             <Form.Item name="divider" {...noLabelFieldProps}>
               <Divider />
+              {user && user.id && (
+                <PP>
+                  <i
+                    onClick={() => {
+                      navigator.clipboard.writeText(user.id);
+                      message.info("Copied your USER ID");
+                    }}
+                    style={{ color: token.colorTextSecondary }}
+                  >
+                    {`UserID ${user.id}`}
+                  </i>
+                </PP>
+              )}
+              <br />
               {user && user.email && (
                 <PP>
                   <i style={{ color: token.colorTextSecondary }}>
@@ -587,21 +621,6 @@ const ProfileSettingsPage = () => {
                 <Button danger>{logoutText}</Button>
               </NavLink>
             </Form.Item>
-            {user && user.id && (
-              <Form.Item name="userID" {...noLabelFieldProps}>
-                <PP>
-                  <i
-                    onClick={() => {
-                      navigator.clipboard.writeText(user.id);
-                      message.info("Copied your USER ID");
-                    }}
-                    style={{ color: token.colorTextSecondary }}
-                  >
-                    {`UserID ${user.id}`}
-                  </i>
-                </PP>
-              </Form.Item>
-            )}
           </Form>
           <RequestPermissionModal
             isOpen={isRequestNotificationModalOpen}

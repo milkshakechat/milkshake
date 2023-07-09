@@ -240,10 +240,10 @@ export const WishPage = () => {
                     onClick={() => setConfirmPurchaseModalOpen(true)}
                   >
                     {spotlightWish.buyFrequency !== WishBuyFrequency.OneTime
-                      ? `SUBSCRIBE GIFT`
+                      ? `SUBSCRIBE WISH`
                       : isMobile
-                      ? `BUY GIFT`
-                      : `PURCHASE GIFT`}
+                      ? `BUY WISH`
+                      : `PURCHASE WISH`}
                   </Button>
                   <$Horizontal
                     alignItems="center"

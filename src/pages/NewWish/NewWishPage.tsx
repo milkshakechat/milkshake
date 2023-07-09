@@ -38,6 +38,7 @@ import {
   Username,
   WishID,
   Wish_Firestore,
+  cookieToUSD,
   getCompressedStickerUrl,
   getCompressedWishlistGraphicUrl,
 } from "@milkshakechat/helpers";
@@ -636,7 +637,9 @@ const NewWishPage = ({}: NewWishPageProps) => {
                       setPriceInCookies(parseInt(v.toFixed(0)));
                     }
                   }}
-                  addonAfter={<PP>{`~$${priceInCookies || 0} USD`}</PP>}
+                  addonAfter={
+                    <PP>{`~$${cookieToUSD(priceInCookies || 0)} USD`}</PP>
+                  }
                   style={{ flex: 1, width: "100%" }}
                 />
               </Form.Item>

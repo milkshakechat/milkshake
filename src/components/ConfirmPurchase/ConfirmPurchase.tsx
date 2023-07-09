@@ -24,6 +24,10 @@ import PP from "@/i18n/PlaceholderPrint";
 import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import LogoCookie from "../LogoText/LogoCookie";
 import { Wish, WishBuyFrequency } from "@/api/graphql/types";
+import { Spacer } from "../AppLayout/AppLayout";
+import { cookieToUSD } from "@milkshakechat/helpers";
+
+const USER_COOKIE_JAR_BALANCE = 253;
 
 interface ConfirmPurchaseProps {
   isOpen: boolean;
@@ -56,6 +60,21 @@ export const ConfirmPurchase = ({
     }
   };
 
+  const renderRealPrice = () => {
+    if (wish.cookiePrice > USER_COOKIE_JAR_BALANCE) {
+      return (
+        <span
+          style={{
+            marginLeft: "0px",
+            color: token.colorTextDescription,
+            fontSize: "0.9rem",
+          }}
+        >{`$${cookieToUSD(wish.cookiePrice)} USD`}</span>
+      );
+    }
+    return null;
+  };
+
   return (
     <Drawer
       title="Confirm Purchase?"
@@ -63,7 +82,7 @@ export const ConfirmPurchase = ({
       width={500}
       onClose={onClose}
       open={isOpen}
-      height={"60vh"}
+      height={"70vh"}
       extra={
         <Space>
           {isMobile && (
@@ -90,7 +109,7 @@ export const ConfirmPurchase = ({
           <$Vertical>
             <$Horizontal justifyContent="space-between">
               <Statistic
-                title={`Buy Wish for ${wish.author?.displayName}`}
+                title={`Buy Wish from ${wish.author?.displayName}`}
                 value={wish.cookiePrice}
                 prefix={<LogoCookie width="20px" />}
                 style={{ flex: 1 }}
@@ -104,13 +123,18 @@ export const ConfirmPurchase = ({
 
             <div style={{ marginTop: "5px" }}>
               {renderBuyFrequencyTag(wish.buyFrequency)}
+              {renderRealPrice()}
             </div>
             <p
               style={{ color: token.colorTextDescription, fontSize: "0.9rem" }}
             >{`Are you sure you want to buy "${wish.wishTitle}" from @${wish.author?.username} ? Milkshake protects you while online dating with 100% refunds within 90 days.`}</p>
 
             <$Horizontal justifyContent="space-between">
-              <Statistic title="Account Balance" value={1893} precision={0} />
+              <Statistic
+                title="Account Balance"
+                value={USER_COOKIE_JAR_BALANCE}
+                precision={0}
+              />
               {!isMobile && (
                 <div>
                   <Tag color="green">90 Days Protection</Tag>
@@ -124,7 +148,7 @@ export const ConfirmPurchase = ({
                   fontSize: "0.9rem",
                 }}
               >
-                You will get an exclusive sticker:
+                {`You will get an exclusive sticker from @${wish.author?.username}:`}
               </p>
               <$Horizontal alignItems="center">
                 <Avatar
@@ -166,6 +190,7 @@ export const ConfirmPurchase = ({
                 Cancel
               </Button>
             )}
+            {isMobile && <Spacer />}
           </$Vertical>
         </$Vertical>
       </$Horizontal>

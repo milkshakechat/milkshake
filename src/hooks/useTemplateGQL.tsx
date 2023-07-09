@@ -24,9 +24,11 @@ import { ObservableSubscription } from "@apollo/client/core";
 export const useDemoQuery = () => {
   const [data, setData] = useState<DemoQueryResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
   const client = useGraphqlClient();
 
   const runQuery = async (args: DemoQueryInput) => {
+    setLoading(true);
     try {
       const DEMO_QUERY = gql`
         query DemoQuery($input: DemoQueryInput!) {
@@ -54,30 +56,35 @@ export const useDemoQuery = () => {
               if (data.demoQuery.__typename === "DemoQueryResponseSuccess") {
                 resolve(data.demoQuery);
               }
+              setLoading(false);
             })
             .catch((graphQLError: Error) => {
               if (graphQLError) {
                 setErrors((errors) => [...errors, graphQLError.message]);
                 reject();
               }
+              setLoading(false);
             });
         }
       );
       setData(result);
     } catch (e) {
       console.log(e);
+      setLoading(false);
     }
   };
 
-  return { data, errors, runQuery };
+  return { data, errors, loading, runQuery };
 };
 
 export const useDemoMutation = () => {
   const [data, setData] = useState<DemoMutationResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
   const client = useGraphqlClient();
 
   const runMutation = async (args: DemoMutationInput) => {
+    setLoading(true);
     try {
       const DEMO_MUTATION = gql`
         mutation DemoMutation($input: DemoMutationInput!) {
@@ -110,22 +117,25 @@ export const useDemoMutation = () => {
               ) {
                 resolve(data.demoMutation);
               }
+              setLoading(false);
             })
             .catch((graphQLError: Error) => {
               if (graphQLError) {
                 setErrors((errors) => [...errors, graphQLError.message]);
                 reject();
               }
+              setLoading(false);
             });
         }
       );
       setData(result);
     } catch (e) {
       console.log(e);
+      setLoading(false);
     }
   };
 
-  return { data, errors, runMutation };
+  return { data, errors, loading, runMutation };
 };
 
 export const useDemoSubscription = () => {
@@ -227,3 +237,29 @@ export const useDemoPing = () => {
 
   return { data, errors, runQuery };
 };
+
+// const {
+//   data: demoQueryData,
+//   loading: demoQueryLoading,
+//   errors: demoQueryErrors,
+//   runQuery: runDemoQuery,
+// } = useDemoQuery();
+
+// const {
+//   data: demoMutationData,
+//   errors: demoMutationErrors,
+//   loading: demoMutationLoading,
+//   runMutation: runDemoMutation,
+// } = useDemoMutation();
+
+// const {
+//   data: demoSubscriptionData,
+//   errors: demoSubscriptionErrors,
+//   runSubscription: runDemoSubscription,
+// } = useDemoSubscription();
+
+// const {
+//   data: pingData,
+//   errors: pingErrors,
+//   runQuery: runPingQuery,
+// } = useDemoPing();

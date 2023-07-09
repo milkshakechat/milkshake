@@ -12,6 +12,8 @@ export const ADD_FRIEND_ONBOARDING_FIRST_TIME =
   "ADD_FRIEND_ONBOARDING_FIRST_TIME";
 export const WATCH_STORY_BACK_HOME_ROUTE = "WATCH_STORY_BACK_HOME_ROUTE";
 
+export const BRANDED_FONT = `"Sora", sans-serif`;
+
 const devConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER: "ws://localhost:8080/graphql",
   GRAPHQL_SERVER: "http://localhost:8080/graphql",

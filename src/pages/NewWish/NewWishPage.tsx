@@ -56,7 +56,11 @@ import useStorage from "@/hooks/useStorage";
 import config from "@/config.env";
 import { useCreateWish, useGetWish, useUpdateWish } from "@/hooks/useWish";
 import { useWishState } from "@/state/wish.state";
-import { UpdateWishInput, WishBuyFrequency } from "@/api/graphql/types";
+import {
+  UpdateWishInput,
+  WishBuyFrequency,
+  WishlistVisibility,
+} from "@/api/graphql/types";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const formLayout = "horizontal";
@@ -104,7 +108,9 @@ const NewWishPage = ({}: NewWishPageProps) => {
   const { uploadFile } = useStorage();
   const [isUploadingSticker, setIsUploadingSticker] = useState(false);
   const [graphicsUrl, setGraphicsUrl] = useState<string[]>([]);
-  const [buyFrequency, setBuyFrequency] = useState(WishBuyFrequency.OneTime);
+  const [buyFrequency, setBuyFrequency] = useState<WishBuyFrequency>(
+    WishBuyFrequency.OneTime
+  );
   const [compressedGraphicsUrl, setCompressedGraphicsUrl] = useState<string[]>(
     []
   );
@@ -120,6 +126,9 @@ const NewWishPage = ({}: NewWishPageProps) => {
   const [wishName, setWishName] = useState("");
   const [wishAbout, setWishAbout] = useState("");
   const [stickerTitle, setStickerTitle] = useState("");
+  const [wishVisibility, setWishVisibility] = useState<WishlistVisibility>(
+    WishlistVisibility.FriendsOnly
+  );
   const { token } = theme.useToken();
   const [isUploadingGraphics, setIsUploadingGraphics] = useState(false);
   const { backButtonText, updateButtonText } = useSharedTranslations();
@@ -147,6 +156,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
           setCompressedStickerUrl(wish.stickerMediaSet.medium);
           setIsFavorite(wish.isFavorite);
           setBuyFrequency(wish.buyFrequency);
+          setWishVisibility(wish.visibility);
           setFinishedLoadingEdit(true);
         }
       };
@@ -171,6 +181,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
       stickerGraphic: stickerUrl,
       isFavorite: isFavorite,
       buyFrequency: buyFrequency,
+      visibility: wishVisibility,
     });
     setIsSubmitting(false);
     setSubmitted(true);
@@ -203,6 +214,9 @@ const NewWishPage = ({}: NewWishPageProps) => {
     }
     if (getWishData.wish.buyFrequency !== buyFrequency) {
       updateParams.buyFrequency = buyFrequency;
+    }
+    if (getWishData.wish.visibility !== wishVisibility) {
+      updateParams.visibility = wishVisibility;
     }
     if (getWishData.wish.stickerMediaSet.medium !== stickerUrl) {
       updateParams.stickerGraphic = stickerUrl;
@@ -310,6 +324,8 @@ const NewWishPage = ({}: NewWishPageProps) => {
     setStickerUrl("");
     setCompressedStickerUrl("");
     setSubmitted(false);
+    setBuyFrequency(WishBuyFrequency.OneTime);
+    setWishVisibility(WishlistVisibility.FriendsOnly);
   };
   const uploadWishlistGraphics = async (file: string | Blob | RcFile) => {
     if (selfUser) {
@@ -471,6 +487,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
                 price: priceInCookies,
                 stickerTitle: stickerTitle,
                 buyFrequency: buyFrequency,
+                visibility: wishVisibility,
               }}
               onFieldsChange={onFormLayoutChange}
               style={{ width: "100%" }}
@@ -650,6 +667,33 @@ const NewWishPage = ({}: NewWishPageProps) => {
                     {
                       value: WishBuyFrequency.Monthly,
                       label: "Monthly Recurring",
+                    },
+                  ]}
+                />
+              </Form.Item>
+              <Form.Item
+                label={<PP>Visibility</PP>}
+                name="visibility"
+                tooltip={
+                  <PP>
+                    {`Do you want to allow anyone to buy this wish, or friends only?`}
+                  </PP>
+                }
+              >
+                <Select
+                  value={wishVisibility}
+                  style={{ width: "100%" }}
+                  onChange={(v) => {
+                    setWishVisibility(v);
+                  }}
+                  options={[
+                    {
+                      value: WishlistVisibility.FriendsOnly,
+                      label: "Friends Only",
+                    },
+                    {
+                      value: WishlistVisibility.PublicMarketplace,
+                      label: "Public Marketplace",
                     },
                   ]}
                 />

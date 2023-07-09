@@ -56,6 +56,7 @@ import WishPage from "./pages/WishPage/WishPage";
 import OnboardingPage from "./pages/Onboarding/OnboardingPage";
 import SubscribePremium from "./components/SubscribePremium/SubscribePremium";
 import SubscribePremiumSuccess from "./components/SubscribePremium/SubscribePremiumSuccess";
+import { usePreloadImages } from "./hooks/usePreloadImages";
 
 const AppRouter = () => {
   const {
@@ -76,7 +77,9 @@ const AppRouter = () => {
     }),
     shallow
   );
+  const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
   useEffect(() => {
+    preloadImages(PRELOAD_IMAGE_SET.BASE_APP_IMAGES);
     const cachedThemeColor = window.localStorage.getItem(
       THEME_COLOR_LOCALSTORAGE
     );

@@ -24,3 +24,17 @@ code {
   display: none;
 }
 
+
+/* Custom Branded Font */
+@font-face {
+  font-family: "Sora";   /*Can be any text*/
+  src: local("Sora-ExtraBold"),
+    url("./assets/fonts/Sora-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+}
+@font-face {
+  font-family: "Sora";   /*Can be any text*/
+  src: local("Sora-Bold"),
+    url("./assets/fonts/Sora-Bold.ttf") format("truetype");
+  font-weight: 700;
+}

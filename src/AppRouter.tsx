@@ -57,6 +57,7 @@ import OnboardingPage from "./pages/Onboarding/OnboardingPage";
 import SubscribePremium from "./components/SubscribePremium/SubscribePremium";
 import SubscribePremiumSuccess from "./components/SubscribePremium/SubscribePremiumSuccess";
 import { usePreloadImages } from "./hooks/usePreloadImages";
+import ShoppingPage from "./pages/Shopping/ShoppingPage";
 
 const AppRouter = () => {
   const {
@@ -168,6 +169,16 @@ const AppRouter = () => {
                               <AuthProtect>
                                 <AppLayout>
                                   <ChatsPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+                          <Route
+                            path="marketplace"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <ShoppingPage />
                                 </AppLayout>
                               </AuthProtect>
                             }

@@ -112,7 +112,7 @@ const ProfilePage = () => {
             <NavLink to="/app/notifications">
               <$Horizontal>
                 <BellFilled
-                  style={{ color: token.colorBgSpotlight, fontSize: "1rem" }}
+                  style={{ color: token.colorBgSpotlight, fontSize: "1.2rem" }}
                 />
                 <Badge
                   count={notifications.filter((n) => !n.markedRead).length}

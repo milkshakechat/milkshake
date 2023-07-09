@@ -37,6 +37,7 @@ import {
 import PP from "@/i18n/PlaceholderPrint";
 import Sider from "antd/es/layout/Sider";
 import LogoText from "@/components/LogoText/LogoText";
+import { ShoppingOutlined } from "@ant-design/icons";
 
 type detectMobileAddressBarSettingsType = {
   userAgent: "ios" | "android" | "other";
@@ -265,10 +266,10 @@ export const StickyAdaptiveMobileFooter = ({
 
   const itemsMobile = [
     {
-      key: "new-story",
-      text: newStoryText,
-      route: "/app/story/new",
-      icon: <CameraOutlined style={{ fontSize: "1rem" }} />,
+      key: "dating",
+      text: <PP>Dating</PP>,
+      route: "/app/marketplace",
+      icon: <ShoppingOutlined style={{ fontSize: "1rem" }} />,
     },
     {
       key: "messages",

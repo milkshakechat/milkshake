@@ -39,6 +39,7 @@ export const useCreateWish = () => {
                 description
                 thumbnail
                 cookiePrice
+                visibility
                 galleryMediaSet {
                   small
                   medium
@@ -117,6 +118,7 @@ export const useListWishlist = () => {
                 description
                 thumbnail
                 cookiePrice
+                visibility
                 galleryMediaSet {
                   small
                   medium
@@ -130,6 +132,12 @@ export const useListWishlist = () => {
                 isFavorite
                 buyFrequency
                 createdAt
+                author {
+                  id
+                  username
+                  avatar
+                  displayName
+                }
               }
             }
             ... on ResponseError {
@@ -197,6 +205,7 @@ export const useGetWish = () => {
                 description
                 thumbnail
                 cookiePrice
+                visibility
                 galleryMediaSet {
                   small
                   medium
@@ -277,6 +286,7 @@ export const useUpdateWish = () => {
                 description
                 thumbnail
                 cookiePrice
+                visibility
                 galleryMediaSet {
                   small
                   medium

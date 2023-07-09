@@ -231,7 +231,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
             subTitle={
               <span
                 style={{ color: ONBOARDING_SUBTITLE_COLOR, fontSize: "1rem" }}
-              >{`No Ai girlfriends. Only REAL people sharing their everyday lives.`}</span>
+              >{`No Ai girlfriends. Online dates with REAL people sharing their everyday lives.`}</span>
             }
             extra={
               <$Vertical

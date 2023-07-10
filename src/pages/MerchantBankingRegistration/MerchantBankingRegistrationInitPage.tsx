@@ -62,7 +62,7 @@ export const MerchantBankingRegistrationInitPage = () => {
     checkMerchantStatusData &&
     !checkMerchantStatusData.summary.hasMerchantPrivilege;
   const hasExistingStripeAccount =
-    checkMerchantStatusData && checkMerchantStatusData.summary.stripeAccountID
+    checkMerchantStatusData && checkMerchantStatusData.summary.stripeMerchantID
       ? true
       : false;
   const registrationUrl =
@@ -73,14 +73,14 @@ export const MerchantBankingRegistrationInitPage = () => {
   const activePendingMerchantOnboarding =
     checkMerchantStatusData &&
     !lacksMerchantPrivilege &&
-    checkMerchantStatusData.summary.stripeAccountID &&
+    checkMerchantStatusData.summary.stripeMerchantID &&
     !checkMerchantStatusData.summary.capabilities.transfers &&
     (checkMerchantStatusData.summary.anythingDue ||
       checkMerchantStatusData.summary.anythingErrors);
   const successfulMerchantRegistration =
     checkMerchantStatusData &&
     !lacksMerchantPrivilege &&
-    checkMerchantStatusData.summary.stripeAccountID &&
+    checkMerchantStatusData.summary.stripeMerchantID &&
     checkMerchantStatusData.summary.capabilities.transfers === "active" &&
     checkMerchantStatusData.summary.capabilities.payouts_enabled &&
     !checkMerchantStatusData.summary.anythingErrors;

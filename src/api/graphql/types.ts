@@ -75,13 +75,16 @@ export type CreateStoryResponseSuccess = {
 export type CreateWishInput = {
   buyFrequency?: InputMaybe<WishBuyFrequency>;
   cookiePrice: Scalars['Int']['input'];
+  countdownDate?: InputMaybe<Scalars['DateString']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  externalURL?: InputMaybe<Scalars['String']['input']>;
   isFavorite?: InputMaybe<Scalars['Boolean']['input']>;
   stickerGraphic?: InputMaybe<Scalars['String']['input']>;
   stickerTitle?: InputMaybe<Scalars['String']['input']>;
   visibility?: InputMaybe<WishlistVisibility>;
   wishGraphics?: InputMaybe<Array<Scalars['String']['input']>>;
   wishTitle: Scalars['String']['input'];
+  wishType: WishTypeEnum;
 };
 
 export type CreateWishResponse = CreateWishResponseSuccess | ResponseError;
@@ -645,7 +648,9 @@ export type UpdatePushTokenResponseSuccess = {
 export type UpdateWishInput = {
   buyFrequency?: InputMaybe<WishBuyFrequency>;
   cookiePrice?: InputMaybe<Scalars['Int']['input']>;
+  countdownDate?: InputMaybe<Scalars['DateString']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  externalURL?: InputMaybe<Scalars['String']['input']>;
   isFavorite?: InputMaybe<Scalars['Boolean']['input']>;
   stickerGraphic?: InputMaybe<Scalars['String']['input']>;
   stickerTitle?: InputMaybe<Scalars['String']['input']>;
@@ -653,6 +658,7 @@ export type UpdateWishInput = {
   wishGraphics?: InputMaybe<Array<Scalars['String']['input']>>;
   wishID: Scalars['ID']['input'];
   wishTitle?: InputMaybe<Scalars['String']['input']>;
+  wishType?: InputMaybe<WishTypeEnum>;
 };
 
 export type UpdateWishResponse = ResponseError | UpdateWishResponseSuccess;
@@ -708,9 +714,11 @@ export type Wish = {
   author?: Maybe<WishAuthor>;
   buyFrequency: WishBuyFrequency;
   cookiePrice: Scalars['Int']['output'];
+  countdownDate?: Maybe<Scalars['DateString']['output']>;
   createdAt: Scalars['DateString']['output'];
   creatorID: Scalars['ID']['output'];
   description: Scalars['String']['output'];
+  externalURL?: Maybe<Scalars['String']['output']>;
   galleryMediaSet: Array<MediaSet>;
   id: Scalars['ID']['output'];
   isFavorite: Scalars['Boolean']['output'];
@@ -719,6 +727,7 @@ export type Wish = {
   thumbnail: Scalars['String']['output'];
   visibility: WishlistVisibility;
   wishTitle: Scalars['String']['output'];
+  wishType: WishTypeEnum;
 };
 
 export type WishAuthor = {
@@ -730,9 +739,15 @@ export type WishAuthor = {
 };
 
 export enum WishBuyFrequency {
+  Daily = 'DAILY',
   Monthly = 'MONTHLY',
   OneTime = 'ONE_TIME',
   Weekly = 'WEEKLY'
+}
+
+export enum WishTypeEnum {
+  Event = 'EVENT',
+  Gift = 'GIFT'
 }
 
 export enum WishlistVisibility {
@@ -902,25 +917,25 @@ export type CreateWishMutationVariables = Exact<{
 }>;
 
 
-export type CreateWishMutation = { __typename?: 'Mutation', createWish: { __typename: 'CreateWishResponseSuccess', wish: { __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type CreateWishMutation = { __typename?: 'Mutation', createWish: { __typename: 'CreateWishResponseSuccess', wish: { __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, wishType: WishTypeEnum, countdownDate?: any | null, externalURL?: string | null, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type ListWishlistQueryVariables = Exact<{
   input: ListWishlistInput;
 }>;
 
 
-export type ListWishlistQuery = { __typename?: 'Query', listWishlist: { __typename: 'ListWishlistResponseSuccess', wishlist: Array<{ __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null }, author?: { __typename?: 'WishAuthor', id: any, username: string, avatar: string, displayName: string } | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type ListWishlistQuery = { __typename?: 'Query', listWishlist: { __typename: 'ListWishlistResponseSuccess', wishlist: Array<{ __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, wishType: WishTypeEnum, countdownDate?: any | null, externalURL?: string | null, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null }, author?: { __typename?: 'WishAuthor', id: any, username: string, avatar: string, displayName: string } | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type GetWishQueryVariables = Exact<{
   input: GetWishInput;
 }>;
 
 
-export type GetWishQuery = { __typename?: 'Query', getWish: { __typename: 'GetWishResponseSuccess', wish: { __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null }, author?: { __typename?: 'WishAuthor', id: any, username: string, avatar: string, displayName: string } | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type GetWishQuery = { __typename?: 'Query', getWish: { __typename: 'GetWishResponseSuccess', wish: { __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, wishType: WishTypeEnum, countdownDate?: any | null, externalURL?: string | null, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null }, author?: { __typename?: 'WishAuthor', id: any, username: string, avatar: string, displayName: string } | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type UpdateWishMutationVariables = Exact<{
   input: UpdateWishInput;
 }>;
 
 
-export type UpdateWishMutation = { __typename?: 'Mutation', updateWish: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpdateWishResponseSuccess', wish: { __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null } } } };
+export type UpdateWishMutation = { __typename?: 'Mutation', updateWish: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpdateWishResponseSuccess', wish: { __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, wishType: WishTypeEnum, countdownDate?: any | null, externalURL?: string | null, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null } } } };

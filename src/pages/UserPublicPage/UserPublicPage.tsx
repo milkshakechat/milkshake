@@ -30,8 +30,10 @@ import AboutSection from "@/components/UserPageSkeleton/AboutSection/AboutSectio
 import { Username } from "@milkshakechat/helpers";
 import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
 import { PrivacyModeEnum } from "@/api/graphql/types";
-import { ADD_FRIEND_ONBOARDING_FIRST_TIME } from "@/config.env";
+import { ADD_FRIEND_ONBOARDING_FIRST_TIME, BRANDED_FONT } from "@/config.env";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import { $Horizontal } from "@/api/utils/spacing";
+import LogoCookie from "@/components/LogoText/LogoCookie";
 
 export const UserPublicPage = () => {
   const { username: usernameFromUrl } = useParams();
@@ -193,25 +195,48 @@ export const UserPublicPage = () => {
           height: isMobile ? 80 : "15vh",
           backgroundColor: token.colorPrimaryActive,
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
           padding: "0px 20px",
         }}
       >
+        {!isMobile && (
+          <$Horizontal
+            spacing={3}
+            style={{
+              marginRight: "20px",
+            }}
+          >
+            <LogoCookie width="20px" fill={token.colorWhite} />
+            <span
+              style={{
+                color: token.colorWhite,
+                fontSize: "1.2rem",
+                fontWeight: 400,
+                fontFamily: BRANDED_FONT,
+              }}
+            >
+              Join the Party
+            </span>
+          </$Horizontal>
+        )}
         <NavLink
           to={
             spotlightUser.stories.length > 0
               ? `/app/signup/onboarding`
               : `/app/login`
           }
-          style={{ width: "100%" }}
+          style={{ width: "100%", maxWidth: isMobile ? "none" : "300px" }}
         >
           <Button
             type="primary"
             size="large"
             block
-            style={{ fontWeight: "bold", fontSize: "1rem" }}
+            style={{
+              fontWeight: "bold",
+              fontSize: "1rem",
+            }}
           >
             {spotlightUser.stories.length > 0 ? `JOIN MILKSHAKE` : `LOGIN`}
           </Button>

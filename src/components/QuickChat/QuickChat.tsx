@@ -12,39 +12,51 @@ import {
   Avatar,
   Button,
   Drawer,
+  Input,
+  InputNumber,
   Space,
   Statistic,
   Tag,
-  message,
-  InputNumber,
   theme,
-  Input,
 } from "antd";
 import { useIntl } from "react-intl";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  NavLink,
+  createSearchParams,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import PP from "@/i18n/PlaceholderPrint";
-import { $Vertical, $Horizontal } from "@/api/utils/spacing";
-import LogoCookie from "../LogoText/LogoCookie";
-import { Wish, WishBuyFrequency } from "@/api/graphql/types";
-import { Spacer } from "../AppLayout/AppLayout";
-import { cookieToUSD } from "@milkshakechat/helpers";
-import { CloseOutlined, EditOutlined } from "@ant-design/icons";
+import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
+import { $Horizontal, $Vertical } from "@/api/utils/spacing";
+import { UserID } from "@milkshakechat/helpers";
+import { WishAuthor } from "@/api/graphql/types";
 import { useState } from "react";
+import LogoCookie from "../LogoText/LogoCookie";
+import { CloseOutlined, EditOutlined } from "@ant-design/icons";
+import { Spacer } from "../AppLayout/AppLayout";
+import { useChatsListState } from "@/state/chats.state";
+import { themeTypeEnum, useStyleConfigGlobal } from "@/state/styleconfig.state";
 
-const USER_COOKIE_JAR_BALANCE = 253;
-
-interface ConfirmPurchaseProps {
+interface QuickChatProps {
   isOpen: boolean;
   toggleOpen?: (isOpen: boolean) => void;
   onClose?: () => void;
-  wish: Wish;
+  user: WishAuthor | null;
+  suggestedCookies?: number;
+  textPlaceholder?: string;
+  actionButton?: React.ReactNode;
 }
-export const ConfirmPurchase = ({
+export const QuickChat = ({
   isOpen,
   toggleOpen,
   onClose,
-  wish,
-}: ConfirmPurchaseProps) => {
+  textPlaceholder,
+  user,
+  suggestedCookies = 0,
+  actionButton,
+}: QuickChatProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -53,50 +65,54 @@ export const ConfirmPurchase = ({
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
   const { token } = theme.useToken();
-  const [suggestedPrice, setSuggestedPrice] = useState(wish.cookiePrice);
+  const themeType = useStyleConfigGlobal((state) => state.themeType);
+  const [suggestedPrice, setSuggestedPrice] = useState(suggestedCookies);
   const [suggestMode, setSuggestMode] = useState(false);
-  const [purchaseNote, setPurchaseNote] = useState("");
-  const [noteMode, setNoteMode] = useState(false);
 
-  const renderBuyFrequencyTag = (buyFrequency: WishBuyFrequency) => {
-    if (buyFrequency === WishBuyFrequency.OneTime) {
-      return <Tag>One Time Purchase</Tag>;
-    } else if (buyFrequency === WishBuyFrequency.Monthly) {
-      return <Tag>Monthly Subscription</Tag>;
-    } else if (buyFrequency === WishBuyFrequency.Weekly) {
-      return <Tag>Weekly Subscription</Tag>;
+  const chatsList = useChatsListState((state) => state.chatsList);
+
+  const visitUser = (uid: UserID) => {
+    if (uid) {
+      navigate({
+        pathname: `/user`,
+        search: createSearchParams({
+          userID: uid,
+        }).toString(),
+      });
     }
   };
 
-  const renderRealPrice = () => {
-    if (wish.cookiePrice > USER_COOKIE_JAR_BALANCE) {
-      return (
-        <span
-          style={{
-            marginLeft: "0px",
-            color: token.colorTextDescription,
-            fontSize: "0.9rem",
-          }}
-        >{`$${cookieToUSD(suggestedPrice)} USD`}</span>
-      );
-    }
+  if (!user) {
     return null;
+  }
+
+  const renderDefaultActionButton = () => {
+    if (!selfUser) return null;
+    console.log(`chatsList`, chatsList);
+    const chatRoom = chatsList.find((chat) =>
+      chat.participants.every((p: UserID) => p === user.id || p === selfUser.id)
+    );
+    if (!chatRoom) return null;
+    return (
+      <NavLink to={`/app/chat?chat=${chatRoom.chatRoomID}`}>
+        <Button>View Chat</Button>
+      </NavLink>
+    );
   };
 
   return (
     <Drawer
-      title="Confirm Purchase?"
+      title="Send a message"
       placement="bottom"
-      width={500}
       onClose={() => {
         if (onClose) {
           onClose();
         }
-        setSuggestedPrice(wish.cookiePrice);
-        setSuggestMode(false);
       }}
       open={isOpen}
       height={"70vh"}
+      key="quick-message"
+      style={{ color: token.colorText }}
       extra={
         <Space>
           {isMobile && (
@@ -120,7 +136,58 @@ export const ConfirmPurchase = ({
             width: "100%",
           }}
         >
-          <$Vertical>
+          <$Horizontal justifyContent="space-between">
+            <$Horizontal>
+              <Avatar
+                src={user?.avatar}
+                style={{ backgroundColor: token.colorPrimaryText }}
+                size="large"
+                onClick={() => visitUser(user.id)}
+              />
+              <$Vertical
+                style={{
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                  color: token.colorTextBase,
+                  marginLeft: "10px",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  visitUser(user.id);
+                }}
+              >
+                <PP>
+                  <b>{user.displayName || user.username}</b>
+                </PP>
+                <PP>
+                  <i>{`@${user.username}`}</i>
+                </PP>
+              </$Vertical>
+            </$Horizontal>
+            {actionButton}
+            {!actionButton && renderDefaultActionButton()}
+          </$Horizontal>
+
+          <p style={{ color: token.colorTextDescription, fontSize: "0.9rem" }}>
+            Send a message
+          </p>
+          <Input.TextArea
+            rows={3}
+            placeholder={textPlaceholder || "Type a message..."}
+            style={{ resize: "none" }}
+          />
+          <$Vertical
+            style={{
+              background:
+                themeType === themeTypeEnum.light ? "#e6f4ff" : "#0e2140",
+              borderColor: "#91caff",
+              color: "#3d70c4",
+              fontSize: "1rem",
+              padding: "10px 15px",
+              marginTop: "10px",
+            }}
+          >
             <$Horizontal justifyContent="space-between">
               {suggestMode ? (
                 <$Vertical>
@@ -136,14 +203,14 @@ export const ConfirmPurchase = ({
                       addonAfter={
                         <CloseOutlined
                           onClick={() => {
-                            setSuggestedPrice(wish.cookiePrice);
+                            setSuggestedPrice(suggestedCookies || 0);
                             setSuggestMode(false);
                           }}
                         />
                       }
                       value={suggestedPrice}
                       onChange={(value) => {
-                        if (value) {
+                        if (value !== null) {
                           setSuggestedPrice(value);
                         }
                       }}
@@ -165,7 +232,7 @@ export const ConfirmPurchase = ({
                 </$Vertical>
               ) : (
                 <Statistic
-                  title={`Buy Wish from ${wish.author?.displayName}`}
+                  title={`Give her a cookie?`}
                   value={suggestedPrice}
                   prefix={<LogoCookie width="20px" />}
                   suffix={
@@ -191,117 +258,31 @@ export const ConfirmPurchase = ({
                       </span>
                     </$Horizontal>
                   }
-                  style={{ flex: 1 }}
                 />
               )}
-              <$Vertical
-                spacing={2}
-                justifyContent="space-between"
-                alignItems="flex-end"
-              >
-                <Avatar
-                  src={wish.author?.avatar}
-                  style={{ backgroundColor: token.colorPrimaryActive }}
-                  size="large"
-                />
-                {!noteMode && (
-                  <$Horizontal
-                    onClick={() => setNoteMode(true)}
-                    alignItems="center"
-                  >
-                    <EditOutlined
-                      style={{
-                        fontSize: "1rem",
-                        color: token.colorTextDescription,
-                        marginLeft: "5px",
-                      }}
-                    />
-                    <span
-                      style={{
-                        color: token.colorTextDescription,
-                        fontSize: "0.8rem",
-                        marginLeft: "5px",
-                      }}
-                    >
-                      Note
-                    </span>
-                  </$Horizontal>
-                )}
-              </$Vertical>
-            </$Horizontal>
-
-            <div style={{ marginTop: "5px" }}>
-              {renderBuyFrequencyTag(wish.buyFrequency)}
-              {renderRealPrice()}
-            </div>
-            {noteMode ? (
-              <$Vertical style={{ position: "relative" }}>
-                <Input.TextArea
-                  rows={2}
-                  placeholder="Add a note to your purchase"
-                  style={{ resize: "none", margin: "10px 0px" }}
-                />
-                <$Horizontal
-                  spacing={2}
-                  onClick={() => setNoteMode(false)}
-                  style={{
-                    color: token.colorTextDescription,
-                    fontSize: "0.8rem",
-                    position: "absolute",
-                    right: 10,
-                    bottom: -20,
-                  }}
-                >
-                  <span>Cancel</span>
-                  <span>Save</span>
-                </$Horizontal>
-              </$Vertical>
-            ) : (
-              <p
-                style={{
-                  color: token.colorTextDescription,
-                  fontSize: "0.9rem",
-                }}
-              >{`Are you sure you want to buy "${wish.wishTitle}" from @${wish.author?.username}? Milkshake protects you while online dating with 100% refunds within 90 days.`}</p>
-            )}
-
-            <$Horizontal justifyContent="space-between">
-              <Statistic
-                title="Account Balance"
-                value={USER_COOKIE_JAR_BALANCE}
-                precision={0}
-              />
-              {!isMobile && (
-                <div>
-                  <Tag color="green">90 Days Protection</Tag>
-                </div>
-              )}
-            </$Horizontal>
-            <$Vertical>
-              <p
-                style={{
-                  color: token.colorTextDescription,
-                  fontSize: "0.9rem",
-                }}
-              >
-                {`You will get an exclusive sticker from @${wish.author?.username}:`}
-              </p>
-              <$Horizontal alignItems="center">
-                <Avatar
-                  src={wish.stickerMediaSet.small}
-                  size="small"
-                  style={{ backgroundColor: token.colorPrimaryText }}
-                />
+              <$Vertical justifyContent="flex-start" alignItems="flex-end">
                 <span
                   style={{
                     color: token.colorTextDescription,
-                    marginLeft: "10px",
+                    fontSize: "0.8rem",
                   }}
                 >
-                  {wish.stickerTitle}
+                  Balance
                 </span>
-              </$Horizontal>
-            </$Vertical>
+                <span
+                  style={{
+                    color: token.colorTextDescription,
+                    fontSize: "0.9rem",
+                    marginTop: "5px",
+                  }}
+                >
+                  248
+                </span>
+              </$Vertical>
+            </$Horizontal>
+            <p
+              style={{ color: token.colorTextDescription, fontSize: "0.9rem" }}
+            >{`Are you sure you want to gift ${suggestedPrice} cookies to @${user.username}? Milkshake protects you while online dating with 100% refunds within 90 days.`}</p>
           </$Vertical>
           <$Vertical style={{ marginTop: "10px" }}>
             <Button
@@ -310,7 +291,7 @@ export const ConfirmPurchase = ({
               block
               style={{ fontWeight: "bold" }}
             >
-              CONFIRM PURCHASE
+              SEND MESSAGE
             </Button>
             {isMobile && (
               <Button
@@ -333,4 +314,4 @@ export const ConfirmPurchase = ({
     </Drawer>
   );
 };
-export default ConfirmPurchase;
+export default QuickChat;

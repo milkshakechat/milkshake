@@ -101,10 +101,10 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
                           }).toString(),
                         });
                       } else {
-                        window.localStorage.setItem(
-                          WATCH_STORY_BACK_HOME_ROUTE,
-                          location.pathname
-                        );
+                        // window.localStorage.setItem(
+                        //   WATCH_STORY_BACK_HOME_ROUTE,
+                        //   `${window.location.origin}${location.pathname}${window.location}`
+                        // );
                       }
                     }}
                   >

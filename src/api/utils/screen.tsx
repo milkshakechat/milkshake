@@ -1,6 +1,7 @@
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import { useUserState } from "@/state/user.state";
 import {
+  Avatar,
   Badge,
   Button,
   Drawer,
@@ -32,6 +33,7 @@ import {
   VideoCameraOutlined,
   CameraOutlined,
   SettingFilled,
+  FireOutlined,
   ContactsOutlined,
 } from "@ant-design/icons";
 import PP from "@/i18n/PlaceholderPrint";
@@ -269,7 +271,7 @@ export const StickyAdaptiveMobileFooter = ({
       key: "dating",
       text: <PP>Dating</PP>,
       route: "/app/marketplace",
-      icon: <ShoppingOutlined style={{ fontSize: "1rem" }} />,
+      icon: <FireOutlined style={{ fontSize: "1rem" }} />,
     },
     {
       key: "messages",
@@ -472,153 +474,193 @@ export const StickyAdaptiveMobileFooter = ({
         onClose={() => setShowMobileSideMenu(false)}
         width={window.innerWidth / 1.5}
       >
-        <$Vertical justifyContent="space-between" style={{ height: "100%" }}>
-          <List size="large" grid={{ gutter: 20, column: 0 }}>
-            <NavLink
-              to="/app/profile"
-              className={({ isActive, isPending }) =>
-                isPending ? "pending" : isActive ? "active" : ""
-              }
-            >
-              <Button
-                size="large"
-                type="link"
-                icon={<UserOutlined style={{ fontSize: "1rem" }} />}
-                onClick={() => setShowMobileSideMenu(false)}
+        <$Vertical
+          justifyContent="space-between"
+          spacing={3}
+          style={{ height: "100%" }}
+        >
+          <$Vertical>
+            {user && (
+              <$Horizontal
+                spacing={3}
                 style={{
-                  border: "0px solid white",
-                  width: "100%",
-                  textAlign: "left",
-                  marginBottom: "10px",
+                  zIndex: 1,
+                  color: token.colorWhite,
+                  marginLeft: "10px",
+                  marginBottom: "20px",
                 }}
               >
-                {profileText}
-              </Button>
-            </NavLink>
-            <NavLink to="/app/story/new">
-              <Button
-                size="large"
-                type="link"
-                icon={<CameraOutlined style={{ fontSize: "1rem" }} />}
-                onClick={() => setShowMobileSideMenu(false)}
-                style={{
-                  border: "0px solid white",
-                  width: "100%",
-                  textAlign: "left",
-                  marginBottom: "10px",
-                }}
-              >
-                {newStoryText}
-              </Button>
-            </NavLink>
+                <Avatar
+                  src={user.avatar}
+                  style={{ backgroundColor: token.colorPrimaryText }}
+                  size="large"
+                />
+                <$Vertical
+                  style={{
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                >
+                  <PP>
+                    <b>{user.displayName || user.username}</b>
+                  </PP>
+                  <PP>
+                    <i>{`@${user.username}`}</i>
+                  </PP>
+                </$Vertical>
+              </$Horizontal>
+            )}
 
-            <NavLink
-              to="/app/chats"
-              type="link"
-              onClick={() => setShowMobileSideMenu(false)}
-              className={({ isActive, isPending }) =>
-                isPending ? "pending" : isActive ? "active" : ""
-              }
-            >
-              <Button
-                size="large"
-                icon={<MessageOutlined style={{ fontSize: "1rem" }} />}
-                type="link"
-                onClick={() => setShowMobileSideMenu(false)}
-                style={{
-                  border: "0px solid white",
-                  width: "100%",
-                  textAlign: "left",
-                  marginBottom: "10px",
-                }}
+            <List size="large" grid={{ gutter: 20, column: 0 }}>
+              <NavLink
+                to="/app/profile"
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "active" : ""
+                }
               >
-                {messagesText}
-              </Button>
-            </NavLink>
-            <NavLink to="/app/notifications">
-              <Button
-                size="large"
-                type="link"
-                icon={<BellOutlined style={{ fontSize: "1rem" }} />}
-                onClick={() => setShowMobileSideMenu(false)}
-                style={{
-                  border: "0px solid white",
-                  width: "100%",
-                  textAlign: "left",
-                  marginBottom: "10px",
-                }}
-              >
-                {notificationsText}
-              </Button>
-            </NavLink>
-            <NavLink
-              to="/app/friends"
-              onClick={() => setShowMobileSideMenu(false)}
-              className={({ isActive, isPending }) =>
-                isPending ? "pending" : isActive ? "active" : ""
-              }
-            >
-              <Button
-                size="large"
-                type="link"
-                icon={<ContactsOutlined style={{ fontSize: "1rem" }} />}
-                onClick={() => setShowMobileSideMenu(false)}
-                style={{
-                  border: "0px solid white",
-                  width: "100%",
-                  textAlign: "left",
-                  marginBottom: "10px",
-                }}
-              >
-                {contactsText}
-              </Button>
-            </NavLink>
-            <NavLink
-              to="/app/profile?view=wishlist"
-              onClick={() => setShowMobileSideMenu(false)}
-              className={({ isActive, isPending }) =>
-                isPending ? "pending" : isActive ? "active" : ""
-              }
-            >
-              <Button
-                size="large"
-                type="link"
-                icon={<GiftOutlined style={{ fontSize: "1rem" }} />}
-                onClick={() => setShowMobileSideMenu(false)}
-                style={{
-                  border: "0px solid white",
-                  width: "100%",
-                  textAlign: "left",
-                  marginBottom: "10px",
-                }}
-              >
-                <PP>Wishlist</PP>
-              </Button>
-            </NavLink>
+                <Button
+                  size="large"
+                  type="link"
+                  icon={<UserOutlined style={{ fontSize: "1rem" }} />}
+                  onClick={() => setShowMobileSideMenu(false)}
+                  style={{
+                    border: "0px solid white",
+                    width: "100%",
+                    textAlign: "left",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {profileText}
+                </Button>
+              </NavLink>
+              <NavLink to="/app/story/new">
+                <Button
+                  size="large"
+                  type="link"
+                  icon={<CameraOutlined style={{ fontSize: "1rem" }} />}
+                  onClick={() => setShowMobileSideMenu(false)}
+                  style={{
+                    border: "0px solid white",
+                    width: "100%",
+                    textAlign: "left",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {newStoryText}
+                </Button>
+              </NavLink>
 
-            <NavLink
-              to="/app/profile/settings"
-              className={({ isActive, isPending }) =>
-                isPending ? "pending" : isActive ? "active" : ""
-              }
-            >
-              <Button
-                size="large"
-                type="primary"
-                icon={<SettingOutlined style={{ fontSize: "1rem" }} />}
+              <NavLink
+                to="/app/chats"
+                type="link"
                 onClick={() => setShowMobileSideMenu(false)}
-                style={{
-                  border: "0px solid white",
-                  width: "100%",
-                  textAlign: "left",
-                  marginBottom: "10px",
-                }}
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "active" : ""
+                }
               >
-                {settingsText}
-              </Button>
-            </NavLink>
-          </List>
+                <Button
+                  size="large"
+                  icon={<MessageOutlined style={{ fontSize: "1rem" }} />}
+                  type="link"
+                  onClick={() => setShowMobileSideMenu(false)}
+                  style={{
+                    border: "0px solid white",
+                    width: "100%",
+                    textAlign: "left",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {messagesText}
+                </Button>
+              </NavLink>
+              <NavLink to="/app/notifications">
+                <Button
+                  size="large"
+                  type="link"
+                  icon={<BellOutlined style={{ fontSize: "1rem" }} />}
+                  onClick={() => setShowMobileSideMenu(false)}
+                  style={{
+                    border: "0px solid white",
+                    width: "100%",
+                    textAlign: "left",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {notificationsText}
+                </Button>
+              </NavLink>
+              <NavLink
+                to="/app/friends"
+                onClick={() => setShowMobileSideMenu(false)}
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "active" : ""
+                }
+              >
+                <Button
+                  size="large"
+                  type="link"
+                  icon={<ContactsOutlined style={{ fontSize: "1rem" }} />}
+                  onClick={() => setShowMobileSideMenu(false)}
+                  style={{
+                    border: "0px solid white",
+                    width: "100%",
+                    textAlign: "left",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {contactsText}
+                </Button>
+              </NavLink>
+              <NavLink
+                to="/app/profile?view=wishlist"
+                onClick={() => setShowMobileSideMenu(false)}
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "active" : ""
+                }
+              >
+                <Button
+                  size="large"
+                  type="link"
+                  icon={<GiftOutlined style={{ fontSize: "1rem" }} />}
+                  onClick={() => setShowMobileSideMenu(false)}
+                  style={{
+                    border: "0px solid white",
+                    width: "100%",
+                    textAlign: "left",
+                    marginBottom: "10px",
+                  }}
+                >
+                  <PP>Wishlist</PP>
+                </Button>
+              </NavLink>
 
+              <NavLink
+                to="/app/profile/settings"
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "active" : ""
+                }
+              >
+                <Button
+                  size="large"
+                  type="primary"
+                  icon={<SettingOutlined style={{ fontSize: "1rem" }} />}
+                  onClick={() => setShowMobileSideMenu(false)}
+                  style={{
+                    border: "0px solid white",
+                    width: "100%",
+                    textAlign: "left",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {settingsText}
+                </Button>
+              </NavLink>
+            </List>
+          </$Vertical>
           <Popconfirm
             title="Confirm Logout"
             description="Are you sure you want to log out?"

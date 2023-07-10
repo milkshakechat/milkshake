@@ -17,7 +17,7 @@ interface UserState {
     email: EmailString | null;
     idToken: string | null;
   }) => void;
-  setGQLUser: (user: User) => void;
+  setGQLUser: (user: User | null) => void;
   setContacts: (contacts: Contact[]) => void;
   setGlobalDirectory: (contacts: Contact[]) => void;
   triggerRefetch: () => void;

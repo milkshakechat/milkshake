@@ -207,7 +207,7 @@ const ChatPage = () => {
                       backButton={true}
                       backButtonAction={() =>
                         navigate({
-                          pathname: `/app/friends`,
+                          pathname: `/app/chats`,
                         })
                       }
                       actionButton={

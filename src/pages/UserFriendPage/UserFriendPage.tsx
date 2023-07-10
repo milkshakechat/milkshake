@@ -42,13 +42,14 @@ import {
   User_Firestore,
   Username,
 } from "@milkshakechat/helpers";
-import { FriendshipStatus } from "@/api/graphql/types";
+import { FriendshipStatus, WishAuthor } from "@/api/graphql/types";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
 import AboutSection from "@/components/UserPageSkeleton/AboutSection/AboutSection";
 import WishlistGallery from "@/components/WishlistGallery/WishlistGallery";
 import { useListWishlist } from "@/hooks/useWish";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import QuickChat from "@/components/QuickChat/QuickChat";
 
 enum viewModes {
   timeline = "timeline",
@@ -62,7 +63,9 @@ export const UserFriendPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isMobile } = useWindowSize();
+  const contacts = useUserState((state) => state.contacts);
 
+  const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   const viewMode =
     viewModes[view as keyof typeof viewModes] || viewModes.timeline;
   const user = useUserState((state) => state.user);
@@ -74,6 +77,14 @@ export const UserFriendPage = () => {
     errors: spotlightUserErrors,
     runQuery: getSpotlightUser,
   } = useViewPublicProfile();
+  const isAcceptedFriend = spotlightUser
+    ? contacts.find(
+        (contact) =>
+          spotlightUser &&
+          contact.status === FriendshipStatus.Accepted &&
+          contact.friendID === spotlightUser.id
+      )
+    : false;
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const { screen } = useWindowSize();
   const {
@@ -151,12 +162,24 @@ export const UserFriendPage = () => {
       <div>
         <Dropdown.Button
           loading={isPending}
-          onClick={handleSendFriendRequest}
+          onClick={
+            isAcceptedFriend
+              ? () => setChatDrawerOpen(true)
+              : handleSendFriendRequest
+          }
           disabled={recentlySentRequest}
-          size={isMobile ? "small" : "middle"}
+          size={isMobile ? "middle" : "middle"}
           type="primary"
           menu={{
             items: [
+              {
+                key: "send-message",
+                label: (
+                  <Button onClick={() => setChatDrawerOpen(true)} type="ghost">
+                    Chat
+                  </Button>
+                ),
+              },
               {
                 key: "share-friend",
                 label: (
@@ -193,7 +216,7 @@ export const UserFriendPage = () => {
             ],
           }}
         >
-          Add Friend
+          {isAcceptedFriend ? "Message" : "Add Friend"}
         </Dropdown.Button>
       </div>
     );
@@ -276,8 +299,28 @@ export const UserFriendPage = () => {
             </div>
           )}
         </AppLayoutPadding>
+        <QuickChat
+          isOpen={chatDrawerOpen}
+          onClose={() => setChatDrawerOpen(false)}
+          user={
+            spotlightUser
+              ? ({
+                  displayName: spotlightUser?.displayName,
+                  username: spotlightUser?.username,
+                  avatar: spotlightUser?.avatar,
+                  id: spotlightUser?.id,
+                } as WishAuthor)
+              : null
+          }
+        />
       </>
     </AppLayout>
   );
 };
 export default UserFriendPage;
+
+// actionButton={
+//   <NavLink to={`/app/wish/${quickChatUser?.wishID}`}>
+//     <Button>View Event</Button>
+//   </NavLink>
+// }

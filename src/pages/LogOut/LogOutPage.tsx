@@ -40,6 +40,7 @@ const LogOutPage = () => {
     shallow
   );
   const setFirebaseUser = useUserState((state) => state.setFirebaseUser);
+  const setGQLUser = useUserState((state) => state.setGQLUser);
   useEffect(() => {
     switchTheme(themeTypeEnum.light);
     switchColor(themeColorToHexMap[themeColorEnum.skyblue]);
@@ -61,6 +62,7 @@ const LogOutPage = () => {
           email: null,
           idToken: null,
         });
+        setGQLUser(null);
         navigate("/app/login");
       })
       .catch((error) => {

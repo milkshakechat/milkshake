@@ -32,7 +32,7 @@ import { shallow } from "zustand/shallow";
 import LogoText from "@/components/LogoText/LogoText";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import NotificationsPage from "@/pages/Notifications/NotificationsPage";
-import { LeftOutlined, ShoppingOutlined } from "@ant-design/icons";
+import { LeftOutlined, FireOutlined } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
 import { ItemType } from "antd/es/menu/hooks/useItems";
 import { cid } from "./i18n/types.i18n.AppLayout";
@@ -141,7 +141,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <NavLink to="/app/marketplace">{<PP>Dating</PP>}</NavLink>,
       "date",
       "/app/marketplace",
-      <ShoppingOutlined style={{ fontSize: "1rem" }} />
+      <FireOutlined style={{ fontSize: "1rem" }} />
     ),
     getItem(
       <NavLink

@@ -53,6 +53,9 @@ export const useCreateWish = () => {
                 isFavorite
                 buyFrequency
                 createdAt
+                wishType
+                countdownDate
+                externalURL
               }
             }
             ... on ResponseError {
@@ -141,6 +144,9 @@ export const useListWishlist = () => {
                   avatar
                   displayName
                 }
+                wishType
+                countdownDate
+                externalURL
               }
             }
             ... on ResponseError {
@@ -232,6 +238,9 @@ export const useGetWish = () => {
                   avatar
                   displayName
                 }
+                wishType
+                countdownDate
+                externalURL
               }
             }
             ... on ResponseError {
@@ -307,6 +316,9 @@ export const useUpdateWish = () => {
                 isFavorite
                 buyFrequency
                 createdAt
+                wishType
+                countdownDate
+                externalURL
               }
             }
             ... on ResponseError {

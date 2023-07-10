@@ -16,6 +16,8 @@ import {
   Avatar,
   Button,
   Carousel,
+  DatePicker,
+  Divider,
   Form,
   Input,
   InputNumber,
@@ -60,9 +62,11 @@ import { useWishState } from "@/state/wish.state";
 import {
   UpdateWishInput,
   WishBuyFrequency,
+  WishTypeEnum,
   WishlistVisibility,
 } from "@/api/graphql/types";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import dayjs, { Dayjs } from "dayjs";
 
 const formLayout = "horizontal";
 
@@ -88,6 +92,12 @@ const aboutRules: Rule[] = [
 ];
 
 const priceRules: Rule[] = [];
+const linkRules: Rule[] = [
+  {
+    type: "url",
+    message: "Must be a valid URL",
+  },
+];
 
 const contentStyle: React.CSSProperties = {
   margin: 0,
@@ -127,9 +137,13 @@ const NewWishPage = ({}: NewWishPageProps) => {
   const [wishName, setWishName] = useState("");
   const [wishAbout, setWishAbout] = useState("");
   const [stickerTitle, setStickerTitle] = useState("");
+  const [countdownDate, setCountdownDate] = useState<Dayjs | null>(null);
   const [wishVisibility, setWishVisibility] = useState<WishlistVisibility>(
     WishlistVisibility.FriendsOnly
   );
+  const [showAdvancedView, setShowAdvancedView] = useState(false);
+  const [wishType, setWishType] = useState<WishTypeEnum>(WishTypeEnum.Gift);
+  const [externalUrl, setExternalUrl] = useState("");
   const { token } = theme.useToken();
   const [isUploadingGraphics, setIsUploadingGraphics] = useState(false);
   const { backButtonText, updateButtonText } = useSharedTranslations();
@@ -146,6 +160,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
           wishID: wishIDFromURL,
         });
         if (wish) {
+          setShowAdvancedView(true);
           const { wishTitle, description, cookiePrice, stickerTitle } = wish;
           setWishName(wishTitle);
           setWishAbout(description);
@@ -159,6 +174,16 @@ const NewWishPage = ({}: NewWishPageProps) => {
           setBuyFrequency(wish.buyFrequency);
           setWishVisibility(wish.visibility);
           setFinishedLoadingEdit(true);
+          setWishType(wish.wishType);
+          if (wish.externalURL) setExternalUrl(wish.externalURL);
+          if (wish.countdownDate) {
+            console.log("wish.countdownDate", wish.countdownDate);
+            console.log(
+              "wish.countdownDate > dayjs",
+              dayjs(wish.countdownDate)
+            );
+            setCountdownDate(dayjs(wish.countdownDate));
+          }
         }
       };
       run();
@@ -183,6 +208,9 @@ const NewWishPage = ({}: NewWishPageProps) => {
       isFavorite: isFavorite,
       buyFrequency: buyFrequency,
       visibility: wishVisibility,
+      wishType: WishTypeEnum.Event,
+      externalURL: externalUrl,
+      countdownDate: countdownDate ? countdownDate.toISOString() : undefined,
     });
     setIsSubmitting(false);
     setSubmitted(true);
@@ -221,6 +249,15 @@ const NewWishPage = ({}: NewWishPageProps) => {
     }
     if (getWishData.wish.stickerMediaSet.medium !== stickerUrl) {
       updateParams.stickerGraphic = stickerUrl;
+    }
+    if (getWishData.wish.wishType !== wishType) {
+      updateParams.wishType = wishType;
+    }
+    if (getWishData.wish.externalURL !== externalUrl) {
+      updateParams.externalURL = externalUrl;
+    }
+    if (getWishData.wish.countdownDate !== countdownDate?.toISOString()) {
+      updateParams.countdownDate = countdownDate?.toISOString();
     }
     if (
       getWishData.wish.galleryMediaSet
@@ -417,11 +454,11 @@ const NewWishPage = ({}: NewWishPageProps) => {
         title={wishIDFromURL ? <PP>Edit Wish</PP> : <PP>New Wish</PP>}
         rightAction={
           <Switch
-            checkedChildren="Favorite"
-            unCheckedChildren="Regular"
-            checked={isFavorite}
+            checkedChildren="Advanced"
+            unCheckedChildren="Simple"
+            checked={showAdvancedView}
             onChange={(v) => {
-              setIsFavorite(v);
+              setShowAdvancedView(v);
             }}
           />
         }
@@ -489,6 +526,8 @@ const NewWishPage = ({}: NewWishPageProps) => {
                 stickerTitle: stickerTitle,
                 buyFrequency: buyFrequency,
                 visibility: wishVisibility,
+                link: externalUrl,
+                countdown: countdownDate,
               }}
               onFieldsChange={onFormLayoutChange}
               style={{ width: "100%" }}
@@ -528,7 +567,11 @@ const NewWishPage = ({}: NewWishPageProps) => {
                   </Carousel>
                 )}
 
-                <$Horizontal alignItems="center" style={{ marginTop: "10px" }}>
+                <$Horizontal
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  style={{ marginTop: "10px" }}
+                >
                   <Upload
                     showUploadList={false}
                     maxCount={4}
@@ -567,6 +610,16 @@ const NewWishPage = ({}: NewWishPageProps) => {
                       </span>
                     )}
                   </Upload>
+
+                  <Select
+                    style={{ width: "100px" }}
+                    onChange={(v) => setWishType(v)}
+                    value={wishType}
+                    options={[
+                      { value: WishTypeEnum.Event, label: "Event" },
+                      { value: WishTypeEnum.Gift, label: "Gift" },
+                    ]}
+                  />
                 </$Horizontal>
                 {graphicsUrl.length > 0 && (
                   <Popconfirm
@@ -591,6 +644,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
               </Form.Item>
               <Spacer height={isMobile ? "10px" : "20px"} />
               <Form.Item
+                required
                 label={<PP>Wish Name</PP>}
                 name="wishName"
                 rules={wishNameRules}
@@ -603,18 +657,43 @@ const NewWishPage = ({}: NewWishPageProps) => {
                   placeholder="What do you wish for?"
                 />
               </Form.Item>
-              <Form.Item label={<PP>About</PP>} name="about" rules={aboutRules}>
-                <Input.TextArea
-                  rows={3}
-                  value={wishAbout}
-                  onChange={(e) =>
-                    setWishAbout(e.target.value.slice(0, MAX_WISH_ABOUT_CHARS))
-                  }
-                  placeholder="Why you like this wish (optional)"
-                  style={{ resize: "none" }}
-                />
-              </Form.Item>
+              {showAdvancedView && (
+                <Form.Item
+                  label={<PP>About</PP>}
+                  name="about"
+                  rules={aboutRules}
+                >
+                  <Input.TextArea
+                    rows={3}
+                    value={wishAbout}
+                    onChange={(e) =>
+                      setWishAbout(
+                        e.target.value.slice(0, MAX_WISH_ABOUT_CHARS)
+                      )
+                    }
+                    placeholder="Why you like this wish (optional)"
+                    style={{ resize: "none" }}
+                  />
+                </Form.Item>
+              )}
+              {showAdvancedView && (
+                <Form.Item
+                  label={<PP>External link</PP>}
+                  name="link"
+                  rules={linkRules}
+                >
+                  <Input
+                    value={externalUrl}
+                    onChange={(e) => setExternalUrl(e.target.value)}
+                    placeholder="Link to event or shopping page"
+                    style={{ resize: "none" }}
+                  />
+                </Form.Item>
+              )}
+              <Divider />
+
               <Form.Item
+                required
                 label={<PP>Price in Cookies</PP>}
                 name="price"
                 rules={priceRules}
@@ -643,129 +722,179 @@ const NewWishPage = ({}: NewWishPageProps) => {
                   style={{ flex: 1, width: "100%" }}
                 />
               </Form.Item>
-              <Form.Item
-                label={<PP>Frequency</PP>}
-                name="buyFrequency"
-                tooltip={
-                  <PP>
-                    {`How often this wish price will be charged to the customer fan.`}
-                  </PP>
-                }
-              >
-                <Select
-                  value={buyFrequency}
-                  style={{ width: "100%" }}
-                  onChange={(v) => {
-                    setBuyFrequency(v);
-                  }}
-                  options={[
-                    {
-                      value: WishBuyFrequency.OneTime,
-                      label: "Once Time Payment",
-                    },
-                    {
-                      value: WishBuyFrequency.Weekly,
-                      label: "Weekly Recurring",
-                    },
-                    {
-                      value: WishBuyFrequency.Monthly,
-                      label: "Monthly Recurring",
-                    },
-                  ]}
-                />
-              </Form.Item>
-              <Form.Item
-                label={<PP>Visibility</PP>}
-                name="visibility"
-                tooltip={
-                  <PP>
-                    {`Do you want to allow anyone to buy this wish, or friends only?`}
-                  </PP>
-                }
-              >
-                <Select
-                  value={wishVisibility}
-                  style={{ width: "100%" }}
-                  onChange={(v) => {
-                    setWishVisibility(v);
-                  }}
-                  options={[
-                    {
-                      value: WishlistVisibility.FriendsOnly,
-                      label: "Friends Only",
-                    },
-                    {
-                      value: WishlistVisibility.PublicMarketplace,
-                      label: "Public Marketplace",
-                    },
-                  ]}
-                />
-              </Form.Item>
-              <Form.Item
-                name="stickerImage"
-                label={<PP>Sticker Graphic</PP>}
-                tooltip={
-                  <PP>
-                    Anyone who buys your wishlist item will get an exclusive
-                    sticker for chat
-                  </PP>
-                }
-              >
-                <Avatar
-                  size={64}
-                  src={stickerUrl}
-                  style={{ backgroundColor: token.colorPrimaryText }}
-                  icon={<HeartFilled />}
-                />
-                <Upload
-                  showUploadList={false}
-                  customRequest={async (options) => {
-                    try {
-                      await uploadSticker(options.file);
-                      if (options && options.onSuccess) {
-                        options.onSuccess({});
-                      }
-                    } catch (e) {
-                      if (options.onError) {
-                        options.onError(e as Error);
-                      }
-                    }
-                  }}
-                  beforeUpload={validateFile}
-                >
-                  <Button type="link" style={{ marginLeft: 16 }}>
-                    {isUploadingSticker ? (
-                      <Space direction="horizontal">
-                        <Spin />
-                        <Spacer width="5px" />
-                        <span>
-                          <PP>Uploading...</PP>
-                        </span>
-                      </Space>
-                    ) : (
-                      <span>
-                        <PP>Change Sticker</PP>
-                      </span>
-                    )}
-                  </Button>
-                </Upload>
-              </Form.Item>
-              <Form.Item
-                label={<PP>Sticker Name</PP>}
-                name="stickerTitle"
-                rules={wishNameRules}
-                tooltip="The name of the sticker that buyers will see in their chats."
-              >
-                <Input
-                  value={stickerTitle}
-                  onChange={(e) =>
-                    setStickerTitle(
-                      e.target.value.slice(0, MAX_WISH_NAME_CHARS)
-                    )
+              {showAdvancedView && (
+                <Form.Item
+                  label={<PP>Frequency</PP>}
+                  name="buyFrequency"
+                  tooltip={
+                    <PP>
+                      {`How often this wish price will be charged to the customer fan.`}
+                    </PP>
                   }
-                  placeholder="Sticker Name (optional)"
-                />
-              </Form.Item>
+                >
+                  <Select
+                    value={buyFrequency}
+                    style={{ width: "100%" }}
+                    onChange={(v) => {
+                      setBuyFrequency(v);
+                    }}
+                    options={[
+                      {
+                        value: WishBuyFrequency.OneTime,
+                        label: "Once Time Payment",
+                      },
+                      {
+                        value: WishBuyFrequency.Daily,
+                        label: "Daily Recurring",
+                      },
+                      {
+                        value: WishBuyFrequency.Weekly,
+                        label: "Weekly Recurring",
+                      },
+                      {
+                        value: WishBuyFrequency.Monthly,
+                        label: "Monthly Recurring",
+                      },
+                    ]}
+                  />
+                </Form.Item>
+              )}
+              <Divider />
+              {showAdvancedView && (
+                <Form.Item
+                  label={<PP>Visibility</PP>}
+                  name="visibility"
+                  tooltip={
+                    <PP>
+                      {`Do you want to allow anyone to buy this wish, or friends only?`}
+                    </PP>
+                  }
+                >
+                  <Select
+                    value={wishVisibility}
+                    style={{ width: "100%" }}
+                    onChange={(v) => {
+                      setWishVisibility(v);
+                    }}
+                    options={[
+                      {
+                        value: WishlistVisibility.FriendsOnly,
+                        label: "Friends Only",
+                      },
+                      {
+                        value: WishlistVisibility.PublicMarketplace,
+                        label: "Public Marketplace",
+                      },
+                    ]}
+                  />
+                </Form.Item>
+              )}
+              {showAdvancedView && (
+                <Form.Item
+                  label={<PP>Countdown</PP>}
+                  name="countdown"
+                  tooltip={
+                    <PP>{`Optional countdown timer for your event or wish.`}</PP>
+                  }
+                >
+                  <DatePicker
+                    showTime
+                    onChange={(v) => {
+                      console.log(v);
+                      setCountdownDate(v);
+                    }}
+                    onOk={(x) => console.log(x)}
+                  />
+                </Form.Item>
+              )}
+              {showAdvancedView && (
+                <Form.Item
+                  label={<PP>Favorite</PP>}
+                  name="favorite"
+                  tooltip={<PP>{`Is this a favorited wishlist item?`}</PP>}
+                >
+                  <Switch
+                    checkedChildren="Favorite"
+                    unCheckedChildren="Regular"
+                    checked={isFavorite}
+                    onChange={(v) => {
+                      setIsFavorite(v);
+                    }}
+                  />
+                </Form.Item>
+              )}
+              <Divider />
+              {showAdvancedView && (
+                <Form.Item
+                  name="stickerImage"
+                  label={<PP>Sticker Graphic</PP>}
+                  tooltip={
+                    <PP>
+                      Anyone who buys your wishlist item will get an exclusive
+                      sticker for chat
+                    </PP>
+                  }
+                >
+                  <Avatar
+                    size={64}
+                    src={stickerUrl}
+                    style={{ backgroundColor: token.colorPrimaryText }}
+                    icon={<HeartFilled />}
+                  />
+                  <Upload
+                    showUploadList={false}
+                    customRequest={async (options) => {
+                      try {
+                        await uploadSticker(options.file);
+                        if (options && options.onSuccess) {
+                          options.onSuccess({});
+                        }
+                      } catch (e) {
+                        if (options.onError) {
+                          options.onError(e as Error);
+                        }
+                      }
+                    }}
+                    beforeUpload={validateFile}
+                  >
+                    <Button type="link" style={{ marginLeft: 16 }}>
+                      {isUploadingSticker ? (
+                        <Space direction="horizontal">
+                          <Spin />
+                          <Spacer width="5px" />
+                          <span>
+                            <PP>Uploading...</PP>
+                          </span>
+                        </Space>
+                      ) : (
+                        <span>
+                          <PP>Change Sticker</PP>
+                        </span>
+                      )}
+                    </Button>
+                  </Upload>
+                </Form.Item>
+              )}
+
+              {showAdvancedView && (
+                <Form.Item
+                  label={<PP>Sticker Name</PP>}
+                  name="stickerTitle"
+                  rules={wishNameRules}
+                  tooltip="The name of the sticker that buyers will see in their chats."
+                >
+                  <Input
+                    value={stickerTitle}
+                    onChange={(e) =>
+                      setStickerTitle(
+                        e.target.value.slice(0, MAX_WISH_NAME_CHARS)
+                      )
+                    }
+                    placeholder="Sticker Name (optional)"
+                  />
+                </Form.Item>
+              )}
+
               {!isMobile && (
                 <Form.Item {...buttonItemLayout} name="submit">
                   {renderSubmitButton()}

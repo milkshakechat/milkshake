@@ -1,5 +1,10 @@
 import { ErrorLines } from "@/api/graphql/error-line";
-import { MediaSet, Wish, WishBuyFrequency } from "@/api/graphql/types";
+import {
+  MediaSet,
+  Wish,
+  WishBuyFrequency,
+  WishTypeEnum,
+} from "@/api/graphql/types";
 import { useWindowSize } from "@/api/utils/screen";
 import { AppLayoutPadding, Spacer } from "@/components/AppLayout/AppLayout";
 import BookmarkIcon from "@/components/BookmarkIcon/BookmarkIcon";
@@ -44,6 +49,8 @@ import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import ConfirmPurchase from "@/components/ConfirmPurchase/ConfirmPurchase";
+import QuickChat from "@/components/QuickChat/QuickChat";
+import Countdown from "antd/es/statistic/Countdown";
 
 export const WishPage = () => {
   const intl = useIntl();
@@ -53,6 +60,7 @@ export const WishPage = () => {
   const selfUser = useUserState((state) => state.user);
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
+  const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   const { token } = theme.useToken();
   const [confirmPurchaseModalOpen, setConfirmPurchaseModalOpen] =
     useState(false);
@@ -128,7 +136,10 @@ export const WishPage = () => {
                 src={set.medium}
                 height={isMobile ? "400px" : "500px"}
                 width="auto"
-                style={{ objectFit: "cover" }}
+                style={{
+                  objectFit: "cover",
+                  maxHeight: isMobile ? "400px" : "500px",
+                }}
               />
             </div>
           );
@@ -145,6 +156,22 @@ export const WishPage = () => {
     } else if (buyFrequency === WishBuyFrequency.Monthly) {
       return <Tag color="purple">Monthly Recurring</Tag>;
     }
+  };
+
+  const renderButtonActionText = () => {
+    if (spotlightWish.wishType === WishTypeEnum.Event) {
+      if (spotlightWish.buyFrequency === WishBuyFrequency.OneTime) {
+        return `ATTEND EVENT`;
+      }
+      return `SUBSCRIBE EVENT`;
+    }
+    if (spotlightWish.buyFrequency !== WishBuyFrequency.OneTime) {
+      return `SUBSCRIBE WISH`;
+    }
+    if (isMobile) {
+      return `BUY WISH`;
+    }
+    return `PURCHASE WISH`;
   };
 
   return (
@@ -200,9 +227,9 @@ export const WishPage = () => {
                       <Button>Edit</Button>
                     </NavLink>
                   ) : (
-                    <NavLink to={`/user?userID=${spotlightWish.creatorID}`}>
-                      <Button>Message</Button>
-                    </NavLink>
+                    <Button onClick={() => setChatDrawerOpen(true)}>
+                      Message
+                    </Button>
                   )}
                 </div>
               }
@@ -237,7 +264,38 @@ export const WishPage = () => {
             </$Horizontal>
 
             <p>{spotlightWish.description}</p>
+            {spotlightWish.countdownDate && (
+              <Countdown
+                value={new Date(spotlightWish.countdownDate).getTime()}
+                valueStyle={{
+                  fontSize: "0.8rem",
+                }}
+                prefix={
+                  <span
+                    style={{
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {"RSVP by"}
+                  </span>
+                }
+                onFinish={() => console.log("Finished countdown")}
+                style={{ color: token.colorWhite, marginBottom: "15px" }}
+              />
+            )}
             {renderBuyFrequencyTag(spotlightWish.buyFrequency)}
+            {spotlightWish.externalURL && (
+              <a
+                href={spotlightWish.externalURL}
+                style={{
+                  fontSize: "0.8rem",
+                  color: token.colorInfoHover,
+                  marginTop: "5px",
+                }}
+              >
+                More Info
+              </a>
+            )}
             <Divider />
             <h3>Unlocked Stickers</h3>
             <Spacer />
@@ -276,11 +334,7 @@ export const WishPage = () => {
                     style={{ fontWeight: "bold", flex: 1 }}
                     onClick={() => setConfirmPurchaseModalOpen(true)}
                   >
-                    {spotlightWish.buyFrequency !== WishBuyFrequency.OneTime
-                      ? `SUBSCRIBE WISH`
-                      : isMobile
-                      ? `BUY WISH`
-                      : `PURCHASE WISH`}
+                    {renderButtonActionText()}
                   </Button>
                   <$Horizontal
                     alignItems="center"
@@ -303,6 +357,11 @@ export const WishPage = () => {
         isOpen={confirmPurchaseModalOpen}
         onClose={() => setConfirmPurchaseModalOpen(false)}
         wish={spotlightWish}
+      />
+      <QuickChat
+        isOpen={chatDrawerOpen}
+        onClose={() => setChatDrawerOpen(false)}
+        user={spotlightWish.author ? spotlightWish.author : null}
       />
     </>
   );

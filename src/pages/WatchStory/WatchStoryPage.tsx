@@ -30,13 +30,9 @@ import {
   LeftOutlined,
   RightOutlined,
   GiftFilled,
-  GiftOutlined,
-  SoundOutlined,
-  ShareAltOutlined,
   SoundFilled,
-  HeartOutlined,
+  ShareAltOutlined,
   HeartFilled,
-  MessageOutlined,
   MessageFilled,
 } from "@ant-design/icons";
 import { Spacer } from "@/components/AppLayout/AppLayout";
@@ -53,6 +49,7 @@ import dayjs from "dayjs";
 import shallow from "zustand/shallow";
 import { WATCH_STORY_BACK_HOME_ROUTE } from "@/config.env";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import QuickChat from "@/components/QuickChat/QuickChat";
 
 const EMPTY_PLAYER = {
   player: null,
@@ -81,6 +78,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
   const [srcExistStatus, setSrcExistStatus] = useState<SRC_STATE_STATUS>(
     SRC_STATE_STATUS.INITIAL
   );
+  const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   const videoControllerRef = useRef<ShakePlayerRef>(EMPTY_PLAYER);
   const localStories = useStoriesState((state) => state.stories);
   const localStory = localStories.find((story) => story.id === storyIDFromURL);
@@ -249,7 +247,11 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
     <$Vertical
       alignItems="center"
       justifyContent="stretch"
-      style={{ width: "100%", height: "100%" }}
+      style={{
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0,0,0,0.8)",
+      }}
     >
       <div
         style={{
@@ -283,10 +285,10 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
         <div
           style={{
             width: "100%",
-            height: "85vh",
+            height: "100vh",
             display: "flex",
             flexDirection: "column",
-            justifyContent: "flex-start",
+            justifyContent: "center",
             alignItems: "center",
             position: "relative",
             maxWidth: isMobile ? "none" : "800px",
@@ -351,7 +353,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
           <div
             style={{
               width: "100%",
-              backgroundColor: "rgba(0,0,0,0)", //"rgba(202, 59, 59, 0.5)",
+              // backgroundColor: "rgba(0,0,0,0)", //"rgba(202, 59, 59, 0.5)",
               padding: "10px",
             }}
           >
@@ -368,8 +370,12 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   const watchStoryBackHomeRoute = window.localStorage.getItem(
                     WATCH_STORY_BACK_HOME_ROUTE
                   );
+                  console.log(
+                    `watchStoryBackHomeRoute`,
+                    watchStoryBackHomeRoute
+                  );
                   if (watchStoryBackHomeRoute) {
-                    navigate(watchStoryBackHomeRoute);
+                    window.location.href = watchStoryBackHomeRoute;
                   } else {
                     navigate("/app/chats");
                   }
@@ -392,7 +398,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   style={{ width: "100%", flex: 1 }}
                 />
                 <i
-                  style={{ marginTop: "5px", color: token.colorTextLabel }}
+                  style={{ marginTop: "5px", color: token.colorWhite }}
                 >{`Posted ${dayjs().to(
                   dayjs(spotlightStory.createdAt)
                 )} (${getTimeRemaining(spotlightStory.expiresAt)})`}</i>
@@ -449,17 +455,56 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
               alignItems: "flex-end",
             }}
           >
+            <$Horizontal
+              spacing={3}
+              style={{
+                zIndex: 1,
+                position: "absolute",
+                left: 10,
+                bottom: 20,
+                color: token.colorWhite,
+              }}
+            >
+              <Avatar
+                src={spotlightStory.author.avatar}
+                style={{ backgroundColor: token.colorPrimaryText }}
+                size="large"
+                onClick={visitUser}
+              />
+              <$Vertical
+                style={{
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  visitUser();
+                }}
+              >
+                <PP>
+                  <b>
+                    {spotlightStory.author.displayName ||
+                      spotlightStory.author.username}
+                  </b>
+                </PP>
+                <PP>
+                  <i>{`@${spotlightStory.author.username}`}</i>
+                </PP>
+              </$Vertical>
+            </$Horizontal>
             <$Vertical
               style={{
                 zIndex: 1,
                 position: "absolute",
                 alignItems: "flex-end",
+                bottom: 20,
               }}
             >
               <$Vertical
                 spacing={3}
                 style={{
-                  backgroundColor: `${token.colorBgContainer}9A`,
+                  // backgroundColor: `${token.colorBgContainer}9A`,
                   padding: "10px",
                   borderRadius: "10px 0px 0px 0px",
                 }}
@@ -474,11 +519,11 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                     }}
                     style={{
                       fontSize: "2rem",
-                      color: token.colorPrimaryActive,
+                      color: token.colorErrorActive,
                     }}
                   />
                 ) : (
-                  <HeartOutlined
+                  <HeartFilled
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
@@ -487,28 +532,29 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                     }}
                     style={{
                       fontSize: "2rem",
-                      color: token.colorTextPlaceholder,
+                      color: token.colorWhite,
                     }}
                   />
                 )}
 
-                <MessageOutlined
+                <MessageFilled
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    setChatDrawerOpen(true);
                   }}
                   style={{
-                    color: token.colorTextPlaceholder,
+                    color: token.colorWhite,
                     fontSize: "2rem",
                   }}
                 />
-                <GiftOutlined
+                <GiftFilled
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                   }}
                   style={{
-                    color: token.colorTextPlaceholder,
+                    color: token.colorWhite,
                     fontSize: "2rem",
                   }}
                 />
@@ -518,27 +564,28 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                     e.stopPropagation();
                   }}
                   style={{
-                    color: token.colorTextPlaceholder,
+                    color: token.colorWhite,
                     fontSize: "2rem",
                   }}
                 />
-                <SoundOutlined
+                <SoundFilled
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     toggleMuteVideo();
                   }}
                   style={{
-                    color: token.colorTextPlaceholder,
+                    color: token.colorWhite,
                     fontSize: "2rem",
                   }}
                 />
               </$Vertical>
+
               {authorStories.length > 1 && (
                 <$Horizontal
                   spacing={3}
                   style={{
-                    backgroundColor: `${token.colorBgContainer}9A`,
+                    // backgroundColor: `${token.colorBgContainer}9A`,
                     padding: "10px",
                     borderRadius: "10px 0px 0px 0px",
                   }}
@@ -550,8 +597,8 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                       paginateStory(-1);
                     }}
                     style={{
-                      fontSize: "1.3rem",
-                      color: token.colorTextPlaceholder,
+                      fontSize: "1.5rem",
+                      color: token.colorWhite,
                     }}
                   />
                   <RightOutlined
@@ -561,8 +608,8 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                       paginateStory(1);
                     }}
                     style={{
-                      fontSize: "1.3rem",
-                      color: token.colorTextPlaceholder,
+                      fontSize: "1.5rem",
+                      color: token.colorWhite,
                     }}
                   />
                 </$Horizontal>
@@ -602,7 +649,8 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
               }}
             ></div>
           </div>
-          <div
+
+          {/* <div
             style={{
               width: "100%",
               padding: "10px",
@@ -676,9 +724,25 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
               }}
               style={{ width: "100%", resize: "none" }}
             ></Input.TextArea>
-          </div>
+          </div> */}
         </div>
       </div>
+      {selfUser && spotlightStory.author.id !== selfUser.id && (
+        <QuickChat
+          isOpen={chatDrawerOpen}
+          onClose={() => setChatDrawerOpen(false)}
+          user={
+            spotlightStory.author
+              ? {
+                  id: spotlightStory.author.id,
+                  avatar: spotlightStory.author.avatar,
+                  username: spotlightStory.author.username,
+                  displayName: spotlightStory.author.displayName,
+                }
+              : null
+          }
+        />
+      )}
     </$Vertical>
   );
 };

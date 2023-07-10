@@ -166,14 +166,27 @@ export const ConfirmPurchase = ({
                   value={suggestedPrice}
                   prefix={<LogoCookie width="20px" />}
                   suffix={
-                    <EditOutlined
+                    <$Horizontal
                       onClick={() => setSuggestMode(true)}
-                      style={{
-                        fontSize: "1rem",
-                        color: token.colorTextDescription,
-                        marginLeft: "5px",
-                      }}
-                    />
+                      alignItems="center"
+                    >
+                      <EditOutlined
+                        style={{
+                          fontSize: "1rem",
+                          color: token.colorTextDescription,
+                          marginLeft: "5px",
+                        }}
+                      />
+                      <span
+                        style={{
+                          color: token.colorTextDescription,
+                          fontSize: "0.8rem",
+                          marginLeft: "5px",
+                        }}
+                      >
+                        Suggest
+                      </span>
+                    </$Horizontal>
                   }
                   style={{ flex: 1 }}
                 />

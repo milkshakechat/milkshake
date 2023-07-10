@@ -1,5 +1,5 @@
 import { ErrorLines } from "@/api/graphql/error-line";
-import { Wish, WishBuyFrequency } from "@/api/graphql/types";
+import { MediaSet, Wish, WishBuyFrequency } from "@/api/graphql/types";
 import { useWindowSize } from "@/api/utils/screen";
 import { AppLayoutPadding, Spacer } from "@/components/AppLayout/AppLayout";
 import BookmarkIcon from "@/components/BookmarkIcon/BookmarkIcon";
@@ -27,6 +27,7 @@ import {
   Badge,
   Tag,
   Divider,
+  Image,
   Alert,
 } from "antd";
 import { useEffect, useState } from "react";
@@ -77,32 +78,62 @@ export const WishPage = () => {
     }
   }, [wishIDFromURL]);
 
+  const fillGallery = (gallery: MediaSet[]) => {
+    if (gallery.length === 1) {
+      return [...gallery, ...gallery];
+    } else {
+      return gallery;
+    }
+  };
+
   if (!spotlightWish) {
     return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
 
   const renderImageGallery = () => {
     return (
-      <Carousel
-        afterChange={(slideNum: number) => {
-          console.log(slideNum);
-        }}
+      <$Horizontal
+        justifyContent="flex-start"
+        style={{ width: "100%", overflowX: "scroll", overflowY: "hidden" }}
       >
-        {spotlightWish.galleryMediaSet.map((set) => {
+        {fillGallery(spotlightWish.galleryMediaSet).map((set) => {
           return (
-            <div key={set.small}>
-              <img
+            <div
+              key={set.small}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "flex-start",
+                alignContent: "center",
+                overflow: "hidden",
+                backgroundColor: token.colorBgElevated,
+                height: isMobile ? "400px" : "500px",
+                maxHeight: isMobile ? "400px" : "500px",
+                width: "auto",
+                flexShrink: 0,
+                minWidth: "auto", // Fixes issue on mobile Safari
+                marginRight: "3px",
+                position: "relative",
+              }}
+            >
+              {/* <img
                 src={set.medium}
                 style={{
                   width: "100%",
                   height: isMobile ? "160px" : "250px",
                   objectFit: "cover",
                 }}
+              />} */}
+              <Image
+                src={set.medium}
+                height={isMobile ? "400px" : "500px"}
+                width="auto"
+                style={{ objectFit: "cover" }}
               />
             </div>
           );
         })}
-      </Carousel>
+      </$Horizontal>
     );
   };
 
@@ -156,7 +187,11 @@ export const WishPage = () => {
               glowColor={token.colorPrimaryText}
               backButton={true}
               backButtonAction={() => {
-                navigate(-1);
+                if (isOwnProfile) {
+                  navigate("/app/profile?view=wishlist");
+                } else {
+                  navigate(-1);
+                }
               }}
               actionButton={
                 <div>
@@ -165,7 +200,9 @@ export const WishPage = () => {
                       <Button>Edit</Button>
                     </NavLink>
                   ) : (
-                    <Button>Bookmark</Button>
+                    <NavLink to={`/user?userID=${spotlightWish.creatorID}`}>
+                      <Button>Message</Button>
+                    </NavLink>
                   )}
                 </div>
               }
@@ -184,7 +221,7 @@ export const WishPage = () => {
             ) : (
               renderImageGallery()
             )}
-
+            {!isMobile && <Spacer />}
             <$Horizontal justifyContent="space-between" alignItems="center">
               <h2>{spotlightWish.wishTitle}</h2>
               <$Horizontal alignItems="center" style={{ marginLeft: "20px " }}>

@@ -28,11 +28,13 @@ import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import { UserID, localeEnum } from "@milkshakechat/helpers";
 import { useListChatRooms } from "./useChat";
 import { useNotificationsState } from "@/state/notifications.state";
+import { usePreloadImages } from "./usePreloadImages";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
+  const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
   const setGQLUser = useUserState((state) => state.setGQLUser);
   const { switchLocale, switchTheme, switchColor } = useStyleConfigGlobal(
     (state) => ({
@@ -115,6 +117,21 @@ export const useProfile = () => {
                 data.getMyProfile.__typename === "GetMyProfileResponseSuccess"
               ) {
                 resolve(data.getMyProfile);
+                preloadImages([
+                  data.getMyProfile.user.avatar,
+                  ...data.getMyProfile.user.stories.map(
+                    (story) => story.author.avatar || ""
+                  ),
+                  ...data.getMyProfile.user.stories.map(
+                    (story) => story.attachments[0]?.url || ""
+                  ),
+                  ...data.getMyProfile.user.stories.map(
+                    (story) => story.thumbnail || ""
+                  ),
+                  ...data.getMyProfile.user.stories.map(
+                    (story) => story.showcaseThumbnail || ""
+                  ),
+                ]);
               }
             })
             .catch((graphQLError: Error) => {
@@ -270,6 +287,7 @@ export const useListContacts = () => {
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
   const setContacts = useUserState((state) => state.setContacts);
+  const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
   const setGlobalDirectory = useUserState((state) => state.setGlobalDirectory);
   const [lastRequestTimestamp, setLastRequestTimestamp] = useState<string>(
     new Date().toISOString()
@@ -342,7 +360,10 @@ export const useListContacts = () => {
       setData(result);
       setContacts(result.contacts);
       setGlobalDirectory(result.globalDirectory);
-
+      preloadImages([
+        ...result.contacts.map((contact) => contact.avatar || ""),
+        ...result.globalDirectory.map((contact) => contact.avatar || ""),
+      ]);
       if (selfUser) {
         fetchChatRooms({
           contacts: result.contacts,
@@ -374,6 +395,7 @@ export const useFetchRecentNotifications = () => {
   const [data, setData] = useState<FetchRecentNotificationsResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
+  const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
   const [lastRequestTimestamp, setLastRequestTimestamp] = useState<string>(
     new Date().toISOString()
   );
@@ -444,6 +466,11 @@ export const useFetchRecentNotifications = () => {
       setData(result);
       console.log(`result.notifications`, result.notifications);
       setInitialNotifications(result.notifications);
+      preloadImages([
+        ...result.notifications.map(
+          (notification) => notification.thumbnail || ""
+        ),
+      ]);
     } catch (e) {
       console.log(e);
     }

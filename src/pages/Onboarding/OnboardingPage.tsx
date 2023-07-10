@@ -60,7 +60,7 @@ export const SUGARBABY_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fsugarbaby.png?alt=media";
 export const HONIES_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fhonies.png?alt=media";
-const DATING_APPS_IMAGE =
+export const DATING_APPS_IMAGE =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/app-public-shared%2Fdatingapps.png?alt=media";
 
 interface OnboardingPageProps {

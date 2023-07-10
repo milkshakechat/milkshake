@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { shallow } from "zustand/shallow";
 import { useGraphqlClient } from "./GraphQLSocketProvider";
 import { useListWishlist } from "@/hooks/useWish";
+import { usePreloadImages } from "@/hooks/usePreloadImages";
 
 interface Props {
   children: React.ReactNode;

@@ -195,10 +195,14 @@ const LoginPage = () => {
         }}
       >
         <Spacer height="5vh" flexOff />
+
         <img
           src={SUGARBABY_IMAGE}
-          style={{ width: isMobile ? "270px" : "450px" }}
+          style={{
+            width: isMobile ? "250px" : "350px",
+          }}
         />
+
         <$Vertical
           style={{
             fontWeight: 900,

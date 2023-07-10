@@ -128,7 +128,11 @@ export const ShoppingPage = () => {
   useEffect(() => {
     const ref = wishRefs.current.find((ref) => ref?.id === lastIntersectedId);
     if (ref) {
-      ref.scrollIntoView({ behavior: "smooth" });
+      ref.scrollIntoView({
+        behavior: "auto",
+        block: "nearest",
+        inline: "nearest",
+      });
     }
   }, []);
 

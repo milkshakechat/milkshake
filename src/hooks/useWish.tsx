@@ -18,6 +18,7 @@ import {
 } from "../api/graphql/types";
 import { useWishState } from "@/state/wish.state";
 import { useUserState } from "@/state/user.state";
+import { usePreloadImages } from "./usePreloadImages";
 
 export const useCreateWish = () => {
   const [data, setData] = useState<CreateWishResponseSuccess>();
@@ -102,7 +103,7 @@ export const useListWishlist = () => {
   const [data, setData] = useState<ListWishlistResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
-
+  const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
   const setMyWishlist = useWishState((state) => state.setMyWishlist);
   const setMarketplaceWishlist = useWishState(
     (state) => state.setMarketplaceWishlist
@@ -190,6 +191,12 @@ export const useListWishlist = () => {
         // assumes no userID means all public marketplace wishlists
         setMarketplaceWishlist(result.wishlist);
       }
+      preloadImages([
+        ...result.wishlist.map((w) => w.thumbnail),
+        ...result.wishlist.flatMap((w) =>
+          w.galleryMediaSet.map((m) => m.medium)
+        ),
+      ]);
     } catch (e) {
       console.log(e);
     }

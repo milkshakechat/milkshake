@@ -17,6 +17,7 @@ import { useStoriesState } from "@/state/stories.state";
 import { useUserState } from "@/state/user.state";
 import gql from "graphql-tag";
 import { useState } from "react";
+import { usePreloadImages } from "./usePreloadImages";
 
 export const useStoryCreate = () => {
   const [data, setData] = useState<CreateStoryResponseSuccess>();
@@ -193,7 +194,7 @@ export const useFetchStoryFeedQuery = () => {
   );
   const client = useGraphqlClient();
   const setStories = useStoriesState((state) => state.setStories);
-
+  const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
   const runQuery = async ({ refresh }: { refresh?: boolean }) => {
     console.log(`useFetchStoryFeedQuery()...`);
     const now = new Date().toISOString();
@@ -270,6 +271,12 @@ export const useFetchStoryFeedQuery = () => {
       );
       setData(result);
       setStories(result.stories);
+      preloadImages([
+        ...result.stories.map((story) => story.thumbnail || ""),
+        ...result.stories.map((story) => story.showcaseThumbnail || ""),
+        ...result.stories.map((story) => story.attachments[0]?.thumbnail || ""),
+        ...result.stories.map((story) => story.attachments[0]?.url || ""),
+      ]);
     } catch (e) {
       console.log(e);
     }

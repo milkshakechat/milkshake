@@ -42,6 +42,8 @@ const StoriesHeader = () => {
           backgroundColor: token.colorPrimaryBg,
           border: `3px solid ${token.colorPrimaryBgHover}`,
           cursor: "pointer",
+          minWidth: 75,
+          minHeight: 75,
         }}
       />
       {

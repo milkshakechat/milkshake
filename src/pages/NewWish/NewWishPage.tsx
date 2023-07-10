@@ -72,14 +72,14 @@ interface StickerInitialFormValue {
   cookiePrice: number;
 }
 
-const MAX_WISH_NAME_CHARS = 40;
+const MAX_WISH_NAME_CHARS = 60;
 const wishNameRules: Rule[] = [
   {
     max: MAX_WISH_NAME_CHARS,
     message: `Wish name must be less than ${MAX_WISH_NAME_CHARS} characters`,
   },
 ];
-const MAX_WISH_ABOUT_CHARS = 280;
+const MAX_WISH_ABOUT_CHARS = 560;
 const aboutRules: Rule[] = [
   {
     max: MAX_WISH_ABOUT_CHARS,

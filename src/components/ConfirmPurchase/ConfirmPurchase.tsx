@@ -16,6 +16,7 @@ import {
   Statistic,
   Tag,
   message,
+  InputNumber,
   theme,
 } from "antd";
 import { useIntl } from "react-intl";
@@ -26,6 +27,8 @@ import LogoCookie from "../LogoText/LogoCookie";
 import { Wish, WishBuyFrequency } from "@/api/graphql/types";
 import { Spacer } from "../AppLayout/AppLayout";
 import { cookieToUSD } from "@milkshakechat/helpers";
+import { CloseOutlined, EditOutlined } from "@ant-design/icons";
+import { useState } from "react";
 
 const USER_COOKIE_JAR_BALANCE = 253;
 
@@ -49,6 +52,8 @@ export const ConfirmPurchase = ({
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
   const { token } = theme.useToken();
+  const [suggestedPrice, setSuggestedPrice] = useState(wish.cookiePrice);
+  const [suggestMode, setSuggestMode] = useState(false);
 
   const renderBuyFrequencyTag = (buyFrequency: WishBuyFrequency) => {
     if (buyFrequency === WishBuyFrequency.OneTime) {
@@ -69,7 +74,7 @@ export const ConfirmPurchase = ({
             color: token.colorTextDescription,
             fontSize: "0.9rem",
           }}
-        >{`$${cookieToUSD(wish.cookiePrice)} USD`}</span>
+        >{`$${cookieToUSD(suggestedPrice)} USD`}</span>
       );
     }
     return null;
@@ -80,7 +85,13 @@ export const ConfirmPurchase = ({
       title="Confirm Purchase?"
       placement="bottom"
       width={500}
-      onClose={onClose}
+      onClose={() => {
+        if (onClose) {
+          onClose();
+        }
+        setSuggestedPrice(wish.cookiePrice);
+        setSuggestMode(false);
+      }}
       open={isOpen}
       height={"70vh"}
       extra={
@@ -108,12 +119,65 @@ export const ConfirmPurchase = ({
         >
           <$Vertical>
             <$Horizontal justifyContent="space-between">
-              <Statistic
-                title={`Buy Wish from ${wish.author?.displayName}`}
-                value={wish.cookiePrice}
-                prefix={<LogoCookie width="20px" />}
-                style={{ flex: 1 }}
-              />
+              {suggestMode ? (
+                <$Vertical>
+                  <span
+                    style={{
+                      color: token.colorTextDescription,
+                      fontSize: "1rem",
+                    }}
+                  >{`Offer a custom amount`}</span>
+                  <$Horizontal alignItems="center" justifyContent="flex-start">
+                    <InputNumber
+                      addonBefore={<LogoCookie width="16px" />}
+                      addonAfter={
+                        <CloseOutlined
+                          onClick={() => {
+                            setSuggestedPrice(wish.cookiePrice);
+                            setSuggestMode(false);
+                          }}
+                        />
+                      }
+                      value={suggestedPrice}
+                      onChange={(value) => {
+                        if (value) {
+                          setSuggestedPrice(value);
+                        }
+                      }}
+                      style={{ margin: "5px 0px", maxWidth: "70%" }}
+                      type="tel"
+                      min={1}
+                      max={999999}
+                    />
+                    {suggestMode && (
+                      <Button
+                        onClick={() => setSuggestMode(false)}
+                        type="link"
+                        size="small"
+                      >
+                        Save
+                      </Button>
+                    )}
+                  </$Horizontal>
+                </$Vertical>
+              ) : (
+                <Statistic
+                  title={`Buy Wish from ${wish.author?.displayName}`}
+                  value={suggestedPrice}
+                  prefix={<LogoCookie width="20px" />}
+                  suffix={
+                    <EditOutlined
+                      onClick={() => setSuggestMode(true)}
+                      style={{
+                        fontSize: "1rem",
+                        color: token.colorTextDescription,
+                        marginLeft: "5px",
+                      }}
+                    />
+                  }
+                  style={{ flex: 1 }}
+                />
+              )}
               <Avatar
                 src={wish.author?.avatar}
                 style={{ backgroundColor: token.colorPrimaryActive }}

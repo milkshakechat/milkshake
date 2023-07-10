@@ -38,7 +38,7 @@ export const useCheckMerchantStatus = () => {
                 name
                 email
                 hasMerchantPrivilege
-                stripeAccountID
+                stripeMerchantID
                 stripePortalUrl
                 anythingDue
                 anythingErrors

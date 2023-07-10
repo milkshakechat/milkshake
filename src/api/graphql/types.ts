@@ -301,7 +301,7 @@ export type MerchantOnboardingStatusSummary = {
   email: Scalars['String']['output'];
   hasMerchantPrivilege: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
-  stripeAccountID?: Maybe<Scalars['ID']['output']>;
+  stripeMerchantID?: Maybe<Scalars['ID']['output']>;
   stripePortalUrl?: Maybe<Scalars['String']['output']>;
   userID: Scalars['ID']['output'];
   walletID: Scalars['ID']['output'];
@@ -786,7 +786,7 @@ export type CheckMerchantStatusQueryVariables = Exact<{
 }>;
 
 
-export type CheckMerchantStatusQuery = { __typename?: 'Query', checkMerchantStatus: { __typename: 'CheckMerchantStatusResponseSuccess', summary: { __typename?: 'MerchantOnboardingStatusSummary', userID: string, walletID: string, name: string, email: string, hasMerchantPrivilege: boolean, stripeAccountID?: string | null, stripePortalUrl?: string | null, anythingDue: boolean, anythingErrors: boolean, capabilities: { __typename?: 'MerchantOnboardingStatusCapabilities', card_payments?: string | null, transfers?: string | null, charges_enabled: boolean, payouts_enabled: boolean } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type CheckMerchantStatusQuery = { __typename?: 'Query', checkMerchantStatus: { __typename: 'CheckMerchantStatusResponseSuccess', summary: { __typename?: 'MerchantOnboardingStatusSummary', userID: string, walletID: string, name: string, email: string, hasMerchantPrivilege: boolean, stripeMerchantID?: string | null, stripePortalUrl?: string | null, anythingDue: boolean, anythingErrors: boolean, capabilities: { __typename?: 'MerchantOnboardingStatusCapabilities', card_payments?: string | null, transfers?: string | null, charges_enabled: boolean, payouts_enabled: boolean } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type RequestMerchantOnboardingMutationVariables = Exact<{ [key: string]: never; }>;
 

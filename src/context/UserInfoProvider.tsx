@@ -13,6 +13,7 @@ import { shallow } from "zustand/shallow";
 import { useGraphqlClient } from "./GraphQLSocketProvider";
 import { useListWishlist } from "@/hooks/useWish";
 import { usePreloadImages } from "@/hooks/usePreloadImages";
+import { useNotifications } from "@/hooks/useNotifications";
 
 interface Props {
   children: React.ReactNode;
@@ -25,9 +26,10 @@ export const UserInfoProvider = ({ children }: Props) => {
   const selfUser = useUserState((state) => state.user);
   const client = useGraphqlClient();
   const { runQuery: runFetchStoryFeedQuery } = useFetchStoryFeedQuery();
+  const notifs = useNotifications();
 
-  const { runQuery: runFetchRecentNotificationsQuery } =
-    useFetchRecentNotifications();
+  // const { runQuery: runFetchRecentNotificationsQuery } =
+  //   useFetchRecentNotifications();
 
   const { runQuery: runListWishlistQuery } = useListWishlist();
 
@@ -76,9 +78,9 @@ export const UserInfoProvider = ({ children }: Props) => {
         runFetchStoryFeedQuery({
           refresh,
         });
-        runFetchRecentNotificationsQuery({
-          refresh,
-        });
+        // runFetchRecentNotificationsQuery({
+        //   refresh,
+        // });
         // personal wishlist
         runListWishlistQuery({
           userID: selfUser.id,

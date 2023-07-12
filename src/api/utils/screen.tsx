@@ -21,6 +21,7 @@ import {
   UserOutlined,
   BellOutlined,
   SettingOutlined,
+  ReloadOutlined,
   MenuOutlined,
   MessageOutlined,
   GiftOutlined,
@@ -41,6 +42,7 @@ import PP from "@/i18n/PlaceholderPrint";
 import Sider from "antd/es/layout/Sider";
 import LogoText from "@/components/LogoText/LogoText";
 import { ShoppingOutlined } from "@ant-design/icons";
+import { useNotificationsState } from "@/state/notifications.state";
 
 type detectMobileAddressBarSettingsType = {
   userAgent: "ios" | "android" | "other";
@@ -213,7 +215,7 @@ export const StickyAdaptiveMobileFooter = ({
   const { addressBarHeight } = detectMobileAddressBarSettings();
   const { isStandalone } = useCheckStandaloneModePWA();
   const user = useUserState((state) => state.user);
-
+  const notifications = useNotificationsState((state) => state.notifications);
   const navigate = useNavigate();
 
   const showMobileFooter =
@@ -230,6 +232,10 @@ export const StickyAdaptiveMobileFooter = ({
       return acc + (curr.unreadCount ? 1 : 0);
     }, 0)
   );
+  const totalUnreadNotifsCount = notifications.filter(
+    (n) => !n.markedRead
+  ).length;
+
   const { themeType, themeColor } = useStyleConfigGlobal(
     (state) => ({
       themeType: state.themeType,
@@ -440,7 +446,40 @@ export const StickyAdaptiveMobileFooter = ({
                                 />
                               </$Horizontal>
                             ) : null}
-                            {item.key !== "messages" && item.icon}
+
+                            {item.key === "profile" &&
+                              totalUnreadNotifsCount === 0 && (
+                                <UserOutlined
+                                  style={{
+                                    fontSize: "1rem",
+                                  }}
+                                />
+                              )}
+
+                            {item.key === "profile" &&
+                            totalUnreadNotifsCount !== 0 ? (
+                              <$Horizontal
+                                spacing={1}
+                                style={{
+                                  width: "100%",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <UserOutlined
+                                  style={{
+                                    fontSize: "1rem",
+                                  }}
+                                />
+                                <Badge
+                                  size="small"
+                                  count={totalUnreadNotifsCount}
+                                />
+                              </$Horizontal>
+                            ) : null}
+                            {item.key !== "messages" &&
+                              item.key !== "profile" &&
+                              item.icon}
                           </Button>
                         </NavLink>
                       );
@@ -689,6 +728,23 @@ export const StickyAdaptiveMobileFooter = ({
                   {settingsText}
                 </Button>
               </NavLink>
+              <Button
+                size="large"
+                ghost
+                icon={<ReloadOutlined style={{ fontSize: "1rem" }} />}
+                onClick={() => {
+                  window.location.reload();
+                }}
+                style={{
+                  border: "0px solid white",
+                  width: "100%",
+                  textAlign: "left",
+                  marginBottom: "10px",
+                  color: token.colorTextBase,
+                }}
+              >
+                <PP>Refresh</PP>
+              </Button>
             </List>
           </$Vertical>
           <Popconfirm

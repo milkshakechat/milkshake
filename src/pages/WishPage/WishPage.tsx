@@ -3,7 +3,7 @@ import {
   MediaSet,
   Wish,
   WishBuyFrequency,
-  WishTypeEnum,
+  WishTypeEnum as WishTypeEnumGQL,
 } from "@/api/graphql/types";
 import { useWindowSize } from "@/api/utils/screen";
 import { AppLayoutPadding, Spacer } from "@/components/AppLayout/AppLayout";
@@ -51,6 +51,7 @@ import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import ConfirmPurchase from "@/components/ConfirmPurchase/ConfirmPurchase";
 import QuickChat from "@/components/QuickChat/QuickChat";
 import Countdown from "antd/es/statistic/Countdown";
+import { WishTypeEnum } from "../../api/graphql/types";
 
 export const WishPage = () => {
   const intl = useIntl();
@@ -72,9 +73,20 @@ export const WishPage = () => {
     spotlightWish &&
     spotlightWish.author &&
     selfUser.id === spotlightWish.author.id;
+  const marketplaceWishlist = useWishState(
+    (state) => state.marketplaceWishlist
+  );
+
   useEffect(() => {
     if (wishIDFromURL) {
       const run = async () => {
+        let foundLocally = false;
+        marketplaceWishlist.forEach((wish) => {
+          if (wish.id === wishIDFromURL) {
+            setSpotlightWish(wish);
+            foundLocally = true;
+          }
+        });
         const wish = await runGetWishQuery({
           wishID: wishIDFromURL,
         });
@@ -104,27 +116,28 @@ export const WishPage = () => {
         justifyContent="flex-start"
         style={{ width: "100%", overflowX: "scroll", overflowY: "hidden" }}
       >
-        {fillGallery(spotlightWish.galleryMediaSet).map((set) => {
-          return (
-            <div
-              key={set.small}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "flex-start",
-                alignContent: "center",
-                overflow: "hidden",
-                backgroundColor: token.colorBgElevated,
-                height: isMobile ? "400px" : "500px",
-                maxHeight: isMobile ? "400px" : "500px",
-                width: "auto",
-                flexShrink: 0,
-                minWidth: "auto", // Fixes issue on mobile Safari
-                marginRight: "3px",
-                position: "relative",
-              }}
-            >
-              {/* <img
+        <Image.PreviewGroup>
+          {fillGallery(spotlightWish.galleryMediaSet).map((set) => {
+            return (
+              <div
+                key={set.small}
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  alignContent: "center",
+                  overflow: "hidden",
+                  backgroundColor: token.colorBgSpotlight,
+                  height: isMobile ? "400px" : "500px",
+                  maxHeight: isMobile ? "400px" : "500px",
+                  width: "100%",
+                  flexShrink: 0,
+                  minWidth: "auto", // Fixes issue on mobile Safari
+                  marginRight: "3px",
+                  position: "relative",
+                }}
+              >
+                {/* <img
                 src={set.medium}
                 style={{
                   width: "100%",
@@ -132,18 +145,19 @@ export const WishPage = () => {
                   objectFit: "cover",
                 }}
               />} */}
-              <Image
-                src={set.medium}
-                height={isMobile ? "400px" : "500px"}
-                width="auto"
-                style={{
-                  objectFit: "cover",
-                  maxHeight: isMobile ? "400px" : "500px",
-                }}
-              />
-            </div>
-          );
-        })}
+                <Image
+                  src={set.medium}
+                  height={isMobile ? "400px" : "500px"}
+                  width="100%"
+                  style={{
+                    objectFit: "contain",
+                    maxHeight: isMobile ? "400px" : "500px",
+                  }}
+                />
+              </div>
+            );
+          })}
+        </Image.PreviewGroup>
       </$Horizontal>
     );
   };
@@ -155,6 +169,14 @@ export const WishPage = () => {
       return <Tag color="orange">Weekly Recurring</Tag>;
     } else if (buyFrequency === WishBuyFrequency.Monthly) {
       return <Tag color="purple">Monthly Recurring</Tag>;
+    }
+  };
+
+  const renderWishTypeTag = (wishType: WishTypeEnumGQL) => {
+    if (wishType === WishTypeEnumGQL.Event) {
+      return <Tag color="blue">Event</Tag>;
+    } else if (wishType === WishTypeEnumGQL.Gift) {
+      return <Tag color="red">Gift</Tag>;
     }
   };
 
@@ -214,11 +236,12 @@ export const WishPage = () => {
               glowColor={token.colorPrimaryText}
               backButton={true}
               backButtonAction={() => {
-                if (isOwnProfile) {
-                  navigate("/app/profile?view=wishlist");
-                } else {
-                  navigate(-1);
-                }
+                navigate(-1);
+                // if (isOwnProfile) {
+                //   navigate("/app/profile?view=wishlist");
+                // } else {
+                //   navigate(-1);
+                // }
               }}
               actionButton={
                 <div>
@@ -284,6 +307,8 @@ export const WishPage = () => {
               />
             )}
             {renderBuyFrequencyTag(spotlightWish.buyFrequency)}
+
+            {renderWishTypeTag(spotlightWish.wishType)}
             {spotlightWish.externalURL && (
               <a
                 href={spotlightWish.externalURL}
@@ -317,7 +342,7 @@ export const WishPage = () => {
             </$Horizontal>
             <Divider />
             {!isOwnProfile && (
-              <Affix offsetBottom={0}>
+              <Affix offsetBottom={30}>
                 <div
                   style={{
                     backgroundColor: token.colorBgBase,

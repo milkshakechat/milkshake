@@ -60,6 +60,7 @@ import { usePreloadImages } from "./hooks/usePreloadImages";
 import ShoppingPage from "./pages/Shopping/ShoppingPage";
 import MerchantBankingRegistrationRefreshPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationRefreshPage";
 import MerchantBankingRegistrationInitPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationInitPage";
+import WalletPage from "./pages/Wallet/WalletPage";
 
 const AppRouter = () => {
   const {
@@ -176,11 +177,22 @@ const AppRouter = () => {
                             }
                           />
                           <Route
-                            path="marketplace"
+                            path="activities"
                             element={
                               <AuthProtect>
                                 <AppLayout>
                                   <ShoppingPage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+
+                          <Route
+                            path="wallet"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <WalletPage />
                                 </AppLayout>
                               </AuthProtect>
                             }

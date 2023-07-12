@@ -141,7 +141,11 @@ export const UserFriendPage = () => {
   console.log(`spotlightUser`, spotlightUser);
 
   if (!spotlightUser) {
-    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
+    return (
+      <div style={{ backgroundColor: token.colorBgContainer }}>
+        <LoadingAnimation width="100vw" height="100vh" type="cookie" />
+      </div>
+    );
   }
 
   const TabFolders = [
@@ -168,7 +172,7 @@ export const UserFriendPage = () => {
               : handleSendFriendRequest
           }
           disabled={recentlySentRequest}
-          size={isMobile ? "middle" : "middle"}
+          size={isMobile ? "small" : "middle"}
           type="primary"
           menu={{
             items: [
@@ -223,98 +227,103 @@ export const UserFriendPage = () => {
   };
 
   return (
-    <AppLayout>
-      <>
-        {isMobile && (
-          <LayoutLogoHeader
-            rightAction={
-              <NavLink to="/app/friends">
-                <SearchOutlined
-                  style={{ color: token.colorBgSpotlight, fontSize: "1.3rem" }}
+    <div style={{ backgroundColor: token.colorBgContainer }}>
+      <AppLayout>
+        <>
+          {isMobile && (
+            <LayoutLogoHeader
+              rightAction={
+                <NavLink to="/app/friends">
+                  <SearchOutlined
+                    style={{
+                      color: token.colorBgSpotlight,
+                      fontSize: "1.3rem",
+                    }}
+                  />
+                </NavLink>
+              }
+            />
+          )}
+          <AppLayoutPadding
+            paddings={{
+              mobile: "15px 15px",
+              desktop: "50px 15px",
+            }}
+            align="center"
+          >
+            {isInitialLoading ? (
+              <LoadingAnimation width="100vw" height="100vh" type="cookie" />
+            ) : spotlightUser ? (
+              <div>
+                <AboutSection
+                  user={{
+                    id: spotlightUser.id,
+                    avatar: spotlightUser.avatar || "",
+                    displayName:
+                      spotlightUser.displayName || spotlightUser.username,
+                    username: spotlightUser.username as Username,
+                    bio: spotlightUser.bio || "",
+                  }}
+                  glowColor={token.colorPrimaryText}
+                  actionButton={mainActionButton()}
                 />
-              </NavLink>
+                <Tabs
+                  defaultActiveKey={
+                    viewMode && viewMode === viewModes.timeline
+                      ? viewModes.timeline
+                      : viewMode === viewModes.wishlist
+                      ? viewModes.wishlist
+                      : viewModes.timeline
+                  }
+                  items={TabFolders.map(({ title, key, children }) => {
+                    return {
+                      label: (
+                        <PP>
+                          {" "}
+                          <span style={{ fontSize: "1rem" }}>{title}</span>
+                        </PP>
+                      ),
+                      key,
+                      children,
+                    };
+                  })}
+                  onChange={(view) => {
+                    if (userID) {
+                      navigate({
+                        pathname: location.pathname,
+                        search: createSearchParams({
+                          view,
+                          userID,
+                        }).toString(),
+                      });
+                    }
+                  }}
+                />
+              </div>
+            ) : (
+              <div>
+                <h1>No User Found</h1>
+                <span>{`@${usernameFromUrl}`}</span>
+              </div>
+            )}
+          </AppLayoutPadding>
+          <QuickChat
+            isOpen={chatDrawerOpen}
+            onClose={() => setChatDrawerOpen(false)}
+            user={
+              spotlightUser
+                ? ({
+                    displayName: spotlightUser?.displayName,
+                    username: spotlightUser?.username,
+                    avatar: spotlightUser?.avatar,
+                    id: spotlightUser?.id,
+                  } as WishAuthor)
+                : null
             }
           />
-        )}
-        <AppLayoutPadding
-          paddings={{
-            mobile: "15px 15px",
-            desktop: "50px 15px",
-          }}
-          align="center"
-        >
-          {isInitialLoading ? (
-            <LoadingAnimation width="100vw" height="100vh" type="cookie" />
-          ) : spotlightUser ? (
-            <div>
-              <AboutSection
-                user={{
-                  id: spotlightUser.id,
-                  avatar: spotlightUser.avatar || "",
-                  displayName:
-                    spotlightUser.displayName || spotlightUser.username,
-                  username: spotlightUser.username as Username,
-                  bio: spotlightUser.bio || "",
-                }}
-                glowColor={token.colorPrimaryText}
-                actionButton={mainActionButton()}
-              />
-              <Tabs
-                defaultActiveKey={
-                  viewMode && viewMode === viewModes.timeline
-                    ? viewModes.timeline
-                    : viewMode === viewModes.wishlist
-                    ? viewModes.wishlist
-                    : viewModes.timeline
-                }
-                items={TabFolders.map(({ title, key, children }) => {
-                  return {
-                    label: (
-                      <PP>
-                        {" "}
-                        <span style={{ fontSize: "1rem" }}>{title}</span>
-                      </PP>
-                    ),
-                    key,
-                    children,
-                  };
-                })}
-                onChange={(view) => {
-                  if (userID) {
-                    navigate({
-                      pathname: location.pathname,
-                      search: createSearchParams({
-                        view,
-                        userID,
-                      }).toString(),
-                    });
-                  }
-                }}
-              />
-            </div>
-          ) : (
-            <div>
-              <h1>No User Found</h1>
-              <span>{`@${usernameFromUrl}`}</span>
-            </div>
-          )}
-        </AppLayoutPadding>
-        <QuickChat
-          isOpen={chatDrawerOpen}
-          onClose={() => setChatDrawerOpen(false)}
-          user={
-            spotlightUser
-              ? ({
-                  displayName: spotlightUser?.displayName,
-                  username: spotlightUser?.username,
-                  avatar: spotlightUser?.avatar,
-                  id: spotlightUser?.id,
-                } as WishAuthor)
-              : null
-          }
-        />
-      </>
-    </AppLayout>
+        </>
+      </AppLayout>
+    </div>
   );
 };
 export default UserFriendPage;

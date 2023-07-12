@@ -60,6 +60,19 @@ export type Contact = {
   username?: Maybe<Scalars['String']['output']>;
 };
 
+export type CreatePaymentIntentInput = {
+  __typename?: 'CreatePaymentIntentInput';
+  note?: Maybe<Scalars['String']['output']>;
+  wishlist: Array<WishSuggest>;
+};
+
+export type CreatePaymentIntentResponse = CreatePaymentIntentResponseSuccess | ResponseError;
+
+export type CreatePaymentIntentResponseSuccess = {
+  __typename?: 'CreatePaymentIntentResponseSuccess';
+  checkoutToken: Scalars['String']['output'];
+};
+
 export type CreateStoryInput = {
   caption: Scalars['String']['input'];
   media?: InputMaybe<StoryMediaAttachmentInput>;
@@ -744,6 +757,13 @@ export enum WishBuyFrequency {
   OneTime = 'ONE_TIME',
   Weekly = 'WEEKLY'
 }
+
+export type WishSuggest = {
+  __typename?: 'WishSuggest';
+  suggestedAmount?: Maybe<Scalars['Int']['output']>;
+  suggestedFrequency?: Maybe<WishBuyFrequency>;
+  wishID: Scalars['ID']['output'];
+};
 
 export enum WishTypeEnum {
   Event = 'EVENT',

@@ -74,14 +74,14 @@ export const ShoppingPage = () => {
   const location = useLocation();
   const [searchString, setSearchString] = useState("");
   const { token } = theme.useToken();
-  const observer = useRef<IntersectionObserver | null>(null);
-  const wishRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const [quickChatUser, setQuickChatUser] = useState<{
     user: WishAuthor | null;
     wishID: WishID;
   } | null>(null);
 
+  const observer = useRef<IntersectionObserver | null>(null);
+  const wishRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { lastFocusedScrollPosition, setLastFocusedScrollPosition } =
     useWishState(
       (state) => ({
@@ -96,19 +96,17 @@ export const ShoppingPage = () => {
   );
 
   useEffect(() => {
-    console.log(`lastFocusedScrollPosition`, lastFocusedScrollPosition);
-    if (lastFocusedScrollPosition) {
-      setLastFocusedScrollPosition(lastFocusedScrollPosition);
-    }
-
-    observer.current = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          console.log(`Found an intersection!`, entry);
-          setLastIntersectedId(entry.target.id);
-        }
-      });
-    });
+    observer.current = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            console.log(`Found an intersection!`, entry);
+            setLastIntersectedId(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
 
     return () => {
       if (observer.current) {
@@ -128,11 +126,13 @@ export const ShoppingPage = () => {
   useEffect(() => {
     const ref = wishRefs.current.find((ref) => ref?.id === lastIntersectedId);
     if (ref) {
-      ref.scrollIntoView({
-        behavior: "auto",
-        block: "nearest",
-        inline: "nearest",
-      });
+      setTimeout(() => {
+        ref.scrollIntoView({
+          behavior: "auto",
+          block: "end",
+          inline: "start",
+        });
+      }, 100);
     }
   }, []);
 

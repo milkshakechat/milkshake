@@ -138,9 +138,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   const items = [
     getItem(
-      <NavLink to="/app/marketplace">{<PP>Dating</PP>}</NavLink>,
+      <NavLink to="/app/activities">{<PP>Dating</PP>}</NavLink>,
       "date",
-      "/app/marketplace",
+      "/app/activities",
       <FireOutlined style={{ fontSize: "1rem" }} />
     ),
     getItem(
@@ -202,6 +202,18 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </NavLink>,
           "contacts",
           "/app/friends"
+        ),
+        getItem(
+          <NavLink
+            to="/app/wallet"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            <PP>Wallet</PP>
+          </NavLink>,
+          "wallet",
+          "/app/wallet"
         ),
         getItem(
           <NavLink

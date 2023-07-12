@@ -22,6 +22,7 @@ import { useMarkNotificationsAsRead } from "@/hooks/useProfile";
 import { useState } from "react";
 import dayjs from "dayjs";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import { UserOutlined } from "@ant-design/icons";
 
 const NotificationsPage = () => {
   const user = useUserState((state) => state.user);
@@ -119,7 +120,7 @@ const NotificationsPage = () => {
                   style={{ width: "100%", cursor: "pointer" }}
                 >
                   <List.Item.Meta
-                    avatar={<Avatar src={notif.icon} />}
+                    avatar={<Avatar src={notif.icon} icon={<UserOutlined />} />}
                     title={notif.title}
                     description={`${dayjs().to(dayjs(notif.createdAt))}`}
                   />

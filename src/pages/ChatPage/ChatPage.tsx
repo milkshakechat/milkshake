@@ -177,6 +177,7 @@ const ChatPage = () => {
         padding: isMobile ? "0px" : "20px",
         // height: `calc(100vh - 20px)`,
         height: "100%",
+        backgroundColor: token.colorBgContainer,
       }}
     >
       {sendbirdChannelURL && selfUser && selfUser.sendBirdAccessToken ? (

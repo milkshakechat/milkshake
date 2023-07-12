@@ -28,8 +28,9 @@ import LogoCookie from "../LogoText/LogoCookie";
 import { Wish, WishBuyFrequency } from "@/api/graphql/types";
 import { Spacer } from "../AppLayout/AppLayout";
 import { cookieToUSD } from "@milkshakechat/helpers";
-import { CloseOutlined, EditOutlined } from "@ant-design/icons";
+import { CloseOutlined, EditOutlined, DownOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { Dropdown } from "antd";
 
 const USER_COOKIE_JAR_BALANCE = 253;
 
@@ -57,10 +58,14 @@ export const ConfirmPurchase = ({
   const [suggestMode, setSuggestMode] = useState(false);
   const [purchaseNote, setPurchaseNote] = useState("");
   const [noteMode, setNoteMode] = useState(false);
+  const [suggestedBuyFrequency, setSuggestedBuyFrequency] =
+    useState<WishBuyFrequency>(wish.buyFrequency);
 
   const renderBuyFrequencyTag = (buyFrequency: WishBuyFrequency) => {
     if (buyFrequency === WishBuyFrequency.OneTime) {
       return <Tag>One Time Purchase</Tag>;
+    } else if (buyFrequency === WishBuyFrequency.Daily) {
+      return <Tag>Daily Subscription</Tag>;
     } else if (buyFrequency === WishBuyFrequency.Monthly) {
       return <Tag>Monthly Subscription</Tag>;
     } else if (buyFrequency === WishBuyFrequency.Weekly) {
@@ -231,7 +236,80 @@ export const ConfirmPurchase = ({
             </$Horizontal>
 
             <div style={{ marginTop: "5px" }}>
-              {renderBuyFrequencyTag(wish.buyFrequency)}
+              {suggestMode ? (
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        label: (
+                          <span
+                            onClick={() =>
+                              setSuggestedBuyFrequency(WishBuyFrequency.OneTime)
+                            }
+                          >
+                            One Time
+                          </span>
+                        ),
+                        key: WishBuyFrequency.OneTime,
+                      },
+                      {
+                        label: (
+                          <span
+                            onClick={() =>
+                              setSuggestedBuyFrequency(WishBuyFrequency.Daily)
+                            }
+                          >
+                            Daily
+                          </span>
+                        ),
+                        key: WishBuyFrequency.Daily,
+                      },
+                      {
+                        label: (
+                          <span
+                            onClick={() =>
+                              setSuggestedBuyFrequency(WishBuyFrequency.Weekly)
+                            }
+                          >
+                            Weekly
+                          </span>
+                        ),
+                        key: WishBuyFrequency.Weekly,
+                      },
+                      {
+                        label: (
+                          <span
+                            onClick={() =>
+                              setSuggestedBuyFrequency(WishBuyFrequency.Monthly)
+                            }
+                          >
+                            Monthly
+                          </span>
+                        ),
+                        key: WishBuyFrequency.Monthly,
+                      },
+                    ],
+                  }}
+                >
+                  <a onClick={(e) => e.preventDefault()}>
+                    <Space>
+                      {suggestedBuyFrequency === WishBuyFrequency.OneTime
+                        ? "One Time"
+                        : suggestedBuyFrequency === WishBuyFrequency.Daily
+                        ? "Daily"
+                        : suggestedBuyFrequency === WishBuyFrequency.Weekly
+                        ? "Weekly"
+                        : suggestedBuyFrequency === WishBuyFrequency.Monthly
+                        ? "Monthly"
+                        : "Frequency"}
+                      <DownOutlined />
+                    </Space>
+                  </a>
+                </Dropdown>
+              ) : (
+                renderBuyFrequencyTag(suggestedBuyFrequency)
+              )}
+
               {renderRealPrice()}
             </div>
             {noteMode ? (
@@ -265,7 +343,10 @@ export const ConfirmPurchase = ({
               >{`Are you sure you want to buy "${wish.wishTitle}" from @${wish.author?.username}? Milkshake protects you while online dating with 100% refunds within 90 days.`}</p>
             )}
 
-            <$Horizontal justifyContent="space-between">
+            <$Horizontal
+              justifyContent="space-between"
+              alignItems={noteMode ? "flex-end" : "flex-start"}
+            >
               <Statistic
                 title="Account Balance"
                 value={USER_COOKIE_JAR_BALANCE}

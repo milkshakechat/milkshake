@@ -26,7 +26,7 @@ import {
   theme,
 } from "antd";
 import { useEffect, useState } from "react";
-import { BellOutlined, BellFilled } from "@ant-design/icons";
+import { BellOutlined, BellFilled, UserOutlined } from "@ant-design/icons";
 import {
   NavLink,
   createSearchParams,
@@ -277,6 +277,7 @@ const ProfilePage = () => {
                         src={user.avatar}
                         size={isMobile ? 64 : 48}
                         style={{ marginRight: "10px" }}
+                        icon={<UserOutlined size={isMobile ? 64 : 48} />}
                       />
                       <$Vertical>
                         <PP>

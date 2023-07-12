@@ -35,6 +35,7 @@ import {
   SettingFilled,
   FireOutlined,
   ContactsOutlined,
+  WalletOutlined,
 } from "@ant-design/icons";
 import PP from "@/i18n/PlaceholderPrint";
 import Sider from "antd/es/layout/Sider";
@@ -270,7 +271,7 @@ export const StickyAdaptiveMobileFooter = ({
     {
       key: "dating",
       text: <PP>Dating</PP>,
-      route: "/app/marketplace",
+      route: "/app/activities",
       icon: <FireOutlined style={{ fontSize: "1rem" }} />,
     },
     {
@@ -524,7 +525,7 @@ export const StickyAdaptiveMobileFooter = ({
               >
                 <Button
                   size="large"
-                  type="link"
+                  ghost
                   icon={<UserOutlined style={{ fontSize: "1rem" }} />}
                   onClick={() => setShowMobileSideMenu(false)}
                   style={{
@@ -532,6 +533,7 @@ export const StickyAdaptiveMobileFooter = ({
                     width: "100%",
                     textAlign: "left",
                     marginBottom: "10px",
+                    color: token.colorTextBase,
                   }}
                 >
                   {profileText}
@@ -540,7 +542,7 @@ export const StickyAdaptiveMobileFooter = ({
               <NavLink to="/app/story/new">
                 <Button
                   size="large"
-                  type="link"
+                  ghost
                   icon={<CameraOutlined style={{ fontSize: "1rem" }} />}
                   onClick={() => setShowMobileSideMenu(false)}
                   style={{
@@ -548,6 +550,7 @@ export const StickyAdaptiveMobileFooter = ({
                     width: "100%",
                     textAlign: "left",
                     marginBottom: "10px",
+                    color: token.colorTextBase,
                   }}
                 >
                   {newStoryText}
@@ -565,12 +568,13 @@ export const StickyAdaptiveMobileFooter = ({
                 <Button
                   size="large"
                   icon={<MessageOutlined style={{ fontSize: "1rem" }} />}
-                  type="link"
+                  ghost
                   onClick={() => setShowMobileSideMenu(false)}
                   style={{
                     border: "0px solid white",
                     width: "100%",
                     textAlign: "left",
+                    color: token.colorTextBase,
                     marginBottom: "10px",
                   }}
                 >
@@ -580,7 +584,7 @@ export const StickyAdaptiveMobileFooter = ({
               <NavLink to="/app/notifications">
                 <Button
                   size="large"
-                  type="link"
+                  ghost
                   icon={<BellOutlined style={{ fontSize: "1rem" }} />}
                   onClick={() => setShowMobileSideMenu(false)}
                   style={{
@@ -588,6 +592,7 @@ export const StickyAdaptiveMobileFooter = ({
                     width: "100%",
                     textAlign: "left",
                     marginBottom: "10px",
+                    color: token.colorTextBase,
                   }}
                 >
                   {notificationsText}
@@ -602,7 +607,7 @@ export const StickyAdaptiveMobileFooter = ({
               >
                 <Button
                   size="large"
-                  type="link"
+                  ghost
                   icon={<ContactsOutlined style={{ fontSize: "1rem" }} />}
                   onClick={() => setShowMobileSideMenu(false)}
                   style={{
@@ -610,6 +615,7 @@ export const StickyAdaptiveMobileFooter = ({
                     width: "100%",
                     textAlign: "left",
                     marginBottom: "10px",
+                    color: token.colorTextBase,
                   }}
                 >
                   {contactsText}
@@ -624,7 +630,7 @@ export const StickyAdaptiveMobileFooter = ({
               >
                 <Button
                   size="large"
-                  type="link"
+                  ghost
                   icon={<GiftOutlined style={{ fontSize: "1rem" }} />}
                   onClick={() => setShowMobileSideMenu(false)}
                   style={{
@@ -632,9 +638,33 @@ export const StickyAdaptiveMobileFooter = ({
                     width: "100%",
                     textAlign: "left",
                     marginBottom: "10px",
+                    color: token.colorTextBase,
                   }}
                 >
                   <PP>Wishlist</PP>
+                </Button>
+              </NavLink>
+              <NavLink
+                to="/app/wallet"
+                onClick={() => setShowMobileSideMenu(false)}
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "active" : ""
+                }
+              >
+                <Button
+                  size="large"
+                  ghost
+                  icon={<WalletOutlined style={{ fontSize: "1rem" }} />}
+                  onClick={() => setShowMobileSideMenu(false)}
+                  style={{
+                    border: "0px solid white",
+                    width: "100%",
+                    textAlign: "left",
+                    marginBottom: "10px",
+                    color: token.colorTextBase,
+                  }}
+                >
+                  <PP>Wallet</PP>
                 </Button>
               </NavLink>
 

@@ -136,7 +136,7 @@ export const SubscribePremium = () => {
                   SUBSCRIBE
                 </Button>
               </a>
-              <NavLink to="/app/chats">
+              <NavLink to="/app/profile">
                 <span
                   style={{
                     fontSize: "1rem",

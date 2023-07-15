@@ -83,6 +83,8 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
   const [loadingClaimUsername, setLoadingClaimUsername] = useState(false);
   const userIDToken = useUserState((state) => state.idToken);
   const [focusedSlide, setFocusedSlide] = useState(currentTab);
+  const [preparingProfileCountdown, setPreparingProfileCountdown] =
+    useState(10);
   const {
     themeType,
     locale,
@@ -116,6 +118,16 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
     navigate({
       search: `?tab=${currentSlide}`,
     });
+    console.log(`currentSlide`, currentSlide);
+    if (currentSlide === 3) {
+      startPrepProfileCountdown();
+    }
+  };
+
+  const startPrepProfileCountdown = () => {
+    setInterval(() => {
+      setPreparingProfileCountdown((countdown) => countdown - 1);
+    }, 1000);
   };
 
   useEffect(() => {
@@ -135,6 +147,9 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
       if (friend) {
         setOnboardingFriend(friend);
       }
+    }
+    if (focusedSlide === 3) {
+      startPrepProfileCountdown();
     }
   }, []);
 
@@ -370,10 +385,12 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                 type="primary"
                 size="large"
                 disabled={!userIDToken}
-                loading={loadingClaimUsername}
                 style={{ marginTop: "10px", fontWeight: "bold" }}
+                loading={loadingClaimUsername || preparingProfileCountdown > 0}
               >
-                Claim Username
+                {preparingProfileCountdown > 0
+                  ? `Loading ${preparingProfileCountdown}...`
+                  : "Claim Username"}
               </Button>
             }
             style={contentStyle}

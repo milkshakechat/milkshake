@@ -315,12 +315,13 @@ export type MerchantOnboardingStatusSummary = {
   anythingErrors: Scalars['Boolean']['output'];
   capabilities: MerchantOnboardingStatusCapabilities;
   email: Scalars['String']['output'];
+  escrowWallet: Scalars['ID']['output'];
   hasMerchantPrivilege: Scalars['Boolean']['output'];
   name: Scalars['String']['output'];
   stripeMerchantID?: Maybe<Scalars['ID']['output']>;
   stripePortalUrl?: Maybe<Scalars['String']['output']>;
+  tradingWallet: Scalars['ID']['output'];
   userID: Scalars['ID']['output'];
-  walletID: Scalars['ID']['output'];
 };
 
 export type ModifyProfileInput = {
@@ -821,7 +822,7 @@ export type CheckMerchantStatusQueryVariables = Exact<{
 }>;
 
 
-export type CheckMerchantStatusQuery = { __typename?: 'Query', checkMerchantStatus: { __typename: 'CheckMerchantStatusResponseSuccess', summary: { __typename?: 'MerchantOnboardingStatusSummary', userID: string, walletID: string, name: string, email: string, hasMerchantPrivilege: boolean, stripeMerchantID?: string | null, stripePortalUrl?: string | null, anythingDue: boolean, anythingErrors: boolean, capabilities: { __typename?: 'MerchantOnboardingStatusCapabilities', card_payments?: string | null, transfers?: string | null, charges_enabled: boolean, payouts_enabled: boolean } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type CheckMerchantStatusQuery = { __typename?: 'Query', checkMerchantStatus: { __typename: 'CheckMerchantStatusResponseSuccess', summary: { __typename?: 'MerchantOnboardingStatusSummary', userID: string, tradingWallet: string, escrowWallet: string, name: string, email: string, hasMerchantPrivilege: boolean, stripeMerchantID?: string | null, stripePortalUrl?: string | null, anythingDue: boolean, anythingErrors: boolean, capabilities: { __typename?: 'MerchantOnboardingStatusCapabilities', card_payments?: string | null, transfers?: string | null, charges_enabled: boolean, payouts_enabled: boolean } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type RequestMerchantOnboardingMutationVariables = Exact<{ [key: string]: never; }>;
 

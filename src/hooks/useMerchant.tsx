@@ -34,7 +34,8 @@ export const useCheckMerchantStatus = () => {
             ... on CheckMerchantStatusResponseSuccess {
               summary {
                 userID
-                walletID
+                tradingWallet
+                escrowWallet
                 name
                 email
                 hasMerchantPrivilege

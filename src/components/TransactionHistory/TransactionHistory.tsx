@@ -15,9 +15,13 @@ import PP from "@/i18n/PlaceholderPrint";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 import { PlusOutlined, MinusOutlined, SearchOutlined } from "@ant-design/icons";
 import {
+  MirrorTransactionID,
   TransactionID,
   TransactionType,
+  Tx_MirrorFireLedger,
+  WalletAliasID,
   WalletID,
+  placeholderImageThumbnail,
 } from "@milkshakechat/helpers";
 import { useState } from "react";
 import { $Vertical } from "@/api/utils/spacing";
@@ -26,143 +30,25 @@ import RecallTransaction from "../RecallTransaction/RecallTransaction";
 import ReturnTransaction from "../ReturnTransaction/ReturnTransaction";
 
 export interface TransactionFE {
-  id: TransactionID;
+  id: MirrorTransactionID;
   title: string;
   date: Date;
-  avatar: string;
   amount: number;
   type: TransactionType;
   note: string;
-  senderWalletID: WalletID;
-  receiverWalletID: WalletID;
-  gotReverted: boolean;
+  avatar: string;
+  senderWalletID: WalletAliasID;
+  receiverWalletID: WalletAliasID;
+  gotRecalled: boolean;
+  gotCashOut: boolean;
 }
 
-const selfWalletID = "self" as WalletID;
-const transactions: TransactionFE[] = [
-  {
-    id: "0" as TransactionID,
-    title: "Sent 70 cookies",
-    note: `You paid 70 cookies buy a wish "Bouquet Roses" with @xiaoqi77`,
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2021-10-14"),
-    amount: 70,
-    type: TransactionType.DEAL,
-    senderWalletID: selfWalletID as WalletID,
-    receiverWalletID: "b" as WalletID,
-    gotReverted: false,
-  },
-  {
-    id: "0" as TransactionID,
-    title: "Sent 20 cookies",
-    note: `You paid 20 cookies towards subscription "Study with me" with @xiaoqi77`,
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2021-10-18"),
-    amount: 20,
-    type: TransactionType.DEAL,
-    senderWalletID: selfWalletID,
-    receiverWalletID: "b" as WalletID,
-    gotReverted: false,
-  },
-  {
-    id: "0" as TransactionID,
-    title: "Recieved 10 cookies",
-    note: '@xiaoqi77 returned 10 cookies you spent on their wish "Skincare Fund"',
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2021-10-10"),
-    amount: 10,
-    type: TransactionType.REFUND,
-    senderWalletID: "a" as WalletID,
-    receiverWalletID: selfWalletID,
-    gotReverted: false,
-  },
-  {
-    id: "0" as TransactionID,
-    title: "Recieved 30 cookies",
-    note: "You recalled 30 cookies from @xiaoqi77's event 'Sauna Livestream'",
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2021-10-3"),
-    amount: 30,
-    type: TransactionType.REFUND,
-    senderWalletID: "a" as WalletID,
-    receiverWalletID: selfWalletID,
-    gotReverted: false,
-  },
-  {
-    id: "0" as TransactionID,
-    title: "Sent 4 cookies",
-    note: "You sent 4 cookies to @xiaoqi77",
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2023-5-5"),
-    amount: 4,
-    type: TransactionType.TRANSFER,
-    senderWalletID: selfWalletID,
-    receiverWalletID: "b" as WalletID,
-    gotReverted: false,
-  },
-  {
-    id: "0" as TransactionID,
-    title: "Received 1 cookies",
-    note: "@xiaoqi77 sent you 1 cookies",
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2023-6-4"),
-    amount: 1,
-    type: TransactionType.TRANSFER,
-    senderWalletID: "a" as WalletID,
-    receiverWalletID: selfWalletID,
-    gotReverted: false,
-  },
-  {
-    id: "0" as TransactionID,
-    title: "Received 1 cookies",
-    note: "@xiaoqi77 sent you 1 cookies",
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2020-6-4"),
-    amount: 1,
-    type: TransactionType.TRANSFER,
-    senderWalletID: "a" as WalletID,
-    receiverWalletID: selfWalletID,
-    gotReverted: false,
-  },
-  {
-    id: "0" as TransactionID,
-    title: "Received 100 cookies",
-    note: "Purchased 100 cookies from Global Shop",
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2021-9-10"),
-    amount: 100,
-    type: TransactionType.TOP_UP,
-    senderWalletID: "a" as WalletID,
-    receiverWalletID: selfWalletID,
-    gotReverted: false,
-  },
-  {
-    id: "0" as TransactionID,
-    title: "Sent 50 cookies",
-    note: "You sent 50 cookies to @sashimeee",
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2021-10-2"),
-    amount: 50,
-    type: TransactionType.TRANSFER,
-    senderWalletID: selfWalletID,
-    receiverWalletID: "b" as WalletID,
-    gotReverted: true,
-  },
-  {
-    id: "0" as TransactionID,
-    title: "Received 2 cookies",
-    note: "@joey32 sent you 2 cookies",
-    avatar: "https://i.imgur.com/3Z4tELt.png",
-    date: new Date("2023-6-11"),
-    amount: 1,
-    type: TransactionType.TRANSFER,
-    senderWalletID: "a" as WalletID,
-    receiverWalletID: selfWalletID,
-    gotReverted: true,
-  },
-];
+const selfWalletID = "self" as WalletAliasID;
 
-export const TransactionHistory = () => {
+interface TransactionHistoryProps {
+  txs: Tx_MirrorFireLedger[];
+}
+export const TransactionHistory = ({ txs }: TransactionHistoryProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -175,7 +61,23 @@ export const TransactionHistory = () => {
   const [txRecall, setTxRecall] = useState<TransactionFE | null>(null);
   const [txReturn, setTxReturn] = useState<TransactionFE | null>(null);
 
-  const filteredTransactions = transactions
+  const filteredTransactions = txs
+    .map((tx) => {
+      const _tx: TransactionFE = {
+        id: tx.id,
+        title: tx.note,
+        note: tx.note,
+        date: new Date((tx.createdAt as any).seconds * 1000),
+        amount: tx.amount,
+        type: tx.type,
+        avatar: placeholderImageThumbnail,
+        senderWalletID: tx.sendingWallet,
+        receiverWalletID: tx.recievingWallet,
+        gotRecalled: tx.recallTransactionID ? true : false,
+        gotCashOut: tx.cashOutTransactionID ? true : false,
+      };
+      return _tx;
+    })
     .slice()
     .filter((tx) => {
       return (
@@ -187,7 +89,7 @@ export const TransactionHistory = () => {
     })
     .sort((a, b) => {
       // sort by most recent first
-      return b.date.getTime() - a.date.getTime();
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
 
   if (!selfUser) {
@@ -199,7 +101,7 @@ export const TransactionHistory = () => {
     // check if now is after targetDate
     const isAfter = dayjs().isAfter(targetDate);
 
-    if (tx.gotReverted) {
+    if (tx.gotRecalled) {
       if (tx.senderWalletID === selfWalletID) {
         return [<span key={`action-${tx.id}`}>Recalled</span>];
       }
@@ -270,22 +172,18 @@ export const TransactionHistory = () => {
               <List.Item.Meta
                 avatar={
                   <Avatar
-                    icon={
-                      tx.senderWalletID === selfWalletID ? (
-                        <MinusOutlined />
-                      ) : (
-                        <PlusOutlined />
-                      )
-                    }
+                    icon={tx.amount < 0 ? <MinusOutlined /> : <PlusOutlined />}
                     style={{
                       backgroundColor:
-                        tx.senderWalletID === selfWalletID
-                          ? token.colorWarning
-                          : token.colorInfo,
+                        tx.amount < 0 ? token.colorWarning : token.colorInfo,
                     }}
                   />
                 }
-                title={<span>{`${tx.title}`}</span>}
+                title={
+                  <span>{`${tx.title.slice(0, 30)}${
+                    tx.title.length > 30 ? ".." : ""
+                  }`}</span>
+                }
                 description={
                   <$Vertical>
                     <i>{dayjs(tx.date).format("MMM D YYYY")}</i>

@@ -76,6 +76,8 @@ export const useProfile = () => {
                     gender
                     interestedIn
                     sendBirdAccessToken
+                    tradingWallet
+                    escrowWallet
                     stories {
                       id
                       userID

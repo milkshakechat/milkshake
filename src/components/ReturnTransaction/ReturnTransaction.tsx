@@ -111,7 +111,7 @@ export const ReturnTransaction = ({
             <$Horizontal justifyContent="space-between">
               <Statistic
                 title={`Return Cookies`}
-                value={tx?.amount || 0}
+                value={Math.abs(tx?.amount || 0)}
                 prefix={<LogoCookie width="20px" />}
                 style={{ flex: 1 }}
               />
@@ -233,7 +233,11 @@ export const ReturnTransaction = ({
                 <Statistic
                   title="New Account Balance"
                   value={USER_COOKIE_JAR_BALANCE}
-                  suffix={<span>{`- ${tx?.amount}`}</span>}
+                  suffix={
+                    <span>{`${tx?.amount || 0 < 0 ? "-" : "+"} ${Math.abs(
+                      tx?.amount || 0
+                    )}`}</span>
+                  }
                   precision={0}
                 />
                 {!isMobile && (

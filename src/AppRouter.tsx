@@ -60,7 +60,7 @@ import { usePreloadImages } from "./hooks/usePreloadImages";
 import ShoppingPage from "./pages/Shopping/ShoppingPage";
 import MerchantBankingRegistrationRefreshPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationRefreshPage";
 import MerchantBankingRegistrationInitPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationInitPage";
-import WalletPage from "./pages/Wallet/WalletPage";
+import WalletPage from "./pages/WalletPage/WalletPage";
 
 const AppRouter = () => {
   const {

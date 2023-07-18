@@ -14,6 +14,7 @@ import { useGraphqlClient } from "./GraphQLSocketProvider";
 import { useListWishlist } from "@/hooks/useWish";
 import { usePreloadImages } from "@/hooks/usePreloadImages";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useWallets } from "@/hooks/useWallets";
 
 interface Props {
   children: React.ReactNode;
@@ -26,7 +27,8 @@ export const UserInfoProvider = ({ children }: Props) => {
   const selfUser = useUserState((state) => state.user);
   const client = useGraphqlClient();
   const { runQuery: runFetchStoryFeedQuery } = useFetchStoryFeedQuery();
-  const notifs = useNotifications();
+  const realtimeNotifs = useNotifications();
+  const realtimeWallets = useWallets();
 
   // const { runQuery: runFetchRecentNotificationsQuery } =
   //   useFetchRecentNotifications();

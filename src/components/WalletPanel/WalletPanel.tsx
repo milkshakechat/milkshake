@@ -11,6 +11,7 @@ import {
   WalletType,
   Wallet_MirrorFireLedger,
 } from "@milkshakechat/helpers";
+import { useWalletState } from "@/state/wallets.state";
 
 interface WalletPanelProps {
   wallet: Wallet_MirrorFireLedger;
@@ -18,6 +19,8 @@ interface WalletPanelProps {
 }
 const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
   const intl = useIntl();
+
+  const purchaseManifests = useWalletState((state) => state.purchaseManifests);
 
   const [searchParams] = useSearchParams();
   const { token } = theme.useToken();
@@ -36,7 +39,13 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
     {
       key: "purchases",
       label: `Purchases`,
-      children: `Content of Tab Pane 2`,
+      children: (
+        <$Vertical>
+          {purchaseManifests.map((pm) => {
+            return <div style={{ margin: "5px 0px" }}>{pm.title}</div>;
+          })}
+        </$Vertical>
+      ),
     },
   ];
 

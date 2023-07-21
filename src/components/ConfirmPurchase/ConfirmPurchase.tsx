@@ -1,4 +1,4 @@
-import { ErrorLines } from "@/api/graphql/error-line";
+import { ErrorLine, ErrorLines } from "@/api/graphql/error-line";
 import { useWindowSize } from "@/api/utils/screen";
 import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import {
@@ -34,6 +34,19 @@ import { Dropdown } from "antd";
 import { useWalletState } from "@/state/wallets.state";
 import shallow from "zustand/shallow";
 import { useCreatePaymentIntent } from "@/hooks/useWallets";
+import AddPaymentMethodModal from "../AddPaymentMethodModal/AddPaymentMethodModal";
+import {
+  CardElement,
+  Elements,
+  useStripe,
+  useElements,
+  LinkAuthenticationElement,
+} from "@stripe/react-stripe-js";
+import {
+  useStripeAttachCard,
+  useStripeHook,
+  useStripeSetupIntent,
+} from "@/hooks/useStripeHook";
 
 interface ConfirmPurchaseProps {
   isOpen: boolean;
@@ -42,7 +55,7 @@ interface ConfirmPurchaseProps {
   wish: Wish;
   openNotification: () => void;
 }
-export const ConfirmPurchase = ({
+const ConfirmPurchase = ({
   isOpen,
   toggleOpen,
   onClose,
@@ -54,8 +67,14 @@ export const ConfirmPurchase = ({
   const [searchParams] = useSearchParams();
   const tab = searchParams.get("tab");
   const selfUser = useUserState((state) => state.user);
+  const defaultPaymentMethodID = useUserState(
+    (state) => state.defaultPaymentMethodID
+  );
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
+
+  const [addPaymentMethodModalOpen, setAddPaymentMethodModalOpen] =
+    useState(false);
 
   const { tradingWallet } = useWalletState(
     (state) => ({
@@ -76,8 +95,10 @@ export const ConfirmPurchase = ({
   const [suggestedPrice, setSuggestedPrice] = useState(wish.cookiePrice);
   const [suggestMode, setSuggestMode] = useState(false);
   const [purchaseNote, setPurchaseNote] = useState("");
+  const stripe = useStripe();
   const [noteMode, setNoteMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
   const [suggestedBuyFrequency, setSuggestedBuyFrequency] =
     useState<WishBuyFrequency>(wish.buyFrequency);
 
@@ -109,18 +130,48 @@ export const ConfirmPurchase = ({
   };
 
   const checkoutPurchase = async () => {
-    setIsLoading(true);
-    await runCreatePaymentIntentMutation({
-      note: purchaseNote,
-      wishSuggest: {
-        suggestedAmount: suggestedPrice,
-        suggestedFrequency: suggestedBuyFrequency,
-        wishID: wish.id,
-      },
-    });
-    openNotification();
-    setIsLoading(false);
-    toggleOpen(false);
+    console.log(`checkoutPurchase`);
+    console.log(`stripe`, stripe);
+    console.log(`defaultPaymentMethodID`, defaultPaymentMethodID);
+    if (!selfUser || !stripe || stripe === null) {
+      return;
+    }
+    if (defaultPaymentMethodID === null) {
+      setAddPaymentMethodModalOpen(true);
+      return;
+    } else {
+      setIsLoading(true);
+      const res = await runCreatePaymentIntentMutation({
+        note: purchaseNote,
+        wishSuggest: {
+          suggestedAmount: suggestedPrice,
+          suggestedFrequency: suggestedBuyFrequency,
+          wishID: wish.id,
+        },
+      });
+      if (!res || !res.checkoutToken) {
+        setIsLoading(false);
+        message.error("Failed to purchase wish");
+        return;
+      }
+      console.log(`---> res`, res);
+      const confirmationRes = await stripe.confirmCardPayment(
+        res.checkoutToken,
+        {
+          payment_method: defaultPaymentMethodID,
+        }
+      );
+      if (confirmationRes.error) {
+        console.log(`error`, confirmationRes.error);
+        setErrors([confirmationRes.error.message as ErrorLine]);
+      }
+      console.log(`confirmationRes`, confirmationRes);
+      if (confirmationRes.paymentIntent?.status === "succeeded") {
+        openNotification();
+        setIsLoading(false);
+        toggleOpen(false);
+      }
+    }
   };
 
   return (
@@ -419,7 +470,8 @@ export const ConfirmPurchase = ({
               </$Horizontal>
             </$Vertical>
           </$Vertical>
-          <$Vertical style={{ marginTop: "10px" }}>
+          <$Vertical spacing={1} style={{ marginTop: "10px" }}>
+            <ErrorLines errors={errors} />
             <Button
               type="primary"
               size="large"
@@ -448,7 +500,26 @@ export const ConfirmPurchase = ({
           </$Vertical>
         </$Vertical>
       </$Horizontal>
+      <AddPaymentMethodModal
+        isOpen={addPaymentMethodModalOpen}
+        toggleOpen={setAddPaymentMethodModalOpen}
+      />
     </Drawer>
   );
 };
-export default ConfirmPurchase;
+
+const ConfirmPurchaseHOC = (args: ConfirmPurchaseProps) => {
+  const { stripePromise, initStripe } = useStripeHook();
+
+  useEffect(() => {
+    initStripe();
+  }, []);
+
+  return (
+    <Elements stripe={stripePromise}>
+      <ConfirmPurchase {...args} />
+    </Elements>
+  );
+};
+
+export default ConfirmPurchaseHOC;

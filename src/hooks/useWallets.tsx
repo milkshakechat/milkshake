@@ -2,6 +2,7 @@ import {
   FirestoreCollection,
   MirrorTransactionID,
   Notification_Firestore,
+  PurchaseMainfest_Firestore,
   TxRefID,
   Tx_MirrorFireLedger,
   UserID,
@@ -39,11 +40,15 @@ export const useWallets = () => {
   const [recentTxs, setRecentTxs] = useState<Tx_MirrorFireLedger[]>([]);
 
   const setWallet = useWalletState((state) => state.setWallet);
+  const addPurchaseManifest = useWalletState(
+    (state) => state.addPurchaseManifest
+  );
 
   useEffect(() => {
     if (selfUser && selfUser.id) {
       getRealtimeWallet();
       getRealtimeTxs();
+      getRealtimePurchaseManifests();
     }
   }, [selfUser?.id]);
 
@@ -102,6 +107,38 @@ export const useWallets = () => {
           });
         });
       }
+    }
+  };
+
+  const getRealtimePurchaseManifests = async () => {
+    if (selfUser) {
+      console.log(`selfUser`, selfUser);
+      // purchases
+      const purch = query(
+        collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
+        where("buyerUserID", "==", selfUser.id),
+        limit(50)
+      );
+      onSnapshot(purch, (docsSnap) => {
+        docsSnap.forEach((doc) => {
+          const pm = doc.data() as PurchaseMainfest_Firestore;
+          // console.log(`tx`, tx);
+          addPurchaseManifest(pm);
+        });
+      });
+      // sales
+      const sale = query(
+        collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
+        where("sellerUserID", "==", selfUser.id),
+        limit(50)
+      );
+      onSnapshot(sale, (docsSnap) => {
+        docsSnap.forEach((doc) => {
+          const pm = doc.data() as PurchaseMainfest_Firestore;
+          // console.log(`tx`, tx);
+          addPurchaseManifest(pm);
+        });
+      });
     }
   };
 

@@ -15,6 +15,7 @@ import { useListWishlist } from "@/hooks/useWish";
 import { usePreloadImages } from "@/hooks/usePreloadImages";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useWallets } from "@/hooks/useWallets";
+import { useStripeHook } from "@/hooks/useStripeHook";
 
 interface Props {
   children: React.ReactNode;
@@ -26,6 +27,7 @@ export const UserInfoProvider = ({ children }: Props) => {
   const { runQuery: runListContacts } = useListContacts();
   const selfUser = useUserState((state) => state.user);
   const client = useGraphqlClient();
+
   const { runQuery: runFetchStoryFeedQuery } = useFetchStoryFeedQuery();
   const realtimeNotifs = useNotifications();
   const realtimeWallets = useWallets();

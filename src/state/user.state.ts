@@ -1,5 +1,9 @@
 import { Contact, Story, User } from "@/api/graphql/types";
-import { EmailString, UserID } from "@milkshakechat/helpers";
+import {
+  EmailString,
+  StripePaymentMethodID,
+  UserID,
+} from "@milkshakechat/helpers";
 import { create } from "zustand";
 
 interface UserState {
@@ -23,6 +27,10 @@ interface UserState {
   triggerRefetch: () => void;
   refetchNonce: number;
   updateOrPushStory: (story: Story) => void;
+  defaultPaymentMethodID: StripePaymentMethodID | null;
+  updateDefaultPaymentMethod: (
+    defaultPaymentMethodID: StripePaymentMethodID | null
+  ) => void;
 }
 
 export const useUserState = create<UserState>()((set) => ({
@@ -43,8 +51,16 @@ export const useUserState = create<UserState>()((set) => ({
       };
     });
   },
-
-  setGQLUser: (user) => set((state) => ({ user })),
+  defaultPaymentMethodID: null,
+  updateDefaultPaymentMethod: (defaultPaymentMethodID) => {
+    set((state) => ({ defaultPaymentMethodID }));
+  },
+  setGQLUser: (user) =>
+    set((state) => ({
+      user,
+      defaultPaymentMethodID:
+        (user?.defaultPaymentMethodID as StripePaymentMethodID) || null,
+    })),
   setContacts: (contacts) => set((state) => ({ contacts })),
   setGlobalDirectory: (contacts) =>
     set((state) => ({ globalDirectory: contacts })),

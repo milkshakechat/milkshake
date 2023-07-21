@@ -215,6 +215,7 @@ export const WishPage = () => {
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+      duration: null,
     });
   };
 

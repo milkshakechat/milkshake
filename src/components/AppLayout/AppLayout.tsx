@@ -32,7 +32,7 @@ import { shallow } from "zustand/shallow";
 import LogoText from "@/components/LogoText/LogoText";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
 import NotificationsPage from "@/pages/Notifications/NotificationsPage";
-import { LeftOutlined, FireOutlined } from "@ant-design/icons";
+import { LeftOutlined, FireOutlined, WalletOutlined } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
 import { ItemType } from "antd/es/menu/hooks/useItems";
 import { cid } from "./i18n/types.i18n.AppLayout";
@@ -174,6 +174,19 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <BellOutlined style={{ fontSize: "1rem" }} />
     ),
     getItem(
+      <NavLink
+        to="/app/wallet"
+        className={({ isActive, isPending }) =>
+          isPending ? "pending" : isActive ? "active" : ""
+        }
+      >
+        <PP>Wallet</PP>
+      </NavLink>,
+      "wallet",
+      "/app/wallet",
+      <WalletOutlined style={{ fontSize: "1rem" }} />
+    ),
+    getItem(
       <NavLink to="/app/profile">{accountText}</NavLink>,
       "account",
       "/app",
@@ -215,18 +228,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </NavLink>,
           "wishlists",
           "/app/profile?view=wishlist"
-        ),
-        getItem(
-          <NavLink
-            to="/app/wallet"
-            className={({ isActive, isPending }) =>
-              isPending ? "pending" : isActive ? "active" : ""
-            }
-          >
-            <PP>Wallet</PP>
-          </NavLink>,
-          "wallet",
-          "/app/wallet"
         ),
         getItem(
           <NavLink

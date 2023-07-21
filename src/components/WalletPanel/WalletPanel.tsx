@@ -41,9 +41,16 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
       label: `Purchases`,
       children: (
         <$Vertical>
-          {purchaseManifests.map((pm) => {
-            return <div style={{ margin: "5px 0px" }}>{pm.title}</div>;
-          })}
+          {purchaseManifests
+            .slice()
+            .sort((a, b) => {
+              return (
+                (b.createdAt as any).seconds - (a.createdAt as any).seconds
+              );
+            })
+            .map((pm) => {
+              return <div style={{ margin: "5px 0px" }}>{pm.title}</div>;
+            })}
         </$Vertical>
       ),
     },

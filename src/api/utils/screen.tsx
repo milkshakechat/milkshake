@@ -294,10 +294,11 @@ export const StickyAdaptiveMobileFooter = ({
       icon: <UserOutlined style={{ fontSize: "1rem" }} />,
     },
     // {
-    //   key: "settings",
-    //   text: settingsText,
-    //   route: "/app/profile/settings",
-    //   icon: <SettingOutlined style={{ fontSize: "1rem" }} />,
+    //   key: "wallet",
+    //   text: <PP>Wallet</PP>,
+    //   // text: profileText,
+    //   route: "/app/wallet",
+    //   icon: <WalletOutlined style={{ fontSize: "1rem" }} />,
     // },
     {
       key: "menu",

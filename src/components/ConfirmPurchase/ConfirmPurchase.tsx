@@ -25,26 +25,29 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import PP from "@/i18n/PlaceholderPrint";
 import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import LogoCookie from "../LogoText/LogoCookie";
-import { Wish, WishBuyFrequency } from "@/api/graphql/types";
+import { Wish, WishBuyFrequency, WishSuggest } from "@/api/graphql/types";
 import { Spacer } from "../AppLayout/AppLayout";
 import { cookieToUSD } from "@milkshakechat/helpers";
 import { CloseOutlined, EditOutlined, DownOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dropdown } from "antd";
 import { useWalletState } from "@/state/wallets.state";
 import shallow from "zustand/shallow";
+import { useCreatePaymentIntent } from "@/hooks/useWallets";
 
 interface ConfirmPurchaseProps {
   isOpen: boolean;
-  toggleOpen?: (isOpen: boolean) => void;
+  toggleOpen: (isOpen: boolean) => void;
   onClose?: () => void;
   wish: Wish;
+  openNotification: () => void;
 }
 export const ConfirmPurchase = ({
   isOpen,
   toggleOpen,
   onClose,
   wish,
+  openNotification,
 }: ConfirmPurchaseProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
@@ -60,12 +63,21 @@ export const ConfirmPurchase = ({
     }),
     shallow
   );
+
+  const {
+    data: createPaymentIntentData,
+    errors: createPaymentIntentErrors,
+    loading: createPaymentIntentLoading,
+    runMutation: runCreatePaymentIntentMutation,
+  } = useCreatePaymentIntent();
+
   const USER_COOKIE_JAR_BALANCE = tradingWallet?.balance || 0;
   const { token } = theme.useToken();
   const [suggestedPrice, setSuggestedPrice] = useState(wish.cookiePrice);
   const [suggestMode, setSuggestMode] = useState(false);
   const [purchaseNote, setPurchaseNote] = useState("");
   const [noteMode, setNoteMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [suggestedBuyFrequency, setSuggestedBuyFrequency] =
     useState<WishBuyFrequency>(wish.buyFrequency);
 
@@ -94,6 +106,21 @@ export const ConfirmPurchase = ({
       );
     }
     return null;
+  };
+
+  const checkoutPurchase = async () => {
+    setIsLoading(true);
+    await runCreatePaymentIntentMutation({
+      note: purchaseNote,
+      wishSuggest: {
+        suggestedAmount: suggestedPrice,
+        suggestedFrequency: suggestedBuyFrequency,
+        wishID: wish.id,
+      },
+    });
+    openNotification();
+    setIsLoading(false);
+    toggleOpen(false);
   };
 
   return (
@@ -398,6 +425,8 @@ export const ConfirmPurchase = ({
               size="large"
               block
               style={{ fontWeight: "bold" }}
+              onClick={checkoutPurchase}
+              loading={isLoading}
             >
               CONFIRM PURCHASE
             </Button>

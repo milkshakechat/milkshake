@@ -62,16 +62,18 @@ export type Contact = {
 };
 
 export type CreatePaymentIntentInput = {
-  __typename?: 'CreatePaymentIntentInput';
-  note?: Maybe<Scalars['String']['output']>;
-  wishlist: Array<WishSuggest>;
+  attribution?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  promoCode?: InputMaybe<Scalars['String']['input']>;
+  wishSuggest: WishSuggest;
 };
 
 export type CreatePaymentIntentResponse = CreatePaymentIntentResponseSuccess | ResponseError;
 
 export type CreatePaymentIntentResponseSuccess = {
   __typename?: 'CreatePaymentIntentResponseSuccess';
-  checkoutToken: Scalars['String']['output'];
+  checkoutToken?: Maybe<Scalars['String']['output']>;
+  referenceID: Scalars['String']['output'];
 };
 
 export type CreateStoryInput = {
@@ -361,6 +363,7 @@ export type ModifyStoryResponseSuccess = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createPaymentIntent: CreatePaymentIntentResponse;
   createStory: CreateStoryResponse;
   createWish: CreateWishResponse;
   demoMutation: DemoMutationResponse;
@@ -376,6 +379,11 @@ export type Mutation = {
   updateChatSettings: UpdateChatSettingsResponse;
   updatePushToken: UpdatePushTokenResponse;
   updateWish: UpdateWishResponse;
+};
+
+
+export type MutationCreatePaymentIntentArgs = {
+  input: CreatePaymentIntentInput;
 };
 
 
@@ -800,10 +808,9 @@ export enum WishBuyFrequency {
 }
 
 export type WishSuggest = {
-  __typename?: 'WishSuggest';
-  suggestedAmount?: Maybe<Scalars['Int']['output']>;
-  suggestedFrequency?: Maybe<WishBuyFrequency>;
-  wishID: Scalars['ID']['output'];
+  suggestedAmount?: InputMaybe<Scalars['Int']['input']>;
+  suggestedFrequency?: InputMaybe<WishBuyFrequency>;
+  wishID: Scalars['ID']['input'];
 };
 
 export enum WishTypeEnum {
@@ -974,6 +981,13 @@ export type RecallTransactionMutationVariables = Exact<{
 
 
 export type RecallTransactionMutation = { __typename?: 'Mutation', recallTransaction: { __typename: 'RecallTransactionResponseSuccess', referenceID: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type CreatePaymentIntentMutationVariables = Exact<{
+  input: CreatePaymentIntentInput;
+}>;
+
+
+export type CreatePaymentIntentMutation = { __typename?: 'Mutation', createPaymentIntent: { __typename: 'CreatePaymentIntentResponseSuccess', checkoutToken?: string | null, referenceID: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type UpdatePushTokenMutationVariables = Exact<{
   input: UpdatePushTokenInput;

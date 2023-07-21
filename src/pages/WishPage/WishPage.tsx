@@ -402,7 +402,9 @@ export const WishPage = () => {
       </AppLayoutPadding>
       <ConfirmPurchase
         isOpen={confirmPurchaseModalOpen}
+        toggleOpen={setConfirmPurchaseModalOpen}
         onClose={() => setConfirmPurchaseModalOpen(false)}
+        openNotification={openNotification}
         wish={spotlightWish}
       />
       <QuickChat

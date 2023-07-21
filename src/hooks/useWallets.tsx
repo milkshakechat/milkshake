@@ -20,6 +20,8 @@ import { useEffect, useState } from "react";
 import { useUserState } from "@/state/user.state";
 import { useNotificationsState } from "@/state/notifications.state";
 import {
+  CreatePaymentIntentInput,
+  CreatePaymentIntentResponseSuccess,
   Mutation,
   NotificationGql,
   RecallTransactionResponseSuccess,
@@ -50,6 +52,7 @@ export const useWallets = () => {
       console.log(`selfUser`, selfUser);
       console.log(`selfUser.tradingWallet`, selfUser.tradingWallet);
       if (selfUser.tradingWallet) {
+        console.log(`getting trading wallet...`);
         const unsub1 = onSnapshot(
           doc(
             firestore,
@@ -63,6 +66,7 @@ export const useWallets = () => {
         );
       }
       if (selfUser.escrowWallet) {
+        console.log(`getting escrow wallet...`);
         const unsub2 = onSnapshot(
           doc(
             firestore,
@@ -91,7 +95,7 @@ export const useWallets = () => {
         onSnapshot(q, (docsSnap) => {
           docsSnap.forEach((doc) => {
             const tx = doc.data() as Tx_MirrorFireLedger;
-            console.log(`tx`, tx);
+            // console.log(`tx`, tx);
             setRecentTxs((txs) =>
               txs.filter((t) => t.id !== tx.id).concat([tx])
             );
@@ -223,6 +227,72 @@ export const useRecallTransaction = () => {
         referenceID: result.referenceID as TxRefID,
         originalTxMirrorID: args.txMirrorID as MirrorTransactionID,
       });
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+export const useCreatePaymentIntent = () => {
+  const [data, setData] = useState<CreatePaymentIntentResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+  const addPendingTx = useWalletState((state) => state.addPendingTx);
+
+  const runMutation = async (args: CreatePaymentIntentInput) => {
+    setLoading(true);
+    try {
+      const CREATE_PAYMENT_INTENT = gql`
+        mutation CreatePaymentIntent($input: CreatePaymentIntentInput!) {
+          createPaymentIntent(input: $input) {
+            __typename
+            ... on CreatePaymentIntentResponseSuccess {
+              checkoutToken
+              referenceID
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<CreatePaymentIntentResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "createPaymentIntent">>({
+              mutation: CREATE_PAYMENT_INTENT,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.createPaymentIntent.__typename ===
+                "CreatePaymentIntentResponseSuccess"
+              ) {
+                resolve(data.createPaymentIntent);
+                return data.createPaymentIntent;
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+      addPendingTx({
+        referenceID: result.referenceID as TxRefID,
+      });
+      return result;
     } catch (e) {
       console.log(e);
       setLoading(false);

@@ -46,6 +46,9 @@ const devConfig: ConfigEnv = {
       paymentLink: "https://buy.stripe.com/test_00g6picv61pv1FK144",
     },
   },
+  LEDGER: {
+    recallGracePeriodDays: 90,
+  },
 };
 const stagingConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
@@ -79,6 +82,9 @@ const stagingConfig: ConfigEnv = {
       priceInUSDCents: 1299,
       paymentLink: "https://buy.stripe.com/test_00g6picv61pv1FK144",
     },
+  },
+  LEDGER: {
+    recallGracePeriodDays: 90,
   },
 };
 const prodConfig: ConfigEnv = {
@@ -114,6 +120,9 @@ const prodConfig: ConfigEnv = {
       paymentLink: "https://buy.stripe.com/test_00g6picv61pv1FK144",
     },
   },
+  LEDGER: {
+    recallGracePeriodDays: 90,
+  },
 };
 
 interface ConfigEnv {
@@ -142,6 +151,9 @@ interface ConfigEnv {
       priceInUSDCents: 1299;
       paymentLink: string;
     };
+  };
+  LEDGER: {
+    recallGracePeriodDays: number;
   };
 }
 

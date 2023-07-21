@@ -13,7 +13,7 @@ import {
 } from "@milkshakechat/helpers";
 
 interface WalletPanelProps {
-  wallet?: Wallet_MirrorFireLedger;
+  wallet: Wallet_MirrorFireLedger;
   txs: Tx_MirrorFireLedger[];
 }
 const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
@@ -29,7 +29,9 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
     {
       key: "transactions",
       label: `Transactions`,
-      children: <TransactionHistory txs={txs} />,
+      children: (
+        <TransactionHistory walletAliasID={wallet.walletAliasID} txs={txs} />
+      ),
     },
     {
       key: "purchases",

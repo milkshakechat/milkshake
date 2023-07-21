@@ -368,9 +368,11 @@ export type Mutation = {
   markNotificationsAsRead: MarkNotificationsAsReadResponse;
   modifyProfile: ModifyProfileResponse;
   modifyStory: ModifyStoryResponse;
+  recallTransaction: RecallTransactionResponse;
   requestMerchantOnboarding: RequestMerchantOnboardingResponse;
   revokePushTokens: RevokePushTokensResponse;
   sendFriendRequest: SendFriendRequestResponse;
+  sendTransfer: SendTransferResponse;
   updateChatSettings: UpdateChatSettingsResponse;
   updatePushToken: UpdatePushTokenResponse;
   updateWish: UpdateWishResponse;
@@ -412,8 +414,18 @@ export type MutationModifyStoryArgs = {
 };
 
 
+export type MutationRecallTransactionArgs = {
+  input: RecallTransactionInput;
+};
+
+
 export type MutationSendFriendRequestArgs = {
   input: SendFriendRequestInput;
+};
+
+
+export type MutationSendTransferArgs = {
+  input: SendTransferInput;
 };
 
 
@@ -534,6 +546,18 @@ export type QueryViewPublicProfileArgs = {
   input: ViewPublicProfileInput;
 };
 
+export type RecallTransactionInput = {
+  recallerNote?: InputMaybe<Scalars['String']['input']>;
+  txMirrorID: Scalars['String']['input'];
+};
+
+export type RecallTransactionResponse = RecallTransactionResponseSuccess | ResponseError;
+
+export type RecallTransactionResponseSuccess = {
+  __typename?: 'RecallTransactionResponseSuccess';
+  referenceID: Scalars['String']['output'];
+};
+
 export type RequestMerchantOnboardingResponse = RequestMerchantOnboardingResponseSuccess | ResponseError;
 
 export type RequestMerchantOnboardingResponseSuccess = {
@@ -564,6 +588,19 @@ export type SendFriendRequestResponse = ResponseError | SendFriendRequestRespons
 export type SendFriendRequestResponseSuccess = {
   __typename?: 'SendFriendRequestResponseSuccess';
   status: FriendshipStatus;
+};
+
+export type SendTransferInput = {
+  amount: Scalars['Int']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  recipientID: Scalars['UserID']['input'];
+};
+
+export type SendTransferResponse = ResponseError | SendTransferResponseSuccess;
+
+export type SendTransferResponseSuccess = {
+  __typename?: 'SendTransferResponseSuccess';
+  referenceID: Scalars['String']['output'];
 };
 
 export type Status = {
@@ -923,6 +960,20 @@ export type DemoPingQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type DemoPingQuery = { __typename?: 'Query', demoPing: { __typename?: 'Ping', timestamp: string } };
+
+export type SendTransferMutationVariables = Exact<{
+  input: SendTransferInput;
+}>;
+
+
+export type SendTransferMutation = { __typename?: 'Mutation', sendTransfer: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'SendTransferResponseSuccess', referenceID: string } };
+
+export type RecallTransactionMutationVariables = Exact<{
+  input: RecallTransactionInput;
+}>;
+
+
+export type RecallTransactionMutation = { __typename?: 'Mutation', recallTransaction: { __typename: 'RecallTransactionResponseSuccess', referenceID: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type UpdatePushTokenMutationVariables = Exact<{
   input: UpdatePushTokenInput;

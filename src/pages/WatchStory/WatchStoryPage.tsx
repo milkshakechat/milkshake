@@ -14,13 +14,14 @@ import { useWindowSize } from "@/api/utils/screen";
 import { ReactNode, useEffect, useRef, useState } from "react";
 import {
   Avatar,
-  Input,
+  Space,
   Progress,
   Spin,
   theme,
   Button,
   Dropdown,
   message,
+  notification,
 } from "antd";
 import { Story, StoryAttachmentType } from "@/api/graphql/types";
 import { useGetStory } from "@/hooks/useStory";
@@ -34,6 +35,7 @@ import {
   ShareAltOutlined,
   HeartFilled,
   MessageFilled,
+  WalletOutlined,
 } from "@ant-design/icons";
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import VideoPlayer, {
@@ -78,6 +80,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
   const [srcExistStatus, setSrcExistStatus] = useState<SRC_STATE_STATUS>(
     SRC_STATE_STATUS.INITIAL
   );
+  const [api, contextHolder] = notification.useNotification();
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   const videoControllerRef = useRef<ShakePlayerRef>(EMPTY_PLAYER);
   const localStories = useStoriesState((state) => state.stories);
@@ -241,6 +244,26 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
     if (videoElement) {
       videoElement.muted = !videoElement.muted;
     }
+  };
+
+  const openNotification = () => {
+    console.log("opening notification...");
+    const key = `open${Date.now()}-1`;
+    const btn = (
+      <Space>
+        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
+          Okay
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: "Transaction Sent",
+      description:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+      btn,
+      key,
+      icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+    });
   };
 
   return (
@@ -730,7 +753,9 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
       {selfUser && spotlightStory.author.id !== selfUser.id && (
         <QuickChat
           isOpen={chatDrawerOpen}
+          toggleOpen={setChatDrawerOpen}
           onClose={() => setChatDrawerOpen(false)}
+          openNotification={openNotification}
           user={
             spotlightStory.author
               ? {
@@ -743,6 +768,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
           }
         />
       )}
+      {contextHolder}
     </$Vertical>
   );
 };

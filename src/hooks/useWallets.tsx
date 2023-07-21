@@ -1,6 +1,8 @@
 import {
   FirestoreCollection,
+  MirrorTransactionID,
   Notification_Firestore,
+  TxRefID,
   Tx_MirrorFireLedger,
   UserID,
   Wallet_MirrorFireLedger,
@@ -17,13 +19,24 @@ import {
 import { useEffect, useState } from "react";
 import { useUserState } from "@/state/user.state";
 import { useNotificationsState } from "@/state/notifications.state";
-import { NotificationGql } from "@/api/graphql/types";
+import {
+  Mutation,
+  NotificationGql,
+  RecallTransactionResponseSuccess,
+  SendTransferInput,
+  SendTransferResponseSuccess,
+} from "@/api/graphql/types";
+import { useWalletState } from "@/state/wallets.state";
+import gql from "graphql-tag";
+import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
+import { ErrorLine } from "@/api/graphql/error-line";
+import { RecallTransactionInput } from "../api/graphql/types";
 
 export const useWallets = () => {
   const selfUser = useUserState((state) => state.user);
-  const [tradingWallet, setTradingWallet] = useState<Wallet_MirrorFireLedger>();
-  const [escrowWallet, setEscrowWallet] = useState<Wallet_MirrorFireLedger>();
   const [recentTxs, setRecentTxs] = useState<Tx_MirrorFireLedger[]>([]);
+
+  const setWallet = useWalletState((state) => state.setWallet);
 
   useEffect(() => {
     if (selfUser && selfUser.id) {
@@ -45,7 +58,7 @@ export const useWallets = () => {
           ),
           (doc) => {
             console.log("Current data: ", doc.data());
-            setTradingWallet(doc.data() as Wallet_MirrorFireLedger);
+            setWallet(doc.data() as Wallet_MirrorFireLedger);
           }
         );
       }
@@ -58,7 +71,7 @@ export const useWallets = () => {
           ),
           (doc) => {
             console.log("Current data: ", doc.data());
-            setEscrowWallet(doc.data() as Wallet_MirrorFireLedger);
+            setWallet(doc.data() as Wallet_MirrorFireLedger);
           }
         );
       }
@@ -89,8 +102,132 @@ export const useWallets = () => {
   };
 
   return {
-    tradingWallet,
-    escrowWallet,
     recentTxs,
   };
+};
+
+export const useTransferFunds = () => {
+  const [data, setData] = useState<SendTransferResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+  const addPendingTx = useWalletState((state) => state.addPendingTx);
+
+  const runMutation = async (args: SendTransferInput) => {
+    setLoading(true);
+    try {
+      const SEND_TRANSFER = gql`
+        mutation SendTransfer($input: SendTransferInput!) {
+          sendTransfer(input: $input) {
+            __typename
+            ... on SendTransferResponseSuccess {
+              referenceID
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<SendTransferResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "sendTransfer">>({
+              mutation: SEND_TRANSFER,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.sendTransfer.__typename === "SendTransferResponseSuccess"
+              ) {
+                resolve(data.sendTransfer);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+      addPendingTx({
+        referenceID: result.referenceID as TxRefID,
+      });
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+export const useRecallTransaction = () => {
+  const [data, setData] = useState<RecallTransactionResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+  const addPendingTx = useWalletState((state) => state.addPendingTx);
+
+  const runMutation = async (args: RecallTransactionInput) => {
+    setLoading(true);
+    try {
+      const RECALL_TRANSACTION = gql`
+        mutation RecallTransaction($input: RecallTransactionInput!) {
+          recallTransaction(input: $input) {
+            __typename
+            ... on RecallTransactionResponseSuccess {
+              referenceID
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<RecallTransactionResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "recallTransaction">>({
+              mutation: RECALL_TRANSACTION,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.recallTransaction.__typename ===
+                "RecallTransactionResponseSuccess"
+              ) {
+                resolve(data.recallTransaction);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+      addPendingTx({
+        referenceID: result.referenceID as TxRefID,
+        originalTxMirrorID: args.txMirrorID as MirrorTransactionID,
+      });
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
 };

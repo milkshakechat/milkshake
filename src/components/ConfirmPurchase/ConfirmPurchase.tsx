@@ -31,8 +31,8 @@ import { cookieToUSD } from "@milkshakechat/helpers";
 import { CloseOutlined, EditOutlined, DownOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { Dropdown } from "antd";
-
-const USER_COOKIE_JAR_BALANCE = 253;
+import { useWalletState } from "@/state/wallets.state";
+import shallow from "zustand/shallow";
 
 interface ConfirmPurchaseProps {
   isOpen: boolean;
@@ -53,6 +53,14 @@ export const ConfirmPurchase = ({
   const selfUser = useUserState((state) => state.user);
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
+
+  const { tradingWallet } = useWalletState(
+    (state) => ({
+      tradingWallet: state.tradingWallet,
+    }),
+    shallow
+  );
+  const USER_COOKIE_JAR_BALANCE = tradingWallet?.balance || 0;
   const { token } = theme.useToken();
   const [suggestedPrice, setSuggestedPrice] = useState(wish.cookiePrice);
   const [suggestMode, setSuggestMode] = useState(false);

@@ -17,7 +17,7 @@ import {
 } from "@/pages/UserFriendPage/useTemplate.graphql";
 import { useUserState } from "@/state/user.state";
 import {
-  Avatar,
+  Space,
   Button,
   Dropdown,
   Input,
@@ -25,6 +25,7 @@ import {
   Tabs,
   message,
   theme,
+  notification,
 } from "antd";
 import {
   NavLink,
@@ -35,7 +36,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { SettingFilled, SearchOutlined } from "@ant-design/icons";
+import { WalletOutlined, SearchOutlined } from "@ant-design/icons";
 import {
   Friendship_Firestore,
   UserID,
@@ -65,6 +66,7 @@ export const UserFriendPage = () => {
   const { isMobile } = useWindowSize();
   const contacts = useUserState((state) => state.contacts);
 
+  const [api, contextHolder] = notification.useNotification();
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   const viewMode =
     viewModes[view as keyof typeof viewModes] || viewModes.timeline;
@@ -226,6 +228,26 @@ export const UserFriendPage = () => {
     );
   };
 
+  const openNotification = () => {
+    console.log("opening notification...");
+    const key = `open${Date.now()}-1`;
+    const btn = (
+      <Space>
+        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
+          Okay
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: "Transaction Sent",
+      description:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+      btn,
+      key,
+      icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+    });
+  };
+
   return (
     <div style={{ backgroundColor: token.colorBgContainer }}>
       <AppLayout>
@@ -309,7 +331,9 @@ export const UserFriendPage = () => {
           </AppLayoutPadding>
           <QuickChat
             isOpen={chatDrawerOpen}
+            toggleOpen={setChatDrawerOpen}
             onClose={() => setChatDrawerOpen(false)}
+            openNotification={openNotification}
             user={
               spotlightUser
                 ? ({
@@ -323,6 +347,7 @@ export const UserFriendPage = () => {
           />
         </>
       </AppLayout>
+      {contextHolder}
     </div>
   );
 };

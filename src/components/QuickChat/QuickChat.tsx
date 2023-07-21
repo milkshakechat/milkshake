@@ -17,6 +17,7 @@ import {
   Space,
   Statistic,
   Tag,
+  notification,
   theme,
 } from "antd";
 import { useIntl } from "react-intl";
@@ -34,19 +35,23 @@ import { UserID } from "@milkshakechat/helpers";
 import { WishAuthor } from "@/api/graphql/types";
 import { useState } from "react";
 import LogoCookie from "../LogoText/LogoCookie";
-import { CloseOutlined, EditOutlined } from "@ant-design/icons";
+import { CloseOutlined, EditOutlined, WalletOutlined } from "@ant-design/icons";
 import { Spacer } from "../AppLayout/AppLayout";
 import { useChatsListState } from "@/state/chats.state";
 import { themeTypeEnum, useStyleConfigGlobal } from "@/state/styleconfig.state";
+import { useWalletState } from "@/state/wallets.state";
+import shallow from "zustand/shallow";
+import { useTransferFunds } from "@/hooks/useWallets";
 
 interface QuickChatProps {
   isOpen: boolean;
-  toggleOpen?: (isOpen: boolean) => void;
+  toggleOpen: (isOpen: boolean) => void;
   onClose?: () => void;
   user: WishAuthor | null;
   suggestedCookies?: number;
   textPlaceholder?: string;
   actionButton?: React.ReactNode;
+  openNotification: () => void;
 }
 export const QuickChat = ({
   isOpen,
@@ -56,6 +61,7 @@ export const QuickChat = ({
   user,
   suggestedCookies = 0,
   actionButton,
+  openNotification,
 }: QuickChatProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
@@ -65,9 +71,25 @@ export const QuickChat = ({
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
   const { token } = theme.useToken();
+  const [note, setNote] = useState("");
   const themeType = useStyleConfigGlobal((state) => state.themeType);
   const [suggestedPrice, setSuggestedPrice] = useState(suggestedCookies);
   const [suggestMode, setSuggestMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { tradingWallet } = useWalletState(
+    (state) => ({
+      tradingWallet: state.tradingWallet,
+    }),
+    shallow
+  );
+
+  const {
+    data: runTransferMutationData,
+    errors: runTransferMutationErrors,
+    loading: runTransferMutationLoading,
+    runMutation: runTransferMutation,
+  } = useTransferFunds();
 
   const chatsList = useChatsListState((state) => state.chatsList);
 
@@ -98,6 +120,20 @@ export const QuickChat = ({
         <Button>View Chat</Button>
       </NavLink>
     );
+  };
+
+  const sendMessageTransfer = async () => {
+    setIsLoading(true);
+    await runTransferMutation({
+      recipientID: user.id,
+      amount: suggestedPrice,
+      note,
+    });
+    openNotification();
+    setIsLoading(false);
+    setSuggestedPrice(suggestedCookies);
+    setNote("");
+    toggleOpen(false);
   };
 
   return (
@@ -176,6 +212,8 @@ export const QuickChat = ({
             rows={3}
             placeholder={textPlaceholder || "Type a message..."}
             style={{ resize: "none" }}
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
           />
           <$Vertical
             style={{
@@ -276,7 +314,7 @@ export const QuickChat = ({
                     marginTop: "5px",
                   }}
                 >
-                  248
+                  {tradingWallet?.balance || 0}
                 </span>
               </$Vertical>
             </$Horizontal>
@@ -289,7 +327,9 @@ export const QuickChat = ({
               type="primary"
               size="large"
               block
+              onClick={sendMessageTransfer}
               style={{ fontWeight: "bold" }}
+              loading={isLoading}
             >
               SEND MESSAGE
             </Button>

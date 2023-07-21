@@ -20,6 +20,7 @@ import {
   theme,
   Input,
   Divider,
+  notification,
 } from "antd";
 import { useIntl } from "react-intl";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -28,18 +29,19 @@ import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import LogoCookie from "../LogoText/LogoCookie";
 import { Wish, WishBuyFrequency } from "@/api/graphql/types";
 import { Spacer } from "../AppLayout/AppLayout";
-import { cookieToUSD } from "@milkshakechat/helpers";
-import { CloseOutlined, EditOutlined, DownOutlined } from "@ant-design/icons";
+import { checkIfRecallable } from "@milkshakechat/helpers";
+import { CloseOutlined, EditOutlined, WalletOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { Dropdown } from "antd";
 import { TransactionFE } from "../TransactionHistory/TransactionHistory";
 import dayjs from "dayjs";
-
-const USER_COOKIE_JAR_BALANCE = 253;
+import shallow from "zustand/shallow";
+import { useWalletState } from "@/state/wallets.state";
+import { useRecallTransaction, useWallets } from "@/hooks/useWallets";
 
 interface RecallTransactionProps {
   isOpen: boolean;
-  toggleOpen?: (isOpen: boolean) => void;
+  toggleOpen: (isOpen: boolean) => void;
   onClose?: () => void;
   tx: TransactionFE | null;
 }
@@ -58,9 +60,21 @@ export const RecallTransaction = ({
   const location = useLocation();
   const { token } = theme.useToken();
   const [suggestMode, setSuggestMode] = useState(false);
-  const [purchaseNote, setPurchaseNote] = useState("");
+  const [note, setNote] = useState("");
   const [noteMode, setNoteMode] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
+  const [isLoading, setIsLoading] = useState(false);
 
+  const { tradingWallet } = useWalletState(
+    (state) => ({
+      tradingWallet: state.tradingWallet,
+    }),
+    shallow
+  );
+
+  const { runMutation: runRecallTransactionMutation } = useRecallTransaction();
+
+  const USER_COOKIE_JAR_BALANCE = tradingWallet?.balance || 0;
   const targetDate = dayjs(tx?.date).add(90, "day");
   // check if now is after targetDate
   const isAfter = dayjs().isAfter(targetDate);
@@ -75,6 +89,42 @@ export const RecallTransaction = ({
     const timeUntilString = targetDate.fromNow();
     return <Tag color="green">{`Final ${timeUntilString}`}</Tag>;
   };
+
+  const recallTx = async () => {
+    if (tx) {
+      setIsLoading(true);
+      await runRecallTransactionMutation({
+        recallerNote: note,
+        txMirrorID: tx.id,
+      });
+      openNotification();
+      setNote("");
+      setIsLoading(false);
+      toggleOpen(false);
+    }
+  };
+
+  const openNotification = () => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Space>
+        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
+          Okay
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: "Transaction Sent",
+      description:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+      btn,
+      key,
+      icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+    });
+  };
+
+  const withinGracePeriod =
+    tx && tx.createdAt ? checkIfRecallable(tx?.createdAt) : false;
 
   return (
     <Drawer
@@ -111,7 +161,7 @@ export const RecallTransaction = ({
             <$Horizontal justifyContent="space-between">
               <Statistic
                 title={`Recall Cookies`}
-                value={tx?.amount || 0}
+                value={tx?.amount ? Math.abs(tx.amount) : 0}
                 prefix={<LogoCookie width="20px" />}
                 style={{ flex: 1 }}
               />
@@ -156,6 +206,8 @@ export const RecallTransaction = ({
               <$Vertical style={{ position: "relative" }}>
                 <Input.TextArea
                   rows={2}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
                   placeholder="Add a note to your recall"
                   style={{ resize: "none", margin: "10px 0px" }}
                 />
@@ -233,7 +285,7 @@ export const RecallTransaction = ({
                 <Statistic
                   title="New Account Balance"
                   value={USER_COOKIE_JAR_BALANCE}
-                  suffix={<span>{`+ ${tx?.amount}`}</span>}
+                  suffix={<span>{`+ ${Math.abs(tx?.amount || 0)}`}</span>}
                   precision={0}
                 />
                 {!isMobile && (
@@ -249,10 +301,12 @@ export const RecallTransaction = ({
               type="primary"
               size="large"
               block
-              disabled={isAfter}
+              onClick={recallTx}
               style={{ fontWeight: "bold" }}
+              disabled={!withinGracePeriod}
+              loading={isLoading}
             >
-              RECALL COOKIES
+              {withinGracePeriod ? "RECALL COOKIES" : "Past Protection"}
             </Button>
             {isMobile && (
               <Button
@@ -272,6 +326,7 @@ export const RecallTransaction = ({
           </$Vertical>
         </$Vertical>
       </$Horizontal>
+      {contextHolder}
     </Drawer>
   );
 };

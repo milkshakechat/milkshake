@@ -215,6 +215,7 @@ export const WishPage = () => {
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+      duration: null,
     });
   };
 
@@ -402,7 +403,9 @@ export const WishPage = () => {
       </AppLayoutPadding>
       <ConfirmPurchase
         isOpen={confirmPurchaseModalOpen}
+        toggleOpen={setConfirmPurchaseModalOpen}
         onClose={() => setConfirmPurchaseModalOpen(false)}
+        openNotification={openNotification}
         wish={spotlightWish}
       />
       <QuickChat

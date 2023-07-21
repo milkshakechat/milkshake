@@ -223,6 +223,7 @@ export const ShoppingPage = () => {
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+      duration: null,
     });
   };
 

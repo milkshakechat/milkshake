@@ -205,18 +205,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         ),
         getItem(
           <NavLink
-            to="/app/wallet"
-            className={({ isActive, isPending }) =>
-              isPending ? "pending" : isActive ? "active" : ""
-            }
-          >
-            <PP>Wallet</PP>
-          </NavLink>,
-          "wallet",
-          "/app/wallet"
-        ),
-        getItem(
-          <NavLink
             to="/app/profile?view=wishlist"
             reloadDocument={_location.pathname === "/app/profile"}
             className={({ isActive, isPending }) =>
@@ -227,6 +215,18 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </NavLink>,
           "wishlists",
           "/app/profile?view=wishlist"
+        ),
+        getItem(
+          <NavLink
+            to="/app/wallet"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "active" : ""
+            }
+          >
+            <PP>Wallet</PP>
+          </NavLink>,
+          "wallet",
+          "/app/wallet"
         ),
         getItem(
           <NavLink

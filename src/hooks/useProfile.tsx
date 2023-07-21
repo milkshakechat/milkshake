@@ -78,6 +78,7 @@ export const useProfile = () => {
                     sendBirdAccessToken
                     tradingWallet
                     escrowWallet
+                    defaultPaymentMethodID
                     stories {
                       id
                       userID

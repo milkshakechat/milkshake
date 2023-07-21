@@ -120,6 +120,7 @@ export const RecallTransaction = ({
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+      duration: null,
     });
   };
 

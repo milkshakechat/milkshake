@@ -118,6 +118,7 @@ export const ReturnTransaction = ({
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+      duration: null,
     });
   };
 

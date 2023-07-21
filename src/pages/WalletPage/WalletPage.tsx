@@ -21,6 +21,8 @@ import LogoCookie from "@/components/LogoText/LogoCookie";
 import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
 import WalletPanel from "@/components/WalletPanel/WalletPanel";
 import { useWallets } from "@/hooks/useWallets";
+import { useWalletState } from "@/state/wallets.state";
+import shallow from "zustand/shallow";
 
 export const WalletPage = () => {
   const intl = useIntl();
@@ -31,11 +33,34 @@ export const WalletPage = () => {
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
   const { token } = theme.useToken();
-  const { tradingWallet, escrowWallet, recentTxs } = useWallets();
+  const { recentTxs } = useWallets();
+
+  const { tradingWallet, escrowWallet } = useWalletState(
+    (state) => ({
+      tradingWallet: state.tradingWallet,
+      escrowWallet: state.escrowWallet,
+    }),
+    shallow
+  );
+
   console.log(`recentTxs`, recentTxs);
+  console.log(`selfUser`, selfUser);
+  console.log(`tradingWallet`, tradingWallet);
+  console.log(`escrowWallet`, escrowWallet);
+
   if (!selfUser || !tradingWallet || !escrowWallet) {
     return <LoadingAnimation width="100%" height="100%" type="cookie" />;
   }
+
+  console.log(
+    `recentTxs.filter(tradingWallet)`,
+    recentTxs.filter((tx) => tx.walletAliasID === tradingWallet.id)
+  );
+  console.log(
+    `recentTxs.filter(escrowWallet)`,
+    recentTxs.filter((tx) => tx.walletAliasID === escrowWallet.id)
+  );
+
   const onChange = (key: string) => {
     console.log(key);
   };

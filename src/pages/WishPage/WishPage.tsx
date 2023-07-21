@@ -25,7 +25,7 @@ import {
   Affix,
   Avatar,
   Button,
-  Carousel,
+  Space,
   Dropdown,
   Spin,
   theme,
@@ -34,10 +34,11 @@ import {
   Divider,
   Image,
   Alert,
+  notification,
 } from "antd";
 import { useEffect, useState } from "react";
 import { useIntl } from "react-intl";
-import { GiftFilled } from "@ant-design/icons";
+import { WalletOutlined } from "@ant-design/icons";
 import {
   NavLink,
   useLocation,
@@ -61,6 +62,7 @@ export const WishPage = () => {
   const selfUser = useUserState((state) => state.user);
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
+  const [api, contextHolder] = notification.useNotification();
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   const { token } = theme.useToken();
   const [confirmPurchaseModalOpen, setConfirmPurchaseModalOpen] =
@@ -194,6 +196,26 @@ export const WishPage = () => {
       return `BUY WISH`;
     }
     return `PURCHASE WISH`;
+  };
+
+  const openNotification = () => {
+    console.log("opening notification...");
+    const key = `open${Date.now()}-1`;
+    const btn = (
+      <Space>
+        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
+          Okay
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: "Transaction Sent",
+      description:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+      btn,
+      key,
+      icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+    });
   };
 
   return (
@@ -386,8 +408,11 @@ export const WishPage = () => {
       <QuickChat
         isOpen={chatDrawerOpen}
         onClose={() => setChatDrawerOpen(false)}
+        toggleOpen={setChatDrawerOpen}
+        openNotification={openNotification}
         user={spotlightWish.author ? spotlightWish.author : null}
       />
+      {contextHolder}
     </>
   );
 };

@@ -20,6 +20,7 @@ import {
   theme,
   Input,
   Divider,
+  notification,
 } from "antd";
 import { useIntl } from "react-intl";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
@@ -28,18 +29,19 @@ import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import LogoCookie from "../LogoText/LogoCookie";
 import { Wish, WishBuyFrequency } from "@/api/graphql/types";
 import { Spacer } from "../AppLayout/AppLayout";
-import { cookieToUSD } from "@milkshakechat/helpers";
-import { CloseOutlined, EditOutlined, DownOutlined } from "@ant-design/icons";
+import { checkIfRecallable, cookieToUSD } from "@milkshakechat/helpers";
+import { CloseOutlined, EditOutlined, WalletOutlined } from "@ant-design/icons";
 import { useState } from "react";
 import { Dropdown } from "antd";
 import { TransactionFE } from "../TransactionHistory/TransactionHistory";
 import dayjs from "dayjs";
-
-const USER_COOKIE_JAR_BALANCE = 253;
+import shallow from "zustand/shallow";
+import { useWalletState } from "@/state/wallets.state";
+import { useRecallTransaction } from "@/hooks/useWallets";
 
 interface ReturnTransactionProps {
   isOpen: boolean;
-  toggleOpen?: (isOpen: boolean) => void;
+  toggleOpen: (isOpen: boolean) => void;
   onClose?: () => void;
   tx: TransactionFE | null;
 }
@@ -58,9 +60,20 @@ export const ReturnTransaction = ({
   const location = useLocation();
   const { token } = theme.useToken();
   const [suggestMode, setSuggestMode] = useState(false);
-  const [purchaseNote, setPurchaseNote] = useState("");
+  const [note, setNote] = useState("");
   const [noteMode, setNoteMode] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
+  const [isLoading, setIsLoading] = useState(false);
 
+  const { runMutation: runRecallTransactionMutation } = useRecallTransaction();
+
+  const { tradingWallet } = useWalletState(
+    (state) => ({
+      tradingWallet: state.tradingWallet,
+    }),
+    shallow
+  );
+  const USER_COOKIE_JAR_BALANCE = tradingWallet?.balance || 0;
   const targetDate = dayjs(tx?.date).add(90, "day");
   // check if now is after targetDate
   const isAfter = dayjs().isAfter(targetDate);
@@ -75,7 +88,41 @@ export const ReturnTransaction = ({
     const timeUntilString = targetDate.fromNow();
     return <Tag color="green">{`Final ${timeUntilString}`}</Tag>;
   };
+  const recallTx = async () => {
+    if (tx) {
+      setIsLoading(true);
+      await runRecallTransactionMutation({
+        recallerNote: note,
+        txMirrorID: tx.id,
+      });
+      openNotification();
+      setNote("");
+      toggleOpen(false);
+      setIsLoading(false);
+    }
+  };
 
+  const openNotification = () => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Space>
+        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
+          Okay
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: "Transaction Sent",
+      description:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+      btn,
+      key,
+      icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+    });
+  };
+
+  const withinGracePeriod =
+    tx && tx.createdAt ? checkIfRecallable(tx?.createdAt) : false;
   return (
     <Drawer
       title={isAfter ? "Finalized" : "Return Cookies?"}
@@ -158,6 +205,8 @@ export const ReturnTransaction = ({
                   rows={2}
                   placeholder="Add a note to your return"
                   style={{ resize: "none", margin: "10px 0px" }}
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
                 />
                 <$Horizontal
                   spacing={2}
@@ -253,10 +302,12 @@ export const ReturnTransaction = ({
               type="primary"
               size="large"
               block
-              disabled={isAfter}
+              onClick={recallTx}
               style={{ fontWeight: "bold" }}
+              disabled={isAfter || !withinGracePeriod}
+              loading={isLoading}
             >
-              RETURN COOKIES
+              {withinGracePeriod ? "RETURN COOKIES" : "Past Protection"}
             </Button>
             {isMobile && (
               <Button
@@ -276,6 +327,7 @@ export const ReturnTransaction = ({
           </$Vertical>
         </$Vertical>
       </$Horizontal>
+      {contextHolder}
     </Drawer>
   );
 };

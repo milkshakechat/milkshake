@@ -16,6 +16,7 @@ import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 import { PlusOutlined, MinusOutlined, SearchOutlined } from "@ant-design/icons";
 import {
   MirrorTransactionID,
+  TimestampFirestore,
   TransactionID,
   TransactionType,
   Tx_MirrorFireLedger,
@@ -28,9 +29,11 @@ import { $Vertical } from "@/api/utils/spacing";
 import dayjs from "dayjs";
 import RecallTransaction from "../RecallTransaction/RecallTransaction";
 import ReturnTransaction from "../ReturnTransaction/ReturnTransaction";
+import { useWalletState } from "@/state/wallets.state";
 
 export interface TransactionFE {
   id: MirrorTransactionID;
+  txID: TransactionID;
   title: string;
   date: Date;
   amount: number;
@@ -41,14 +44,17 @@ export interface TransactionFE {
   receiverWalletID: WalletAliasID;
   gotRecalled: boolean;
   gotCashOut: boolean;
+  createdAt: TimestampFirestore;
 }
-
-const selfWalletID = "self" as WalletAliasID;
 
 interface TransactionHistoryProps {
+  walletAliasID: WalletAliasID;
   txs: Tx_MirrorFireLedger[];
 }
-export const TransactionHistory = ({ txs }: TransactionHistoryProps) => {
+export const TransactionHistory = ({
+  walletAliasID,
+  txs,
+}: TransactionHistoryProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -60,11 +66,14 @@ export const TransactionHistory = ({ txs }: TransactionHistoryProps) => {
   const [searchString, setSearchString] = useState("");
   const [txRecall, setTxRecall] = useState<TransactionFE | null>(null);
   const [txReturn, setTxReturn] = useState<TransactionFE | null>(null);
+  const pendingTxs = useWalletState((state) => state.pendingTxs);
+  console.log(`selfUser`, selfUser);
 
   const filteredTransactions = txs
     .map((tx) => {
       const _tx: TransactionFE = {
         id: tx.id,
+        txID: tx.txID,
         title: tx.note,
         note: tx.note,
         date: new Date((tx.createdAt as any).seconds * 1000),
@@ -75,6 +84,7 @@ export const TransactionHistory = ({ txs }: TransactionHistoryProps) => {
         receiverWalletID: tx.recievingWallet,
         gotRecalled: tx.recallTransactionID ? true : false,
         gotCashOut: tx.cashOutTransactionID ? true : false,
+        createdAt: tx.createdAt,
       };
       return _tx;
     })
@@ -97,34 +107,52 @@ export const TransactionHistory = ({ txs }: TransactionHistoryProps) => {
   }
 
   const determineAction = (tx: TransactionFE) => {
-    const targetDate = dayjs(tx?.date).add(90, "day");
+    const targetDate = dayjs(tx?.date).add(1, "day");
     // check if now is after targetDate
     const isAfter = dayjs().isAfter(targetDate);
 
     if (tx.gotRecalled) {
-      if (tx.senderWalletID === selfWalletID) {
+      if (tx.senderWalletID === walletAliasID) {
         return [<span key={`action-${tx.id}`}>Recalled</span>];
       }
       return [<span key={`action-${tx.id}`}>Returned</span>];
     }
-
+    if (pendingTxs.map((tx) => tx.originalTxMirrorID).includes(tx.id)) {
+      return [
+        <span
+          key={`action-${tx.id}`}
+          style={{ color: token.colorTextDescription }}
+        >
+          Pending
+        </span>,
+      ];
+    }
     if (isAfter) {
-      if (tx.senderWalletID === selfWalletID) {
+      console.log(`isAfter`, isAfter);
+      if (tx.senderWalletID === walletAliasID) {
         return [
-          <span onClick={() => setTxRecall(tx)} key={`action-${tx.id}`}>
+          <span
+            onClick={() => setTxRecall(tx)}
+            key={`action-${tx.id}`}
+            style={{ color: token.colorTextDescription }}
+          >
             Recall
           </span>,
         ];
       }
       return [
-        <span onClick={() => setTxReturn(tx)} key={`action-${tx.id}`}>
+        <span
+          onClick={() => setTxReturn(tx)}
+          key={`action-${tx.id}`}
+          style={{ color: token.colorTextDescription }}
+        >
           Return
         </span>,
       ];
     }
 
     if (tx.type === TransactionType.DEAL) {
-      if (tx.senderWalletID === selfWalletID) {
+      if (tx.senderWalletID === walletAliasID) {
         return [
           <a onClick={() => setTxRecall(tx)} key={`action-${tx.id}`}>
             Recall
@@ -138,7 +166,7 @@ export const TransactionHistory = ({ txs }: TransactionHistoryProps) => {
       ];
     }
     if (tx.type === TransactionType.TRANSFER) {
-      if (tx.senderWalletID === selfWalletID) {
+      if (tx.senderWalletID === walletAliasID) {
         return [
           <a onClick={() => setTxRecall(tx)} key={`action-${tx.id}`}>
             Recall

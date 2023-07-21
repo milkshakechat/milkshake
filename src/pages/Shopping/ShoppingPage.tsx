@@ -22,7 +22,7 @@ import { useUserState } from "@/state/user.state";
 import { UserID, Username, WishID } from "@milkshakechat/helpers";
 import {
   Avatar,
-  Drawer,
+  Space,
   Card,
   Col,
   Row,
@@ -35,6 +35,7 @@ import {
   Alert,
   Affix,
   Tooltip,
+  notification,
 } from "antd";
 import Meta from "antd/es/card/Meta";
 import { useEffect, useRef, useState } from "react";
@@ -52,6 +53,7 @@ import {
   FilterOutlined,
   ArrowRightOutlined,
   UserOutlined,
+  WalletOutlined,
 } from "@ant-design/icons";
 import { useNotificationsState } from "@/state/notifications.state";
 import PP from "@/i18n/PlaceholderPrint";
@@ -74,6 +76,7 @@ export const ShoppingPage = () => {
   const location = useLocation();
   const [searchString, setSearchString] = useState("");
   const { token } = theme.useToken();
+  const [api, contextHolder] = notification.useNotification();
 
   const [quickChatUser, setQuickChatUser] = useState<{
     user: WishAuthor | null;
@@ -201,6 +204,26 @@ export const ShoppingPage = () => {
         }).toString(),
       });
     }
+  };
+
+  const openNotification = () => {
+    console.log("opening notification...");
+    const key = `open${Date.now()}-1`;
+    const btn = (
+      <Space>
+        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
+          Okay
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: "Transaction Sent",
+      description:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+      btn,
+      key,
+      icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+    });
   };
 
   return (
@@ -578,14 +601,17 @@ export const ShoppingPage = () => {
       <QuickChat
         isOpen={quickChatUser !== null}
         onClose={() => setQuickChatUser(null)}
+        toggleOpen={(bool: boolean) => setQuickChatUser(null)}
         user={quickChatUser?.user || null}
         textPlaceholder="Are you coming to my event?"
+        openNotification={openNotification}
         actionButton={
           <NavLink to={`/app/wish/${quickChatUser?.wishID}`}>
             <Button>View Event</Button>
           </NavLink>
         }
       />
+      {contextHolder}
     </>
   );
 };

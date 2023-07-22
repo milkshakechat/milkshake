@@ -172,6 +172,18 @@ const PurchasePage = () => {
           </div>
         </$Vertical>
         <Spacer />
+        <span
+          onClick={() => {
+            navigator.clipboard.writeText(
+              `Purchase#ID${purchaseManifestIDFromUrl}` || ""
+            );
+            message.success(<PP>{`Copied Purchase#ID`}</PP>);
+          }}
+          style={{
+            color: token.colorTextDescription,
+          }}
+        >{`Purchase#${purchaseManifestIDFromUrl}`}</span>
+        <Spacer height="10px" />
         {purchaseManifest.buyerWallet === selfUser.tradingWallet ? (
           <TransactionHistory
             walletAliasID={selfUser.escrowWallet}

@@ -67,7 +67,6 @@ export const TransactionHistory = ({
   const [txRecall, setTxRecall] = useState<TransactionFE | null>(null);
   const [txReturn, setTxReturn] = useState<TransactionFE | null>(null);
   const pendingTxs = useWalletState((state) => state.pendingTxs);
-  console.log(`selfUser`, selfUser);
 
   const filteredTransactions = txs
     .map((tx) => {
@@ -208,8 +207,8 @@ export const TransactionHistory = ({
                   />
                 }
                 title={
-                  <span>{`${tx.title.slice(0, isMobile ? 30 : 200)}${
-                    tx.title.length > 30 ? ".." : ""
+                  <span>{`${tx.title.slice(0, isMobile ? 50 : 200)}${
+                    tx.title.length > 50 ? ".." : ""
                   }`}</span>
                 }
                 description={

@@ -10,8 +10,10 @@ import {
   Tx_MirrorFireLedger,
   WalletType,
   Wallet_MirrorFireLedger,
+  checkIfEscrowWallet,
 } from "@milkshakechat/helpers";
 import { useWalletState } from "@/state/wallets.state";
+import PurchaseHistory from "../PurchaseHistory/PurchaseHistory";
 
 interface WalletPanelProps {
   wallet: Wallet_MirrorFireLedger;
@@ -37,14 +39,13 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
       ),
     },
     {
-      key: "purchases",
-      label: `Purchases`,
+      key: checkIfEscrowWallet(wallet.walletAliasID) ? "sales" : "purchases",
+      label: checkIfEscrowWallet(wallet.walletAliasID) ? "Sales" : "Purchases",
       children: (
-        <$Vertical>
-          {purchaseManifests.map((pm) => {
-            return <div style={{ margin: "5px 0px" }}>{pm.title}</div>;
-          })}
-        </$Vertical>
+        <PurchaseHistory
+          wallet={wallet}
+          purchaseManifests={purchaseManifests}
+        />
       ),
     },
   ];

@@ -10,7 +10,12 @@ import {
 import { useUserState } from "@/state/user.state";
 import { Button, Result, Statistic, Tabs, TabsProps, theme } from "antd";
 import { useIntl } from "react-intl";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  createSearchParams,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import PP from "@/i18n/PlaceholderPrint";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import { AppLayoutPadding, Spacer } from "@/components/AppLayout/AppLayout";
@@ -24,11 +29,18 @@ import { useWallets } from "@/hooks/useWallets";
 import { useWalletState } from "@/state/wallets.state";
 import shallow from "zustand/shallow";
 
+enum viewModes {
+  trading = "trading",
+  escrow = "escrow",
+}
+
 export const WalletPage = () => {
   const intl = useIntl();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const tab = searchParams.get("tab");
+  const view = searchParams.get("view");
+  const viewMode =
+    viewModes[view as keyof typeof viewModes] || viewModes.trading;
   const selfUser = useUserState((state) => state.user);
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
@@ -61,8 +73,15 @@ export const WalletPage = () => {
     recentTxs.filter((tx) => tx.walletAliasID === escrowWallet.id)
   );
 
-  const onChange = (key: string) => {
-    console.log(key);
+  const onChange = (view: string) => {
+    console.log(view);
+    console.log(`Changing view... ${view}`);
+    navigate({
+      pathname: location.pathname,
+      search: createSearchParams({
+        view,
+      }).toString(),
+    });
   };
 
   const items: TabsProps["items"] = [
@@ -118,7 +137,7 @@ export const WalletPage = () => {
         />
         <Spacer />
 
-        <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+        <Tabs defaultActiveKey={viewMode} items={items} onChange={onChange} />
       </>
     </AppLayoutPadding>
   );

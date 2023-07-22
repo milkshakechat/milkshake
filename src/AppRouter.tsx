@@ -58,9 +58,11 @@ import SubscribePremium from "./components/SubscribePremium/SubscribePremium";
 import SubscribePremiumSuccess from "./components/SubscribePremium/SubscribePremiumSuccess";
 import { usePreloadImages } from "./hooks/usePreloadImages";
 import ShoppingPage from "./pages/Shopping/ShoppingPage";
+import TinderPage from "./pages/TinderPage/TinderPage";
 import MerchantBankingRegistrationRefreshPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationRefreshPage";
 import MerchantBankingRegistrationInitPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationInitPage";
 import WalletPage from "./pages/WalletPage/WalletPage";
+import PurchasePage from "./pages/PurchasePage/PurchasePage";
 
 const AppRouter = () => {
   const {
@@ -181,7 +183,7 @@ const AppRouter = () => {
                             element={
                               <AuthProtect>
                                 <AppLayout>
-                                  <ShoppingPage />
+                                  <TinderPage />
                                 </AppLayout>
                               </AuthProtect>
                             }
@@ -197,6 +199,18 @@ const AppRouter = () => {
                               </AuthProtect>
                             }
                           />
+
+                          <Route
+                            path="wallet/purchase/:purchaseManifestID"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <PurchasePage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+
                           <Route
                             path="chat"
                             element={

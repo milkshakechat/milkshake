@@ -58,6 +58,7 @@ import SubscribePremium from "./components/SubscribePremium/SubscribePremium";
 import SubscribePremiumSuccess from "./components/SubscribePremium/SubscribePremiumSuccess";
 import { usePreloadImages } from "./hooks/usePreloadImages";
 import ShoppingPage from "./pages/Shopping/ShoppingPage";
+import TinderPage from "./pages/TinderPage/TinderPage";
 import MerchantBankingRegistrationRefreshPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationRefreshPage";
 import MerchantBankingRegistrationInitPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationInitPage";
 import WalletPage from "./pages/WalletPage/WalletPage";
@@ -181,7 +182,7 @@ const AppRouter = () => {
                             element={
                               <AuthProtect>
                                 <AppLayout>
-                                  <ShoppingPage />
+                                  <TinderPage />
                                 </AppLayout>
                               </AuthProtect>
                             }

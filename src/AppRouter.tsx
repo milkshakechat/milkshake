@@ -62,6 +62,7 @@ import TinderPage from "./pages/TinderPage/TinderPage";
 import MerchantBankingRegistrationRefreshPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationRefreshPage";
 import MerchantBankingRegistrationInitPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationInitPage";
 import WalletPage from "./pages/WalletPage/WalletPage";
+import PurchasePage from "./pages/PurchasePage/PurchasePage";
 
 const AppRouter = () => {
   const {
@@ -198,6 +199,18 @@ const AppRouter = () => {
                               </AuthProtect>
                             }
                           />
+
+                          <Route
+                            path="wallet/purchase/:purchaseManifestID"
+                            element={
+                              <AuthProtect>
+                                <AppLayout>
+                                  <PurchasePage />
+                                </AppLayout>
+                              </AuthProtect>
+                            }
+                          />
+
                           <Route
                             path="chat"
                             element={

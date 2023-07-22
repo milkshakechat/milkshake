@@ -2,6 +2,7 @@ import {
   FirestoreCollection,
   MirrorTransactionID,
   Notification_Firestore,
+  PurchaseMainfestID,
   PurchaseMainfest_Firestore,
   TxRefID,
   Tx_MirrorFireLedger,
@@ -21,6 +22,8 @@ import { useEffect, useState } from "react";
 import { useUserState } from "@/state/user.state";
 import { useNotificationsState } from "@/state/notifications.state";
 import {
+  CancelSubscriptionInput,
+  CancelSubscriptionResponseSuccess,
   CreatePaymentIntentInput,
   CreatePaymentIntentResponseSuccess,
   Mutation,
@@ -144,6 +147,52 @@ export const useWallets = () => {
 
   return {
     recentTxs,
+  };
+};
+
+export const usePurchaseManifest = () => {
+  const selfUser = useUserState((state) => state.user);
+  const [purchaseManifestTxs, setPmTxs] = useState<Tx_MirrorFireLedger[]>([]);
+  const [purchaseManifest, setPm] = useState<PurchaseMainfest_Firestore>();
+
+  const getPurchaseManifestTxs = async (
+    purchaseManifestID: PurchaseMainfestID
+  ) => {
+    console.log(`Attempting purchase manifest txs..`);
+    console.log(`purchasemaniID`, purchaseManifestID);
+    console.log(`and selfusesr`, selfUser);
+    if (selfUser) {
+      const q = query(
+        collection(firestore, FirestoreCollection.MIRROR_TX),
+        where("purchaseManifestID", "==", purchaseManifestID),
+        limit(50)
+      );
+      onSnapshot(q, (docsSnap) => {
+        docsSnap.forEach((doc) => {
+          const tx = doc.data() as Tx_MirrorFireLedger;
+          // console.log(`tx`, tx);
+          setPmTxs((txs) => txs.filter((t) => t.id !== tx.id).concat([tx]));
+        });
+      });
+      const unsub1 = onSnapshot(
+        doc(
+          firestore,
+          FirestoreCollection.PURCHASE_MANIFESTS,
+          purchaseManifestID
+        ),
+        (doc) => {
+          console.log("Current data: ", doc.data());
+          setPm(doc.data() as PurchaseMainfest_Firestore);
+        }
+      );
+    }
+    return { purchaseManifestTxs, purchaseManifest };
+  };
+
+  return {
+    getPurchaseManifestTxs,
+    purchaseManifestTxs,
+    purchaseManifest,
   };
 };
 
@@ -290,6 +339,7 @@ export const useCreatePaymentIntent = () => {
             ... on CreatePaymentIntentResponseSuccess {
               checkoutToken
               referenceID
+              purchaseManifestID
             }
             ... on ResponseError {
               error {
@@ -338,3 +388,89 @@ export const useCreatePaymentIntent = () => {
 
   return { data, errors, loading, runMutation };
 };
+
+export const useCancelSubscription = () => {
+  const [data, setData] = useState<CancelSubscriptionResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: CancelSubscriptionInput) => {
+    setLoading(true);
+    try {
+      const CANCEL_SUBSCRIPTION = gql`
+        mutation CancelSubscription($input: CancelSubscriptionInput!) {
+          cancelSubscription(input: $input) {
+            __typename
+            ... on CancelSubscriptionResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<CancelSubscriptionResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "cancelSubscription">>({
+              mutation: CANCEL_SUBSCRIPTION,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.cancelSubscription.__typename ===
+                "CancelSubscriptionResponseSuccess"
+              ) {
+                resolve(data.cancelSubscription);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+// rules_version = '2';
+
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+
+// 		match /notifications/{notificationId} {
+//       allow read: if request.auth != null && request.auth.uid == resource.data.recipientID;
+//     }
+
+// 		match /mirrorWallets/{walletAliasID} {
+//       allow read: if request.auth != null && request.auth.uid == resource.data.ownerID;
+//     }
+
+// 		match /mirrorTx/{mirrorTxID} {
+//       allow read: if request.auth != null && request.auth.uid == resource.data.ownerID;
+//     }
+
+// 		match /purchaseManifests/{purchaseManifestID} {
+//       allow read: if request.auth != null && (request.auth.uid == resource.data.sellerUserID || request.auth.uid == resource.data.buyerUserID);
+//     }
+
+//     match /{document=**} {
+//       allow read, write: if false;
+//     }
+//   }
+// }

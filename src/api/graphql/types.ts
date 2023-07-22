@@ -21,6 +21,17 @@ export type Scalars = {
   WalletAliasID: { input: any; output: any; }
 };
 
+export type CancelSubscriptionInput = {
+  purchaseManifestID: Scalars['String']['input'];
+};
+
+export type CancelSubscriptionResponse = CancelSubscriptionResponseSuccess | ResponseError;
+
+export type CancelSubscriptionResponseSuccess = {
+  __typename?: 'CancelSubscriptionResponseSuccess';
+  status: Scalars['String']['output'];
+};
+
 export type ChatRoom = {
   __typename?: 'ChatRoom';
   chatRoomID: Scalars['String']['output'];
@@ -73,6 +84,7 @@ export type CreatePaymentIntentResponse = CreatePaymentIntentResponseSuccess | R
 export type CreatePaymentIntentResponseSuccess = {
   __typename?: 'CreatePaymentIntentResponseSuccess';
   checkoutToken?: Maybe<Scalars['String']['output']>;
+  purchaseManifestID: Scalars['String']['output'];
   referenceID: Scalars['String']['output'];
 };
 
@@ -370,6 +382,7 @@ export type ModifyStoryResponseSuccess = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  cancelSubscription: CancelSubscriptionResponse;
   createPaymentIntent: CreatePaymentIntentResponse;
   createSetupIntent: CreateSetupIntentResponse;
   createStory: CreateStoryResponse;
@@ -388,6 +401,11 @@ export type Mutation = {
   updateChatSettings: UpdateChatSettingsResponse;
   updatePushToken: UpdatePushTokenResponse;
   updateWish: UpdateWishResponse;
+};
+
+
+export type MutationCancelSubscriptionArgs = {
+  input: CancelSubscriptionInput;
 };
 
 
@@ -1025,7 +1043,14 @@ export type CreatePaymentIntentMutationVariables = Exact<{
 }>;
 
 
-export type CreatePaymentIntentMutation = { __typename?: 'Mutation', createPaymentIntent: { __typename: 'CreatePaymentIntentResponseSuccess', checkoutToken?: string | null, referenceID: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type CreatePaymentIntentMutation = { __typename?: 'Mutation', createPaymentIntent: { __typename: 'CreatePaymentIntentResponseSuccess', checkoutToken?: string | null, referenceID: string, purchaseManifestID: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type CancelSubscriptionMutationVariables = Exact<{
+  input: CancelSubscriptionInput;
+}>;
+
+
+export type CancelSubscriptionMutation = { __typename?: 'Mutation', cancelSubscription: { __typename: 'CancelSubscriptionResponseSuccess', status: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type UpdatePushTokenMutationVariables = Exact<{
   input: UpdatePushTokenInput;

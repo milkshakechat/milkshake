@@ -149,27 +149,39 @@ const ConfirmPurchase = ({
           wishID: wish.id,
         },
       });
-      if (!res || !res.checkoutToken) {
+      if (!res) {
         setIsLoading(false);
         message.error("Failed to purchase wish");
         return;
       }
-      console.log(`---> res`, res);
-      const confirmationRes = await stripe.confirmCardPayment(
-        res.checkoutToken,
-        {
-          payment_method: defaultPaymentMethodID,
+      if (res.checkoutToken) {
+        console.log(`---> res`, res);
+        const confirmationRes = await stripe.confirmCardPayment(
+          res.checkoutToken,
+          {
+            payment_method: defaultPaymentMethodID,
+          }
+        );
+        if (confirmationRes.error) {
+          console.log(`error`, confirmationRes.error);
+          setErrors([confirmationRes.error.message as ErrorLine]);
         }
-      );
-      if (confirmationRes.error) {
-        console.log(`error`, confirmationRes.error);
-        setErrors([confirmationRes.error.message as ErrorLine]);
-      }
-      console.log(`confirmationRes`, confirmationRes);
-      if (confirmationRes.paymentIntent?.status === "succeeded") {
+        console.log(`confirmationRes`, confirmationRes);
+        if (confirmationRes.paymentIntent?.status === "succeeded") {
+          openNotification();
+          setIsLoading(false);
+          toggleOpen(false);
+          navigate({
+            pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
+          });
+        }
+      } else if (res.referenceID) {
         openNotification();
         setIsLoading(false);
         toggleOpen(false);
+        navigate({
+          pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
+        });
       }
     }
   };

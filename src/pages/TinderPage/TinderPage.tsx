@@ -95,20 +95,20 @@ export const TinderPage = () => {
   const currentIndexRef = useRef(currentIndex);
 
   useEffect(() => {
-    const _cachedIndex = localStorage.getItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE);
-    console.log(`_cachedIndex = ${_cachedIndex}`);
-    console.log(
-      `parseInt(_cachedIndex) = ${_cachedIndex && parseInt(_cachedIndex)}`
-    );
-    if (_cachedIndex && !isNaN(parseInt(_cachedIndex))) {
-      setCurrentIndex(parseInt(_cachedIndex));
-      currentIndexRef.current = parseInt(_cachedIndex);
-      localStorage.removeItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE);
-    } else {
-      const endOfStack = marketplaceWishlist.length - 1;
-      setCurrentIndex(endOfStack);
-      currentIndexRef.current = endOfStack;
-    }
+    // const _cachedIndex = localStorage.getItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE);
+    // console.log(`_cachedIndex = ${_cachedIndex}`);
+    // console.log(
+    //   `parseInt(_cachedIndex) = ${_cachedIndex && parseInt(_cachedIndex)}`
+    // );
+    // if (_cachedIndex && !isNaN(parseInt(_cachedIndex))) {
+    //   setCurrentIndex(parseInt(_cachedIndex));
+    //   currentIndexRef.current = parseInt(_cachedIndex);
+    //   localStorage.removeItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE);
+    // } else {
+    const endOfStack = marketplaceWishlist.length - 1;
+    setCurrentIndex(endOfStack);
+    currentIndexRef.current = endOfStack;
+    // }
   }, [marketplaceWishlist]);
 
   const childRefs = useMemo(
@@ -122,8 +122,8 @@ export const TinderPage = () => {
   const updateCurrentIndex = (val: number) => {
     setCurrentIndex(val);
     currentIndexRef.current = val;
-    console.log(`setting localstorage`, val.toString());
-    localStorage.setItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE, val.toString());
+    // console.log(`setting localstorage`, val.toString());
+    // localStorage.setItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE, val.toString());
   };
 
   const canGoBack = currentIndex < marketplaceWishlist.length - 1;
@@ -287,6 +287,7 @@ export const TinderPage = () => {
                 }}
               >
                 <$Horizontal
+                  className="pressable"
                   spacing={3}
                   justifyContent="space-between"
                   alignItems="flex-end"
@@ -296,7 +297,14 @@ export const TinderPage = () => {
                     bottom: 0,
                   }}
                 >
-                  <$Horizontal>
+                  <$Horizontal
+                    className="pressable"
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      visitUser(wish.author?.id);
+                    }}
+                  >
                     <Avatar
                       src={wish.author?.avatar}
                       style={{ backgroundColor: token.colorPrimaryText }}
@@ -304,6 +312,7 @@ export const TinderPage = () => {
                       onClick={() => visitUser(wish.author?.id)}
                     />
                     <$Vertical
+                      className="pressable"
                       style={{
                         whiteSpace: "nowrap",
                         textOverflow: "ellipsis",
@@ -326,16 +335,23 @@ export const TinderPage = () => {
                       </PP>
                     </$Vertical>
                   </$Horizontal>
-                  <NavLink to={`/app/wish/${wish.id}`}>
-                    <Button
-                      size={isMobile ? "middle" : "middle"}
-                      type="primary"
-                      ghost
-                      style={{ marginLeft: "5px" }}
-                    >
-                      View Event
-                    </Button>
-                  </NavLink>
+                  <div
+                    className="pressable"
+                    onTouchStart={() => {
+                      navigate(`/app/wish/${wish.id}`);
+                    }}
+                  >
+                    <NavLink to={`/app/wish/${wish.id}`}>
+                      <Button
+                        size={isMobile ? "middle" : "middle"}
+                        type="primary"
+                        ghost
+                        style={{ marginLeft: "5px" }}
+                      >
+                        View Event
+                      </Button>
+                    </NavLink>
+                  </div>
                 </$Horizontal>
                 <div
                   style={{
@@ -461,7 +477,7 @@ export const TinderPage = () => {
         className="buttons"
         spacing={3}
         style={{
-          height: isMobile ? "25vh" : "20vh",
+          height: isMobile ? "20vh" : "20vh",
           backgroundColor: token.colorBgBase,
           zIndex: 1,
         }}
@@ -515,10 +531,7 @@ export const TinderPage = () => {
         textPlaceholder="Are you coming to my event?"
         openNotification={openNotification}
         actionButton={
-          <NavLink
-            className="pressable"
-            to={`/app/wish/${quickChatUser?.wishID}`}
-          >
+          <NavLink to={`/app/wish/${quickChatUser?.wishID}`}>
             <Button>View Event</Button>
           </NavLink>
         }

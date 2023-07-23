@@ -1,14 +1,6 @@
 import { useIntl, FormattedMessage } from "react-intl";
 import { $Vertical, $Horizontal } from "@/api/utils/spacing";
-import {
-  Button,
-  Card,
-  Dropdown,
-  Popconfirm,
-  message,
-  theme,
-  Modal,
-} from "antd";
+import { Button, Card, Dropdown, Popconfirm, Empty, theme, Modal } from "antd";
 import { useWindowSize } from "@/api/utils/screen";
 import { Story, StoryAttachmentType } from "@/api/graphql/types";
 import { groupUserStoriesByDateRange } from "@/api/utils/stories.util";
@@ -16,6 +8,7 @@ import {
   EllipsisOutlined,
   SettingOutlined,
   EyeInvisibleOutlined,
+  FireFilled,
 } from "@ant-design/icons";
 import {
   NavLink,
@@ -31,7 +24,8 @@ import { Affix } from "antd";
 import VideoPlayer, {
   ShakePlayerRef,
 } from "@/components/VideoPlayer/VideoPlayer";
-import { WATCH_STORY_BACK_HOME_ROUTE } from "@/config.env";
+import { BRANDED_FONT, WATCH_STORY_BACK_HOME_ROUTE } from "@/config.env";
+import { Spacer } from "@/components/AppLayout/AppLayout";
 
 interface TimelineGalleryProps {
   stories: Story[];
@@ -316,6 +310,49 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
       {myStories.map((row) => {
         return renderTimelineRow(row);
       })}
+      {myStories.length === 0 && (
+        <$Vertical
+          justifyContent="center"
+          alignItems="center"
+          style={{ flex: 1, minHeight: "50vh" }}
+        >
+          <Empty
+            image={
+              <FireFilled
+                style={{ fontSize: "5rem", color: token.colorPrimaryBgHover }}
+              />
+            }
+            description={
+              <span
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: "normal",
+                  color: token.colorPrimaryBorder,
+                  fontFamily: BRANDED_FONT,
+                }}
+              >
+                Post Your First Story
+              </span>
+            }
+          >
+            <NavLink to={`/app/story/new`}>
+              <Button
+                type="primary"
+                ghost
+                style={{
+                  width: "150px",
+                  marginTop: "10px",
+                  fontWeight: "bold",
+                  color: token.colorPrimaryBorder,
+                  border: `2px solid ${token.colorPrimaryBorder}`,
+                }}
+              >
+                Upload
+              </Button>
+            </NavLink>
+          </Empty>
+        </$Vertical>
+      )}
       <Modal
         style={{ overflow: "hidden", top: 20, padding: 0 }}
         open={anonViewStoryModal ? true : false}

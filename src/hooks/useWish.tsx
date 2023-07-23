@@ -95,7 +95,6 @@ export const useCreateWish = () => {
       console.log(e);
     }
   };
-
   return { data, errors, runMutation };
 };
 

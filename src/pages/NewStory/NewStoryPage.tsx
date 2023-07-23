@@ -36,9 +36,10 @@ const NewStoryPage = () => {
           glowColor={token.colorPrimaryText}
           backButton={true}
           backButtonAction={() => {
-            navigate({
-              pathname: "/app/chats",
-            });
+            // navigate({
+            //   pathname: "/app/chats",
+            // });
+            navigate(-1);
           }}
           actionButton={
             null

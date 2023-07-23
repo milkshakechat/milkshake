@@ -8,6 +8,8 @@ interface WishState {
   upsertWish: (wish: Wish) => void;
   marketplaceWishlist: Wish[];
   setMarketplaceWishlist: (wishlist: Wish[]) => void;
+  swipeStackWishlist: Wish[];
+  swipedWish: (wishID: WishID) => void;
   setLastFocusedScrollPosition: (wishID: WishID) => void;
   lastFocusedScrollPosition: WishID | null;
 }
@@ -15,6 +17,7 @@ interface WishState {
 export const useWishState = create<WishState>()((set) => ({
   myWishlist: [],
   marketplaceWishlist: [],
+  swipeStackWishlist: [],
   setMyWishlist: (wishlist) => set((state) => ({ myWishlist: wishlist })),
   upsertWish: (wish) => {
     set((state) => {
@@ -33,7 +36,16 @@ export const useWishState = create<WishState>()((set) => ({
     });
   },
   setMarketplaceWishlist: (wishlist) =>
-    set((state) => ({ marketplaceWishlist: wishlist })),
+    set((state) => ({
+      marketplaceWishlist: wishlist,
+      swipeStackWishlist: wishlist,
+    })),
+  swipedWish: (wishID: WishID) =>
+    set((state) => ({
+      swipeStackWishlist: state.swipeStackWishlist.filter(
+        (wish) => wish.id !== wishID
+      ),
+    })),
   setLastFocusedScrollPosition: (wishID) =>
     set((state) => ({ lastFocusedScrollPosition: wishID })),
   lastFocusedScrollPosition: null,

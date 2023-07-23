@@ -62,7 +62,7 @@ const PurchaseHistory = ({
     ];
     return [];
   };
-
+  console.log(`purchaseManifests --> purchase history`, purchaseManifests);
   const filteredPurchaseManifests = purchaseManifests
     .filter((pm) => {
       if (checkIfEscrowWallet(wallet.walletAliasID)) {
@@ -96,47 +96,51 @@ const PurchaseHistory = ({
         itemLayout="horizontal"
         dataSource={filteredPurchaseManifests}
         renderItem={(pm) => (
-          <NavLink to={`/app/wallet/purchase/${pm.id}`}>
-            <List.Item actions={determineAction(pm)}>
-              <Skeleton avatar title={false} loading={false} active>
-                <List.Item.Meta
-                  avatar={
-                    <Avatar
-                      icon={
-                        pm.agreedBuyFrequency === WishBuyFrequency.ONE_TIME ? (
-                          <ShoppingOutlined />
-                        ) : (
-                          <HistoryOutlined />
-                        )
-                      }
-                      style={{
-                        backgroundColor:
-                          pm.agreedBuyFrequency === WishBuyFrequency.ONE_TIME
-                            ? token.colorSuccess
-                            : token.colorInfo,
-                      }}
-                    />
-                  }
-                  title={
-                    <span>{`${(pm.title || "").slice(0, isMobile ? 70 : 200)}${
-                      (pm.title || "").length > 70 ? ".." : ""
-                    }`}</span>
-                  }
-                  description={
-                    <$Vertical>
-                      <i>
-                        {dayjs((pm.createdAt as any).seconds * 1000).format(
-                          "MMM D YYYY"
-                        )}
-                      </i>
-                      <span>{`${(pm.note || "").slice(0, 100)}..`}</span>
-                      <span>{pm.stripeSubItemID}</span>
-                    </$Vertical>
-                  }
-                />
-              </Skeleton>
-            </List.Item>
-          </NavLink>
+          <div key={pm.id}>
+            <NavLink to={`/app/wallet/purchase/${pm.id}`}>
+              <List.Item actions={determineAction(pm)}>
+                <Skeleton avatar title={false} loading={false} active>
+                  <List.Item.Meta
+                    avatar={
+                      <Avatar
+                        icon={
+                          pm.agreedBuyFrequency ===
+                          WishBuyFrequency.ONE_TIME ? (
+                            <ShoppingOutlined />
+                          ) : (
+                            <HistoryOutlined />
+                          )
+                        }
+                        style={{
+                          backgroundColor:
+                            pm.agreedBuyFrequency === WishBuyFrequency.ONE_TIME
+                              ? token.colorSuccess
+                              : token.colorInfo,
+                        }}
+                      />
+                    }
+                    title={
+                      <span>{`${(pm.title || "").slice(
+                        0,
+                        isMobile ? 70 : 200
+                      )}${(pm.title || "").length > 70 ? ".." : ""}`}</span>
+                    }
+                    description={
+                      <$Vertical>
+                        <i>
+                          {dayjs((pm.createdAt as any).seconds * 1000).format(
+                            "MMM D YYYY"
+                          )}
+                        </i>
+                        <span>{`${(pm.note || "").slice(0, 100)}..`}</span>
+                        <span>{pm.stripeSubItemID}</span>
+                      </$Vertical>
+                    }
+                  />
+                </Skeleton>
+              </List.Item>
+            </NavLink>
+          </div>
         )}
       />
     </$Vertical>

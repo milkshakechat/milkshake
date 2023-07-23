@@ -75,6 +75,7 @@ const PurchasePage = () => {
   if (!selfUser || !purchaseManifest) {
     return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
+  console.log(`purchaseManifestTxs --> purchase page`, purchaseManifestTxs);
   return (
     <AppLayoutPadding
       maxWidths={{
@@ -186,7 +187,7 @@ const PurchasePage = () => {
         <Spacer height="10px" />
         {purchaseManifest.buyerWallet === selfUser.tradingWallet ? (
           <TransactionHistory
-            walletAliasID={selfUser.escrowWallet}
+            walletAliasID={selfUser.tradingWallet}
             txs={purchaseManifestTxs}
           />
         ) : null}

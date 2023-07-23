@@ -17,6 +17,7 @@ import {
   onSnapshot,
   limit,
   doc,
+  orderBy,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useUserState } from "@/state/user.state";
@@ -98,7 +99,8 @@ export const useWallets = () => {
         const q = query(
           collection(firestore, FirestoreCollection.MIRROR_TX),
           where("ownerID", "==", selfUser.id),
-          limit(50)
+          orderBy("createdAt", "desc"), // This will sort in descending order
+          limit(100)
         );
         onSnapshot(q, (docsSnap) => {
           docsSnap.forEach((doc) => {
@@ -120,7 +122,8 @@ export const useWallets = () => {
       const purch = query(
         collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
         where("buyerUserID", "==", selfUser.id),
-        limit(50)
+        orderBy("createdAt", "desc"), // This will sort in descending order
+        limit(100)
       );
       onSnapshot(purch, (docsSnap) => {
         docsSnap.forEach((doc) => {
@@ -133,7 +136,7 @@ export const useWallets = () => {
       const sale = query(
         collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
         where("sellerUserID", "==", selfUser.id),
-        limit(50)
+        limit(100)
       );
       onSnapshot(sale, (docsSnap) => {
         docsSnap.forEach((doc) => {
@@ -165,12 +168,12 @@ export const usePurchaseManifest = () => {
       const q = query(
         collection(firestore, FirestoreCollection.MIRROR_TX),
         where("purchaseManifestID", "==", purchaseManifestID),
-        limit(50)
+        limit(100)
       );
       onSnapshot(q, (docsSnap) => {
         docsSnap.forEach((doc) => {
           const tx = doc.data() as Tx_MirrorFireLedger;
-          // console.log(`tx`, tx);
+          console.log(`tx`, tx);
           setPmTxs((txs) => txs.filter((t) => t.id !== tx.id).concat([tx]));
         });
       });

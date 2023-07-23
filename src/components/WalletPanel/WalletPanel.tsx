@@ -2,7 +2,16 @@ import { useIntl, FormattedMessage } from "react-intl";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import { useSearchParams } from "react-router-dom";
-import { Button, Result, Statistic, Tabs, TabsProps, theme } from "antd";
+import {
+  Button,
+  Result,
+  Space,
+  Statistic,
+  Tabs,
+  TabsProps,
+  notification,
+  theme,
+} from "antd";
 import TransactionHistory from "../TransactionHistory/TransactionHistory";
 import LogoCookie from "../LogoText/LogoCookie";
 import { Spacer } from "../AppLayout/AppLayout";
@@ -14,6 +23,9 @@ import {
 } from "@milkshakechat/helpers";
 import { useWalletState } from "@/state/wallets.state";
 import PurchaseHistory from "../PurchaseHistory/PurchaseHistory";
+import { useState } from "react";
+import TopUpWallet from "../TopUpWallet/TopUpWallet";
+import { WalletOutlined } from "@ant-design/icons";
 
 interface WalletPanelProps {
   wallet: Wallet_MirrorFireLedger;
@@ -21,9 +33,9 @@ interface WalletPanelProps {
 }
 const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
   const intl = useIntl();
-
+  const [api, contextHolder] = notification.useNotification();
   const purchaseManifests = useWalletState((state) => state.purchaseManifests);
-
+  const [showTopUpWallet, setShowTopUpWallet] = useState(false);
   const [searchParams] = useSearchParams();
   const { token } = theme.useToken();
   const onChange = (key: string) => {
@@ -53,6 +65,27 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
   if (!wallet) {
     return null;
   }
+
+  const openNotification = () => {
+    console.log("opening notification...");
+    const key = `open${Date.now()}-1`;
+    const btn = (
+      <Space>
+        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
+          Okay
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: "Transaction Sent",
+      description:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+      btn,
+      key,
+      icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
+      duration: null,
+    });
+  };
 
   return (
     <div>
@@ -100,6 +133,7 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
                     size="large"
                     key="console"
                     block
+                    onClick={() => setShowTopUpWallet(true)}
                     style={{ maxWidth: "250px" }}
                   >
                     Recharge
@@ -111,6 +145,13 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
       </div>
       <Spacer />
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+      <TopUpWallet
+        isOpen={showTopUpWallet}
+        toggleOpen={setShowTopUpWallet}
+        onClose={() => setShowTopUpWallet(false)}
+        openNotification={openNotification}
+      />
+      {contextHolder}
     </div>
   );
 };

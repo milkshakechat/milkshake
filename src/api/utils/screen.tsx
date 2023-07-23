@@ -217,6 +217,7 @@ export const StickyAdaptiveMobileFooter = ({
   const user = useUserState((state) => state.user);
   const notifications = useNotificationsState((state) => state.notifications);
   const navigate = useNavigate();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const showMobileFooter =
     reactRouterLocation.pathname !== "/app/chat" &&
@@ -735,7 +736,9 @@ export const StickyAdaptiveMobileFooter = ({
                 icon={<ReloadOutlined style={{ fontSize: "1rem" }} />}
                 onClick={() => {
                   window.location.reload();
+                  setIsRefreshing(true);
                 }}
+                loading={isRefreshing}
                 style={{
                   border: "0px solid white",
                   width: "100%",

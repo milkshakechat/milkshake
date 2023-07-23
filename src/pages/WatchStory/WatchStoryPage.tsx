@@ -401,7 +401,8 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   if (watchStoryBackHomeRoute) {
                     window.location.href = watchStoryBackHomeRoute;
                   } else {
-                    navigate("/app/chats");
+                    // navigate("/app/chats");
+                    navigate(-1);
                   }
                 }}
                 style={{

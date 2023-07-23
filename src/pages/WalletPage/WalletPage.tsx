@@ -83,7 +83,12 @@ export const WalletPage = () => {
       }).toString(),
     });
   };
-
+  console.log(
+    `recentTxs for main wallet with purch manifest 2010f116-4c00-409d-bd7b-efdbde9be798`,
+    recentTxs.filter(
+      (tx) => tx.purchaseManifestID === "2010f116-4c00-409d-bd7b-efdbde9be798"
+    )
+  );
   const items: TabsProps["items"] = [
     {
       key: "trading",

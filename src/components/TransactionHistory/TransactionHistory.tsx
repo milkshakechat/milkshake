@@ -16,6 +16,7 @@ import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 import { PlusOutlined, MinusOutlined, SearchOutlined } from "@ant-design/icons";
 import {
   MirrorTransactionID,
+  PurchaseMainfestID,
   TimestampFirestore,
   TransactionID,
   TransactionType,
@@ -25,7 +26,7 @@ import {
   placeholderImageThumbnail,
 } from "@milkshakechat/helpers";
 import { useState } from "react";
-import { $Vertical } from "@/api/utils/spacing";
+import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import dayjs from "dayjs";
 import RecallTransaction from "../RecallTransaction/RecallTransaction";
 import ReturnTransaction from "../ReturnTransaction/ReturnTransaction";
@@ -45,6 +46,7 @@ export interface TransactionFE {
   gotRecalled: boolean;
   gotCashOut: boolean;
   createdAt: TimestampFirestore;
+  purchaseManifestID?: PurchaseMainfestID;
 }
 
 interface TransactionHistoryProps {
@@ -84,6 +86,7 @@ export const TransactionHistory = ({
         gotRecalled: tx.recallTransactionID ? true : false,
         gotCashOut: tx.cashOutTransactionID ? true : false,
         createdAt: tx.createdAt,
+        purchaseManifestID: tx.purchaseManifestID,
       };
       return _tx;
     })
@@ -207,7 +210,15 @@ export const TransactionHistory = ({
                   />
                 }
                 title={
-                  <span>{`${tx.title.slice(0, isMobile ? 50 : 200)}${
+                  <span
+                    onClick={() => {
+                      if (tx.purchaseManifestID) {
+                        navigate({
+                          pathname: `/app/wallet/purchase/${tx.purchaseManifestID}`,
+                        });
+                      }
+                    }}
+                  >{`${tx.title.slice(0, isMobile ? 50 : 200)}${
                     tx.title.length > 50 ? ".." : ""
                   }`}</span>
                 }

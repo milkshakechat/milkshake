@@ -73,6 +73,7 @@ export const TinderPage = () => {
   const location = useLocation();
   const [searchString, setSearchString] = useState("");
   const { token } = theme.useToken();
+  const [swipeStack, setSwipeStack] = useState<Wish[]>([]);
 
   const [quickChatUser, setQuickChatUser] = useState<{
     user: WishAuthor | null;
@@ -83,9 +84,17 @@ export const TinderPage = () => {
     WishlistSortByEnum.recent
   );
   const notifications = useNotificationsState((state) => state.notifications);
-  const marketplaceWishlist = useWishState(
-    (state) => state.marketplaceWishlist
+  const { swipeStackWishlist, swipedWish } = useWishState(
+    (state) => ({
+      swipeStackWishlist: state.swipeStackWishlist,
+      swipedWish: state.swipedWish,
+    }),
+    shallow
   );
+
+  useEffect(() => {
+    setSwipeStack(swipeStackWishlist);
+  }, []);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -105,18 +114,18 @@ export const TinderPage = () => {
     //   currentIndexRef.current = parseInt(_cachedIndex);
     //   localStorage.removeItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE);
     // } else {
-    const endOfStack = marketplaceWishlist.length - 1;
+    const endOfStack = swipeStack.length - 1;
     setCurrentIndex(endOfStack);
     currentIndexRef.current = endOfStack;
     // }
-  }, [marketplaceWishlist]);
+  }, [swipeStack]);
 
   const childRefs = useMemo(
     () =>
-      Array(marketplaceWishlist.length)
+      Array(swipeStack.length)
         .fill(0)
         .map((i) => createRef()),
-    [marketplaceWishlist]
+    [swipeStack]
   );
 
   const updateCurrentIndex = (val: number) => {
@@ -126,14 +135,15 @@ export const TinderPage = () => {
     // localStorage.setItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE, val.toString());
   };
 
-  const canGoBack = currentIndex < marketplaceWishlist.length - 1;
+  const canGoBack = currentIndex < swipeStack.length - 1;
 
   const canSwipe = currentIndex >= 0;
 
   // set last direction and decrease current index
-  const swiped = (direction: string, index: number) => {
+  const swiped = (direction: string, index: number, wishID: WishID) => {
     setLastDirection(direction);
     updateCurrentIndex(index - 1);
+    swipedWish(wishID);
   };
 
   const outOfFrame = (wish: Wish, idx: number) => {
@@ -150,7 +160,7 @@ export const TinderPage = () => {
   };
 
   const swipe = async (dir: string) => {
-    if (canSwipe && currentIndex < marketplaceWishlist.length) {
+    if (canSwipe && currentIndex < swipeStack.length) {
       await (childRefs[currentIndex].current as any).swipe(dir); // Swipe the card!
     }
   };
@@ -251,13 +261,13 @@ export const TinderPage = () => {
             width: "auto",
           }}
         >
-          {marketplaceWishlist.map((wish, index) => (
+          {swipeStack.map((wish, index) => (
             <TinderCard
               className="swipe"
               // @ts-ignore
               ref={childRefs[index]}
               key={wish.id}
-              onSwipe={(dir) => swiped(dir, index)}
+              onSwipe={(dir) => swiped(dir, index, wish.id as WishID)}
               onCardLeftScreen={() => outOfFrame(wish, index)}
               style={{
                 width: isMobile ? "auto" : "auto",
@@ -418,7 +428,16 @@ export const TinderPage = () => {
                           />
                         )}
                       </$Vertical>
-                      <div style={{ marginLeft: "5px" }}>
+                      <div
+                        className="pressable"
+                        onClick={() => {
+                          navigate(`/app/wish/${wish.id}`);
+                        }}
+                        onTouchStart={() => {
+                          navigate(`/app/wish/${wish.id}`);
+                        }}
+                        style={{ marginLeft: "5px" }}
+                      >
                         <ArrowRightOutlined color={`rgba(256,256,256,0.5)`} />
                       </div>
                     </$Horizontal>
@@ -514,8 +533,8 @@ export const TinderPage = () => {
             e.preventDefault();
             e.stopPropagation();
             setQuickChatUser({
-              user: marketplaceWishlist[currentIndex].author || null,
-              wishID: marketplaceWishlist[currentIndex].id as WishID,
+              user: swipeStack[currentIndex].author || null,
+              wishID: swipeStack[currentIndex].id as WishID,
             });
           }}
           icon={<MessageOutlined style={{ fontSize: "1.7rem" }} />}

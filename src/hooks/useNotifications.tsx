@@ -10,6 +10,7 @@ import {
   where,
   onSnapshot,
   limit,
+  orderBy,
 } from "firebase/firestore";
 import { useEffect } from "react";
 import { useUserState } from "@/state/user.state";
@@ -32,7 +33,8 @@ export const useNotifications = () => {
     const q = query(
       collection(firestore, FirestoreCollection.NOTIFICATIONS),
       where("recipientID", "==", userID),
-      limit(50)
+      orderBy("createdAt", "desc"), // This will sort in descending order
+      limit(100)
     );
     onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {

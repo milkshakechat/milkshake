@@ -136,6 +136,7 @@ const ConfirmPurchase = ({
     if (!selfUser || !stripe || stripe === null) {
       return;
     }
+    setSuggestMode(false);
     if (defaultPaymentMethodID === null) {
       setAddPaymentMethodModalOpen(true);
       return;
@@ -414,6 +415,8 @@ const ConfirmPurchase = ({
               <$Vertical style={{ position: "relative" }}>
                 <Input.TextArea
                   rows={2}
+                  value={purchaseNote}
+                  onChange={(e) => setPurchaseNote(e.target.value)}
                   placeholder="Add a note to your purchase"
                   style={{ resize: "none", margin: "10px 0px" }}
                 />

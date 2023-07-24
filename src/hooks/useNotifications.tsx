@@ -40,7 +40,7 @@ export const useNotifications = () => {
       docsSnap.forEach((doc) => {
         const notif = doc.data() as Notification_Firestore;
         const notifGQL = notifToGQL(notif);
-        console.log(`notifGQL`, notifGQL);
+
         addNotifications([notifGQL]);
       });
     });

@@ -587,6 +587,9 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    const url = window.location.href;
+                    navigator.clipboard.writeText(url);
+                    message.success("Story link copied to clipboard!");
                   }}
                   style={{
                     color: token.colorWhite,

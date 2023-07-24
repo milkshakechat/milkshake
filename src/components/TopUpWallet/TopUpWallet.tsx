@@ -21,7 +21,12 @@ import {
   Input,
 } from "antd";
 import { useIntl } from "react-intl";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  createSearchParams,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import PP from "@/i18n/PlaceholderPrint";
 import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import LogoCookie from "../LogoText/LogoCookie";
@@ -158,6 +163,9 @@ const TopUpWallet = ({
           toggleOpen(false);
           navigate({
             pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
+            search: createSearchParams({
+              mode: "success",
+            }).toString(),
           });
         }
       } else if (res.referenceID) {
@@ -166,6 +174,9 @@ const TopUpWallet = ({
         toggleOpen(false);
         navigate({
           pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
+          search: createSearchParams({
+            mode: "success",
+          }).toString(),
         });
       }
     }

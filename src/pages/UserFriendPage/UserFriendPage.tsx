@@ -38,7 +38,9 @@ import {
 import { useEffect, useState } from "react";
 import { WalletOutlined, SearchOutlined } from "@ant-design/icons";
 import {
+  FirestoreCollection,
   Friendship_Firestore,
+  Tx_MirrorFireLedger,
   UserID,
   User_Firestore,
   Username,
@@ -51,6 +53,16 @@ import WishlistGallery from "@/components/WishlistGallery/WishlistGallery";
 import { useListWishlist } from "@/hooks/useWish";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import QuickChat from "@/components/QuickChat/QuickChat";
+import TransactionHistory from "@/components/TransactionHistory/TransactionHistory";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { firestore } from "@/api/firebase";
 
 enum viewModes {
   timeline = "timeline",
@@ -70,7 +82,7 @@ export const UserFriendPage = () => {
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   const viewMode =
     viewModes[view as keyof typeof viewModes] || viewModes.timeline;
-  const user = useUserState((state) => state.user);
+  const selfUser = useUserState((state) => state.user);
   const [friendRequestNote, setFriendRequestNote] = useState("");
   const [isPending, setIsPending] = useState(false);
   const [recentlySentRequest, setRecentlySentRequest] = useState(false);
@@ -100,13 +112,45 @@ export const UserFriendPage = () => {
     runMutation: sendFriendRequestMutation,
   } = useSendFriendRequest();
 
+  // const getRelatedTxs = async () => {
+  //   if (selfUser && spotlightUser) {
+  //     const q1 = query(
+  //       collection(firestore, FirestoreCollection.MIRROR_TX),
+  //       where("ownerID", "==", selfUser.id),
+  //       where("recieverUserID", "==", spotlightUser.id),
+  //       orderBy("createdAt", "desc"), // This will sort in descending order
+  //       limit(100)
+  //     );
+  //     onSnapshot(q1, (docsSnap) => {
+  //       docsSnap.forEach((doc) => {
+  //         const tx = doc.data() as Tx_MirrorFireLedger;
+  //         console.log(`tx`, tx);
+  //       });
+  //     });
+  //     const q2 = query(
+  //       collection(firestore, FirestoreCollection.MIRROR_TX),
+  //       where("ownerID", "==", selfUser.id),
+  //       where("senderUserID", "==", spotlightUser.id),
+  //       orderBy("createdAt", "desc"), // This will sort in descending order
+  //       limit(100)
+  //     );
+  //     onSnapshot(q2, (docsSnap) => {
+  //       docsSnap.forEach((doc) => {
+  //         const tx = doc.data() as Tx_MirrorFireLedger;
+  //         console.log(`tx`, tx);
+  //       });
+  //     });
+  //   }
+  // };
+
   useEffect(() => {
-    if (spotlightUser) {
+    if (spotlightUser && selfUser) {
       runListWishlistQuery({
         userID: spotlightUser.id,
       });
+      // getRelatedTxs();
     }
-  }, [spotlightUser]);
+  }, [spotlightUser, selfUser]);
 
   useEffect(() => {
     if (usernameFromUrl) {
@@ -122,7 +166,6 @@ export const UserFriendPage = () => {
   const { token } = theme.useToken();
 
   const handleSendFriendRequest = async () => {
-    console.log(`handleSendFriendRequest...`);
     if (spotlightUser) {
       setIsPending(true);
       const resp = await sendFriendRequestMutation({
@@ -140,9 +183,8 @@ export const UserFriendPage = () => {
       message.success(`Friend Request Sent`);
     }
   };
-  console.log(`spotlightUser`, spotlightUser);
 
-  if (!spotlightUser) {
+  if (!spotlightUser || !selfUser) {
     return (
       <div style={{ backgroundColor: token.colorBgContainer }}>
         <LoadingAnimation width="100vw" height="100vh" type="cookie" />
@@ -161,6 +203,13 @@ export const UserFriendPage = () => {
       title: "Wishlist",
       children: <WishlistGallery wishlist={listWishlistData?.wishlist || []} />,
     },
+    // {
+    //   key: "cookies",
+    //   title: "Cookies",
+    //   children: (
+    //     <TransactionHistory walletAliasID={selfUser.tradingWallet} txs={[]} />
+    //   ),
+    // },
   ];
 
   const mainActionButton = () => {
@@ -229,7 +278,6 @@ export const UserFriendPage = () => {
   };
 
   const openNotification = () => {
-    console.log("opening notification...");
     const key = `open${Date.now()}-1`;
     const btn = (
       <Space>

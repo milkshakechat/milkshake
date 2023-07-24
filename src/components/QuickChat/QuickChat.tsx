@@ -17,6 +17,7 @@ import {
   Space,
   Statistic,
   Tag,
+  message,
   notification,
   theme,
 } from "antd";
@@ -123,6 +124,15 @@ export const QuickChat = ({
   };
 
   const sendMessageTransfer = async () => {
+    if (tradingWallet && suggestedPrice > tradingWallet?.balance) {
+      message.error(
+        <span>
+          You do not have enough cookies in your wallet.{" "}
+          <a href="/app/wallet">Click here to buy cookies.</a>
+        </span>
+      );
+      return;
+    }
     setIsLoading(true);
     await runTransferMutation({
       recipientID: user.id,

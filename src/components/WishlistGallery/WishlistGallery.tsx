@@ -249,16 +249,16 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
                 <NavLink to={`/app/wish/${item.id}/edit`}>
                   <Button>Edit</Button>
                 </NavLink>
-              ) : (
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                >
-                  Buy
-                </Button>
-              )}
+              ) : null
+              // <Button
+              //   onClick={(e) => {
+              //     e.preventDefault();
+              //     e.stopPropagation();
+              //   }}
+              // >
+              //   Buy
+              // </Button>
+              }
 
               {!viewingOwnProfile && (
                 <div

@@ -20,6 +20,7 @@ import {
   WalletType,
   Wallet_MirrorFireLedger,
   checkIfEscrowWallet,
+  cookieToUSD,
 } from "@milkshakechat/helpers";
 import { useWalletState } from "@/state/wallets.state";
 import PurchaseHistory from "../PurchaseHistory/PurchaseHistory";
@@ -139,7 +140,14 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
                     Recharge
                   </Button>,
                 ]
-              : []
+              : [
+                  <i
+                    style={{
+                      fontSize: "1rem",
+                      color: token.colorPrimary,
+                    }}
+                  >{`Equal to $${cookieToUSD(wallet.balance)} USD`}</i>,
+                ]
           }
         />
       </div>

@@ -29,6 +29,7 @@ import {
   Affix,
   Tooltip,
   notification,
+  Empty,
 } from "antd";
 import Meta from "antd/es/card/Meta";
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
@@ -50,6 +51,7 @@ import {
   ArrowRightOutlined,
   UserOutlined,
   WalletOutlined,
+  FireFilled,
 } from "@ant-design/icons";
 import { useNotificationsState } from "@/state/notifications.state";
 import PP from "@/i18n/PlaceholderPrint";
@@ -91,10 +93,12 @@ export const TinderPage = () => {
     }),
     shallow
   );
-
+  console.log(`swipeStackWishlist`, swipeStackWishlist);
   useEffect(() => {
-    setSwipeStack(swipeStackWishlist);
-  }, []);
+    if (swipeStack.length === 0 && swipeStackWishlist.length > 0) {
+      setSwipeStack(swipeStackWishlist);
+    }
+  }, [swipeStackWishlist]);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -487,6 +491,52 @@ export const TinderPage = () => {
               </div>
             </TinderCard>
           ))}
+          {swipeStack.length === 0 && (
+            <$Vertical
+              justifyContent="center"
+              alignItems="center"
+              style={{ flex: 1, minHeight: "50vh" }}
+            >
+              <Empty
+                image={
+                  <FireFilled
+                    style={{
+                      fontSize: "5rem",
+                      color: token.colorPrimaryBgHover,
+                    }}
+                  />
+                }
+                description={
+                  <span
+                    style={{
+                      fontSize: "1.5rem",
+                      fontWeight: "normal",
+                      color: token.colorPrimaryBorder,
+                      fontFamily: BRANDED_FONT,
+                    }}
+                  >
+                    Post Your First Story
+                  </span>
+                }
+              >
+                <NavLink to={`/app/story/new`}>
+                  <Button
+                    type="primary"
+                    ghost
+                    style={{
+                      width: "150px",
+                      marginTop: "10px",
+                      fontWeight: "bold",
+                      color: token.colorPrimaryBorder,
+                      border: `2px solid ${token.colorPrimaryBorder}`,
+                    }}
+                  >
+                    Upload
+                  </Button>
+                </NavLink>
+              </Empty>
+            </$Vertical>
+          )}
         </div>
       </div>
 
@@ -505,6 +555,7 @@ export const TinderPage = () => {
           type="primary"
           ghost
           danger
+          disabled={swipeStack.length === 0}
           size="large"
           onClick={() => goBack()}
           icon={<ReloadOutlined style={{ fontSize: "1.7rem" }} />}
@@ -513,6 +564,7 @@ export const TinderPage = () => {
         <Button
           danger
           type="primary"
+          disabled={swipeStack.length === 0}
           size="large"
           onClick={() => swipe("left")}
           icon={<CloseOutlined style={{ fontSize: "2.2rem" }} />}
@@ -521,6 +573,7 @@ export const TinderPage = () => {
         <Button
           type="primary"
           size="large"
+          disabled={swipeStack.length === 0}
           onClick={() => swipe("right")}
           icon={<HeartOutlined style={{ fontSize: "2.2rem" }} />}
           style={{ width: "80px", height: "80px" }}
@@ -529,6 +582,7 @@ export const TinderPage = () => {
           type="primary"
           ghost
           size="large"
+          disabled={swipeStack.length === 0}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();

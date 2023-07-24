@@ -33,7 +33,7 @@ import { useEffect, useState } from "react";
 import { Dropdown } from "antd";
 import { useWalletState } from "@/state/wallets.state";
 import shallow from "zustand/shallow";
-import { useCreatePaymentIntent } from "@/hooks/useWallets";
+import { useCreatePaymentIntent, useTopUpWallet } from "@/hooks/useWallets";
 import AddPaymentMethodModal from "../AddPaymentMethodModal/AddPaymentMethodModal";
 import {
   CardElement,
@@ -82,12 +82,7 @@ const TopUpWallet = ({
     shallow
   );
 
-  const {
-    data: createPaymentIntentData,
-    errors: createPaymentIntentErrors,
-    loading: createPaymentIntentLoading,
-    runMutation: runCreatePaymentIntentMutation,
-  } = useCreatePaymentIntent();
+  const { runMutation: runTopUpWalletMutation } = useTopUpWallet();
 
   const USER_COOKIE_JAR_BALANCE = tradingWallet?.balance || 0;
   const { token } = theme.useToken();
@@ -124,61 +119,56 @@ const TopUpWallet = ({
   };
 
   const checkoutPurchase = async () => {
-    // console.log(`checkoutPurchase`);
-    // console.log(`stripe`, stripe);
-    // console.log(`defaultPaymentMethodID`, defaultPaymentMethodID);
-    // if (!selfUser || !stripe || stripe === null) {
-    //   return;
-    // }
-    // setSuggestMode(false);
-    // if (defaultPaymentMethodID === null) {
-    //   setAddPaymentMethodModalOpen(true);
-    //   return;
-    // } else {
-    //   setIsLoading(true);
-    //   const res = await runCreatePaymentIntentMutation({
-    //     note: purchaseNote,
-    //     wishSuggest: {
-    //       suggestedAmount: suggestedPrice,
-    //       suggestedFrequency: suggestedBuyFrequency,
-    //       wishID: wish.id,
-    //     },
-    //   });
-    //   if (!res) {
-    //     setIsLoading(false);
-    //     message.error("Failed to purchase wish");
-    //     return;
-    //   }
-    //   if (res.checkoutToken) {
-    //     console.log(`---> res`, res);
-    //     const confirmationRes = await stripe.confirmCardPayment(
-    //       res.checkoutToken,
-    //       {
-    //         payment_method: defaultPaymentMethodID,
-    //       }
-    //     );
-    //     if (confirmationRes.error) {
-    //       console.log(`error`, confirmationRes.error);
-    //       setErrors([confirmationRes.error.message as ErrorLine]);
-    //     }
-    //     console.log(`confirmationRes`, confirmationRes);
-    //     if (confirmationRes.paymentIntent?.status === "succeeded") {
-    //       openNotification();
-    //       setIsLoading(false);
-    //       toggleOpen(false);
-    //       navigate({
-    //         pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
-    //       });
-    //     }
-    //   } else if (res.referenceID) {
-    //     openNotification();
-    //     setIsLoading(false);
-    //     toggleOpen(false);
-    //     navigate({
-    //       pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
-    //     });
-    //   }
-    // }
+    console.log(`checkoutPurchase`);
+    console.log(`stripe`, stripe);
+    console.log(`defaultPaymentMethodID`, defaultPaymentMethodID);
+    setSuggestMode(false);
+    if (!selfUser || !stripe || stripe === null) {
+      return;
+    }
+    if (defaultPaymentMethodID === null) {
+      setAddPaymentMethodModalOpen(true);
+      return;
+    } else {
+      setIsLoading(true);
+      const res = await runTopUpWalletMutation({
+        amount: suggestedPrice,
+      });
+      if (!res) {
+        setIsLoading(false);
+        message.error("Failed to purchase wish");
+        return;
+      }
+      if (res.checkoutToken) {
+        console.log(`---> res`, res);
+        const confirmationRes = await stripe.confirmCardPayment(
+          res.checkoutToken,
+          {
+            payment_method: defaultPaymentMethodID,
+          }
+        );
+        if (confirmationRes.error) {
+          console.log(`error`, confirmationRes.error);
+          setErrors([confirmationRes.error.message as ErrorLine]);
+        }
+        console.log(`confirmationRes`, confirmationRes);
+        if (confirmationRes.paymentIntent?.status === "succeeded") {
+          openNotification();
+          setIsLoading(false);
+          toggleOpen(false);
+          navigate({
+            pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
+          });
+        }
+      } else if (res.referenceID) {
+        openNotification();
+        setIsLoading(false);
+        toggleOpen(false);
+        navigate({
+          pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
+        });
+      }
+    }
   };
 
   return (

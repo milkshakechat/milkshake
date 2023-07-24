@@ -218,13 +218,13 @@ export const TransactionHistory = ({
                         });
                       }
                     }}
-                  >{`${tx.title.slice(0, isMobile ? 50 : 200)}${
-                    tx.title.length > 50 ? ".." : ""
+                  >{`${tx.title.slice(0, isMobile ? 50 : 999)}${
+                    isMobile ? ".." : ""
                   }`}</span>
                 }
                 description={
                   <$Vertical>
-                    <i>{dayjs(tx.date).format("MMM D YYYY")}</i>
+                    <i>{dayjs().to(dayjs(tx.date))}</i>
                     <span>{tx.note}</span>
                   </$Vertical>
                 }

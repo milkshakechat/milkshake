@@ -115,18 +115,15 @@ const ConfirmPurchase = ({
   };
 
   const renderRealPrice = () => {
-    if (wish.cookiePrice > USER_COOKIE_JAR_BALANCE) {
-      return (
-        <span
-          style={{
-            marginLeft: "0px",
-            color: token.colorTextDescription,
-            fontSize: "0.9rem",
-          }}
-        >{`$${cookieToUSD(suggestedPrice)} USD`}</span>
-      );
-    }
-    return null;
+    return (
+      <span
+        style={{
+          marginLeft: "0px",
+          color: token.colorTextDescription,
+          fontSize: "0.9rem",
+        }}
+      >{`$${cookieToUSD(suggestedPrice)} USD`}</span>
+    );
   };
 
   const checkoutPurchase = async () => {

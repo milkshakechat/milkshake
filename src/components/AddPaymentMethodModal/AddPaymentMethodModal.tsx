@@ -8,7 +8,7 @@ import {
   useDemoSubscription,
 } from "@/hooks/useTemplateGQL";
 import { useUserState } from "@/state/user.state";
-import { Button, Modal, message, theme } from "antd";
+import { Button, Input, Modal, message, theme } from "antd";
 import { useIntl } from "react-intl";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import PP from "@/i18n/PlaceholderPrint";
@@ -70,6 +70,8 @@ const AddPaymentPanel = ({ toggleOpen }: AddPaymentPanelProps) => {
   const elements = useElements();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const selfUser = useUserState((state) => state.user);
+  const [email, setEmail] = useState(selfUser?.email || "");
   const {
     data: createSetupIntentData,
     runMutation: runCreateSetupIntentMutation,
@@ -81,7 +83,7 @@ const AddPaymentPanel = ({ toggleOpen }: AddPaymentPanelProps) => {
     runCreateSetupIntentMutation();
   }, []);
 
-  if (!createSetupIntentData) {
+  if (!createSetupIntentData || !selfUser) {
     return <LoadingAnimation width="100%" height="60vh" type="cookie" />;
   }
 
@@ -110,6 +112,7 @@ const AddPaymentPanel = ({ toggleOpen }: AddPaymentPanelProps) => {
     } else if (result.setupIntent && result.setupIntent.payment_method) {
       await runAttachCardMutation({
         paymentMethodID: result.setupIntent.payment_method as string,
+        email,
       });
       setIsLoading(false);
       toggleOpen(false);
@@ -122,6 +125,12 @@ const AddPaymentPanel = ({ toggleOpen }: AddPaymentPanelProps) => {
         <div style={{ padding: "30px 0px" }}>
           <CardElement />
         </div>
+        {!selfUser.email && (
+          <$Vertical spacing={1}>
+            <label>Email</label>
+            <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+          </$Vertical>
+        )}
         <ErrorLines errors={errors} />
         <$Horizontal justifyContent="flex-end" spacing={2} width="100%">
           <Button key="back" onClick={() => toggleOpen(false)}>
@@ -131,6 +140,7 @@ const AddPaymentPanel = ({ toggleOpen }: AddPaymentPanelProps) => {
             loading={isLoading}
             key="save"
             type="primary"
+            disabled={!email}
             onClick={() => handleSubmit()}
           >
             Save

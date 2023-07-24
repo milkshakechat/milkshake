@@ -12,7 +12,7 @@ import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import { BRANDED_FONT, TINDER_SWIPE_INDEX_LOCAL_STORAGE } from "@/config.env";
 import { useUserState } from "@/state/user.state";
-import { UserID, Username, WishID } from "@milkshakechat/helpers";
+import { StoryID, UserID, Username, WishID } from "@milkshakechat/helpers";
 import {
   Avatar,
   Space,
@@ -57,13 +57,22 @@ import { useNotificationsState } from "@/state/notifications.state";
 import PP from "@/i18n/PlaceholderPrint";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import { WishlistSortByEnum } from "@/components/WishlistGallery/WishlistGallery";
-import { Wish, WishAuthor } from "@/api/graphql/types";
+import {
+  StoryAuthor,
+  SwipeStory,
+  Wish,
+  WishAuthor,
+  WishTypeEnum,
+} from "@/api/graphql/types";
 import { useWishState } from "@/state/wish.state";
 import shallow from "zustand/shallow";
 import Countdown from "antd/es/statistic/Countdown";
 import BookmarkIcon from "@/components/BookmarkIcon/BookmarkIcon";
 import QuickChat from "@/components/QuickChat/QuickChat";
 import "./TinderPage.css";
+import { useSwipeState } from "@/state/swipe.state";
+import { StoryAttachmentType } from "../../api/graphql/types";
+import dayjs from "dayjs";
 
 export const TinderPage = () => {
   const intl = useIntl();
@@ -75,10 +84,10 @@ export const TinderPage = () => {
   const location = useLocation();
   const [searchString, setSearchString] = useState("");
   const { token } = theme.useToken();
-  const [swipeStack, setSwipeStack] = useState<Wish[]>([]);
+  const [localSwipeStack, setLocalSwipeStack] = useState<SwipeStory[]>([]);
 
   const [quickChatUser, setQuickChatUser] = useState<{
-    user: WishAuthor | null;
+    user: StoryAuthor | null;
     wishID: WishID;
   } | null>(null);
 
@@ -86,19 +95,19 @@ export const TinderPage = () => {
     WishlistSortByEnum.recent
   );
   const notifications = useNotificationsState((state) => state.notifications);
-  const { swipeStackWishlist, swipedWish } = useWishState(
+  const { swipeStack, swipedStory } = useSwipeState(
     (state) => ({
-      swipeStackWishlist: state.swipeStackWishlist,
-      swipedWish: state.swipedWish,
+      swipeStack: state.swipeStack,
+      swipedStory: state.swipedStory,
     }),
     shallow
   );
-  console.log(`swipeStackWishlist`, swipeStackWishlist);
+
   useEffect(() => {
-    if (swipeStack.length === 0 && swipeStackWishlist.length > 0) {
-      setSwipeStack(swipeStackWishlist);
+    if (localSwipeStack.length === 0 && swipeStack.length > 0) {
+      setLocalSwipeStack(swipeStack);
     }
-  }, [swipeStackWishlist]);
+  }, [swipeStack]);
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -118,18 +127,18 @@ export const TinderPage = () => {
     //   currentIndexRef.current = parseInt(_cachedIndex);
     //   localStorage.removeItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE);
     // } else {
-    const endOfStack = swipeStack.length - 1;
+    const endOfStack = localSwipeStack.length - 1;
     setCurrentIndex(endOfStack);
     currentIndexRef.current = endOfStack;
     // }
-  }, [swipeStack]);
+  }, [localSwipeStack]);
 
   const childRefs = useMemo(
     () =>
-      Array(swipeStack.length)
+      Array(localSwipeStack.length)
         .fill(0)
         .map((i) => createRef()),
-    [swipeStack]
+    [localSwipeStack]
   );
 
   const updateCurrentIndex = (val: number) => {
@@ -139,20 +148,20 @@ export const TinderPage = () => {
     // localStorage.setItem(TINDER_SWIPE_INDEX_LOCAL_STORAGE, val.toString());
   };
 
-  const canGoBack = currentIndex < swipeStack.length - 1;
+  const canGoBack = currentIndex < localSwipeStack.length - 1;
 
   const canSwipe = currentIndex >= 0;
 
   // set last direction and decrease current index
-  const swiped = (direction: string, index: number, wishID: WishID) => {
+  const swiped = (direction: string, index: number, storyID: StoryID) => {
     setLastDirection(direction);
     updateCurrentIndex(index - 1);
-    swipedWish(wishID);
+    swipedStory(storyID);
   };
 
-  const outOfFrame = (wish: Wish, idx: number) => {
+  const outOfFrame = (swipeStory: SwipeStory, idx: number) => {
     console.log(
-      `${wish.wishTitle} (${idx}) left the screen!`,
+      `${swipeStory.story.id} (${idx}) left the screen!`,
       currentIndexRef.current
     );
     // handle the case in which go back is pressed before card goes outOfFrame
@@ -164,7 +173,7 @@ export const TinderPage = () => {
   };
 
   const swipe = async (dir: string) => {
-    if (canSwipe && currentIndex < swipeStack.length) {
+    if (canSwipe && currentIndex < localSwipeStack.length) {
       await (childRefs[currentIndex].current as any).swipe(dir); // Swipe the card!
     }
   };
@@ -263,33 +272,42 @@ export const TinderPage = () => {
           style={{
             // boxShadow: `0px 0px 30px 0px ${token.colorPrimary}2A`,
             width: "auto",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: isMobile ? "100%" : "100%",
           }}
         >
-          {swipeStack.map((wish, index) => (
+          {localSwipeStack.map((swipeStory, index) => (
             <TinderCard
               className="swipe"
               // @ts-ignore
               ref={childRefs[index]}
-              key={wish.id}
-              onSwipe={(dir) => swiped(dir, index, wish.id as WishID)}
-              onCardLeftScreen={() => outOfFrame(wish, index)}
+              key={swipeStory.story.id}
+              onSwipe={(dir) =>
+                swiped(dir, index, swipeStory.story.id as StoryID)
+              }
+              onCardLeftScreen={() => outOfFrame(swipeStory, index)}
               style={{
-                width: isMobile ? "auto" : "auto",
+                width: isMobile ? "100%" : "auto",
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "center",
                 alignItems: "center",
+                minWidth: isMobile ? "350px" : "400px",
+                maxWidth: isMobile ? "350px" : "400px",
               }}
             >
               <div
-                key={wish.id}
+                key={`card-${swipeStory.story.id}`}
                 className="card"
-                id={wish.id}
+                id={`card-id-${swipeStory.story.id}`}
                 style={{
                   marginBottom: isMobile ? "50px" : "0px",
-                  minWidth: isMobile ? "100%" : "400px",
+                  minWidth: isMobile ? "350px" : "400px",
                   width: "100%",
-                  maxWidth: isMobile ? "100%" : "400px",
+                  maxWidth: isMobile ? "350px" : "400px",
                   height: isMobile ? "450px" : "500px",
                   maxHeight: isMobile ? "450px" : "500px",
                   borderRadius: isMobile ? "10px" : "20px",
@@ -316,14 +334,14 @@ export const TinderPage = () => {
                     onTouchStart={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
-                      visitUser(wish.author?.id);
+                      visitUser(swipeStory.story.author.id);
                     }}
                   >
                     <Avatar
-                      src={wish.author?.avatar}
+                      src={swipeStory.story.author.avatar}
                       style={{ backgroundColor: token.colorPrimaryText }}
                       size="large"
-                      onClick={() => visitUser(wish.author?.id)}
+                      onClick={() => visitUser(swipeStory.story.author.id)}
                     />
                     <$Vertical
                       className="pressable"
@@ -336,36 +354,42 @@ export const TinderPage = () => {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        visitUser(wish.author?.id);
+                        visitUser(swipeStory.story.author.id);
                       }}
                     >
                       <PP>
                         <b>
-                          {wish.author?.displayName || wish.author?.username}
+                          {swipeStory.story.author.displayName ||
+                            swipeStory.story.author.username}
                         </b>
                       </PP>
                       <PP>
-                        <i>{`@${wish.author?.username}`}</i>
+                        <i>{`@${swipeStory.story.author.username}`}</i>
                       </PP>
                     </$Vertical>
                   </$Horizontal>
-                  <div
-                    className="pressable"
-                    onTouchStart={() => {
-                      navigate(`/app/wish/${wish.id}`);
-                    }}
-                  >
-                    <NavLink to={`/app/wish/${wish.id}`}>
-                      <Button
-                        size={isMobile ? "middle" : "middle"}
-                        type="primary"
-                        ghost
-                        style={{ marginLeft: "5px" }}
+                  {swipeStory.wish !== null &&
+                    swipeStory.wish !== undefined && (
+                      <div
+                        className="pressable"
+                        onTouchStart={() => {
+                          navigate(`/app/wish/${swipeStory.wish?.id || ""}`);
+                        }}
                       >
-                        View Event
-                      </Button>
-                    </NavLink>
-                  </div>
+                        <NavLink to={`/app/wish/${swipeStory.wish.id}`}>
+                          <Button
+                            size={isMobile ? "middle" : "middle"}
+                            type="primary"
+                            ghost
+                            style={{ marginLeft: "5px" }}
+                          >
+                            {swipeStory.wish.wishType === WishTypeEnum.Event
+                              ? `View Event`
+                              : "View Gift"}
+                          </Button>
+                        </NavLink>
+                      </div>
+                    )}
                 </$Horizontal>
                 <div
                   style={{
@@ -375,6 +399,8 @@ export const TinderPage = () => {
                     position: "relative",
                     flex: 1,
                     display: "flex",
+                    minWidth: isMobile ? "350px" : "400px",
+                    maxWidth: isMobile ? "350px" : "400px",
                   }}
                 >
                   <$Vertical
@@ -386,66 +412,83 @@ export const TinderPage = () => {
                       marginTop: isMobile ? "-5px" : "0px",
                       position: "absolute",
                       bottom: 0,
+                      minWidth: isMobile ? "350px" : "400px",
+                      maxWidth: isMobile ? "350px" : "400px",
                     }}
                   >
-                    <$Horizontal
-                      style={{
-                        justifyContent: "flex-start",
-                        alignItems: "flex-start",
-                      }}
-                    >
-                      <div
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        style={{
-                          marginRight: "10px",
-                          width: isMobile ? "20px" : "16px",
-                          paddingTop: "3px",
-                        }}
-                      >
-                        <BookmarkIcon fill={`rgba(256,256,256,0.5)`} />
-                      </div>
-                      <$Vertical style={{ flex: 1 }}>
-                        <$Horizontal>{`${wish.wishTitle} with ${wish.author?.displayName}`}</$Horizontal>
-
-                        {wish.countdownDate && (
-                          <Countdown
-                            value={new Date(wish.countdownDate).getTime()}
-                            valueStyle={{
-                              fontSize: "0.8rem",
-                              color: token.colorWhite,
+                    {swipeStory.wish !== null &&
+                      swipeStory.wish !== undefined && (
+                        <$Horizontal
+                          style={{
+                            justifyContent: "flex-start",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <div
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
                             }}
-                            prefix={
-                              <span
-                                style={{
-                                  fontSize: "0.8rem",
-                                  color: token.colorWhite,
-                                }}
-                              >
-                                {"RSVP by"}
-                              </span>
-                            }
-                            onFinish={() => console.log("Finished countdown")}
-                            style={{ color: token.colorWhite }}
-                          />
-                        )}
-                      </$Vertical>
-                      <div
-                        className="pressable"
-                        onClick={() => {
-                          navigate(`/app/wish/${wish.id}`);
-                        }}
-                        onTouchStart={() => {
-                          navigate(`/app/wish/${wish.id}`);
-                        }}
-                        style={{ marginLeft: "5px" }}
-                      >
-                        <ArrowRightOutlined color={`rgba(256,256,256,0.5)`} />
-                      </div>
-                    </$Horizontal>
-                    <$Horizontal style={{ marginTop: "20px" }}>
+                            style={{
+                              marginRight: "10px",
+                              width: isMobile ? "20px" : "16px",
+                              paddingTop: "3px",
+                            }}
+                          >
+                            <BookmarkIcon fill={`rgba(256,256,256,0.5)`} />
+                          </div>
+                          <$Vertical style={{ flex: 1 }}>
+                            <$Horizontal>{`${swipeStory.wish.wishTitle} with ${swipeStory.wish.author?.displayName}`}</$Horizontal>
+
+                            {swipeStory.wish !== null &&
+                              swipeStory.wish !== undefined &&
+                              swipeStory.wish.countdownDate &&
+                              dayjs(swipeStory.wish.countdownDate).isAfter(
+                                dayjs()
+                              ) && (
+                                <Countdown
+                                  value={new Date(
+                                    swipeStory.wish.countdownDate
+                                  ).getTime()}
+                                  valueStyle={{
+                                    fontSize: "0.8rem",
+                                    color: token.colorWhite,
+                                  }}
+                                  prefix={
+                                    <span
+                                      style={{
+                                        fontSize: "0.8rem",
+                                        color: token.colorWhite,
+                                      }}
+                                    >
+                                      {"RSVP by"}
+                                    </span>
+                                  }
+                                  onFinish={() =>
+                                    console.log("Finished countdown")
+                                  }
+                                  style={{ color: token.colorWhite }}
+                                />
+                              )}
+                          </$Vertical>
+                          <div
+                            className="pressable"
+                            onClick={() => {
+                              navigate(`/app/wish/${swipeStory.wish?.id}`);
+                            }}
+                            onTouchStart={() => {
+                              navigate(`/app/wish/${swipeStory.wish?.id}`);
+                            }}
+                            style={{ marginLeft: "5px" }}
+                          >
+                            <ArrowRightOutlined
+                              color={`rgba(256,256,256,0.5)`}
+                            />
+                          </div>
+                        </$Horizontal>
+                      )}
+
+                    {/* <$Horizontal style={{ marginTop: "20px" }}>
                       <Avatar.Group>
                         <Avatar
                           size="small"
@@ -476,11 +519,24 @@ export const TinderPage = () => {
                       >
                         Melissa & 3 others are going
                       </span>
-                    </$Horizontal>
+                    </$Horizontal> */}
                   </$Vertical>
                   <img
-                    alt={wish.wishTitle}
-                    src={wish.galleryMediaSet[0]?.medium || wish.thumbnail}
+                    alt={
+                      swipeStory.story.attachments[0]?.altText ||
+                      swipeStory.wish?.wishTitle ||
+                      ""
+                    }
+                    src={
+                      swipeStory.story.attachments[0]?.type ===
+                      StoryAttachmentType.Video
+                        ? swipeStory.story.showcaseThumbnail ||
+                          swipeStory.story.thumbnail
+                        : swipeStory.story.attachments[0]?.url ||
+                          swipeStory.wish?.galleryMediaSet[0]?.medium ||
+                          swipeStory.wish?.thumbnail ||
+                          ""
+                    }
                     style={{
                       width: "100%",
                       height: "auto",
@@ -491,7 +547,7 @@ export const TinderPage = () => {
               </div>
             </TinderCard>
           ))}
-          {swipeStack.length === 0 && (
+          {localSwipeStack.length === 0 && (
             <$Vertical
               justifyContent="center"
               alignItems="center"
@@ -546,7 +602,7 @@ export const TinderPage = () => {
         className="buttons"
         spacing={3}
         style={{
-          height: isMobile ? "20vh" : "20vh",
+          height: isMobile ? "15vh" : "20vh",
           backgroundColor: token.colorBgBase,
           zIndex: 1,
         }}
@@ -555,7 +611,7 @@ export const TinderPage = () => {
           type="primary"
           ghost
           danger
-          disabled={swipeStack.length === 0}
+          disabled={localSwipeStack.length === 0}
           size="large"
           onClick={() => goBack()}
           icon={<ReloadOutlined style={{ fontSize: "1.7rem" }} />}
@@ -564,7 +620,7 @@ export const TinderPage = () => {
         <Button
           danger
           type="primary"
-          disabled={swipeStack.length === 0}
+          disabled={localSwipeStack.length === 0}
           size="large"
           onClick={() => swipe("left")}
           icon={<CloseOutlined style={{ fontSize: "2.2rem" }} />}
@@ -573,7 +629,7 @@ export const TinderPage = () => {
         <Button
           type="primary"
           size="large"
-          disabled={swipeStack.length === 0}
+          disabled={localSwipeStack.length === 0}
           onClick={() => swipe("right")}
           icon={<HeartOutlined style={{ fontSize: "2.2rem" }} />}
           style={{ width: "80px", height: "80px" }}
@@ -582,13 +638,13 @@ export const TinderPage = () => {
           type="primary"
           ghost
           size="large"
-          disabled={swipeStack.length === 0}
+          disabled={localSwipeStack.length === 0}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             setQuickChatUser({
-              user: swipeStack[currentIndex].author || null,
-              wishID: swipeStack[currentIndex].id as WishID,
+              user: localSwipeStack[currentIndex].story.author || null,
+              wishID: localSwipeStack[currentIndex].wish?.id as WishID,
             });
           }}
           icon={<MessageOutlined style={{ fontSize: "1.7rem" }} />}
@@ -600,13 +656,24 @@ export const TinderPage = () => {
         isOpen={quickChatUser !== null}
         onClose={() => setQuickChatUser(null)}
         toggleOpen={(bool: boolean) => setQuickChatUser(null)}
-        user={quickChatUser?.user || null}
+        user={
+          quickChatUser && quickChatUser.user
+            ? {
+                id: quickChatUser.user.id as UserID,
+                username: quickChatUser.user.username as Username,
+                avatar: quickChatUser.user.avatar,
+                displayName: quickChatUser.user.displayName,
+              }
+            : null
+        }
         textPlaceholder="Are you coming to my event?"
         openNotification={openNotification}
         actionButton={
-          <NavLink to={`/app/wish/${quickChatUser?.wishID}`}>
-            <Button>View Event</Button>
-          </NavLink>
+          quickChatUser?.wishID && (
+            <NavLink to={`/app/wish/${quickChatUser?.wishID}`}>
+              <Button>View Event</Button>
+            </NavLink>
+          )
         }
       />
       {contextHolder}

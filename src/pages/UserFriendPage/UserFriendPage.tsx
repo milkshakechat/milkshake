@@ -196,7 +196,12 @@ export const UserFriendPage = () => {
     {
       key: "timeline",
       title: "Timeline",
-      children: <TimelineGallery stories={spotlightUser.stories} />,
+      children: (
+        <TimelineGallery
+          stories={spotlightUser.stories}
+          userID={spotlightUser.id}
+        />
+      ),
     },
     {
       key: "wishlist",
@@ -385,12 +390,12 @@ export const UserFriendPage = () => {
             openNotification={openNotification}
             user={
               spotlightUser
-                ? ({
-                    displayName: spotlightUser?.displayName,
-                    username: spotlightUser?.username,
-                    avatar: spotlightUser?.avatar,
-                    id: spotlightUser?.id,
-                  } as WishAuthor)
+                ? {
+                    displayName: spotlightUser.displayName || "",
+                    username: spotlightUser.username as Username,
+                    avatar: spotlightUser.avatar || "",
+                    id: spotlightUser.id as UserID,
+                  }
                 : null
             }
           />

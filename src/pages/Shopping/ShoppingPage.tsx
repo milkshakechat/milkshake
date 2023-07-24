@@ -603,7 +603,16 @@ export const ShoppingPage = () => {
         isOpen={quickChatUser !== null}
         onClose={() => setQuickChatUser(null)}
         toggleOpen={(bool: boolean) => setQuickChatUser(null)}
-        user={quickChatUser?.user || null}
+        user={
+          quickChatUser?.user
+            ? {
+                id: quickChatUser.user.id as UserID,
+                username: quickChatUser.user.username as Username,
+                avatar: quickChatUser.user.avatar,
+                displayName: quickChatUser.user.displayName,
+              }
+            : null
+        }
         textPlaceholder="Are you coming to my event?"
         openNotification={openNotification}
         actionButton={

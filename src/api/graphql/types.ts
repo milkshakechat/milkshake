@@ -96,7 +96,9 @@ export type CreateSetupIntentResponseSuccess = {
 };
 
 export type CreateStoryInput = {
+  allowSwipe?: InputMaybe<Scalars['Boolean']['input']>;
   caption: Scalars['String']['input'];
+  linkedWishID?: InputMaybe<Scalars['String']['input']>;
   media?: InputMaybe<StoryMediaAttachmentInput>;
 };
 
@@ -195,6 +197,17 @@ export type FetchStoryFeedResponse = FetchStoryFeedResponseSuccess | ResponseErr
 export type FetchStoryFeedResponseSuccess = {
   __typename?: 'FetchStoryFeedResponseSuccess';
   stories: Array<Story>;
+};
+
+export type FetchSwipeFeedInput = {
+  nonce: Scalars['String']['input'];
+};
+
+export type FetchSwipeFeedResponse = FetchSwipeFeedResponseSuccess | ResponseError;
+
+export type FetchSwipeFeedResponseSuccess = {
+  __typename?: 'FetchSwipeFeedResponseSuccess';
+  swipeStack: Array<SwipeStory>;
 };
 
 export enum FriendshipAction {
@@ -527,6 +540,7 @@ export type Query = {
   enterChatRoom: EnterChatRoomResponse;
   fetchRecentNotifications: FetchRecentNotificationsResponse;
   fetchStoryFeed: FetchStoryFeedResponse;
+  fetchSwipeFeed: FetchSwipeFeedResponse;
   getMyProfile: GetMyProfileResponse;
   getStory: GetStoryResponse;
   getWish: GetWishResponse;
@@ -565,6 +579,11 @@ export type QueryFetchRecentNotificationsArgs = {
 
 export type QueryFetchStoryFeedArgs = {
   input: FetchStoryFeedInput;
+};
+
+
+export type QueryFetchSwipeFeedArgs = {
+  input: FetchSwipeFeedInput;
 };
 
 
@@ -686,6 +705,7 @@ export type Story = {
   createdAt?: Maybe<Scalars['DateString']['output']>;
   expiresAt?: Maybe<Scalars['DateString']['output']>;
   id: Scalars['ID']['output'];
+  linkedWishID?: Maybe<Scalars['String']['output']>;
   outboundLink?: Maybe<Scalars['String']['output']>;
   pinned?: Maybe<Scalars['Boolean']['output']>;
   showcase?: Maybe<Scalars['Boolean']['output']>;
@@ -727,6 +747,12 @@ export type StoryMediaAttachmentInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   demoSubscription: DemoSubscriptionEvent;
+};
+
+export type SwipeStory = {
+  __typename?: 'SwipeStory';
+  story: Story;
+  wish?: Maybe<Wish>;
 };
 
 export type TopUpWalletInput = {
@@ -986,28 +1012,28 @@ export type CreateStoryMutationVariables = Exact<{
 }>;
 
 
-export type CreateStoryMutation = { __typename?: 'Mutation', createStory: { __typename: 'CreateStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type CreateStoryMutation = { __typename?: 'Mutation', createStory: { __typename: 'CreateStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, linkedWishID?: string | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type GetStoryQueryVariables = Exact<{
   input: GetStoryInput;
 }>;
 
 
-export type GetStoryQuery = { __typename?: 'Query', getStory: { __typename: 'GetStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type GetStoryQuery = { __typename?: 'Query', getStory: { __typename: 'GetStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, linkedWishID?: string | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type FetchStoryFeedQueryVariables = Exact<{
   input: FetchStoryFeedInput;
 }>;
 
 
-export type FetchStoryFeedQuery = { __typename?: 'Query', fetchStoryFeed: { __typename: 'FetchStoryFeedResponseSuccess', stories: Array<{ __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type FetchStoryFeedQuery = { __typename?: 'Query', fetchStoryFeed: { __typename: 'FetchStoryFeedResponseSuccess', stories: Array<{ __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, linkedWishID?: string | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type ModifyStoryMutationVariables = Exact<{
   input: ModifyStoryInput;
 }>;
 
 
-export type ModifyStoryMutation = { __typename?: 'Mutation', modifyStory: { __typename: 'ModifyStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, showcase?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type ModifyStoryMutation = { __typename?: 'Mutation', modifyStory: { __typename: 'ModifyStoryResponseSuccess', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, showcase?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, linkedWishID?: string | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type CreateSetupIntentMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -1020,6 +1046,13 @@ export type SavePaymentMethodMutationVariables = Exact<{
 
 
 export type SavePaymentMethodMutation = { __typename?: 'Mutation', savePaymentMethod: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'SavePaymentMethodResponseSuccess', paymentMethodID: string } };
+
+export type FetchSwipeFeedQueryVariables = Exact<{
+  input: FetchSwipeFeedInput;
+}>;
+
+
+export type FetchSwipeFeedQuery = { __typename?: 'Query', fetchSwipeFeed: { __typename: 'FetchSwipeFeedResponseSuccess', swipeStack: Array<{ __typename?: 'SwipeStory', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, linkedWishID?: string | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } }, wish?: { __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, wishType: WishTypeEnum, countdownDate?: any | null, externalURL?: string | null, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null }, author?: { __typename?: 'WishAuthor', id: any, username: string, avatar: string, displayName: string } | null } | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type DemoQueryQueryVariables = Exact<{
   input: DemoQueryInput;

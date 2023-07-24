@@ -17,7 +17,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { useModifyStory } from "@/hooks/useStory";
-import { StoryID } from "@milkshakechat/helpers";
+import { StoryID, UserID } from "@milkshakechat/helpers";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useUserState } from "@/state/user.state";
 import { Affix } from "antd";
@@ -29,6 +29,7 @@ import { Spacer } from "@/components/AppLayout/AppLayout";
 
 interface TimelineGalleryProps {
   stories: Story[];
+  userID: UserID;
 }
 
 const EMPTY_PLAYER = {
@@ -37,12 +38,12 @@ const EMPTY_PLAYER = {
   videoElement: null,
 };
 
-const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
+const TimelineGallery = ({ stories, userID }: TimelineGalleryProps) => {
   const { screen, isMobile } = useWindowSize();
   const intl = useIntl();
   const location = useLocation();
   const navigate = useNavigate();
-  const user = useUserState((state) => state.user);
+  const selfUser = useUserState((state) => state.user);
   const { token } = theme.useToken();
   const [updatingStories, setUpdatingStories] = useState<StoryID[]>([]);
   const [showHidden, setShowHidden] = useState(false);
@@ -51,7 +52,7 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
     stories.filter((s) => (showHidden ? true : s.showcase))
   );
   const viewingOwnProfile =
-    user && stories.every((s) => user && s.userID === user.id);
+    selfUser && stories.every((s) => selfUser && s.userID === selfUser.id);
   const { runMutation: runModifyStoryMutation } = useModifyStory();
   const [anonViewStoryModal, setAnonViewStoryModal] = useState<Story | null>(
     null
@@ -85,7 +86,7 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
                   <NavLink
                     to={`/app/story/${story.id}`}
                     onClick={(e) => {
-                      if (!user) {
+                      if (!selfUser) {
                         e.preventDefault();
                         setAnonViewStoryModal(story);
                         navigate({
@@ -310,7 +311,7 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
       {myStories.map((row) => {
         return renderTimelineRow(row);
       })}
-      {myStories.length === 0 && (
+      {myStories.length === 0 && selfUser && userID === selfUser.id && (
         <$Vertical
           justifyContent="center"
           alignItems="center"
@@ -351,6 +352,33 @@ const TimelineGallery = ({ stories }: TimelineGalleryProps) => {
               </Button>
             </NavLink>
           </Empty>
+        </$Vertical>
+      )}
+      {myStories.length === 0 && selfUser && userID !== selfUser.id && (
+        <$Vertical
+          justifyContent="center"
+          alignItems="center"
+          style={{ flex: 1, minHeight: "50vh" }}
+        >
+          <Empty
+            image={
+              <FireFilled
+                style={{ fontSize: "5rem", color: token.colorPrimaryBgHover }}
+              />
+            }
+            description={
+              <span
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: "normal",
+                  color: token.colorPrimaryBorder,
+                  fontFamily: BRANDED_FONT,
+                }}
+              >
+                Nothing to see yet
+              </span>
+            }
+          ></Empty>
         </$Vertical>
       )}
       <Modal

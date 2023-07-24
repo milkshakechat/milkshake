@@ -14,6 +14,8 @@ import {
   SearchOutlined,
   ShoppingOutlined,
   HistoryOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, Input, List, Skeleton, message, theme } from "antd";
 import { useWindowSize } from "@/api/utils/screen";
@@ -32,6 +34,7 @@ const PurchaseHistory = ({
   const intl = useIntl();
   const [searchString, setSearchString] = useState("");
   const { screen, isMobile } = useWindowSize();
+  const [showStopped, setShowStopped] = useState(true);
   const { token } = theme.useToken();
 
   const determineAction = (pm: PurchaseMainfest_Firestore) => {
@@ -65,6 +68,12 @@ const PurchaseHistory = ({
   console.log(`purchaseManifests --> purchase history`, purchaseManifests);
   const filteredPurchaseManifests = purchaseManifests
     .filter((pm) => {
+      return showStopped
+        ? true
+        : !pm.isCancelled &&
+            pm.agreedBuyFrequency !== WishBuyFrequency.ONE_TIME;
+    })
+    .filter((pm) => {
       if (checkIfEscrowWallet(wallet.walletAliasID)) {
         return pm.escrowWallet === wallet.walletAliasID;
       } else if (checkIfTradingWallet(wallet.walletAliasID)) {
@@ -86,12 +95,34 @@ const PurchaseHistory = ({
 
   return (
     <$Vertical spacing={2}>
-      <Input
-        prefix={<SearchOutlined />}
-        value={searchString}
-        onChange={(e) => setSearchString(e.target.value)}
-        placeholder="Search transactions"
-      />
+      <$Horizontal>
+        <Input
+          prefix={<SearchOutlined />}
+          value={searchString}
+          onChange={(e) => setSearchString(e.target.value)}
+          placeholder="Search transactions"
+          style={{ flex: 1 }}
+        />
+        {showStopped ? (
+          <EyeOutlined
+            onClick={() => setShowStopped(false)}
+            style={{
+              fontSize: "1.3rem",
+              color: token.colorTextDescription,
+              marginLeft: "10px",
+            }}
+          />
+        ) : (
+          <EyeInvisibleOutlined
+            onClick={() => setShowStopped(true)}
+            style={{
+              fontSize: "1.3rem",
+              color: token.colorTextDescription,
+              marginLeft: "10px",
+            }}
+          />
+        )}
+      </$Horizontal>
       <List
         itemLayout="horizontal"
         dataSource={filteredPurchaseManifests}
@@ -122,18 +153,20 @@ const PurchaseHistory = ({
                     title={
                       <span>{`${(pm.title || "").slice(
                         0,
-                        isMobile ? 70 : 200
+                        isMobile ? 70 : 999
                       )}${(pm.title || "").length > 70 ? ".." : ""}`}</span>
                     }
                     description={
                       <$Vertical>
                         <i>
-                          {dayjs((pm.createdAt as any).seconds * 1000).format(
-                            "MMM D YYYY"
+                          {dayjs().to(
+                            dayjs((pm.createdAt as any).seconds * 1000)
                           )}
                         </i>
-                        <span>{`${(pm.note || "").slice(0, 100)}..`}</span>
-                        <span>{pm.stripeSubItemID}</span>
+                        <span>{`${(pm.note || "").slice(
+                          0,
+                          isMobile ? 100 : 999
+                        )}${isMobile ? ".." : ""}`}</span>
                       </$Vertical>
                     }
                   />

@@ -139,7 +139,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
   const [stickerTitle, setStickerTitle] = useState("");
   const [countdownDate, setCountdownDate] = useState<Dayjs | null>(null);
   const [wishVisibility, setWishVisibility] = useState<WishlistVisibility>(
-    WishlistVisibility.FriendsOnly
+    WishlistVisibility.PublicMarketplace
   );
   const [showAdvancedView, setShowAdvancedView] = useState(false);
   const [wishType, setWishType] = useState<WishTypeEnum>(WishTypeEnum.Gift);

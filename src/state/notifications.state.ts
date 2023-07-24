@@ -13,11 +13,15 @@ export const useNotificationsState = create<NotificationsState>()((set) => ({
     set((state) => ({
       notifications:
         notifications.length > 1
-          ? [...notifications].sort(
-              (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
-            )
+          ? [...notifications]
+              .sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              )
+              .sort((a, b) => {
+                return a.markedRead ? 1 : -1;
+              })
           : notifications,
     })),
   addNotifications: (notifs) => {

@@ -32,6 +32,8 @@ import {
   RecallTransactionResponseSuccess,
   SendTransferInput,
   SendTransferResponseSuccess,
+  TopUpWalletInput,
+  TopUpWalletResponseSuccess,
 } from "@/api/graphql/types";
 import { useWalletState } from "@/state/wallets.state";
 import gql from "graphql-tag";
@@ -451,29 +453,63 @@ export const useCancelSubscription = () => {
   return { data, errors, loading, runMutation };
 };
 
-// rules_version = '2';
+export const useTopUpWallet = () => {
+  const [data, setData] = useState<TopUpWalletResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
 
-// service cloud.firestore {
-//   match /databases/{database}/documents {
+  const runMutation = async (args: TopUpWalletInput) => {
+    setLoading(true);
+    try {
+      const TOP_UP_WALLET = gql`
+        mutation TopUpWallet($input: TopUpWalletInput!) {
+          topUpWallet(input: $input) {
+            __typename
+            ... on TopUpWalletResponseSuccess {
+              checkoutToken
+              referenceID
+              purchaseManifestID
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<TopUpWalletResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "topUpWallet">>({
+              mutation: TOP_UP_WALLET,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.topUpWallet.__typename === "TopUpWalletResponseSuccess"
+              ) {
+                resolve(data.topUpWallet);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+      return result;
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
 
-// 		match /notifications/{notificationId} {
-//       allow read: if request.auth != null && request.auth.uid == resource.data.recipientID;
-//     }
-
-// 		match /mirrorWallets/{walletAliasID} {
-//       allow read: if request.auth != null && request.auth.uid == resource.data.ownerID;
-//     }
-
-// 		match /mirrorTx/{mirrorTxID} {
-//       allow read: if request.auth != null && request.auth.uid == resource.data.ownerID;
-//     }
-
-// 		match /purchaseManifests/{purchaseManifestID} {
-//       allow read: if request.auth != null && (request.auth.uid == resource.data.sellerUserID || request.auth.uid == resource.data.buyerUserID);
-//     }
-
-//     match /{document=**} {
-//       allow read, write: if false;
-//     }
-//   }
-// }
+  return { data, errors, loading, runMutation };
+};

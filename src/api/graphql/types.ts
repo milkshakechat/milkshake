@@ -398,6 +398,7 @@ export type Mutation = {
   savePaymentMethod: SavePaymentMethodResponse;
   sendFriendRequest: SendFriendRequestResponse;
   sendTransfer: SendTransferResponse;
+  topUpWallet: TopUpWalletResponse;
   updateChatSettings: UpdateChatSettingsResponse;
   updatePushToken: UpdatePushTokenResponse;
   updateWish: UpdateWishResponse;
@@ -466,6 +467,11 @@ export type MutationSendFriendRequestArgs = {
 
 export type MutationSendTransferArgs = {
   input: SendTransferInput;
+};
+
+
+export type MutationTopUpWalletArgs = {
+  input: TopUpWalletInput;
 };
 
 
@@ -618,6 +624,7 @@ export type RevokePushTokensResponseSuccess = {
 };
 
 export type SavePaymentMethodInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
   paymentMethodID: Scalars['String']['input'];
 };
 
@@ -720,6 +727,20 @@ export type StoryMediaAttachmentInput = {
 export type Subscription = {
   __typename?: 'Subscription';
   demoSubscription: DemoSubscriptionEvent;
+};
+
+export type TopUpWalletInput = {
+  amount: Scalars['Int']['input'];
+  promoCode?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type TopUpWalletResponse = ResponseError | TopUpWalletResponseSuccess;
+
+export type TopUpWalletResponseSuccess = {
+  __typename?: 'TopUpWalletResponseSuccess';
+  checkoutToken?: Maybe<Scalars['String']['output']>;
+  purchaseManifestID: Scalars['String']['output'];
+  referenceID: Scalars['String']['output'];
 };
 
 export type UpdateChatSettingsInput = {
@@ -1051,6 +1072,13 @@ export type CancelSubscriptionMutationVariables = Exact<{
 
 
 export type CancelSubscriptionMutation = { __typename?: 'Mutation', cancelSubscription: { __typename: 'CancelSubscriptionResponseSuccess', status: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type TopUpWalletMutationVariables = Exact<{
+  input: TopUpWalletInput;
+}>;
+
+
+export type TopUpWalletMutation = { __typename?: 'Mutation', topUpWallet: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'TopUpWalletResponseSuccess', checkoutToken?: string | null, referenceID: string, purchaseManifestID: string } };
 
 export type UpdatePushTokenMutationVariables = Exact<{
   input: UpdatePushTokenInput;

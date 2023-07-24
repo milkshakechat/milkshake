@@ -127,6 +127,19 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
   const startPrepProfileCountdown = () => {
     setInterval(() => {
       setPreparingProfileCountdown((countdown) => countdown - 1);
+      if (preparingProfileCountdown === 0) {
+        const run = async () => {
+          if (gender && interestedIn.length > 0) {
+            await runUpdateProfileMutation({
+              gender,
+              interestedIn,
+            });
+          }
+          navigate("/app/profile");
+          refreshWebPage();
+        };
+        run();
+      }
     }, 1000);
   };
 
@@ -367,18 +380,18 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                 onClick={() => {
                   setLoadingClaimUsername(true);
                   setTimeout(() => {
-                    navigate("/app/profile");
+                    const run = async () => {
+                      if (gender && interestedIn.length > 0) {
+                        await runUpdateProfileMutation({
+                          gender,
+                          interestedIn,
+                        });
+                      }
+                      refreshWebPage();
+                    };
+                    run();
                     setTimeout(() => {
-                      const run = async () => {
-                        if (gender && interestedIn.length > 0) {
-                          await runUpdateProfileMutation({
-                            gender,
-                            interestedIn,
-                          });
-                        }
-                        refreshWebPage();
-                      };
-                      run();
+                      navigate("/app/profile");
                     }, 500);
                   }, 1000);
                 }}

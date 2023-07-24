@@ -24,7 +24,7 @@ import {
   HistoryOutlined,
   ShoppingOutlined,
 } from "@ant-design/icons";
-import { $Vertical } from "@/api/utils/spacing";
+import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import StoryUpload from "@/components/StoryUpload/StoryUpload";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
@@ -73,7 +73,7 @@ const PurchasePage = () => {
   };
 
   if (!selfUser || !purchaseManifest) {
-    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
+    return <LoadingAnimation width="100%" height="100%" type="cookie" />;
   }
   console.log(`purchaseManifestTxs --> purchase page`, purchaseManifestTxs);
   return (
@@ -123,12 +123,19 @@ const PurchasePage = () => {
               title={purchaseManifest.title}
               subTitle={
                 <$Vertical>
-                  {purchaseManifest.note}
+                  {`${purchaseManifest.note}`}
+                  {purchaseManifest.priceUSDBasisAsMonthly
+                    ? ` - Equal to ${
+                        purchaseManifest.priceCookieAsMonthly
+                      } Cookies / $${
+                        purchaseManifest.priceUSDBasisAsMonthly / 100
+                      } USD Monthly`
+                    : ""}
                   <br />
                   <i>
-                    {dayjs(
+                    {`Created on ${dayjs(
                       (purchaseManifest.createdAt as any).seconds * 1000
-                    ).format("MMM D YYYY")}
+                    ).format("MMM D YYYY")}`}
                   </i>
                 </$Vertical>
               }
@@ -173,17 +180,19 @@ const PurchasePage = () => {
           </div>
         </$Vertical>
         <Spacer />
-        <span
-          onClick={() => {
-            navigator.clipboard.writeText(
-              `Purchase#ID${purchaseManifestIDFromUrl}` || ""
-            );
-            message.success(<PP>{`Copied Purchase#ID`}</PP>);
-          }}
-          style={{
-            color: token.colorTextDescription,
-          }}
-        >{`Purchase#${purchaseManifestIDFromUrl}`}</span>
+        <$Horizontal justifyContent="center">
+          <span
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `Purchase#ID${purchaseManifestIDFromUrl}` || ""
+              );
+              message.success(<PP>{`Copied Purchase#ID`}</PP>);
+            }}
+            style={{
+              color: token.colorTextDescription,
+            }}
+          >{`Purchase#${purchaseManifestIDFromUrl}`}</span>
+        </$Horizontal>
         <Spacer height="10px" />
         {purchaseManifest.buyerWallet === selfUser.tradingWallet ? (
           <TransactionHistory

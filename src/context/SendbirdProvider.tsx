@@ -33,21 +33,24 @@ export const SendBirdServiceProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  // const [sendBirdService, setSendBirdService] =
-  //   useState<SendBirdService | null>(null);
-  // useEffect(() => {
-  //   const service = SendBirdService.getInstance();
-  //   setSendBirdService(service);
-  // }, []);
+  const [sendBirdService, setSendBirdService] =
+    useState<SendBirdService | null>(null);
+  useEffect(() => {
+    const service = SendBirdService.getInstance();
+    setSendBirdService(service);
+  }, []);
   const selfUser = useUserState((state) => state.user);
-
-  // const { sendbird, loading } = useSendBirdConnection();
-
-  // if (!sendBirdService || !selfUser || loading) {
-  //   return <div>Loading SendBird...</div>; // You can replace this with a proper loading indicator
-  // }
-
   const { token } = theme.useToken();
+  const { sendbird, loading } = useSendBirdConnection();
+
+  console.log(`sendBirdService`, sendBirdService);
+  console.log(`selfUser`, selfUser);
+  console.log(`loading`, loading);
+
+  if (!sendBirdService || !selfUser || loading) {
+    return <div>Loading SendBird...</div>; // You can replace this with a proper loading indicator
+  }
+
   if (!selfUser) {
     return <div>{children}</div>;
   }
@@ -62,19 +65,23 @@ export const SendBirdServiceProvider = ({
     "--sendbird-light-primary-100": token.colorPrimaryActive, // "#027bce",
   };
 
+  if (!selfUser.sendBirdAccessToken) {
+    return <div>{children}</div>;
+  }
+
   return (
-    // <SendBirdServiceContext.Provider value={sendBirdService}>
-    <UISendBirdProvider
-      appId={config.SENDBIRD_APP_ID}
-      userId={selfUser.id}
-      accessToken={selfUser.sendBirdAccessToken || ""}
-      colorSet={sendBirdColorSet}
-    >
-      <SendBirdObservers>
-        <div>{children}</div>
-      </SendBirdObservers>
-    </UISendBirdProvider>
-    // </SendBirdServiceContext.Provider>
+    <SendBirdServiceContext.Provider value={sendBirdService}>
+      <UISendBirdProvider
+        appId={config.SENDBIRD_APP_ID}
+        userId={selfUser.id}
+        accessToken={selfUser.sendBirdAccessToken || ""}
+        colorSet={sendBirdColorSet}
+      >
+        <SendBirdObservers>
+          <div>{children}</div>
+        </SendBirdObservers>
+      </UISendBirdProvider>
+    </SendBirdServiceContext.Provider>
   );
 };
 

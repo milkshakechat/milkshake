@@ -221,6 +221,7 @@ export enum FriendshipAction {
 
 export enum FriendshipStatus {
   Accepted = 'ACCEPTED',
+  Acquaintance = 'ACQUAINTANCE',
   Blocked = 'BLOCKED',
   Declined = 'DECLINED',
   GotRequest = 'GOT_REQUEST',
@@ -305,7 +306,6 @@ export type ListContactsResponse = ListContactsResponseSuccess | ResponseError;
 export type ListContactsResponseSuccess = {
   __typename?: 'ListContactsResponseSuccess';
   contacts: Array<Contact>;
-  globalDirectory: Array<Contact>;
 };
 
 export type ListWishlistInput = {
@@ -1011,7 +1011,7 @@ export type ListContactsQueryVariables = Exact<{
 }>;
 
 
-export type ListContactsQuery = { __typename?: 'Query', listContacts: { __typename: 'ListContactsResponseSuccess', contacts: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }>, globalDirectory: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type ListContactsQuery = { __typename?: 'Query', listContacts: { __typename: 'ListContactsResponseSuccess', contacts: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type FetchRecentNotificationsQueryVariables = Exact<{
   input: FetchRecentNotificationsInput;

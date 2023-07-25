@@ -1,6 +1,7 @@
 import { Contact, Story, User } from "@/api/graphql/types";
 import {
   EmailString,
+  Friendship_Firestore,
   StripePaymentMethodID,
   UserID,
 } from "@milkshakechat/helpers";
@@ -11,7 +12,6 @@ interface UserState {
   idToken: string | null;
   user: User | null;
   contacts: Contact[];
-  globalDirectory: Contact[];
   setFirebaseUser: ({
     userID,
     email,
@@ -23,7 +23,6 @@ interface UserState {
   }) => void;
   setGQLUser: (user: User | null) => void;
   setContacts: (contacts: Contact[]) => void;
-  setGlobalDirectory: (contacts: Contact[]) => void;
   triggerRefetch: () => void;
   refetchNonce: number;
   updateOrPushStory: (story: Story) => void;
@@ -38,7 +37,6 @@ export const useUserState = create<UserState>()((set) => ({
   idToken: null,
   user: null,
   contacts: [],
-  globalDirectory: [],
   setFirebaseUser: (user) => {
     // GET USER AUTH TOKEN
     // authorization: Bearer ....
@@ -62,8 +60,6 @@ export const useUserState = create<UserState>()((set) => ({
         (user?.defaultPaymentMethodID as StripePaymentMethodID) || null,
     })),
   setContacts: (contacts) => set((state) => ({ contacts })),
-  setGlobalDirectory: (contacts) =>
-    set((state) => ({ globalDirectory: contacts })),
   refetchNonce: 1,
   triggerRefetch: () =>
     set((state) => ({ refetchNonce: state.refetchNonce + 1 })),

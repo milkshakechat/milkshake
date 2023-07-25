@@ -291,7 +291,6 @@ export const useListContacts = () => {
   const client = useGraphqlClient();
   const setContacts = useUserState((state) => state.setContacts);
   const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
-  const setGlobalDirectory = useUserState((state) => state.setGlobalDirectory);
   const [lastRequestTimestamp, setLastRequestTimestamp] = useState<string>(
     new Date().toISOString()
   );
@@ -312,13 +311,6 @@ export const useListContacts = () => {
             __typename
             ... on ListContactsResponseSuccess {
               contacts {
-                friendID
-                username
-                displayName
-                avatar
-                status
-              }
-              globalDirectory {
                 friendID
                 username
                 displayName
@@ -362,10 +354,8 @@ export const useListContacts = () => {
 
       setData(result);
       setContacts(result.contacts);
-      setGlobalDirectory(result.globalDirectory);
       preloadImages([
         ...result.contacts.map((contact) => contact.avatar || ""),
-        ...result.globalDirectory.map((contact) => contact.avatar || ""),
       ]);
       if (selfUser) {
         fetchChatRooms({

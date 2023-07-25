@@ -97,7 +97,6 @@ export const ContactsPage = () => {
       : ValidTabs.Friends;
   const location = useLocation();
   const { screen, isMobile } = useWindowSize();
-  const [showGlobalDirectory, setShowGlobalDirectory] = useState(false);
 
   const user = useUserState((state) => state.user);
 
@@ -122,7 +121,6 @@ export const ContactsPage = () => {
     runMutation: sendFriendRequestMutation,
   } = useSendFriendRequest();
   const contacts = useUserState((state) => state.contacts);
-  const globalDirectory = useUserState((state) => state.globalDirectory);
 
   const addFriend = async (userID: UserID) => {
     setLoadingManageFriendships((prev) => [...prev, userID]);
@@ -178,7 +176,7 @@ export const ContactsPage = () => {
                 });
               }}
             >
-              <PP>{fr.displayName}</PP>
+              <PP>{fr.displayName || `@${fr.username}`}</PP>
             </div>
           }
           description={
@@ -645,34 +643,10 @@ export const ContactsPage = () => {
     );
   };
 
-  const renderGlobalDirectory = () => {
-    return (
-      <List
-        className="global-dir"
-        itemLayout="horizontal"
-        dataSource={globalDirectory.filter(
-          (fr) => user && fr.friendID !== user.id
-        )}
-        renderItem={(item) => {
-          return renderRow(item, [
-            <Button
-              loading={loadingManageFriendships.includes(item.friendID)}
-              onClick={() => addFriend(item.friendID)}
-              type="link"
-            >
-              <PP>Add Friend</PP>
-            </Button>,
-          ]);
-        }}
-        style={{ width: "100%" }}
-      />
-    );
-  };
-
   return (
     <>
       <LayoutInteriorHeader
-        title={<PP>{showGlobalDirectory ? "Global Directory" : "Contacts"}</PP>}
+        title={<PP>{"Contacts"}</PP>}
         rightAction={
           <Button
             onClick={() => setShowAddContactModal(true)}
@@ -685,15 +659,15 @@ export const ContactsPage = () => {
       />
       <AppLayoutPadding align="center">
         <>
-          {showGlobalDirectory ? renderGlobalDirectory() : renderContactsList()}
+          {renderContactsList()}
           <Spacer />
           <Space direction="horizontal">
             <Switch
               checkedChildren={<PP>Global</PP>}
               unCheckedChildren={<PP>Contacts</PP>}
-              checked={showGlobalDirectory}
+              checked={true}
               onChange={(bool) => {
-                setShowGlobalDirectory(bool);
+                console.log(bool);
               }}
             />
           </Space>

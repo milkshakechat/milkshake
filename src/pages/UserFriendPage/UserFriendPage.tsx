@@ -44,8 +44,8 @@ import {
   UserID,
   User_Firestore,
   Username,
+  FriendshipStatus,
 } from "@milkshakechat/helpers";
-import { FriendshipStatus, WishAuthor } from "@/api/graphql/types";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import TimelineGallery from "@/components/UserPageSkeleton/TimelineGallery/TimelineGallery";
 import AboutSection from "@/components/UserPageSkeleton/AboutSection/AboutSection";
@@ -76,7 +76,7 @@ export const UserFriendPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isMobile } = useWindowSize();
-  const contacts = useUserState((state) => state.contacts);
+  const friendships = useUserState((state) => state.friendships);
 
   const [api, contextHolder] = notification.useNotification();
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
@@ -92,11 +92,11 @@ export const UserFriendPage = () => {
     runQuery: getSpotlightUser,
   } = useViewPublicProfile();
   const isAcceptedFriend = spotlightUser
-    ? contacts.find(
-        (contact) =>
+    ? friendships.find(
+        (fr) =>
           spotlightUser &&
-          contact.status === FriendshipStatus.Accepted &&
-          contact.friendID === spotlightUser.id
+          fr.status === FriendshipStatus.ACCEPTED &&
+          fr.friendID === spotlightUser.id
       )
     : false;
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -174,10 +174,8 @@ export const UserFriendPage = () => {
         // skip utmAttribution for now
       });
       if (resp) {
-        if (resp.status === FriendshipStatus.SentRequest) {
-          message.success(<PP>Friend Request Sent!</PP>);
-          setRecentlySentRequest(true);
-        }
+        message.success(<PP>Friend Request Sent!</PP>);
+        setRecentlySentRequest(true);
       }
       setIsPending(false);
       message.success(`Friend Request Sent`);

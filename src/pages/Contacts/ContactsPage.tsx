@@ -1,10 +1,5 @@
 import { ErrorLines } from "@/api/graphql/error-line";
-import {
-  Contact,
-  FriendshipAction,
-  FriendshipStatus,
-  Maybe,
-} from "@/api/graphql/types";
+import { FriendshipAction, Maybe } from "@/api/graphql/types";
 import {
   AppLayoutPadding,
   LayoutInteriorHeader,
@@ -17,13 +12,6 @@ import {
   useViewPublicProfile,
 } from "@/hooks/useFriendship";
 
-import { useListContacts } from "@/hooks/useProfile";
-import {
-  useDemoMutation,
-  useDemoPing,
-  useDemoQuery,
-  useDemoSubscription,
-} from "@/hooks/useTemplateGQL";
 import PP from "@/i18n/PlaceholderPrint";
 import {
   Avatar,
@@ -45,7 +33,12 @@ import {
 import { useEffect, useState } from "react";
 import { UserOutlined, ScanOutlined } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
-import { QRCODE_LOGO, UserID } from "@milkshakechat/helpers";
+import {
+  QRCODE_LOGO,
+  UserID,
+  FriendshipStatus,
+  Friendship_Firestore,
+} from "@milkshakechat/helpers";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import {
   NavLink,
@@ -57,17 +50,17 @@ import {
 } from "react-router-dom";
 import { ScreenSize, useWindowSize } from "@/api/utils/screen";
 
-const subtitle = (status?: Maybe<FriendshipStatus>) => {
+const subtitle = (status: FriendshipStatus) => {
   switch (status) {
-    case FriendshipStatus.Accepted:
+    case FriendshipStatus.ACCEPTED:
       return "";
-    case FriendshipStatus.GotRequest:
+    case FriendshipStatus.GOT_REQUEST:
       return <PP>Sent a friend request</PP>;
-    case FriendshipStatus.SentRequest:
+    case FriendshipStatus.SENT_REQUEST:
       return <PP>Waiting for acceptance</PP>;
-    case FriendshipStatus.Declined:
+    case FriendshipStatus.DECLINED:
       return <PP>Declined request</PP>;
-    case FriendshipStatus.Blocked:
+    case FriendshipStatus.BLOCKED:
       return <PP>Blocked user</PP>;
     default:
       return <PP>Not Friends</PP>;
@@ -75,12 +68,13 @@ const subtitle = (status?: Maybe<FriendshipStatus>) => {
 };
 
 const sortStatusPriority: Record<FriendshipStatus, number> = {
-  [FriendshipStatus.GotRequest]: 1,
-  [FriendshipStatus.SentRequest]: 2,
-  [FriendshipStatus.Declined]: 3,
-  [FriendshipStatus.Blocked]: 4,
-  [FriendshipStatus.None]: 5,
-  [FriendshipStatus.Accepted]: 6,
+  [FriendshipStatus.ACQUAINTANCE]: 0,
+  [FriendshipStatus.GOT_REQUEST]: 1,
+  [FriendshipStatus.SENT_REQUEST]: 2,
+  [FriendshipStatus.DECLINED]: 3,
+  [FriendshipStatus.BLOCKED]: 4,
+  [FriendshipStatus.NONE]: 5,
+  [FriendshipStatus.ACCEPTED]: 6,
 };
 
 export const ContactsPage = () => {
@@ -97,7 +91,6 @@ export const ContactsPage = () => {
       : ValidTabs.Friends;
   const location = useLocation();
   const { screen, isMobile } = useWindowSize();
-  const [showGlobalDirectory, setShowGlobalDirectory] = useState(false);
 
   const user = useUserState((state) => state.user);
 
@@ -107,12 +100,17 @@ export const ContactsPage = () => {
   const [searchString, setSearchString] = useState("");
   const [optimisticAccepted, setOptimisticAccepted] = useState<UserID[]>([]);
   const [optimisticDisabled, setOptimisticDisabled] = useState<UserID[]>([]);
-  const [targetOfDecline, setTargetOfDecline] = useState<Contact | null>(null);
+  const [targetOfDecline, setTargetOfDecline] =
+    useState<Friendship_Firestore | null>(null);
   const [showAddContactModal, setShowAddContactModal] = useState(false);
-  const [targetOfBlock, setTargetOfBlock] = useState<Contact | null>(null);
-  const [targetOfUnblock, setTargetOfUnblock] = useState<Contact | null>(null);
-  const [targetOfRemoval, setTargetOfRemoval] = useState<Contact | null>(null);
-  const [targetOfCancel, setTargetOfCancel] = useState<Contact | null>(null);
+  const [targetOfBlock, setTargetOfBlock] =
+    useState<Friendship_Firestore | null>(null);
+  const [targetOfUnblock, setTargetOfUnblock] =
+    useState<Friendship_Firestore | null>(null);
+  const [targetOfRemoval, setTargetOfRemoval] =
+    useState<Friendship_Firestore | null>(null);
+  const [targetOfCancel, setTargetOfCancel] =
+    useState<Friendship_Firestore | null>(null);
   const [loadingManageFriendships, setLoadingManageFriendships] = useState<
     UserID[]
   >([]);
@@ -121,9 +119,8 @@ export const ContactsPage = () => {
     errors: sendFriendRequestErrors,
     runMutation: sendFriendRequestMutation,
   } = useSendFriendRequest();
-  const contacts = useUserState((state) => state.contacts);
-  const globalDirectory = useUserState((state) => state.globalDirectory);
-
+  const friendships = useUserState((state) => state.friendships);
+  console.log(`got friendships`, friendships);
   const addFriend = async (userID: UserID) => {
     setLoadingManageFriendships((prev) => [...prev, userID]);
     await sendFriendRequestMutation({
@@ -134,7 +131,7 @@ export const ContactsPage = () => {
     message.info("Friend Request Sent");
   };
 
-  const renderRow = (fr: Contact, actions: React.ReactNode[]) => {
+  const renderRow = (fr: Friendship_Firestore, actions: React.ReactNode[]) => {
     // return <span>{fr.friendID}</span>;
     return (
       <List.Item
@@ -178,7 +175,7 @@ export const ContactsPage = () => {
                 });
               }}
             >
-              <PP>{fr.displayName}</PP>
+              <PP>{fr.friendNickname || `@${fr.username}`}</PP>
             </div>
           }
           description={
@@ -208,9 +205,9 @@ export const ContactsPage = () => {
 
   const renderContactsList = () => {
     const searchText = "Search Contacts"; // <P>Search Contacts</P>;
-    const handleFilter = (fr: Contact) => {
+    const handleFilter = (fr: Friendship_Firestore) => {
       return (
-        fr.displayName.toLowerCase().includes(searchString.toLowerCase()) ||
+        fr.friendNickname.toLowerCase().includes(searchString.toLowerCase()) ||
         fr.username?.toLowerCase().includes(searchString.toLowerCase()) ||
         fr.friendID?.toLowerCase().includes(searchString.toLowerCase())
       );
@@ -219,7 +216,7 @@ export const ContactsPage = () => {
       {
         key: ValidTabs.Friends,
         label: `${
-          contacts.filter((fr) => fr.status === FriendshipStatus.Accepted)
+          friendships.filter((fr) => fr.status === FriendshipStatus.ACCEPTED)
             .length
         } Friends`,
         children: (
@@ -234,8 +231,8 @@ export const ContactsPage = () => {
             <List
               className="contacts-list"
               itemLayout="horizontal"
-              dataSource={contacts
-                .filter((fr) => fr.status === FriendshipStatus.Accepted)
+              dataSource={friendships
+                .filter((fr) => fr.status === FriendshipStatus.ACCEPTED)
                 .filter(handleFilter)}
               renderItem={(item) => {
                 return renderRow(item, [
@@ -303,8 +300,8 @@ export const ContactsPage = () => {
             <span style={{ marginRight: "5px" }}>Requests</span>
             <Badge
               count={
-                contacts.filter(
-                  (fr) => fr.status === FriendshipStatus.GotRequest
+                friendships.filter(
+                  (fr) => fr.status === FriendshipStatus.GOT_REQUEST
                 ).length
               }
             />
@@ -322,13 +319,13 @@ export const ContactsPage = () => {
             <List
               className="contacts-requests-list"
               itemLayout="horizontal"
-              dataSource={contacts
-                .filter((fr) => fr.status !== FriendshipStatus.Accepted)
+              dataSource={friendships
+                .filter((fr) => fr.status !== FriendshipStatus.ACCEPTED)
                 .filter(handleFilter)
                 .sort(
                   (a, b) =>
-                    sortStatusPriority[a.status || FriendshipStatus.None] -
-                    sortStatusPriority[b.status || FriendshipStatus.None]
+                    sortStatusPriority[a.status || FriendshipStatus.NONE] -
+                    sortStatusPriority[b.status || FriendshipStatus.NONE]
                 )}
               renderItem={(item) => {
                 const renderActions = () => {
@@ -372,7 +369,7 @@ export const ContactsPage = () => {
                       </Button>,
                     ];
                   }
-                  if (item.status === FriendshipStatus.Declined) {
+                  if (item.status === FriendshipStatus.DECLINED) {
                     return [
                       <Dropdown.Button
                         onClick={() => addFriend(item.friendID)}
@@ -410,7 +407,7 @@ export const ContactsPage = () => {
                       </Dropdown.Button>,
                     ];
                   }
-                  if (item.status === FriendshipStatus.Blocked) {
+                  if (item.status === FriendshipStatus.BLOCKED) {
                     return [
                       <Button
                         loading={loadingManageFriendships.includes(
@@ -423,7 +420,7 @@ export const ContactsPage = () => {
                       </Button>,
                     ];
                   }
-                  if (item.status === FriendshipStatus.SentRequest) {
+                  if (item.status === FriendshipStatus.SENT_REQUEST) {
                     return [
                       <Dropdown.Button
                         onClick={() => addFriend(item.friendID)}
@@ -475,7 +472,7 @@ export const ContactsPage = () => {
                       </Dropdown.Button>,
                     ];
                   }
-                  if (item.status === FriendshipStatus.GotRequest) {
+                  if (item.status === FriendshipStatus.GOT_REQUEST) {
                     if (isMobile) {
                       return [
                         <Dropdown.Button
@@ -645,34 +642,10 @@ export const ContactsPage = () => {
     );
   };
 
-  const renderGlobalDirectory = () => {
-    return (
-      <List
-        className="global-dir"
-        itemLayout="horizontal"
-        dataSource={globalDirectory.filter(
-          (fr) => user && fr.friendID !== user.id
-        )}
-        renderItem={(item) => {
-          return renderRow(item, [
-            <Button
-              loading={loadingManageFriendships.includes(item.friendID)}
-              onClick={() => addFriend(item.friendID)}
-              type="link"
-            >
-              <PP>Add Friend</PP>
-            </Button>,
-          ]);
-        }}
-        style={{ width: "100%" }}
-      />
-    );
-  };
-
   return (
     <>
       <LayoutInteriorHeader
-        title={<PP>{showGlobalDirectory ? "Global Directory" : "Contacts"}</PP>}
+        title={<PP>{"Contacts"}</PP>}
         rightAction={
           <Button
             onClick={() => setShowAddContactModal(true)}
@@ -684,20 +657,7 @@ export const ContactsPage = () => {
         }
       />
       <AppLayoutPadding align="center">
-        <>
-          {showGlobalDirectory ? renderGlobalDirectory() : renderContactsList()}
-          <Spacer />
-          <Space direction="horizontal">
-            <Switch
-              checkedChildren={<PP>Global</PP>}
-              unCheckedChildren={<PP>Contacts</PP>}
-              checked={showGlobalDirectory}
-              onChange={(bool) => {
-                setShowGlobalDirectory(bool);
-              }}
-            />
-          </Space>
-        </>
+        <>{renderContactsList()}</>
       </AppLayoutPadding>
       <Modal
         open={targetOfDecline ? true : false}
@@ -714,7 +674,7 @@ export const ContactsPage = () => {
               {!isMobile && (
                 <Button
                   loading={loadingManageFriendships.includes(
-                    targetOfDecline?.friendID
+                    targetOfDecline?.friendID || ("" as UserID)
                   )}
                   onClick={() => {
                     setTargetOfBlock(targetOfDecline);
@@ -776,10 +736,13 @@ export const ContactsPage = () => {
             }}
           >
             <PP>
-              <b>{targetOfDecline?.displayName}</b>
+              <b>
+                {targetOfDecline?.friendNickname ||
+                  `@${targetOfDecline?.username}`}
+              </b>
             </PP>
             <PP>
-              <i>{subtitle(targetOfDecline?.status)}</i>
+              <i>{targetOfDecline && subtitle(targetOfDecline.status)}</i>
             </PP>
           </$Vertical>
         </$Horizontal>
@@ -857,10 +820,13 @@ export const ContactsPage = () => {
             }}
           >
             <PP>
-              <b>{targetOfRemoval?.displayName}</b>
+              <b>
+                {targetOfRemoval?.friendNickname ||
+                  `@${targetOfRemoval?.username}`}
+              </b>
             </PP>
             <PP>
-              <i>{subtitle(targetOfRemoval?.status)}</i>
+              <i>{targetOfRemoval && subtitle(targetOfRemoval.status)}</i>
             </PP>
           </$Vertical>
         </$Horizontal>
@@ -938,10 +904,12 @@ export const ContactsPage = () => {
             }}
           >
             <PP>
-              <b>{targetOfBlock?.displayName}</b>
+              <b>
+                {targetOfBlock?.friendNickname || `@${targetOfBlock?.username}`}
+              </b>
             </PP>
             <PP>
-              <i>{subtitle(targetOfBlock?.status)}</i>
+              <i>{targetOfBlock && subtitle(targetOfBlock.status)}</i>
             </PP>
           </$Vertical>
         </$Horizontal>
@@ -1019,10 +987,13 @@ export const ContactsPage = () => {
             }}
           >
             <PP>
-              <b>{targetOfUnblock?.displayName}</b>
+              <b>
+                {targetOfUnblock?.friendNickname ||
+                  `@${targetOfUnblock?.username}`}
+              </b>
             </PP>
             <PP>
-              <i>{subtitle(targetOfUnblock?.status)}</i>
+              <i>{targetOfUnblock && subtitle(targetOfUnblock.status)}</i>
             </PP>
           </$Vertical>
         </$Horizontal>
@@ -1100,10 +1071,13 @@ export const ContactsPage = () => {
             }}
           >
             <PP>
-              <b>{targetOfCancel?.displayName}</b>
+              <b>
+                {targetOfCancel?.friendNickname ||
+                  `@${targetOfCancel?.username}`}
+              </b>
             </PP>
             <PP>
-              <i>{subtitle(targetOfCancel?.status)}</i>
+              <i>{targetOfCancel && subtitle(targetOfCancel.status)}</i>
             </PP>
           </$Vertical>
         </$Horizontal>

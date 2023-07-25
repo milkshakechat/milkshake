@@ -79,7 +79,7 @@ const ChatPage = () => {
     }),
     shallow
   );
-  const contacts = useUserState((state) => state.contacts);
+  const friendships = useUserState((state) => state.friendships);
 
   const friend = matchContactToChatroom({
     userID: selfUser?.id,
@@ -87,7 +87,7 @@ const ChatPage = () => {
       (enterChatRoomData?.chatRoom.chatRoomID as ChatRoomID) ||
       ("" as ChatRoomID),
     chatRooms: chatRooms,
-    contacts,
+    friendships,
   });
   const { token } = theme.useToken();
 

@@ -46,7 +46,7 @@ const ConversationsPage = () => {
     }),
     shallow
   );
-  const contacts = useUserState((state) => state.contacts);
+  const friendships = useUserState((state) => state.friendships);
 
   return (
     <div>

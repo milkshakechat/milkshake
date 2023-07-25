@@ -21,7 +21,7 @@ export const useSendBirdConnection = () => {
       ? (sendBirdService?.sendbird as any)._storeInitialized
       : false;
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User>();
 
   const selfUser = useUserState((state) => state.user);
@@ -33,10 +33,19 @@ export const useSendBirdConnection = () => {
   const sendbirdRef = useRef<SendbirdGroupChat>();
 
   useEffect(() => {
+    console.log(`Init this baby`);
     // Only proceed if sendBirdService is defined
+    console.log(`sendBirdService`, sendBirdService);
+    console.log(`
+    userId: ${userId}
+    accessToken: ${accessToken}
+    isSendBirdInitialized: ${isSendBirdInitialized}
+    
+    `);
     if (sendBirdService && userId && accessToken && isSendBirdInitialized) {
       sendbirdRef.current = sendBirdService.sendbird;
       const connect = async () => {
+        console.log(`>>>>>>>> connecting...`);
         try {
           console.log(`Attempting connect...`);
           const user = await sendBirdService.connect(userId, accessToken);

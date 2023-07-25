@@ -105,7 +105,6 @@ export const useFetchSwipeFeed = () => {
               variables: { input: args },
             })
             .then(({ data }) => {
-              console.log(`FETCH SWIPE FEED`, data);
               if (
                 data.fetchSwipeFeed.__typename ===
                 "FetchSwipeFeedResponseSuccess"

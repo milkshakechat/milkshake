@@ -935,11 +935,6 @@ export enum WishlistVisibility {
   PublicMarketplace = 'PUBLIC_MARKETPLACE'
 }
 
-export type ListChatRoomsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type ListChatRoomsQuery = { __typename?: 'Query', listChatRooms: { __typename: 'ListChatRoomsResponseSuccess', chatRooms: Array<{ __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
-
 export type EnterChatRoomQueryQueryVariables = Exact<{
   input: EnterChatRoomInput;
 }>;

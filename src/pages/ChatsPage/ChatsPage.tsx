@@ -15,7 +15,6 @@ import {
 } from "react-router-dom";
 import { useUserState } from "@/state/user.state";
 import { useWindowSize } from "@/api/utils/screen";
-import { useListChatRooms } from "@/hooks/useChat";
 import { useChatsListState } from "@/state/chats.state";
 import shallow from "zustand/shallow";
 import { useStoriesState } from "@/state/stories.state";
@@ -46,6 +45,7 @@ const ConversationsPage = () => {
     }),
     shallow
   );
+  console.log(`chatsList`, chatsList);
   const friendships = useUserState((state) => state.friendships);
 
   return (

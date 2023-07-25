@@ -31,7 +31,7 @@ import {
   UserID,
   localeEnum,
 } from "@milkshakechat/helpers";
-import { useListChatRooms } from "./useChat";
+
 import { useNotificationsState } from "@/state/notifications.state";
 import { usePreloadImages } from "./usePreloadImages";
 import {

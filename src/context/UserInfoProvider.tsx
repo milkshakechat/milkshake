@@ -1,4 +1,4 @@
-import { useListChatRooms } from "@/hooks/useChat";
+import { useRealtimeChatRooms } from "@/hooks/useChat";
 import {
   useFetchRecentNotifications,
   useListFriendships,
@@ -32,6 +32,7 @@ export const UserInfoProvider = ({ children }: Props) => {
   const realtimeNotifs = useNotifications();
   const realtimeWallets = useWallets();
   const realtimeFriendships = useListFriendships();
+  const realtimeChatRooms = useRealtimeChatRooms();
 
   // const { runQuery: runFetchRecentNotificationsQuery } =
   //   useFetchRecentNotifications();
@@ -75,9 +76,7 @@ export const UserInfoProvider = ({ children }: Props) => {
 
   // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
   const initialStartupQueries = ({ refresh }: { refresh: boolean }) => {
-    console.log(`initialStartupQueries...`);
     const run = () => {
-      console.log(`Running...`);
       if (selfUser) {
         runFetchStoryFeedQuery({
           refresh,

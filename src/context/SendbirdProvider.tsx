@@ -43,16 +43,8 @@ export const SendBirdServiceProvider = ({
   const { token } = theme.useToken();
   const { sendbird, loading } = useSendBirdConnection();
 
-  console.log(`sendBirdService`, sendBirdService);
-  console.log(`selfUser`, selfUser);
-  console.log(`loading`, loading);
-
   if (!sendBirdService || !selfUser || loading) {
-    return <div>Loading SendBird...</div>; // You can replace this with a proper loading indicator
-  }
-
-  if (!selfUser) {
-    return <div>{children}</div>;
+    return <div>{children}</div>; // You can replace this with a proper loading indicator
   }
 
   // console.log(`------ From context sendBirdService: `, sendBirdService);
@@ -179,7 +171,7 @@ const SendBirdObservers = ({ children }: { children: React.ReactNode }) => {
     if (!sdkInstance || !sdkInstanceReadyForChannelObservation) {
       return;
     }
-    console.log(`---- listenToChat ---- ${sendBirdChannelURL}`);
+
     const ch = await getGroupChannel(sendBirdChannelURL);
     updateSendBirdMetadata({
       sendBirdChannelURL: ch.url,

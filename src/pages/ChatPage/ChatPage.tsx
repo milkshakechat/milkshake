@@ -238,11 +238,10 @@ const ChatPage = () => {
         />
       ) : (
         // <ChatFrame />
-        // <div>
-        //   This is a free tier chat, no direct messaging. Show notifications here
-        //   instead.
-        // </div>
-        <LoadingAnimation width="100vw" height="100vh" type="cookie" />
+        <div>
+          This is a free tier chat, no direct messaging. Show notifications here
+          instead.
+        </div>
       )}
 
       <Modal
@@ -263,7 +262,7 @@ const ChatPage = () => {
         <$Vertical style={{ padding: "20px", gap: "10px" }}>
           <$Vertical style={{ justifyContent: "center", alignItems: "center" }}>
             {isMuteLoading ? (
-              <LoadingAnimation width="100vw" height="100vh" type="cookie" />
+              <LoadingAnimation width="100%" height="100%" type="cookie" />
             ) : (
               <BellOutlined style={{ fontSize: "1.5rem" }} />
             )}

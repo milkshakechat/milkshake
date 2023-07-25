@@ -47,10 +47,14 @@ const NotificationsPage = () => {
               description=""
               onConfirm={async () => {
                 setLoadingNotifs(
-                  notifications.map((n) => n.id as NotificationID)
+                  notifications
+                    .filter((n) => !n.markedRead)
+                    .map((n) => n.id as NotificationID)
                 );
                 await runMarkNotificationsAsReadMutation({
-                  read: notifications.map((n) => n.id),
+                  read: notifications
+                    .filter((n) => !n.markedRead)
+                    .map((n) => n.id),
                   unread: [],
                 });
                 setLoadingNotifs([]);

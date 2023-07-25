@@ -222,7 +222,7 @@ const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
     "privacyModeEnum_helpTip.hidden.___shared": "Hidden profiles cannot be found by username. You must add friends to receive messages, or use a special private invite link.",
     "title.___TemplateComponent": "TemplateComponent (English™️)",
     "new_story_sidebar.___AppLayout": "New Story",
-    "messages_sidebar.___AppLayout": "Messages",
+    "messages_sidebar.___AppLayout": "Chats",
     "notifications_sidebar.___AppLayout": "Notifications",
     "account_sidebar.___AppLayout": "Account",
     "profile_sidebar.___AppLayout": "Profile",

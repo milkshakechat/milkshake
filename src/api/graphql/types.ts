@@ -264,6 +264,20 @@ export type GetWishResponseSuccess = {
   wish: Wish;
 };
 
+export type InteractStoryInput = {
+  storyID: Scalars['ID']['input'];
+  swipeDislike?: InputMaybe<Scalars['String']['input']>;
+  swipeLike?: InputMaybe<Scalars['String']['input']>;
+  viewed?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type InteractStoryResponse = InteractStoryResponseSuccess | ResponseError;
+
+export type InteractStoryResponseSuccess = {
+  __typename?: 'InteractStoryResponseSuccess';
+  status: Scalars['String']['output'];
+};
+
 export enum LanguageEnum {
   Arabic = 'arabic',
   Chinese = 'chinese',
@@ -401,6 +415,7 @@ export type Mutation = {
   createStory: CreateStoryResponse;
   createWish: CreateWishResponse;
   demoMutation: DemoMutationResponse;
+  interactStory: InteractStoryResponse;
   manageFriendship: ManageFriendshipResponse;
   markNotificationsAsRead: MarkNotificationsAsReadResponse;
   modifyProfile: ModifyProfileResponse;
@@ -440,6 +455,11 @@ export type MutationCreateWishArgs = {
 
 export type MutationDemoMutationArgs = {
   input: DemoMutationInput;
+};
+
+
+export type MutationInteractStoryArgs = {
+  input: InteractStoryInput;
 };
 
 
@@ -1053,6 +1073,13 @@ export type FetchSwipeFeedQueryVariables = Exact<{
 
 
 export type FetchSwipeFeedQuery = { __typename?: 'Query', fetchSwipeFeed: { __typename: 'FetchSwipeFeedResponseSuccess', swipeStack: Array<{ __typename?: 'SwipeStory', story: { __typename?: 'Story', id: string, userID: any, caption?: string | null, pinned?: boolean | null, thumbnail: string, showcaseThumbnail?: string | null, outboundLink?: string | null, createdAt?: any | null, expiresAt?: any | null, linkedWishID?: string | null, attachments: Array<{ __typename?: 'StoryAttachment', id: string, thumbnail?: string | null, stream?: string | null, altText?: string | null, url: string, type: StoryAttachmentType }>, author: { __typename?: 'StoryAuthor', id: any, username: string, avatar: string, displayName: string } }, wish?: { __typename?: 'Wish', id: string, creatorID: string, wishTitle: string, stickerTitle: string, description: string, thumbnail: string, cookiePrice: number, visibility: WishlistVisibility, isFavorite: boolean, buyFrequency: WishBuyFrequency, createdAt: any, wishType: WishTypeEnum, countdownDate?: any | null, externalURL?: string | null, galleryMediaSet: Array<{ __typename?: 'MediaSet', small: string, medium: string, large?: string | null }>, stickerMediaSet: { __typename?: 'MediaSet', small: string, medium: string, large?: string | null }, author?: { __typename?: 'WishAuthor', id: any, username: string, avatar: string, displayName: string } | null } | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type InteractStoryMutationVariables = Exact<{
+  input: InteractStoryInput;
+}>;
+
+
+export type InteractStoryMutation = { __typename?: 'Mutation', interactStory: { __typename: 'InteractStoryResponseSuccess', status: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type DemoQueryQueryVariables = Exact<{
   input: DemoQueryInput;

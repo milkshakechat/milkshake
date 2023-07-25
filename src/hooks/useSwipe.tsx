@@ -5,6 +5,8 @@ import {
   FetchSwipeFeedInput,
   Mutation,
   Query,
+  InteractStoryInput,
+  InteractStoryResponseSuccess,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { GraphQLError } from "graphql";
@@ -130,4 +132,63 @@ export const useFetchSwipeFeed = () => {
   };
 
   return { data, errors, loading, runQuery };
+};
+
+export const useInteractStory = () => {
+  const [data, setData] = useState<InteractStoryResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: InteractStoryInput) => {
+    setLoading(true);
+    try {
+      const INTERACT_STORY = gql`
+        mutation InteractStory($input: InteractStoryInput!) {
+          interactStory(input: $input) {
+            __typename
+            ... on InteractStoryResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<InteractStoryResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "interactStory">>({
+              mutation: INTERACT_STORY,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.interactStory.__typename ===
+                "InteractStoryResponseSuccess"
+              ) {
+                resolve(data.interactStory);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
 };

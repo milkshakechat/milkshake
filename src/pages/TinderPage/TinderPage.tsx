@@ -58,6 +58,7 @@ import PP from "@/i18n/PlaceholderPrint";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import { WishlistSortByEnum } from "@/components/WishlistGallery/WishlistGallery";
 import {
+  InteractStoryInput,
   StoryAuthor,
   SwipeStory,
   Wish,
@@ -73,7 +74,9 @@ import "./TinderPage.css";
 import { useSwipeState } from "@/state/swipe.state";
 import { StoryAttachmentType } from "../../api/graphql/types";
 import dayjs from "dayjs";
+import { useInteractStory } from "@/hooks/useSwipe";
 
+type SwipeDirection = "left" | "right";
 export const TinderPage = () => {
   const intl = useIntl();
   const navigate = useNavigate();
@@ -108,6 +111,8 @@ export const TinderPage = () => {
       setLocalSwipeStack(swipeStack);
     }
   }, [swipeStack]);
+
+  const { runMutation: runInteractStoryMutation } = useInteractStory();
 
   const [api, contextHolder] = notification.useNotification();
 
@@ -153,10 +158,24 @@ export const TinderPage = () => {
   const canSwipe = currentIndex >= 0;
 
   // set last direction and decrease current index
-  const swiped = (direction: string, index: number, storyID: StoryID) => {
+  const swiped = (
+    direction: SwipeDirection,
+    index: number,
+    storyID: StoryID
+  ) => {
     setLastDirection(direction);
     updateCurrentIndex(index - 1);
     swipedStory(storyID);
+    const interaction: InteractStoryInput = {
+      storyID,
+      viewed: new Date().getTime().toString(),
+    };
+    if (direction === "left") {
+      interaction.swipeDislike = new Date().getTime().toString();
+    } else if (direction === "right") {
+      interaction.swipeLike = new Date().getTime().toString();
+    }
+    runInteractStoryMutation(interaction);
   };
 
   const outOfFrame = (swipeStory: SwipeStory, idx: number) => {
@@ -286,7 +305,11 @@ export const TinderPage = () => {
               ref={childRefs[index]}
               key={swipeStory.story.id}
               onSwipe={(dir) =>
-                swiped(dir, index, swipeStory.story.id as StoryID)
+                swiped(
+                  dir as SwipeDirection,
+                  index,
+                  swipeStory.story.id as StoryID
+                )
               }
               onCardLeftScreen={() => outOfFrame(swipeStory, index)}
               style={{

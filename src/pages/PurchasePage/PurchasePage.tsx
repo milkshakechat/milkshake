@@ -6,6 +6,7 @@ import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import { useUserState } from "@/state/user.state";
 import {
   PurchaseMainfestID,
+  TransactionType,
   Username,
   WishBuyFrequency,
 } from "@milkshakechat/helpers";
@@ -130,27 +131,46 @@ const PurchasePage = () => {
                     {`${purchaseManifest.note}`}
                     <br />
                     <br />
-                    <i
-                      style={{ fontSize: "1rem" }}
-                    >{`Now send them a message!`}</i>
+                    {purchaseManifest.transactionType ===
+                      TransactionType.TOP_UP && (
+                      <i
+                        style={{ fontSize: "1rem" }}
+                      >{`Now go swipe some stories!`}</i>
+                    )}
+                    {purchaseManifest.transactionType ===
+                      TransactionType.DEAL && (
+                      <i
+                        style={{ fontSize: "1rem" }}
+                      >{`Now send them a message!`}</i>
+                    )}
                   </$Vertical>
                 }
-                extra={[
-                  <NavLink
-                    key={"send-msg"}
-                    to={`/user?userID=${purchaseManifest.sellerUserID}`}
-                  >
-                    <Button type="primary" key="console">
-                      Send Message
-                    </Button>
-                  </NavLink>,
-                  <Button
-                    onClick={() => setIsSuccessMode(false)}
-                    key="view-reciept"
-                  >
-                    View Reciept
-                  </Button>,
-                ]}
+                extra={
+                  purchaseManifest.transactionType === TransactionType.DEAL
+                    ? [
+                        <NavLink
+                          key={"send-msg"}
+                          to={`/user?userID=${purchaseManifest.sellerUserID}`}
+                        >
+                          <Button type="primary" key="console">
+                            Send Message
+                          </Button>
+                        </NavLink>,
+                        <Button
+                          onClick={() => setIsSuccessMode(false)}
+                          key="view-reciept"
+                        >
+                          View Reciept
+                        </Button>,
+                      ]
+                    : [
+                        <NavLink key={"go-swipe"} to={`/app/swipe`}>
+                          <Button type="primary" key="console">
+                            Swipe Stories
+                          </Button>
+                        </NavLink>,
+                      ]
+                }
               />
             ) : (
               <Result

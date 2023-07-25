@@ -278,7 +278,7 @@ export const StickyAdaptiveMobileFooter = ({
     {
       key: "dating",
       text: <PP>Dating</PP>,
-      route: "/app/activities",
+      route: "/app/swipe",
       icon: <FireOutlined style={{ fontSize: "1rem" }} />,
     },
     {

@@ -138,9 +138,9 @@ const AppLayout = ({ children }: AppLayoutProps) => {
 
   const items = [
     getItem(
-      <NavLink to="/app/activities">{<PP>Dating</PP>}</NavLink>,
+      <NavLink to="/app/swipe">{<PP>Dating</PP>}</NavLink>,
       "date",
-      "/app/activities",
+      "/app/swipe",
       <FireOutlined style={{ fontSize: "1rem" }} />
     ),
     getItem(

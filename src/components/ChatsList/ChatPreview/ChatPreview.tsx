@@ -14,7 +14,7 @@ export interface ChatPreviewProps {
 }
 
 const ChatPreview = ({ preview }: ChatPreviewProps) => {
-  const { title, previewText, thumbnail } = preview;
+  const { title, aliasTitle, previewText, thumbnail } = preview;
   const intl = useIntl();
   const navigate = useNavigate();
   const user = useUserState((state) => state.user);
@@ -23,7 +23,7 @@ const ChatPreview = ({ preview }: ChatPreviewProps) => {
     <List.Item
       onClick={() => {
         navigate({
-          pathname: "/app/chat",
+          pathname: "/app/chats/chat",
           search: createSearchParams({
             chat: preview.chatRoomID,
           }).toString(),
@@ -58,7 +58,7 @@ const ChatPreview = ({ preview }: ChatPreviewProps) => {
             style={{ backgroundColor: token.colorPrimaryBg }}
           />
         }
-        title={title}
+        title={title || aliasTitle}
         description={previewText}
       />
 

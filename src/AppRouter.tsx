@@ -130,7 +130,7 @@ const AppRouter = () => {
                           <AuthProtect>
                             <div>
                               {/* <HomePage /> */}
-                              <Navigate to="/app/chats" replace />
+                              <Navigate to="/app/swipe" replace />
                             </div>
                           </AuthProtect>
                         }
@@ -169,7 +169,7 @@ const AppRouter = () => {
                       <Routes>
                         <Route path="/app" errorElement={<Page404 />}>
                           <Route
-                            path="chats"
+                            path="chats/*"
                             element={
                               <AuthProtect>
                                 <AppLayout>
@@ -211,16 +211,6 @@ const AppRouter = () => {
                             }
                           />
 
-                          <Route
-                            path="chat"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <ChatPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
                           <Route
                             path="story/:storyID"
                             element={

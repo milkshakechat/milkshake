@@ -220,7 +220,7 @@ export const StickyAdaptiveMobileFooter = ({
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const showMobileFooter =
-    reactRouterLocation.pathname !== "/app/chat" &&
+    reactRouterLocation.pathname !== "/app/chats/chat" &&
     reactRouterLocation.pathname !== "/app/premium" &&
     reactRouterLocation.pathname !== "/app/story/new" &&
     reactRouterLocation.pathname !== `/app/story/${storyIDFromURL}` &&

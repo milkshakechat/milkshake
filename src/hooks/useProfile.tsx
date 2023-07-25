@@ -43,6 +43,7 @@ import {
   where,
 } from "firebase/firestore";
 import { firestore } from "@/api/firebase";
+import { useChatsListState } from "@/state/chats.state";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
@@ -418,7 +419,6 @@ export const useListFriendships = () => {
     onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
         const fr = doc.data() as Friendship_Firestore;
-        console.log(`fr --> `, fr);
         setFriendships(fr);
         preloadImages([fr.avatar]);
       });

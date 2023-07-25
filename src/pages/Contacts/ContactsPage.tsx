@@ -22,16 +22,17 @@ import {
   List,
   Modal,
   QRCode,
-  Skeleton,
+  Checkbox,
   Space,
   Spin,
   Switch,
   Tabs,
   message,
   theme,
+  Affix,
 } from "antd";
 import { useEffect, useState } from "react";
-import { UserOutlined, ScanOutlined } from "@ant-design/icons";
+import { UserOutlined, ScanOutlined, SearchOutlined } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
 import {
   QRCODE_LOGO,
@@ -49,6 +50,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { ScreenSize, useWindowSize } from "@/api/utils/screen";
+import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 
 const subtitle = (status: FriendshipStatus) => {
   switch (status) {
@@ -95,7 +97,10 @@ export const ContactsPage = () => {
   const user = useUserState((state) => state.user);
 
   const { runMutation: runManageFriendship } = useManageFriendship();
-
+  const [groupChatMode, setGroupChatMode] = useState(false);
+  const [selectedParticipants, setSelectedParticipants] = useState<UserID[]>(
+    []
+  );
   const { token } = theme.useToken();
   const [searchString, setSearchString] = useState("");
   const [optimisticAccepted, setOptimisticAccepted] = useState<UserID[]>([]);
@@ -136,6 +141,9 @@ export const ContactsPage = () => {
     return (
       <List.Item
         actions={actions.map((act) => {
+          if (groupChatMode) {
+            return null;
+          }
           return <div onClick={(e) => e.preventDefault()}>{act}</div>;
         })}
         style={{
@@ -146,33 +154,80 @@ export const ContactsPage = () => {
       >
         <List.Item.Meta
           avatar={
-            <div
+            <$Horizontal
+              alignItems="center"
+              justifyContent="flex-start"
+              spacing={2}
               onClick={() => {
-                navigate({
-                  pathname: "/user",
-                  search: createSearchParams({
-                    userID: fr.friendID,
-                  }).toString(),
-                });
+                if (!groupChatMode) {
+                  navigate({
+                    pathname: "/user",
+                    search: createSearchParams({
+                      userID: fr.friendID,
+                    }).toString(),
+                  });
+                } else {
+                  if (selectedParticipants.includes(fr.friendID)) {
+                    setSelectedParticipants((prev) =>
+                      prev.filter((id) => id !== fr.friendID)
+                    );
+                  } else {
+                    setSelectedParticipants((prev) => [...prev, fr.friendID]);
+                  }
+                }
               }}
             >
+              {groupChatMode && (
+                <Checkbox
+                  onChange={(v) => {
+                    const c = v.target.checked;
+                    if (c) {
+                      setSelectedParticipants((prev) => [...prev, fr.friendID]);
+                    } else {
+                      setSelectedParticipants((prev) =>
+                        prev.filter((id) => id !== fr.friendID)
+                      );
+                    }
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  checked={selectedParticipants.includes(fr.friendID)}
+                  style={{
+                    transform: "scale(2)",
+                    marginLeft: "10px",
+                    marginRight: "20px",
+                  }}
+                />
+              )}
               <Avatar
                 style={{ backgroundColor: token.colorPrimaryText }}
                 icon={<UserOutlined />}
                 src={fr.avatar}
                 size="large"
               />
-            </div>
+            </$Horizontal>
           }
           title={
             <div
               onClick={() => {
-                navigate({
-                  pathname: "/user",
-                  search: createSearchParams({
-                    userID: fr.friendID,
-                  }).toString(),
-                });
+                if (!groupChatMode) {
+                  navigate({
+                    pathname: "/user",
+                    search: createSearchParams({
+                      userID: fr.friendID,
+                    }).toString(),
+                  });
+                } else {
+                  if (selectedParticipants.includes(fr.friendID)) {
+                    setSelectedParticipants((prev) =>
+                      prev.filter((id) => id !== fr.friendID)
+                    );
+                  } else {
+                    setSelectedParticipants((prev) => [...prev, fr.friendID]);
+                  }
+                }
               }}
             >
               <PP>{fr.friendNickname || `@${fr.username}`}</PP>
@@ -198,10 +253,14 @@ export const ContactsPage = () => {
     }).toString();
 
     navigate({
-      pathname: "/app/chat",
+      pathname: "/app/chats/chat",
       search: searchString,
     });
   };
+
+  if (!user) {
+    return <LoadingAnimation width="100%" height="100%" type="cookie" />;
+  }
 
   const renderContactsList = () => {
     const searchText = "Search Contacts"; // <P>Search Contacts</P>;
@@ -221,12 +280,27 @@ export const ContactsPage = () => {
         } Friends`,
         children: (
           <>
-            <Input.Search
-              placeholder={searchText}
-              allowClear
-              onChange={(e) => setSearchString(e.target.value)}
-              style={{ width: "100%" }}
-            />
+            <$Horizontal spacing={2}>
+              <Input
+                prefix={<SearchOutlined />}
+                placeholder={searchText}
+                allowClear
+                onChange={(e) => setSearchString(e.target.value)}
+                style={{ width: "100%", flex: 1 }}
+              />
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (groupChatMode) {
+                    setSelectedParticipants([]);
+                  }
+                  setGroupChatMode(!groupChatMode);
+                }}
+                ghost
+              >
+                {groupChatMode ? "Cancel" : `Group Chat`}
+              </Button>
+            </$Horizontal>
             <Spacer />
             <List
               className="contacts-list"
@@ -290,6 +364,27 @@ export const ContactsPage = () => {
               }}
               style={{ width: "100%" }}
             />
+            {groupChatMode && (
+              <Affix offsetBottom={20}>
+                <div style={{ backgroundColor: token.colorBgBase }}>
+                  <Button
+                    type="primary"
+                    size="large"
+                    disabled={selectedParticipants.length < 2}
+                    onClick={() => {
+                      goToChatPage([...selectedParticipants, user.id]);
+                    }}
+                    style={{
+                      fontWeight: "bold",
+                      width: "100%",
+                      marginTop: "20px",
+                    }}
+                  >
+                    Start Group Chat
+                  </Button>
+                </div>
+              </Affix>
+            )}
           </>
         ),
       },

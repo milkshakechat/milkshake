@@ -39,6 +39,8 @@ export type ChatRoom = {
   pushConfig?: Maybe<PushConfig>;
   sendBirdChannelURL?: Maybe<Scalars['String']['output']>;
   sendBirdParticipants: Array<Scalars['UserID']['output']>;
+  thumbnail: Scalars['String']['output'];
+  title: Scalars['String']['output'];
 };
 
 export type CheckMerchantStatusInput = {
@@ -940,14 +942,14 @@ export type EnterChatRoomQueryQueryVariables = Exact<{
 }>;
 
 
-export type EnterChatRoomQueryQuery = { __typename?: 'Query', enterChatRoom: { __typename: 'EnterChatRoomResponseSuccess', isNew: boolean, chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type EnterChatRoomQueryQuery = { __typename?: 'Query', enterChatRoom: { __typename: 'EnterChatRoomResponseSuccess', isNew: boolean, chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, title: string, thumbnail: string, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type UpdateChatSettingsMutationVariables = Exact<{
   input: UpdateChatSettingsInput;
 }>;
 
 
-export type UpdateChatSettingsMutation = { __typename?: 'Mutation', updateChatSettings: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpdateChatSettingsResponseSuccess', chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } };
+export type UpdateChatSettingsMutation = { __typename?: 'Mutation', updateChatSettings: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpdateChatSettingsResponseSuccess', chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, title: string, thumbnail: string, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } };
 
 export type SendFriendRequestMutationVariables = Exact<{
   input: SendFriendRequestInput;

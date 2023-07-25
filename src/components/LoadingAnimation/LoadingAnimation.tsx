@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import "./LoadingAnimation.css";
 import LogoText from "../LogoText/LogoText";
+import { theme } from "antd";
 
 const useInterval = (callback: () => void, delay: number) => {
   const savedCallback = React.useRef(callback);
@@ -32,32 +33,34 @@ const LoadingAnimation = ({
   height = "100%",
   type = "cookie",
 }: LoadingAnimationProps) => {
-  const colors = [
-    "#85d0ff",
-    "#7fc9ff",
-    "#79c2ff",
-    "#73bbff",
-    "#6db4ff",
-    "#67adff",
-    "#61a6ff",
-    "#5b9fff",
-    "#5598ff",
-    "#4f91ff",
-    "#499aff",
-    "#4393ff",
-    "#3d8cff",
-    "#3785ff",
-    "#317eff",
-    "#2b77ff",
-  ]; // shades of blue
-  const [color, setColor] = useState(colors[0]);
+  // const colors = [
+  //   "#85d0ff",
+  //   "#7fc9ff",
+  //   "#79c2ff",
+  //   "#73bbff",
+  //   "#6db4ff",
+  //   "#67adff",
+  //   "#61a6ff",
+  //   "#5b9fff",
+  //   "#5598ff",
+  //   "#4f91ff",
+  //   "#499aff",
+  //   "#4393ff",
+  //   "#3d8cff",
+  //   "#3785ff",
+  //   "#317eff",
+  //   "#2b77ff",
+  // ]; // shades of blue
+  // const [color, setColor] = useState(colors[0]);
 
-  // Update color every 2 seconds
-  useInterval(() => {
-    const colorIndex = colors.findIndex((c) => c === color);
-    const nextColorIndex = (colorIndex + 1) % colors.length;
-    setColor(colors[nextColorIndex]);
-  }, 2000);
+  // // Update color every 2 seconds
+  // useInterval(() => {
+  //   const colorIndex = colors.findIndex((c) => c === color);
+  //   const nextColorIndex = (colorIndex + 1) % colors.length;
+  //   setColor(colors[nextColorIndex]);
+  // }, 2000);
+  const { token } = theme.useToken();
+  const color = token.colorPrimary;
 
   return (
     <div

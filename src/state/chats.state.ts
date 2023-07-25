@@ -10,7 +10,7 @@ import {
 import { create } from "zustand";
 
 export interface ChatRoomFE extends ChatRoom {
-  title: string;
+  aliasTitle: string;
   thumbnail: string;
   previewText?: string;
   unreadCount?: number;
@@ -30,10 +30,10 @@ interface ChatListsState {
     friendships: Friendship_Firestore[],
     userID: UserID
   ) => void;
-
-  // updateChatsList: (args: UpdateChannelsListProps) => void;
-  // updateChatInList: (chat: ChatRoom) => void;
-
+  refreshAllChatPreviews: (
+    friendships: Friendship_Firestore[],
+    userID: UserID
+  ) => void;
   updateSendBirdMetadata: (diff: UpdateSendBirdChannelMetadataArgsFE) => void;
 }
 
@@ -48,26 +48,16 @@ export const useChatsListState = create<ChatListsState>()((set) => ({
       return { chatsList: [chatFE, ...chats] };
     });
   },
-  // updateChatsList: (args) =>
-  //   set((state) => {
-  //     const chatsFE = extrapolateChatPreviews(args);
-  //     return { chatsList: chatsFE };
-  //   }),
-  // updateChatInList: (chat) => {
-  //   set((state) => {
-  //     const chats = state.chatsList.map((ch) => {
-  //       if (ch.chatRoomID === chat.chatRoomID) {
-  //         return {
-  //           ...ch,
-  //           ...chat,
-  //         };
-  //       }
-  //       return ch;
-  //     });
-
-  //     return { chatsList: chats };
-  //   });
-  // },
+  refreshAllChatPreviews: (friendships, userID) => {
+    set((state) => {
+      const chatsFE = extrapolateChatPreviews(
+        state.chatsList,
+        friendships,
+        userID
+      );
+      return { chatsList: chatsFE };
+    });
+  },
   updateSendBirdMetadata: (diff) => {
     set((state) => {
       const chats = state.chatsList.map((ch) => {
@@ -93,38 +83,37 @@ export const useChatsListState = create<ChatListsState>()((set) => ({
   },
 }));
 
-interface UpdateChannelsListProps {
-  friendships: Friendship_Firestore[];
-  rooms: (ChatRoom | ChatRoomFE)[];
-  userID: UserID;
-}
+const extrapolateChatPreviews = (
+  rooms: ChatRoomFE[],
+  friendships: Friendship_Firestore[],
+  userID: UserID
+): ChatRoomFE[] => {
+  return rooms.map((chatRoom): ChatRoomFE => {
+    // console.log(`chatRoom`, chatRoom);
+    const participants = chatRoom.participants.filter((id) => id !== userID);
+    const participantContacts = participants
+      .map((participantID) =>
+        friendships.find((fr) => fr.friendID === participantID)
+      )
+      .filter((fr) => fr) as Friendship_Firestore[];
+    // console.log(`participantContacts`, participantContacts);
 
-// const extrapolateChatPreviews = (
-//   args: UpdateChannelsListProps
-// ): ChatRoomFE[] => {
-//   const { friendships, rooms, userID } = args;
+    const aliasTitle =
+      chatRoom.title ||
+      `${participantContacts.map((fr) => fr.username).join(", ")} (${
+        chatRoom.participants.length
+      } people)`;
+    const thumbnail = participantContacts[0]?.avatar || "";
 
-//   return rooms.map((chatRoom): ChatRoomFE => {
-//     const participants = chatRoom.participants.filter((id) => id !== userID);
-//     const participantContacts = participants
-//       .map((participantID) =>
-//         friendships.find((fr) => fr.friendID === participantID)
-//       )
-//       .filter((fr) => fr) as Friendship_Firestore[];
-
-//     const title = participantContacts.map((fr) => fr.username).join(", ");
-//     const thumbnail = participantContacts[0]?.avatar || "";
-
-//     const chatFE: ChatRoomFE = {
-//       lastTimestamp: 0,
-//       ...chatRoom,
-//       title,
-//       previewText: "No preview available", // Update this as needed.
-//       thumbnail,
-//     };
-//     return chatFE;
-//   });
-// };
+    const chatFE: ChatRoomFE = {
+      ...chatRoom,
+      title: chatRoom.title || "",
+      aliasTitle,
+      thumbnail,
+    };
+    return chatFE;
+  });
+};
 
 const extrapolateChatPreview = (
   room: ChatRoom_Firestore,
@@ -134,17 +123,18 @@ const extrapolateChatPreview = (
   const participants = room.firestoreParticipantSearch.filter(
     (id) => id !== userID
   );
-  console.log(`found ${participants.length} participants`);
+
   const participantContacts = participants
     .map((participantID) =>
       friendships.find((fr) => fr.friendID === participantID)
     )
     .filter((fr) => fr) as Friendship_Firestore[];
-  console.log(
-    `found ${participantContacts.length} participant contacts`,
-    participantContacts
-  );
-  const title = participantContacts.map((fr) => fr.username).join(", ");
+  const aliasTitle =
+    room.title ||
+    `${participantContacts.map((fr) => fr.username).join(", ")} (${
+      room.firestoreParticipantSearch.length
+    } people)` ||
+    "";
   const thumbnail = participantContacts[0]?.avatar || "";
 
   const chatFE: ChatRoomFE = {
@@ -160,11 +150,29 @@ const extrapolateChatPreview = (
       return next;
     }, [] as UserID[]),
     lastTimestamp: 0,
-    title,
+    title: room.title || "",
+    aliasTitle,
     previewText: "No preview available", // Update this as needed.
     thumbnail,
   };
   return chatFE;
+};
+
+export const extrapolateChatTitle = (
+  roomParticipants: UserID[],
+  friendships: Friendship_Firestore[],
+  userID: UserID
+) => {
+  const participants = roomParticipants.filter((id) => id !== userID);
+  const participantContacts = participants
+    .map((participantID) =>
+      friendships.find((fr) => fr.friendID === participantID)
+    )
+    .filter((fr) => fr) as Friendship_Firestore[];
+  const title = `${participantContacts.map((fr) => fr.username).join(", ")} (${
+    roomParticipants.length
+  } people)`;
+  return title;
 };
 
 interface MatchContactToChatroomProps {
@@ -217,6 +225,8 @@ export const convertChatRoomFirestoreToGQL = (room: ChatRoom_Firestore) => {
     participants: room.firestoreParticipantSearch as any[],
     sendBirdChannelURL: room.sendBirdChannelURL,
     sendBirdParticipants: [],
+    title: room.title || "",
+    thumbnail: room.thumbnail || "",
   };
   return cv;
 };

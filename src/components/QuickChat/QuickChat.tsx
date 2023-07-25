@@ -122,7 +122,7 @@ export const QuickChat = ({
     );
     if (!chatRoom) return null;
     return (
-      <NavLink to={`/app/chat?chat=${chatRoom.chatRoomID}`}>
+      <NavLink to={`/app/chats/chat?chat=${chatRoom.chatRoomID}`}>
         <Button>View Chat</Button>
       </NavLink>
     );

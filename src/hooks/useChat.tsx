@@ -112,10 +112,9 @@ import {
 export const useRealtimeChatRooms = () => {
   const selfUser = useUserState((state) => state.user);
   const friendships = useUserState((state) => state.friendships);
-  const { upsertChat, existingChatsList } = useChatsListState(
+  const { upsertChat } = useChatsListState(
     (state) => ({
       upsertChat: state.upsertChat,
-      existingChatsList: state.chatsList,
     }),
     shallow
   );
@@ -138,6 +137,7 @@ export const useRealtimeChatRooms = () => {
         const room = doc.data() as ChatRoom_Firestore;
         console.log(`room`, room);
         // const chatroom = convertChatRoomFirestoreToGQL(room);
+        console.log(`upserting when ${friendships.length} friendships.length`);
         upsertChat(room, friendships, (selfUser?.id || "") as UserID);
       });
     });
@@ -166,6 +166,8 @@ export const useEnterChatRoom = () => {
                 participants
                 sendBirdParticipants
                 sendBirdChannelURL
+                title
+                thumbnail
                 pushConfig {
                   snoozeUntil
                   allowPush
@@ -239,6 +241,8 @@ export const useUpdateChatSettings = () => {
                 participants
                 sendBirdParticipants
                 sendBirdChannelURL
+                title
+                thumbnail
                 pushConfig {
                   snoozeUntil
                   allowPush

@@ -25,7 +25,7 @@ import {
 } from "antd";
 import { Story, StoryAttachmentType } from "@/api/graphql/types";
 import { useGetStory } from "@/hooks/useStory";
-import { StoryID, UserID } from "@milkshakechat/helpers";
+import { StoryID, UserID, Username } from "@milkshakechat/helpers";
 import {
   HomeOutlined,
   LeftOutlined,
@@ -562,27 +562,34 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   />
                 )}
 
-                <MessageFilled
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setChatDrawerOpen(true);
-                  }}
-                  style={{
-                    color: token.colorWhite,
-                    fontSize: "2rem",
-                  }}
-                />
-                <GiftFilled
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  style={{
-                    color: token.colorWhite,
-                    fontSize: "2rem",
-                  }}
-                />
+                {selfUser && spotlightStory.author.id !== selfUser.id && (
+                  <MessageFilled
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setChatDrawerOpen(true);
+                    }}
+                    style={{
+                      color: token.colorWhite,
+                      fontSize: "2rem",
+                    }}
+                  />
+                )}
+                {spotlightStory.linkedWishID && (
+                  <GiftFilled
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      navigate({
+                        pathname: `/app/wish/${spotlightStory.linkedWishID}`,
+                      });
+                    }}
+                    style={{
+                      color: token.colorWhite,
+                      fontSize: "2rem",
+                    }}
+                  />
+                )}
                 <ShareAltOutlined
                   onClick={(e) => {
                     e.preventDefault();
@@ -596,17 +603,19 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                     fontSize: "2rem",
                   }}
                 />
-                <SoundFilled
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleMuteVideo();
-                  }}
-                  style={{
-                    color: token.colorWhite,
-                    fontSize: "2rem",
-                  }}
-                />
+                {primaryAttachment.type === StoryAttachmentType.Video && (
+                  <SoundFilled
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleMuteVideo();
+                    }}
+                    style={{
+                      color: token.colorWhite,
+                      fontSize: "2rem",
+                    }}
+                  />
+                )}
               </$Vertical>
 
               {authorStories.length > 1 && (
@@ -764,10 +773,10 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
           user={
             spotlightStory.author
               ? {
-                  id: spotlightStory.author.id,
-                  avatar: spotlightStory.author.avatar,
-                  username: spotlightStory.author.username,
-                  displayName: spotlightStory.author.displayName,
+                  id: spotlightStory.author.id as UserID,
+                  avatar: spotlightStory.author.avatar || "",
+                  username: spotlightStory.author.username as Username,
+                  displayName: spotlightStory.author.displayName || "",
                 }
               : null
           }

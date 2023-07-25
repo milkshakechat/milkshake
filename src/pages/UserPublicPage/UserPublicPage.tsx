@@ -165,7 +165,10 @@ export const UserPublicPage = () => {
                 />
                 {privacyTag()}
                 {spotlightUser.stories.length > 0 ? (
-                  <TimelineGallery stories={spotlightUser.stories} />
+                  <TimelineGallery
+                    stories={spotlightUser.stories}
+                    userID={spotlightUser.id}
+                  />
                 ) : (
                   <div style={{ padding: "30px 0px" }}>
                     <Result

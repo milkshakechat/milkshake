@@ -46,6 +46,7 @@ export const useStoryCreate = () => {
                 outboundLink
                 createdAt
                 expiresAt
+                linkedWishID
                 attachments {
                   id
                   thumbnail
@@ -129,6 +130,7 @@ export const useGetStory = () => {
                 outboundLink
                 createdAt
                 expiresAt
+                linkedWishID
                 attachments {
                   id
                   thumbnail
@@ -218,6 +220,7 @@ export const useFetchStoryFeedQuery = () => {
                 outboundLink
                 createdAt
                 expiresAt
+                linkedWishID
                 attachments {
                   id
                   thumbnail
@@ -309,6 +312,7 @@ export const useModifyStory = () => {
                 outboundLink
                 createdAt
                 expiresAt
+                linkedWishID
                 attachments {
                   id
                   thumbnail

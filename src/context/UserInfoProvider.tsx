@@ -16,6 +16,7 @@ import { usePreloadImages } from "@/hooks/usePreloadImages";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useWallets } from "@/hooks/useWallets";
 import { useStripeHook } from "@/hooks/useStripeHook";
+import { useFetchSwipeFeed } from "@/hooks/useSwipe";
 
 interface Props {
   children: React.ReactNode;
@@ -34,6 +35,8 @@ export const UserInfoProvider = ({ children }: Props) => {
 
   // const { runQuery: runFetchRecentNotificationsQuery } =
   //   useFetchRecentNotifications();
+
+  const { runQuery: runFetchSwipeFeedQuery } = useFetchSwipeFeed();
 
   const { runQuery: runListWishlistQuery } = useListWishlist();
 
@@ -81,6 +84,9 @@ export const UserInfoProvider = ({ children }: Props) => {
         });
         runFetchStoryFeedQuery({
           refresh,
+        });
+        runFetchSwipeFeedQuery({
+          nonce: new Date().getTime().toString(),
         });
         // runFetchRecentNotificationsQuery({
         //   refresh,

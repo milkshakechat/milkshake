@@ -32,7 +32,7 @@ import {
 import PP from "@/i18n/PlaceholderPrint";
 import LoadingAnimation from "../LoadingAnimation/LoadingAnimation";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
-import { UserID } from "@milkshakechat/helpers";
+import { UserID, Username } from "@milkshakechat/helpers";
 import { WishAuthor } from "@/api/graphql/types";
 import { useState } from "react";
 import LogoCookie from "../LogoText/LogoCookie";
@@ -48,7 +48,12 @@ interface QuickChatProps {
   isOpen: boolean;
   toggleOpen: (isOpen: boolean) => void;
   onClose?: () => void;
-  user: WishAuthor | null;
+  user: {
+    id: UserID;
+    username: Username;
+    displayName?: string;
+    avatar?: string;
+  } | null;
   suggestedCookies?: number;
   textPlaceholder?: string;
   actionButton?: React.ReactNode;

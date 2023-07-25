@@ -2,10 +2,10 @@ import { useWindowSize } from "@/api/utils/screen";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import { UserID, Username } from "@milkshakechat/helpers";
-import { Avatar, Button, theme } from "antd";
+import { Avatar, Badge, Button, Space, theme } from "antd";
 import { useIntl, FormattedMessage } from "react-intl";
-import { NavLink } from "react-router-dom";
-import { QrcodeOutlined } from "@ant-design/icons";
+import { NavLink, useNavigate } from "react-router-dom";
+import { QrcodeOutlined, PlusCircleFilled } from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
 
 interface AboutSectionProps {
@@ -25,6 +25,7 @@ const AboutSection = ({ user, glowColor, actionButton }: AboutSectionProps) => {
   const currentAuthUser = useUserState((state) => state.user);
   const { screen, isMobile } = useWindowSize();
   const { token } = theme.useToken();
+  const navigate = useNavigate();
   const avatarSize = isMobile ? window.innerWidth / 5 : 100;
   return (
     <$Vertical>
@@ -36,18 +37,36 @@ const AboutSection = ({ user, glowColor, actionButton }: AboutSectionProps) => {
           alignItems: "flex-start",
         }}
       >
-        <Avatar
-          src={user.avatar}
-          style={{
-            backgroundColor: glowColor,
-            height: avatarSize,
-            width: avatarSize,
-            minHeight: avatarSize,
-            minWidth: avatarSize,
-            marginRight: isMobile ? "10px" : "20px",
-          }}
+        <Space
           size={avatarSize}
-        />
+          onClick={() => {
+            navigate({
+              pathname: `/app/story/new`,
+            });
+          }}
+          style={{ marginRight: isMobile ? "20px" : "20px" }}
+        >
+          <Badge
+            count={
+              <PlusCircleFilled
+                style={{ color: token.colorPrimary, fontSize: "1.5rem" }}
+              />
+            }
+            offset={isMobile ? [-5, avatarSize - 10] : [-5, avatarSize - 15]}
+          >
+            <Avatar
+              src={user.avatar}
+              style={{
+                backgroundColor: glowColor,
+                height: avatarSize,
+                width: avatarSize,
+                minHeight: avatarSize,
+                minWidth: avatarSize,
+              }}
+              size={avatarSize}
+            />
+          </Badge>
+        </Space>
         <$Vertical
           style={{
             whiteSpace: "nowrap",

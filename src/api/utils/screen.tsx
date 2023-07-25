@@ -26,7 +26,7 @@ import {
   MessageOutlined,
   GiftOutlined,
 } from "@ant-design/icons";
-import { useStyleConfigGlobal } from "@/state/styleconfig.state";
+import { themeTypeEnum, useStyleConfigGlobal } from "@/state/styleconfig.state";
 import shallow from "zustand/shallow";
 import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import { useChatsListState } from "@/state/chats.state";
@@ -527,7 +527,10 @@ export const StickyAdaptiveMobileFooter = ({
                 spacing={3}
                 style={{
                   zIndex: 1,
-                  color: token.colorWhite,
+                  color:
+                    themeType === themeTypeEnum.dark
+                      ? token.colorWhite
+                      : token.colorText,
                   marginLeft: "10px",
                   marginBottom: "20px",
                 }}

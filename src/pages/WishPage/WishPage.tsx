@@ -20,7 +20,7 @@ import { useGetWish } from "@/hooks/useWish";
 import PP from "@/i18n/PlaceholderPrint";
 import { useUserState } from "@/state/user.state";
 import { useWishState } from "@/state/wish.state";
-import { Username } from "@milkshakechat/helpers";
+import { UserID, Username } from "@milkshakechat/helpers";
 import {
   Affix,
   Avatar,
@@ -413,7 +413,16 @@ export const WishPage = () => {
         onClose={() => setChatDrawerOpen(false)}
         toggleOpen={setChatDrawerOpen}
         openNotification={openNotification}
-        user={spotlightWish.author ? spotlightWish.author : null}
+        user={
+          spotlightWish.author
+            ? {
+                id: spotlightWish.author.id as UserID,
+                username: spotlightWish.author.username as Username,
+                avatar: spotlightWish.author.avatar,
+                displayName: spotlightWish.author.displayName,
+              }
+            : null
+        }
       />
       {contextHolder}
     </>

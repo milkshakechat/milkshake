@@ -1,19 +1,21 @@
 import AppLayout, { AppLayoutPadding } from "@/components/AppLayout/AppLayout";
 import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import { useUserState } from "@/state/user.state";
-import { Username } from "@milkshakechat/helpers";
-import { Button, Spin, theme } from "antd";
+import { Username, WishID } from "@milkshakechat/helpers";
+import { Button, Spin, Switch, theme } from "antd";
 import { OrderedListOutlined, VideoCameraOutlined } from "@ant-design/icons";
 import { $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import StoryUpload from "@/components/StoryUpload/StoryUpload";
 import { useNavigate } from "react-router-dom";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import { useState } from "react";
 
 const NewStoryPage = () => {
   const user = useUserState((state) => state.user);
   const { token } = theme.useToken();
   const navigate = useNavigate();
+  const [allowSwipe, setAllowSwipe] = useState(true);
   if (!user) {
     return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
@@ -42,10 +44,14 @@ const NewStoryPage = () => {
             navigate(-1);
           }}
           actionButton={
-            null
-            // <Button icon={<OrderedListOutlined />}>
-            //   <PP>Audiences</PP>
-            // </Button>
+            <Switch
+              checkedChildren="Swipe"
+              unCheckedChildren="No Swipe"
+              checked={allowSwipe}
+              onChange={(v) => {
+                setAllowSwipe(v);
+              }}
+            />
           }
         />
 
@@ -54,7 +60,7 @@ const NewStoryPage = () => {
           style={{ width: "100%", alignItems: "center" }}
         >
           <div style={{ maxWidth: "800px", width: "100%", overflow: "hidden" }}>
-            <StoryUpload />
+            <StoryUpload allowSwipe={allowSwipe} />
           </div>
         </$Vertical>
       </>

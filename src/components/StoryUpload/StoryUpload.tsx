@@ -7,6 +7,9 @@ import {
   Input,
   Progress,
   Upload,
+  Divider,
+  Space,
+  Dropdown,
   UploadFile,
   UploadProps,
   message,
@@ -15,6 +18,7 @@ import {
   UploadOutlined,
   VideoCameraOutlined,
   CheckCircleFilled,
+  DownOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
 import { RcFile } from "antd/es/upload";
@@ -29,15 +33,27 @@ import { useWindowSize } from "@/api/utils/screen";
 import { useStoryCreate } from "@/hooks/useStory";
 import { StoryAttachmentType } from "@/api/graphql/types";
 import { useNavigate } from "react-router-dom";
-import { StoryID } from "@milkshakechat/helpers";
+import {
+  StoryID,
+  WishBuyFrequency,
+  WishBuyFrequencyPrettyPrint,
+  WishBuyFrequencyPrettyPrintShort,
+  WishID,
+} from "@milkshakechat/helpers";
+import { useWishState } from "@/state/wish.state";
+import React from "react";
+import { SearchOutlined } from "@ant-design/icons";
+import LogoCookie from "../LogoText/LogoCookie";
 
 const placeholderPreviewUrl =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2Fm2fb0WWHOBesIAsevvCeNfv1w2Z2%2Fstory%2Fvideo%2Fc0b7e600-5d58-4c2e-af3c-ba714126208c.mp4?alt=media&token=a6a32b37-efe4-4010-ad0a-c1fb43b4a710";
 const placeholderStreamManifest =
   "https://storage.googleapis.com/user-stories-social/users/m2fb0WWHOBesIAsevvCeNfv1w2Z2/story/video/c0b7e600-5d58-4c2e-af3c-ba714126208c/video-streaming/manifest.mpd";
 
-interface StoryUploadProps {}
-const StoryUpload = ({}: StoryUploadProps) => {
+interface StoryUploadProps {
+  allowSwipe: boolean;
+}
+const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
   const intl = useIntl();
   const [fileForUpload, setFileForUpload] = useState<UploadFile>();
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -47,6 +63,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
   const { screen, isMobile } = useWindowSize();
   const [uploadedUrl, setUploadedUrl] = useState("");
   const [manifestUrl, setManifestUrl] = useState("");
+  const [linkedWishID, setLinkedWishID] = useState<WishID>();
   const [mediaType, setMediaType] = useState<StoryAttachmentType>();
   const [showStream, setShowStream] = useState(false);
   const [assetID, setAssetID] = useState("");
@@ -56,6 +73,41 @@ const StoryUpload = ({}: StoryUploadProps) => {
   const [submitted, setSubmitted] = useState(false);
   const [uploadedStory, setUploadedStory] = useState<StoryID>();
   const navigate = useNavigate();
+  const [searchString, setSearchString] = useState("");
+  const myWishlist = useWishState((state) => state.myWishlist);
+
+  const filteredWishlist = myWishlist
+    .filter((wish) => {
+      return (
+        wish.wishTitle.toLowerCase().includes(searchString.toLowerCase()) ||
+        wish.stickerTitle.toLowerCase().includes(searchString.toLowerCase())
+      );
+    })
+    .map((wish) => {
+      return {
+        key: wish.id,
+        label: (
+          <$Horizontal
+            justifyContent="space-between"
+            alignItems="center"
+            onClick={() => {
+              setLinkedWishID(wish.id as WishID);
+              setSearchString(wish.wishTitle);
+            }}
+          >
+            <span style={{ flex: 1 }}>{wish.wishTitle}</span>
+            <$Horizontal alignItems="center">
+              {`${WishBuyFrequencyPrettyPrintShort(
+                wish.buyFrequency as unknown as WishBuyFrequency
+              )} ${wish.cookiePrice}`}
+              <div style={{ marginLeft: "5px" }}>
+                <LogoCookie fill={token.colorPrimary} width="15px" />
+              </div>
+            </$Horizontal>
+          </$Horizontal>
+        ),
+      };
+    });
 
   const {
     data: createStoryData,
@@ -167,8 +219,38 @@ const StoryUpload = ({}: StoryUploadProps) => {
     return null;
   };
 
-  const renderAudiencePanel = () => {
-    return <Input value="All Audiences"></Input>;
+  const renderAttachWish = () => {
+    // myWishlist
+    return (
+      <Dropdown
+        placement="top"
+        menu={{ items: filteredWishlist }}
+        dropdownRender={(menu) => (
+          <div
+            style={{
+              width: "auto",
+              backgroundColor: token.colorBgContainer,
+              padding: "10px",
+              boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.1)",
+              maxHeight: "70vh",
+              overflowY: "scroll",
+            }}
+          >
+            {React.cloneElement(menu as React.ReactElement, {
+              style: { boxShadow: "none" },
+            })}
+          </div>
+        )}
+      >
+        <Input
+          suffix={<SearchOutlined />}
+          addonBefore="Wish"
+          placeholder={"Attach Wish (Optional)"}
+          value={searchString}
+          onChange={(e) => setSearchString(e.target.value)}
+        />
+      </Dropdown>
+    );
   };
 
   const submitStory = async () => {
@@ -181,6 +263,8 @@ const StoryUpload = ({}: StoryUploadProps) => {
           url: uploadedUrl,
           assetID,
         },
+        linkedWishID,
+        allowSwipe,
       });
       if (story) {
         setUploadedStory(story.story.id as StoryID);
@@ -200,6 +284,8 @@ const StoryUpload = ({}: StoryUploadProps) => {
     setAssetID("");
     setSubmitting(false);
     setCaption("");
+    setLinkedWishID(undefined);
+    setSearchString("");
     setSubmitted(false);
     setUploadedStory(undefined);
   };
@@ -231,7 +317,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
     return (
       <$Vertical style={{ marginBottom: "10px" }}>
         <Input.TextArea
-          placeholder="Caption"
+          placeholder={"Caption"}
           rows={2}
           value={caption}
           onChange={(e) => {
@@ -325,7 +411,7 @@ const StoryUpload = ({}: StoryUploadProps) => {
       </div>
 
       {renderCaptionsPanel()}
-      {/* {renderAudiencePanel()} */}
+      {renderAttachWish()}
       {renderSubmitButton()}
     </$Vertical>
   );

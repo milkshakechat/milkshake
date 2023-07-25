@@ -26,7 +26,7 @@ import {
   theme,
 } from "antd";
 import { useEffect, useState } from "react";
-import { BellOutlined, BellFilled, UserOutlined } from "@ant-design/icons";
+import { PlusOutlined, BellFilled, UserOutlined } from "@ant-design/icons";
 import {
   NavLink,
   createSearchParams,
@@ -82,7 +82,7 @@ const ProfilePage = () => {
     {
       key: "timeline",
       title: "Timeline",
-      children: <TimelineGallery stories={user.stories} />,
+      children: <TimelineGallery stories={user.stories} userID={user.id} />,
     },
     {
       key: "wishlist",
@@ -279,6 +279,7 @@ const ProfilePage = () => {
                         style={{ marginRight: "10px" }}
                         icon={<UserOutlined size={isMobile ? 64 : 48} />}
                       />
+
                       <$Vertical>
                         <PP>
                           <div

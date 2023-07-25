@@ -1006,13 +1006,6 @@ export type ModifyProfileMutationVariables = Exact<{
 
 export type ModifyProfileMutation = { __typename?: 'Mutation', modifyProfile: { __typename: 'ModifyProfileResponseSuccess', user: { __typename?: 'User', id: any, avatar: string, username: string, displayName: string, bio: string, link: string, language: LanguageEnum, themeColor: any, privacyMode: PrivacyModeEnum } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
-export type ListContactsQueryVariables = Exact<{
-  input: ListContactsInput;
-}>;
-
-
-export type ListContactsQuery = { __typename?: 'Query', listContacts: { __typename: 'ListContactsResponseSuccess', contacts: Array<{ __typename?: 'Contact', friendID: any, username?: string | null, displayName: string, avatar?: string | null, status?: FriendshipStatus | null }> } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
-
 export type FetchRecentNotificationsQueryVariables = Exact<{
   input: FetchRecentNotificationsInput;
 }>;

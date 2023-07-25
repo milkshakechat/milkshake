@@ -1,7 +1,7 @@
 import { ErrorLine } from "@/api/graphql/error-line";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import gql from "graphql-tag";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { print } from "graphql/language/printer";
 import { GraphQLError } from "graphql";
 import {
@@ -25,10 +25,24 @@ import { useUserState } from "@/state/user.state";
 import { Observable, FetchResult } from "@apollo/client/core";
 import { shallow } from "zustand/shallow";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
-import { UserID, localeEnum } from "@milkshakechat/helpers";
+import {
+  FirestoreCollection,
+  Friendship_Firestore,
+  UserID,
+  localeEnum,
+} from "@milkshakechat/helpers";
 import { useListChatRooms } from "./useChat";
 import { useNotificationsState } from "@/state/notifications.state";
 import { usePreloadImages } from "./usePreloadImages";
+import {
+  collection,
+  limit,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { firestore } from "@/api/firebase";
 
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
@@ -285,103 +299,133 @@ export const useUpdateProfile = () => {
   return { data, errors, runMutation };
 };
 
-export const useListContacts = () => {
-  const [data, setData] = useState<ListContactsResponseSuccess>();
-  const [errors, setErrors] = useState<ErrorLine[]>([]);
-  const client = useGraphqlClient();
-  const setContacts = useUserState((state) => state.setContacts);
-  const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
-  const [lastRequestTimestamp, setLastRequestTimestamp] = useState<string>(
-    new Date().toISOString()
-  );
+// export const useListContacts = () => {
+//   const [data, setData] = useState<ListContactsResponseSuccess>();
+//   const [errors, setErrors] = useState<ErrorLine[]>([]);
+//   const client = useGraphqlClient();
+//   // const setContacts = useUserState((state) => state.setContacts);
+//   const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
+//   const [lastRequestTimestamp, setLastRequestTimestamp] = useState<string>(
+//     new Date().toISOString()
+//   );
+//   const selfUser = useUserState((state) => state.user);
+
+//   const { runQuery: runListChatRoomsQuery } = useListChatRooms();
+
+//   const runQuery = async ({ refresh }: { refresh: boolean }) => {
+//     const now = new Date().toISOString();
+//     const nonce = refresh ? now : lastRequestTimestamp;
+//     if (refresh) {
+//       setLastRequestTimestamp(now);
+//     }
+//     try {
+//       const LIST_CONTACTS = gql`
+//         query ListContacts($input: ListContactsInput!) {
+//           listContacts(input: $input) {
+//             __typename
+//             ... on ListContactsResponseSuccess {
+//               contacts {
+//                 friendID
+//                 username
+//                 displayName
+//                 avatar
+//                 status
+//               }
+//             }
+//             ... on ResponseError {
+//               error {
+//                 message
+//               }
+//             }
+//           }
+//         }
+//       `;
+//       const result = await new Promise<ListContactsResponseSuccess>(
+//         async (resolve, reject) => {
+//           client
+//             .query<Pick<Query, "listContacts">>({
+//               query: LIST_CONTACTS,
+//               variables: { input: { nonce } },
+//               // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
+//               // fetchPolicy: refresh ? "network-only" : "cache-first",
+//               fetchPolicy: "cache-first",
+//             })
+//             .then(({ data }) => {
+//               if (
+//                 data.listContacts.__typename === "ListContactsResponseSuccess"
+//               ) {
+//                 resolve(data.listContacts);
+//               }
+//             })
+//             .catch((graphQLError: Error) => {
+//               if (graphQLError) {
+//                 setErrors((errors) => [...errors, graphQLError.message]);
+//                 reject();
+//               }
+//             });
+//         }
+//       );
+
+//       setData(result);
+//       // setContacts(result.contacts);
+//       preloadImages([
+//         ...result.contacts.map((contact) => contact.avatar || ""),
+//       ]);
+//       if (selfUser) {
+//         fetchChatRooms({
+//           contacts: result.contacts,
+//           selfUserID: selfUser.id,
+//         });
+//       }
+//     } catch (e) {
+//       console.log(e);
+//     }
+//   };
+
+//   const fetchChatRooms = async ({
+//     contacts,
+//     selfUserID,
+//   }: {
+//     contacts: Contact[];
+//     selfUserID: UserID;
+//   }) => {
+//     runListChatRoomsQuery({
+//       contacts,
+//       selfUserID: selfUserID,
+//     });
+//   };
+
+//   return { data, errors, runQuery };
+// };
+
+export const useListFriendships = () => {
   const selfUser = useUserState((state) => state.user);
+  const setFriendships = useUserState((state) => state.setFriendships);
+  const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
 
-  const { runQuery: runListChatRoomsQuery } = useListChatRooms();
-
-  const runQuery = async ({ refresh }: { refresh: boolean }) => {
-    const now = new Date().toISOString();
-    const nonce = refresh ? now : lastRequestTimestamp;
-    if (refresh) {
-      setLastRequestTimestamp(now);
+  useEffect(() => {
+    if (selfUser && selfUser.id) {
+      getRealtimeFriendships(selfUser.id);
     }
-    try {
-      const LIST_CONTACTS = gql`
-        query ListContacts($input: ListContactsInput!) {
-          listContacts(input: $input) {
-            __typename
-            ... on ListContactsResponseSuccess {
-              contacts {
-                friendID
-                username
-                displayName
-                avatar
-                status
-              }
-            }
-            ... on ResponseError {
-              error {
-                message
-              }
-            }
-          }
-        }
-      `;
-      const result = await new Promise<ListContactsResponseSuccess>(
-        async (resolve, reject) => {
-          client
-            .query<Pick<Query, "listContacts">>({
-              query: LIST_CONTACTS,
-              variables: { input: { nonce } },
-              // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
-              // fetchPolicy: refresh ? "network-only" : "cache-first",
-              fetchPolicy: "cache-first",
-            })
-            .then(({ data }) => {
-              if (
-                data.listContacts.__typename === "ListContactsResponseSuccess"
-              ) {
-                resolve(data.listContacts);
-              }
-            })
-            .catch((graphQLError: Error) => {
-              if (graphQLError) {
-                setErrors((errors) => [...errors, graphQLError.message]);
-                reject();
-              }
-            });
-        }
-      );
+  }, [selfUser?.id]);
 
-      setData(result);
-      setContacts(result.contacts);
-      preloadImages([
-        ...result.contacts.map((contact) => contact.avatar || ""),
-      ]);
-      if (selfUser) {
-        fetchChatRooms({
-          contacts: result.contacts,
-          selfUserID: selfUser.id,
-        });
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const fetchChatRooms = async ({
-    contacts,
-    selfUserID,
-  }: {
-    contacts: Contact[];
-    selfUserID: UserID;
-  }) => {
-    runListChatRoomsQuery({
-      contacts,
-      selfUserID: selfUserID,
+  const getRealtimeFriendships = async (userID: UserID) => {
+    const q = query(
+      collection(firestore, FirestoreCollection.FRIENDSHIPS),
+      where("primaryUserID", "==", userID),
+      limit(100)
+    );
+    onSnapshot(q, (docsSnap) => {
+      docsSnap.forEach((doc) => {
+        const fr = doc.data() as Friendship_Firestore;
+        console.log(`fr --> `, fr);
+        setFriendships(fr);
+        preloadImages([fr.avatar]);
+      });
     });
   };
 
-  return { data, errors, runQuery };
+  return {};
 };
 
 export const useFetchRecentNotifications = () => {

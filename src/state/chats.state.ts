@@ -1,5 +1,10 @@
 import { ChatRoom, Contact } from "@/api/graphql/types";
-import { UserID, Username, ChatRoomID } from "@milkshakechat/helpers";
+import {
+  UserID,
+  Username,
+  ChatRoomID,
+  Friendship_Firestore,
+} from "@milkshakechat/helpers";
 import { create } from "zustand";
 
 export interface ChatRoomFE extends ChatRoom {
@@ -72,7 +77,7 @@ export const useChatsListState = create<ChatListsState>()((set) => ({
 }));
 
 interface UpdateChannelsListProps {
-  contacts: Contact[];
+  friendships: Friendship_Firestore[];
   rooms: (ChatRoom | ChatRoomFE)[];
   userID: UserID;
 }
@@ -80,17 +85,17 @@ interface UpdateChannelsListProps {
 const extrapolateChatPreviews = (
   args: UpdateChannelsListProps
 ): ChatRoomFE[] => {
-  const { contacts, rooms, userID } = args;
+  const { friendships, rooms, userID } = args;
 
   return rooms.map((chatRoom): ChatRoomFE => {
     const participants = chatRoom.participants.filter((id) => id !== userID);
-    const participantContacts = participants.map((participantID) =>
-      contacts.find((contact) => contact.friendID === participantID)
-    );
+    const participantContacts = participants
+      .map((participantID) =>
+        friendships.find((fr) => fr.friendID === participantID)
+      )
+      .filter((fr) => fr) as Friendship_Firestore[];
 
-    const title = participantContacts
-      .map((contact) => contact?.displayName)
-      .join(", ");
+    const title = participantContacts.map((fr) => fr.username).join(", ");
     const thumbnail = participantContacts[0]?.avatar || "";
 
     const chatFE: ChatRoomFE = {
@@ -108,7 +113,7 @@ interface MatchContactToChatroomProps {
   userID: UserID;
   chatroomID: ChatRoomID;
   chatRooms: ChatRoom[];
-  contacts: Contact[];
+  friendships: Friendship_Firestore[];
 }
 
 export const matchContactToChatroom = (
@@ -119,7 +124,7 @@ export const matchContactToChatroom = (
   displayName: string;
   username: Username;
 } | null => {
-  const { userID, chatroomID, chatRooms, contacts } = args;
+  const { userID, chatroomID, chatRooms, friendships } = args;
 
   // Find the chatroom with the given ID
   const chatroom = chatRooms.find(
@@ -134,16 +139,16 @@ export const matchContactToChatroom = (
   if (!otherParticipantID) return null; // if no other participant is found, return null
 
   // Get the other participant's contact data
-  const contact = contacts.find(
-    (contact) => contact.friendID === otherParticipantID
+  const friendship = friendships.find(
+    (fr) => fr.friendID === otherParticipantID
   );
 
-  if (!contact) return null; // if contact is not found, return null
+  if (!friendship) return null; // if contact is not found, return null
 
   return {
-    userID: contact.friendID,
-    avatar: contact.avatar || "",
-    displayName: contact.displayName,
-    username: (contact.username as Username) || ("" as Username),
+    userID: friendship.friendID,
+    avatar: friendship.avatar || "",
+    displayName: friendship.friendNickname || `@${friendship.username}`,
+    username: (friendship.username as Username) || ("" as Username),
   };
 };

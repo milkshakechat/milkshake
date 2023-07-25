@@ -1,7 +1,7 @@
 import { useListChatRooms } from "@/hooks/useChat";
 import {
   useFetchRecentNotifications,
-  useListContacts,
+  useListFriendships,
   useProfile,
 } from "@/hooks/useProfile";
 import { useFetchStoryFeedQuery } from "@/hooks/useStory";
@@ -25,13 +25,13 @@ interface Props {
 export const UserInfoProvider = ({ children }: Props) => {
   const { runQuery: getProfile } = useProfile();
   const { checkWebPermissions } = useWebPermissions({});
-  const { runQuery: runListContacts } = useListContacts();
   const selfUser = useUserState((state) => state.user);
   const client = useGraphqlClient();
 
   const { runQuery: runFetchStoryFeedQuery } = useFetchStoryFeedQuery();
   const realtimeNotifs = useNotifications();
   const realtimeWallets = useWallets();
+  const realtimeFriendships = useListFriendships();
 
   // const { runQuery: runFetchRecentNotificationsQuery } =
   //   useFetchRecentNotifications();
@@ -79,9 +79,6 @@ export const UserInfoProvider = ({ children }: Props) => {
     const run = () => {
       console.log(`Running...`);
       if (selfUser) {
-        runListContacts({
-          refresh,
-        });
         runFetchStoryFeedQuery({
           refresh,
         });

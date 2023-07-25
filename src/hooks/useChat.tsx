@@ -1,6 +1,5 @@
 import { ErrorLine } from "@/api/graphql/error-line";
 import {
-  Contact,
   EnterChatRoomInput,
   EnterChatRoomResponseSuccess,
   ListChatRoomsResponseSuccess,
@@ -12,7 +11,7 @@ import {
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { useChatsListState } from "@/state/chats.state";
 import { useUserState } from "@/state/user.state";
-import { UserID } from "@milkshakechat/helpers";
+import { Friendship_Firestore, UserID } from "@milkshakechat/helpers";
 import gql from "graphql-tag";
 import { useState } from "react";
 
@@ -24,10 +23,10 @@ export const useListChatRooms = () => {
   const updateChatsList = useChatsListState((state) => state.updateChatsList);
 
   const runQuery = async ({
-    contacts,
+    friendships,
     selfUserID,
   }: {
-    contacts: Contact[];
+    friendships: Friendship_Firestore[];
     selfUserID: UserID;
   }) => {
     try {
@@ -80,7 +79,7 @@ export const useListChatRooms = () => {
       if (result.chatRooms) {
         updateChatsList({
           rooms: result.chatRooms,
-          contacts,
+          friendships,
           userID: selfUserID,
         });
       }
@@ -99,7 +98,7 @@ export const useEnterChatRoom = () => {
   const existingChatsList = useChatsListState((state) => state.chatsList);
   const updateChatsList = useChatsListState((state) => state.updateChatsList);
   const selfUser = useUserState((state) => state.user);
-  const contacts = useUserState((state) => state.contacts);
+  const friendships = useUserState((state) => state.friendships);
   const updateChatInList = useChatsListState((state) => state.updateChatInList);
 
   const runQuery = async (args: EnterChatRoomInput) => {
@@ -157,7 +156,7 @@ export const useEnterChatRoom = () => {
         updateChatInList(result.chatRoom);
         updateChatsList({
           rooms: [...existingChatsList, result.chatRoom],
-          contacts,
+          friendships,
           userID: selfUser.id,
         });
       }

@@ -88,11 +88,18 @@ export const GraphqlClientProvider = ({ children }: Props) => {
     };
 
     onIdTokenChanged(auth, async (user) => {
-      if (user) {
-        createNewClient();
-      } else {
-        window.location.href = "/app/logout";
-      }
+      // if (user) {
+      createNewClient();
+      // } else {
+      //   if (
+      //     window.location.pathname.includes("/app") &&
+      //     window.location.pathname !== "/app/logout" &&
+      //     window.location.pathname !== "/app/login" &&
+      //     !window.location.pathname.includes("/app/signup/")
+      //   ) {
+      //     window.location.href = "/app/logout";
+      //   }
+      // }
     });
 
     return () => {

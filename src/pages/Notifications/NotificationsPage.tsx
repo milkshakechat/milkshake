@@ -34,7 +34,7 @@ const NotificationsPage = () => {
     useMarkNotificationsAsRead();
 
   if (!user) {
-    return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
+    return <LoadingAnimation width="100%" height="100%" type="cookie" />;
   }
   return (
     <div>

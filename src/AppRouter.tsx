@@ -179,7 +179,7 @@ const AppRouter = () => {
                             }
                           />
                           <Route
-                            path="activities"
+                            path="swipe"
                             element={
                               <AuthProtect>
                                 <AppLayout>

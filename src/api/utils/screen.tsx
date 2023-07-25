@@ -523,45 +523,52 @@ export const StickyAdaptiveMobileFooter = ({
         >
           <$Vertical>
             {user && (
-              <$Horizontal
-                spacing={3}
-                style={{
-                  zIndex: 1,
-                  color:
-                    themeType === themeTypeEnum.dark
-                      ? token.colorWhite
-                      : token.colorText,
-                  marginLeft: "10px",
-                  marginBottom: "20px",
-                }}
+              <NavLink
+                to="/app/profile"
+                className={({ isActive, isPending }) =>
+                  isPending ? "pending" : isActive ? "active" : ""
+                }
               >
-                <Avatar
-                  src={user.avatar}
-                  style={{ backgroundColor: token.colorPrimaryText }}
-                  size="large"
-                />
-                <$Vertical
+                <$Horizontal
+                  spacing={3}
                   style={{
-                    whiteSpace: "nowrap",
-                    textOverflow: "ellipsis",
-                  }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                    zIndex: 1,
+                    color:
+                      themeType === themeTypeEnum.dark
+                        ? token.colorWhite
+                        : token.colorText,
+                    marginLeft: "10px",
+                    marginBottom: "20px",
                   }}
                 >
-                  <PP>
-                    <b>{user.displayName || user.username}</b>
-                  </PP>
-                  <PP>
-                    <i>{`@${user.username}`}</i>
-                  </PP>
-                </$Vertical>
-              </$Horizontal>
+                  <Avatar
+                    src={user.avatar}
+                    style={{ backgroundColor: token.colorPrimaryText }}
+                    size="large"
+                  />
+                  <$Vertical
+                    style={{
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                  >
+                    <PP>
+                      <b>{user.displayName || user.username}</b>
+                    </PP>
+                    <PP>
+                      <i>{`@${user.username}`}</i>
+                    </PP>
+                  </$Vertical>
+                </$Horizontal>
+              </NavLink>
             )}
 
             <List size="large" grid={{ gutter: 20, column: 0 }}>
-              <NavLink
+              {/* <NavLink
                 to="/app/profile"
                 className={({ isActive, isPending }) =>
                   isPending ? "pending" : isActive ? "active" : ""
@@ -582,7 +589,7 @@ export const StickyAdaptiveMobileFooter = ({
                 >
                   {profileText}
                 </Button>
-              </NavLink>
+              </NavLink> */}
               <NavLink to="/app/story/new">
                 <Button
                   size="large"
@@ -697,7 +704,7 @@ export const StickyAdaptiveMobileFooter = ({
               >
                 <Button
                   size="large"
-                  ghost
+                  type="primary"
                   icon={<WalletOutlined style={{ fontSize: "1rem" }} />}
                   onClick={() => setShowMobileSideMenu(false)}
                   style={{
@@ -720,7 +727,6 @@ export const StickyAdaptiveMobileFooter = ({
               >
                 <Button
                   size="large"
-                  type="primary"
                   icon={<SettingOutlined style={{ fontSize: "1rem" }} />}
                   onClick={() => setShowMobileSideMenu(false)}
                   style={{

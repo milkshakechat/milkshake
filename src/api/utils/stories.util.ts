@@ -66,7 +66,6 @@ export const groupUserStoriesByDateRange = (stories: Story[]) => {
   const now = dayjs();
   let groupedStories: Record<string, Story[]> = {};
 
-  console.log(`stories`, stories);
   const chronologicalStories = stories
     .slice()
     .sort(

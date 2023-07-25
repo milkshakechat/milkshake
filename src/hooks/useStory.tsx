@@ -198,7 +198,6 @@ export const useFetchStoryFeedQuery = () => {
   const setStories = useStoriesState((state) => state.setStories);
   const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
   const runQuery = async ({ refresh }: { refresh?: boolean }) => {
-    console.log(`useFetchStoryFeedQuery()...`);
     const now = new Date().toISOString();
     const nonce = refresh ? now : lastRequestTimestamp;
     if (refresh) {
@@ -256,7 +255,6 @@ export const useFetchStoryFeedQuery = () => {
               fetchPolicy: "cache-first",
             })
             .then(({ data }) => {
-              console.log(`Got response from fetchStoryFeed`, data);
               if (
                 data.fetchStoryFeed.__typename ===
                 "FetchStoryFeedResponseSuccess"

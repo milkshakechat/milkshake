@@ -109,7 +109,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   });
   const messagesText = intl.formatMessage({
     id: `messages_sidebar.${cid}`,
-    defaultMessage: "Messages",
+    defaultMessage: "Chats",
   });
   const notificationsText = intl.formatMessage({
     id: `notifications_sidebar.${cid}`,

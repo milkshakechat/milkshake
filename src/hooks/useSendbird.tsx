@@ -33,21 +33,11 @@ export const useSendBirdConnection = () => {
   const sendbirdRef = useRef<SendbirdGroupChat>();
 
   useEffect(() => {
-    console.log(`Init this baby`);
     // Only proceed if sendBirdService is defined
-    console.log(`sendBirdService`, sendBirdService);
-    console.log(`
-    userId: ${userId}
-    accessToken: ${accessToken}
-    isSendBirdInitialized: ${isSendBirdInitialized}
-    
-    `);
     if (sendBirdService && userId && accessToken && isSendBirdInitialized) {
       sendbirdRef.current = sendBirdService.sendbird;
       const connect = async () => {
-        console.log(`>>>>>>>> connecting...`);
         try {
-          console.log(`Attempting connect...`);
           const user = await sendBirdService.connect(userId, accessToken);
           setUser(user);
         } catch (error) {

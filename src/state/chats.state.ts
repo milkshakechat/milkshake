@@ -4,6 +4,8 @@ import {
   Username,
   ChatRoomID,
   Friendship_Firestore,
+  ChatRoom_Firestore,
+  ChatRoomParticipantStatus,
 } from "@milkshakechat/helpers";
 import { create } from "zustand";
 
@@ -23,18 +25,49 @@ export interface UpdateSendBirdChannelMetadataArgsFE {
 }
 interface ChatListsState {
   chatsList: ChatRoomFE[];
-  updateChatsList: (args: UpdateChannelsListProps) => void;
+  upsertChat: (
+    room: ChatRoom_Firestore,
+    friendships: Friendship_Firestore[],
+    userID: UserID
+  ) => void;
+
+  // updateChatsList: (args: UpdateChannelsListProps) => void;
+  // updateChatInList: (chat: ChatRoom) => void;
+
   updateSendBirdMetadata: (diff: UpdateSendBirdChannelMetadataArgsFE) => void;
-  updateChatInList: (chat: ChatRoom) => void;
 }
 
 export const useChatsListState = create<ChatListsState>()((set) => ({
   chatsList: [],
-  updateChatsList: (args) =>
+  upsertChat: (room, friendships, userID) => {
     set((state) => {
-      const chatsFE = extrapolateChatPreviews(args);
-      return { chatsList: chatsFE };
-    }),
+      const chatFE = extrapolateChatPreview(room, friendships, userID);
+      const chats = state.chatsList.filter(
+        (ch) => ch.chatRoomID !== chatFE.chatRoomID
+      );
+      return { chatsList: [chatFE, ...chats] };
+    });
+  },
+  // updateChatsList: (args) =>
+  //   set((state) => {
+  //     const chatsFE = extrapolateChatPreviews(args);
+  //     return { chatsList: chatsFE };
+  //   }),
+  // updateChatInList: (chat) => {
+  //   set((state) => {
+  //     const chats = state.chatsList.map((ch) => {
+  //       if (ch.chatRoomID === chat.chatRoomID) {
+  //         return {
+  //           ...ch,
+  //           ...chat,
+  //         };
+  //       }
+  //       return ch;
+  //     });
+
+  //     return { chatsList: chats };
+  //   });
+  // },
   updateSendBirdMetadata: (diff) => {
     set((state) => {
       const chats = state.chatsList.map((ch) => {
@@ -58,22 +91,6 @@ export const useChatsListState = create<ChatListsState>()((set) => ({
       return { chatsList: chats };
     });
   },
-  updateChatInList: (chat) => {
-    set((state) => {
-      console.log(`Before update`, chat);
-      const chats = state.chatsList.map((ch) => {
-        if (ch.chatRoomID === chat.chatRoomID) {
-          return {
-            ...ch,
-            ...chat,
-          };
-        }
-        return ch;
-      });
-      console.log(`Next updated`, chats);
-      return { chatsList: chats };
-    });
-  },
 }));
 
 interface UpdateChannelsListProps {
@@ -82,31 +99,72 @@ interface UpdateChannelsListProps {
   userID: UserID;
 }
 
-const extrapolateChatPreviews = (
-  args: UpdateChannelsListProps
-): ChatRoomFE[] => {
-  const { friendships, rooms, userID } = args;
+// const extrapolateChatPreviews = (
+//   args: UpdateChannelsListProps
+// ): ChatRoomFE[] => {
+//   const { friendships, rooms, userID } = args;
 
-  return rooms.map((chatRoom): ChatRoomFE => {
-    const participants = chatRoom.participants.filter((id) => id !== userID);
-    const participantContacts = participants
-      .map((participantID) =>
-        friendships.find((fr) => fr.friendID === participantID)
-      )
-      .filter((fr) => fr) as Friendship_Firestore[];
+//   return rooms.map((chatRoom): ChatRoomFE => {
+//     const participants = chatRoom.participants.filter((id) => id !== userID);
+//     const participantContacts = participants
+//       .map((participantID) =>
+//         friendships.find((fr) => fr.friendID === participantID)
+//       )
+//       .filter((fr) => fr) as Friendship_Firestore[];
 
-    const title = participantContacts.map((fr) => fr.username).join(", ");
-    const thumbnail = participantContacts[0]?.avatar || "";
+//     const title = participantContacts.map((fr) => fr.username).join(", ");
+//     const thumbnail = participantContacts[0]?.avatar || "";
 
-    const chatFE: ChatRoomFE = {
-      lastTimestamp: 0,
-      ...chatRoom,
-      title,
-      previewText: "No preview available", // Update this as needed.
-      thumbnail,
-    };
-    return chatFE;
-  });
+//     const chatFE: ChatRoomFE = {
+//       lastTimestamp: 0,
+//       ...chatRoom,
+//       title,
+//       previewText: "No preview available", // Update this as needed.
+//       thumbnail,
+//     };
+//     return chatFE;
+//   });
+// };
+
+const extrapolateChatPreview = (
+  room: ChatRoom_Firestore,
+  friendships: Friendship_Firestore[],
+  userID: UserID
+): ChatRoomFE => {
+  const participants = room.firestoreParticipantSearch.filter(
+    (id) => id !== userID
+  );
+  console.log(`found ${participants.length} participants`);
+  const participantContacts = participants
+    .map((participantID) =>
+      friendships.find((fr) => fr.friendID === participantID)
+    )
+    .filter((fr) => fr) as Friendship_Firestore[];
+  console.log(
+    `found ${participantContacts.length} participant contacts`,
+    participantContacts
+  );
+  const title = participantContacts.map((fr) => fr.username).join(", ");
+  const thumbnail = participantContacts[0]?.avatar || "";
+
+  const chatFE: ChatRoomFE = {
+    ...room,
+    chatRoomID: room.id,
+    participants: room.firestoreParticipantSearch as any[],
+    sendBirdParticipants: Object.keys(room.participants).reduce((acc, curr) => {
+      const next = [...acc];
+      const status = room.participants[curr as UserID];
+      if (status && status === ChatRoomParticipantStatus.SENDBIRD_ALLOWED) {
+        next.push(curr as UserID);
+      }
+      return next;
+    }, [] as UserID[]),
+    lastTimestamp: 0,
+    title,
+    previewText: "No preview available", // Update this as needed.
+    thumbnail,
+  };
+  return chatFE;
 };
 
 interface MatchContactToChatroomProps {
@@ -151,4 +209,14 @@ export const matchContactToChatroom = (
     displayName: friendship.friendNickname || `@${friendship.username}`,
     username: (friendship.username as Username) || ("" as Username),
   };
+};
+
+export const convertChatRoomFirestoreToGQL = (room: ChatRoom_Firestore) => {
+  const cv: ChatRoom = {
+    chatRoomID: room.id,
+    participants: room.firestoreParticipantSearch as any[],
+    sendBirdChannelURL: room.sendBirdChannelURL,
+    sendBirdParticipants: [],
+  };
+  return cv;
 };

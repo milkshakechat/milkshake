@@ -24,9 +24,9 @@ const StoriesHeader = () => {
       return diffHours < 48;
     })
   );
-  console.log(`stories`, stories);
+
   const showcaseStories = showLatestStoryPerAuthor(stories);
-  console.log(`showcaseStories`, showcaseStories);
+
   return (
     <$StoriesHeader backgroundColor={token.colorBgContainer}>
       <Avatar

@@ -60,10 +60,7 @@ export const useWallets = () => {
 
   const getRealtimeWallet = async () => {
     if (selfUser) {
-      console.log(`selfUser`, selfUser);
-      console.log(`selfUser.tradingWallet`, selfUser.tradingWallet);
       if (selfUser.tradingWallet) {
-        console.log(`getting trading wallet...`);
         const unsub1 = onSnapshot(
           doc(
             firestore,
@@ -71,7 +68,6 @@ export const useWallets = () => {
             selfUser.tradingWallet
           ),
           (doc) => {
-            console.log("Current data: ", doc.data());
             setWallet(doc.data() as Wallet_MirrorFireLedger);
           }
         );
@@ -95,8 +91,6 @@ export const useWallets = () => {
 
   const getRealtimeTxs = async () => {
     if (selfUser) {
-      console.log(`selfUser`, selfUser);
-      console.log(`selfUser.tradingWallet`, selfUser.tradingWallet);
       if (selfUser.tradingWallet) {
         const q = query(
           collection(firestore, FirestoreCollection.MIRROR_TX),
@@ -119,7 +113,6 @@ export const useWallets = () => {
 
   const getRealtimePurchaseManifests = async () => {
     if (selfUser) {
-      console.log(`selfUser`, selfUser);
       // purchases
       const purch = query(
         collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
@@ -163,9 +156,6 @@ export const usePurchaseManifest = () => {
   const getPurchaseManifestTxs = async (
     purchaseManifestID: PurchaseMainfestID
   ) => {
-    console.log(`Attempting purchase manifest txs..`);
-    console.log(`purchasemaniID`, purchaseManifestID);
-    console.log(`and selfusesr`, selfUser);
     if (selfUser) {
       const q = query(
         collection(firestore, FirestoreCollection.MIRROR_TX),
@@ -175,7 +165,7 @@ export const usePurchaseManifest = () => {
       onSnapshot(q, (docsSnap) => {
         docsSnap.forEach((doc) => {
           const tx = doc.data() as Tx_MirrorFireLedger;
-          console.log(`tx`, tx);
+
           setPmTxs((txs) => txs.filter((t) => t.id !== tx.id).concat([tx]));
         });
       });
@@ -186,7 +176,6 @@ export const usePurchaseManifest = () => {
           purchaseManifestID
         ),
         (doc) => {
-          console.log("Current data: ", doc.data());
           setPm(doc.data() as PurchaseMainfest_Firestore);
         }
       );

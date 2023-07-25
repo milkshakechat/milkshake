@@ -9,86 +9,141 @@ import {
   UpdateChatSettingsResponseSuccess,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
-import { useChatsListState } from "@/state/chats.state";
+import {
+  convertChatRoomFirestoreToGQL,
+  useChatsListState,
+} from "@/state/chats.state";
 import { useUserState } from "@/state/user.state";
-import { Friendship_Firestore, UserID } from "@milkshakechat/helpers";
+import {
+  ChatRoom_Firestore,
+  FirestoreCollection,
+  Friendship_Firestore,
+  UserID,
+} from "@milkshakechat/helpers";
 import gql from "graphql-tag";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { firestore } from "../api/firebase";
+import shallow from "zustand/shallow";
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  limit,
+  orderBy,
+} from "firebase/firestore";
 
-export const useListChatRooms = () => {
-  const [data, setData] = useState<ListChatRoomsResponseSuccess>();
-  const [errors, setErrors] = useState<ErrorLine[]>([]);
-  const client = useGraphqlClient();
+// export const useListChatRooms = () => {
+//   const [data, setData] = useState<ListChatRoomsResponseSuccess>();
+//   const [errors, setErrors] = useState<ErrorLine[]>([]);
+//   const client = useGraphqlClient();
 
-  const updateChatsList = useChatsListState((state) => state.updateChatsList);
+//   const updateChatsList = useChatsListState((state) => state.updateChatsList);
 
-  const runQuery = async ({
-    friendships,
-    selfUserID,
-  }: {
-    friendships: Friendship_Firestore[];
-    selfUserID: UserID;
-  }) => {
-    try {
-      const LIST_CHAT_ROOMS = gql`
-        query ListChatRooms {
-          listChatRooms {
-            __typename
-            ... on ListChatRoomsResponseSuccess {
-              chatRooms {
-                chatRoomID
-                participants
-                sendBirdParticipants
-                sendBirdChannelURL
-                pushConfig {
-                  snoozeUntil
-                  allowPush
-                }
-              }
-            }
-            ... on ResponseError {
-              error {
-                message
-              }
-            }
-          }
-        }
-      `;
-      const result = await new Promise<ListChatRoomsResponseSuccess>(
-        async (resolve, reject) => {
-          client
-            .query<Pick<Query, "listChatRooms">>({
-              query: LIST_CHAT_ROOMS,
-            })
-            .then(({ data }) => {
-              if (
-                data.listChatRooms.__typename === "ListChatRoomsResponseSuccess"
-              ) {
-                resolve(data.listChatRooms);
-              }
-            })
-            .catch((graphQLError: Error) => {
-              if (graphQLError) {
-                setErrors((errors) => [...errors, graphQLError.message]);
-                reject();
-              }
-            });
-        }
-      );
-      setData(result);
-      if (result.chatRooms) {
-        updateChatsList({
-          rooms: result.chatRooms,
-          friendships,
-          userID: selfUserID,
-        });
-      }
-    } catch (e) {
-      console.log(e);
+//   const runQuery = async ({
+//     friendships,
+//     selfUserID,
+//   }: {
+//     friendships: Friendship_Firestore[];
+//     selfUserID: UserID;
+//   }) => {
+//     try {
+//       const LIST_CHAT_ROOMS = gql`
+//         query ListChatRooms {
+//           listChatRooms {
+//             __typename
+//             ... on ListChatRoomsResponseSuccess {
+//               chatRooms {
+//                 chatRoomID
+//                 participants
+//                 sendBirdParticipants
+//                 sendBirdChannelURL
+//                 pushConfig {
+//                   snoozeUntil
+//                   allowPush
+//                 }
+//               }
+//             }
+//             ... on ResponseError {
+//               error {
+//                 message
+//               }
+//             }
+//           }
+//         }
+//       `;
+//       const result = await new Promise<ListChatRoomsResponseSuccess>(
+//         async (resolve, reject) => {
+//           client
+//             .query<Pick<Query, "listChatRooms">>({
+//               query: LIST_CHAT_ROOMS,
+//             })
+//             .then(({ data }) => {
+//               if (
+//                 data.listChatRooms.__typename === "ListChatRoomsResponseSuccess"
+//               ) {
+//                 resolve(data.listChatRooms);
+//               }
+//             })
+//             .catch((graphQLError: Error) => {
+//               if (graphQLError) {
+//                 setErrors((errors) => [...errors, graphQLError.message]);
+//                 reject();
+//               }
+//             });
+//         }
+//       );
+//       setData(result);
+//       if (result.chatRooms) {
+//         updateChatsList({
+//           rooms: result.chatRooms,
+//           friendships,
+//           userID: selfUserID,
+//         });
+//       }
+//     } catch (e) {
+//       console.log(e);
+//     }
+//   };
+
+//   return { data, errors, runQuery };
+// };
+
+export const useRealtimeChatRooms = () => {
+  const selfUser = useUserState((state) => state.user);
+  const friendships = useUserState((state) => state.friendships);
+  const { upsertChat, existingChatsList } = useChatsListState(
+    (state) => ({
+      upsertChat: state.upsertChat,
+      existingChatsList: state.chatsList,
+    }),
+    shallow
+  );
+
+  useEffect(() => {
+    if (selfUser && selfUser.id) {
+      getRealtimeChatRooms(selfUser.id);
     }
+  }, [selfUser?.id]);
+
+  const getRealtimeChatRooms = async (userID: UserID) => {
+    console.log(`getRealtimeChatRooms... userID= ${userID}`);
+    const q = query(
+      collection(firestore, FirestoreCollection.CHAT_ROOMS),
+      where("firestoreParticipantSearch", "array-contains", userID),
+      limit(100)
+    );
+    onSnapshot(q, (docsSnap) => {
+      docsSnap.forEach((doc) => {
+        const room = doc.data() as ChatRoom_Firestore;
+        console.log(`room`, room);
+        // const chatroom = convertChatRoomFirestoreToGQL(room);
+        upsertChat(room, friendships, (selfUser?.id || "") as UserID);
+      });
+    });
   };
 
-  return { data, errors, runQuery };
+  return {};
 };
 
 export const useEnterChatRoom = () => {
@@ -96,10 +151,8 @@ export const useEnterChatRoom = () => {
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
   const existingChatsList = useChatsListState((state) => state.chatsList);
-  const updateChatsList = useChatsListState((state) => state.updateChatsList);
   const selfUser = useUserState((state) => state.user);
   const friendships = useUserState((state) => state.friendships);
-  const updateChatInList = useChatsListState((state) => state.updateChatInList);
 
   const runQuery = async (args: EnterChatRoomInput) => {
     try {
@@ -153,12 +206,12 @@ export const useEnterChatRoom = () => {
       setData(result);
       // if its a new room, then we should refetch the list of chat rooms
       if (result.isNew && selfUser) {
-        updateChatInList(result.chatRoom);
-        updateChatsList({
-          rooms: [...existingChatsList, result.chatRoom],
-          friendships,
-          userID: selfUser.id,
-        });
+        // updateChatInList(result.chatRoom);
+        // updateChatsList({
+        //   rooms: [...existingChatsList, result.chatRoom],
+        //   friendships,
+        //   userID: selfUser.id,
+        // });
       }
     } catch (e) {
       console.log(e);
@@ -173,7 +226,6 @@ export const useUpdateChatSettings = () => {
   const [data, setData] = useState<UpdateChatSettingsResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
-  const updateChatInList = useChatsListState((state) => state.updateChatInList);
 
   const runMutation = async (args: UpdateChatSettingsInput) => {
     try {
@@ -225,7 +277,7 @@ export const useUpdateChatSettings = () => {
         }
       );
       setData(result);
-      updateChatInList(result.chatRoom);
+      // updateChatInList(result.chatRoom);
     } catch (e) {
       console.log(e);
     }

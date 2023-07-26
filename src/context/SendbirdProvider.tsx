@@ -23,6 +23,7 @@ import {
   MessageEventContext,
 } from "@sendbird/chat/groupChannel";
 import { BaseChannel, MetaCounter, MetaData } from "@sendbird/chat";
+import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 
 export const SendBirdServiceContext = createContext<SendBirdService | null>(
   null
@@ -42,6 +43,7 @@ export const SendBirdServiceProvider = ({
   const selfUser = useUserState((state) => state.user);
   const { token } = theme.useToken();
   const { sendbird, loading } = useSendBirdConnection();
+  const themeType = useStyleConfigGlobal((state) => state.themeType);
 
   if (!sendBirdService || !selfUser || loading) {
     return <div>{children}</div>; // You can replace this with a proper loading indicator
@@ -68,6 +70,7 @@ export const SendBirdServiceProvider = ({
         userId={selfUser.id}
         accessToken={selfUser.sendBirdAccessToken || ""}
         colorSet={sendBirdColorSet}
+        theme={themeType}
       >
         <SendBirdObservers>
           <div>{children}</div>

@@ -5,6 +5,8 @@ import {
   ListChatRoomsResponseSuccess,
   Mutation,
   Query,
+  SendFreeChatInput,
+  SendFreeChatResponseSuccess,
   UpdateChatSettingsInput,
   UpdateChatSettingsResponseSuccess,
 } from "@/api/graphql/types";
@@ -15,6 +17,8 @@ import {
 } from "@/state/chats.state";
 import { useUserState } from "@/state/user.state";
 import {
+  ChatLog_Firestore,
+  ChatRoomID,
   ChatRoom_Firestore,
   FirestoreCollection,
   Friendship_Firestore,
@@ -126,18 +130,17 @@ export const useRealtimeChatRooms = () => {
   }, [selfUser?.id]);
 
   const getRealtimeChatRooms = async (userID: UserID) => {
-    console.log(`getRealtimeChatRooms... userID= ${userID}`);
     const q = query(
       collection(firestore, FirestoreCollection.CHAT_ROOMS),
-      where("firestoreParticipantSearch", "array-contains", userID),
+      where("members", "array-contains", userID),
       limit(100)
     );
     onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
         const room = doc.data() as ChatRoom_Firestore;
-        console.log(`room`, room);
+
         // const chatroom = convertChatRoomFirestoreToGQL(room);
-        console.log(`upserting when ${friendships.length} friendships.length`);
+
         upsertChat(room, friendships, (selfUser?.id || "") as UserID);
       });
     });
@@ -288,4 +291,94 @@ export const useUpdateChatSettings = () => {
   };
 
   return { data, errors, runMutation };
+};
+
+export const useSendFreeChat = () => {
+  const [data, setData] = useState<SendFreeChatResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: SendFreeChatInput) => {
+    setLoading(true);
+    try {
+      const SEND_FREE_CHAT = gql`
+        mutation SendFreeChat($input: SendFreeChatInput!) {
+          sendFreeChat(input: $input) {
+            __typename
+            ... on SendFreeChatResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<SendFreeChatResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "sendFreeChat">>({
+              mutation: SEND_FREE_CHAT,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.sendFreeChat.__typename === "SendFreeChatResponseSuccess"
+              ) {
+                resolve(data.sendFreeChat);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+export const useRealtimeFreeChat = () => {
+  const selfUser = useUserState((state) => state.user);
+  const [freeChatLogs, setFreeChatLogs] = useState<ChatLog_Firestore[]>([]);
+
+  const getRealtimeFreeChatLogs = async (chatRoomID: ChatRoomID) => {
+    console.log(
+      `getRealtimeFreeChatLogs... chatRoomID=${chatRoomID} & userID=${selfUser?.id}`
+    );
+    const q = query(
+      collection(firestore, FirestoreCollection.CHAT_LOGS),
+      where("chatRoomID", "==", chatRoomID),
+      orderBy("createdAt", "desc"), // This will sort in descending order
+      limit(100)
+    );
+    onSnapshot(q, (docsSnap) => {
+      docsSnap.forEach((doc) => {
+        const log = doc.data() as ChatLog_Firestore;
+
+        setFreeChatLogs((logs) => [
+          ...logs.filter((l) => l.id !== log.id),
+          log,
+        ]);
+      });
+    });
+  };
+
+  return {
+    getRealtimeFreeChatLogs,
+    freeChatLogs,
+  };
 };

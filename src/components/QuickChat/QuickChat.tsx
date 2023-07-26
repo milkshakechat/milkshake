@@ -116,15 +116,20 @@ export const QuickChat = ({
 
   const renderDefaultActionButton = () => {
     if (!selfUser) return null;
-    console.log(`chatsList`, chatsList);
-    const chatRoom = chatsList.find((chat) =>
-      chat.participants.every((p: UserID) => p === user.id || p === selfUser.id)
-    );
-    if (!chatRoom) return null;
+    const goToChatPage = (participants: UserID[]) => {
+      const searchString = createSearchParams({
+        participants: encodeURIComponent(participants.join(",")),
+      }).toString();
+
+      navigate({
+        pathname: "/app/chats/chat",
+        search: searchString,
+      });
+    };
     return (
-      <NavLink to={`/app/chats/chat?chat=${chatRoom.chatRoomID}`}>
-        <Button>View Chat</Button>
-      </NavLink>
+      <Button onClick={() => goToChatPage([user.id, selfUser.id])}>
+        View Chat
+      </Button>
     );
   };
 

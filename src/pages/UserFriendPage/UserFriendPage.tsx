@@ -233,7 +233,21 @@ export const UserFriendPage = () => {
               {
                 key: "send-message",
                 label: (
-                  <Button onClick={() => setChatDrawerOpen(true)} type="ghost">
+                  <Button
+                    onClick={() => {
+                      const searchString = createSearchParams({
+                        participants: encodeURIComponent(
+                          [spotlightUser.id, selfUser.id].join(",")
+                        ),
+                      }).toString();
+
+                      navigate({
+                        pathname: "/app/chats/chat",
+                        search: searchString,
+                      });
+                    }}
+                    type="ghost"
+                  >
                     Chat
                   </Button>
                 ),

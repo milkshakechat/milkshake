@@ -52,6 +52,7 @@ const ConversationsPage = () => {
     }),
     shallow
   );
+  const refreshNonce = useRef(0);
 
   const friendships = useUserState((state) => state.friendships);
 
@@ -63,8 +64,12 @@ const ConversationsPage = () => {
 
   useEffect(() => {
     const refresh = () => {
+      if (refreshNonce.current > 3) {
+        return;
+      }
       if (selfUser) {
         refreshAllChatPreviews(friendsRef.current, selfUser.id as UserID);
+        refreshNonce.current = refreshNonce.current + 1;
       }
     };
 
@@ -73,7 +78,9 @@ const ConversationsPage = () => {
     return () => {
       clearInterval(intervalId); // Don't forget to clear interval on component unmount
     };
-  }, []); // Empty dependency array ensures this effect runs once when component mounts and never again.
+  }, [selfUser]); // Empty dependency array ensures this effect runs once when component mounts and never again.
+
+  const showingAlertBanner = !allowedPermissions.notifications;
 
   return (
     <div style={{ maxHeight: "100vh", overflow: "hidden" }}>
@@ -119,8 +126,10 @@ const ConversationsPage = () => {
           <div
             style={{
               flex: 3,
-              borderLeft: `1px solid ${token.colorBorderSecondary}`,
-              height: "95vh",
+              borderLeft: isMobile
+                ? "0px solid white"
+                : `1px solid ${token.colorBorderSecondary}`,
+              height: showingAlertBanner ? "95vh" : "100vh",
             }}
           >
             <Routes>

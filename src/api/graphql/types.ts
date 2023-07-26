@@ -426,6 +426,7 @@ export type Mutation = {
   requestMerchantOnboarding: RequestMerchantOnboardingResponse;
   revokePushTokens: RevokePushTokensResponse;
   savePaymentMethod: SavePaymentMethodResponse;
+  sendFreeChat: SendFreeChatResponse;
   sendFriendRequest: SendFriendRequestResponse;
   sendTransfer: SendTransferResponse;
   topUpWallet: TopUpWalletResponse;
@@ -492,6 +493,11 @@ export type MutationRecallTransactionArgs = {
 
 export type MutationSavePaymentMethodArgs = {
   input: SavePaymentMethodInput;
+};
+
+
+export type MutationSendFreeChatArgs = {
+  input: SendFreeChatInput;
 };
 
 
@@ -674,6 +680,18 @@ export type SavePaymentMethodResponse = ResponseError | SavePaymentMethodRespons
 export type SavePaymentMethodResponseSuccess = {
   __typename?: 'SavePaymentMethodResponseSuccess';
   paymentMethodID: Scalars['String']['output'];
+};
+
+export type SendFreeChatInput = {
+  chatRoomID: Scalars['String']['input'];
+  message: Scalars['String']['input'];
+};
+
+export type SendFreeChatResponse = ResponseError | SendFreeChatResponseSuccess;
+
+export type SendFreeChatResponseSuccess = {
+  __typename?: 'SendFreeChatResponseSuccess';
+  status: Scalars['String']['output'];
 };
 
 export type SendFriendRequestInput = {
@@ -950,6 +968,13 @@ export type UpdateChatSettingsMutationVariables = Exact<{
 
 
 export type UpdateChatSettingsMutation = { __typename?: 'Mutation', updateChatSettings: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpdateChatSettingsResponseSuccess', chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, title: string, thumbnail: string, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } };
+
+export type SendFreeChatMutationVariables = Exact<{
+  input: SendFreeChatInput;
+}>;
+
+
+export type SendFreeChatMutation = { __typename?: 'Mutation', sendFreeChat: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'SendFreeChatResponseSuccess', status: string } };
 
 export type SendFriendRequestMutationVariables = Exact<{
   input: SendFriendRequestInput;

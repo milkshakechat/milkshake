@@ -44,6 +44,7 @@ import { useWishState } from "@/state/wish.state";
 import React from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import LogoCookie from "../LogoText/LogoCookie";
+import { Spacer } from "../AppLayout/AppLayout";
 
 const placeholderPreviewUrl =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2Fm2fb0WWHOBesIAsevvCeNfv1w2Z2%2Fstory%2Fvideo%2Fc0b7e600-5d58-4c2e-af3c-ba714126208c.mp4?alt=media&token=a6a32b37-efe4-4010-ad0a-c1fb43b4a710";
@@ -292,8 +293,8 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
 
   const renderSubmitButton = () => {
     return (
-      <Affix offsetBottom={20}>
-        <div style={{ backgroundColor: token.colorBgBase }}>
+      <Affix offsetBottom={0}>
+        <div style={{ backgroundColor: token.colorBgContainer }}>
           <Button
             type="primary"
             size="large"
@@ -309,6 +310,7 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
             Post Story
           </Button>
         </div>
+        <Spacer />
       </Affix>
     );
   };

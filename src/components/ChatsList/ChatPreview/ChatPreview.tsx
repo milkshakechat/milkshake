@@ -58,7 +58,7 @@ const ChatPreview = ({ preview }: ChatPreviewProps) => {
             style={{ backgroundColor: token.colorPrimaryBg }}
           />
         }
-        title={title || aliasTitle}
+        title={title || aliasTitle || "Chat loading..."}
         description={previewText}
       />
 

@@ -12,6 +12,7 @@ import {
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import {
+  NOT_FOUND_USER_MIRROR_NAME,
   convertChatRoomFirestoreToGQL,
   useChatsListState,
 } from "@/state/chats.state";
@@ -35,6 +36,7 @@ import {
   onSnapshot,
   limit,
   orderBy,
+  getDocs,
 } from "firebase/firestore";
 
 // export const useListChatRooms = () => {
@@ -116,12 +118,16 @@ import {
 export const useRealtimeChatRooms = () => {
   const selfUser = useUserState((state) => state.user);
   const friendships = useUserState((state) => state.friendships);
-  const { upsertChat } = useChatsListState(
-    (state) => ({
-      upsertChat: state.upsertChat,
-    }),
-    shallow
-  );
+  const { upsertChat, globalUserMirror, upsertUserMirror, getUserMirror } =
+    useChatsListState(
+      (state) => ({
+        upsertChat: state.upsertChat,
+        globalUserMirror: state.globalUserMirror,
+        upsertUserMirror: state.upsertUserMirror,
+        getUserMirror: state.getUserMirror,
+      }),
+      shallow
+    );
 
   useEffect(() => {
     if (selfUser && selfUser.id) {
@@ -138,10 +144,25 @@ export const useRealtimeChatRooms = () => {
     onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
         const room = doc.data() as ChatRoom_Firestore;
-
-        // const chatroom = convertChatRoomFirestoreToGQL(room);
-
         upsertChat(room, friendships, (selfUser?.id || "") as UserID);
+
+        room.members.forEach(async (pid) => {
+          const userMirror = getUserMirror(pid, globalUserMirror);
+
+          if (userMirror.username === NOT_FOUND_USER_MIRROR_NAME) {
+            // get firestore doc
+            const q = query(
+              collection(firestore, FirestoreCollection.MIRROR_USER),
+              where("id", "==", pid),
+              limit(1)
+            );
+            const innerDocsSnap = await getDocs(q);
+            innerDocsSnap.forEach((doc) => {
+              const mirror = doc.data() as any;
+              upsertUserMirror(mirror);
+            });
+          }
+        });
       });
     });
   };

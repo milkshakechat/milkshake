@@ -24,9 +24,11 @@ import { UserMessage, UserMessageCreateParams } from "@sendbird/chat/message";
 import {
   Alert,
   Avatar,
+  Badge,
   Button,
   Dropdown,
   Input,
+  InputNumber,
   List,
   MenuProps,
   Modal,
@@ -48,6 +50,7 @@ import {
 import {
   ChatRoomID,
   Friendship_Firestore,
+  MirrorPublicUser_Firestore,
   UserID,
   Username,
   getCompressedAvatarUrl,
@@ -75,6 +78,8 @@ import {
 } from "@ant-design/icons";
 import React from "react";
 import { Affix } from "antd";
+import LogoCookie from "@/components/LogoText/LogoCookie";
+import { useWalletState } from "@/state/wallets.state";
 
 const ChatPage = () => {
   const intl = useIntl();
@@ -92,6 +97,15 @@ const ChatPage = () => {
   const [compressedAvatarUrl, setCompressedAvatarUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [chatRoomTitle, setChatRoomTitle] = useState("");
+  const [upgradePremiumModal, setUpgradePremiumModal] = useState(false);
+
+  const { tradingWallet } = useWalletState(
+    (state) => ({
+      tradingWallet: state.tradingWallet,
+    }),
+    shallow
+  );
+  const USER_COOKIE_JAR_BALANCE = tradingWallet?.balance || 0;
   const participants = decodeURIComponent(
     searchParams.get("participants") || ""
   )
@@ -177,6 +191,14 @@ const ChatPage = () => {
           : true
       );
       setChatRoomTitle(spotlightChatroom.title);
+      setPremiumChatGift(
+        spotlightChatroom.participants.reduce((acc, curr) => {
+          return {
+            ...acc,
+            [curr]: 1,
+          };
+        }, {})
+      );
     }
   }, [spotlightChatroom]);
 
@@ -187,9 +209,15 @@ const ChatPage = () => {
   const [isWishlistModalOpen, setIsWishlistModalOpen] =
     useState<boolean>(false);
 
-  const { chatRooms } = useChatsListState(
+  const [premiumChatGift, setPremiumChatGift] = useState<
+    Record<UserID, number>
+  >({});
+
+  const { chatRooms, getUserMirror, globalUserMirror } = useChatsListState(
     (state) => ({
       chatRooms: state.chatsList,
+      getUserMirror: state.getUserMirror,
+      globalUserMirror: state.globalUserMirror,
     }),
     shallow
   );
@@ -208,6 +236,11 @@ const ChatPage = () => {
   useEffect(() => {
     loadPageData();
   }, []);
+
+  const PREMIUM_CHAT_GIFT_TOTAL = Object.values(premiumChatGift).reduce(
+    (acc, curr) => acc + curr,
+    0
+  );
 
   const loadPageData = () => {
     const args: EnterChatRoomInput = {
@@ -404,6 +437,132 @@ const ChatPage = () => {
     );
   };
 
+  const renderUpgradePremiumModal = () => {
+    return (
+      <Modal
+        open={upgradePremiumModal}
+        onOk={() => setUpgradePremiumModal(false)}
+        onCancel={() => setUpgradePremiumModal(false)}
+        footer={
+          <$Horizontal
+            justifyContent={isMobile ? "flex-end" : "space-between"}
+            alignItems="center"
+            spacing={4}
+          >
+            {!isMobile && (
+              <$Horizontal>{`Your Balance: ${USER_COOKIE_JAR_BALANCE}`}</$Horizontal>
+            )}
+            <$Horizontal spacing={4}>
+              <$Horizontal alignItems="center" spacing={2}>
+                <LogoCookie fill={token.colorPrimary} width="18px" />
+                <span
+                  style={{
+                    textAlign: "left",
+                    color: token.colorPrimary,
+                    fontSize: "1rem",
+                  }}
+                >
+                  {PREMIUM_CHAT_GIFT_TOTAL}
+                </span>
+              </$Horizontal>
+
+              <Button
+                disabled={PREMIUM_CHAT_GIFT_TOTAL > USER_COOKIE_JAR_BALANCE}
+                type="primary"
+              >
+                Confirm Purchase
+              </Button>
+            </$Horizontal>
+          </$Horizontal>
+        }
+      >
+        <$Vertical style={{ padding: "20px", gap: "10px" }}>
+          <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+            Gift Premium Chat
+          </span>
+          <span>
+            Buy Premium Chat for your group members. 1 month = 1 cookie
+          </span>
+          {isMobile && (
+            <span>{`Your Balance: ${USER_COOKIE_JAR_BALANCE} cookies`}</span>
+          )}
+          <Spacer height="10px" />
+          <List
+            itemLayout="horizontal"
+            dataSource={spotlightChatroom.participants.map((pid) =>
+              getUserMirror(pid, globalUserMirror)
+            )}
+            renderItem={(item, index) => (
+              <$Horizontal
+                justifyContent="space-between"
+                style={{ padding: "10px 0px" }}
+              >
+                <$Horizontal
+                  alignItems="center"
+                  spacing={3}
+                  style={{ flex: 1 }}
+                >
+                  <Badge
+                    dot
+                    color={
+                      spotlightChatroom.sendBirdParticipants.includes(item.id)
+                        ? token.colorSuccess
+                        : token.colorWarning
+                    }
+                    offset={[-24, 0]}
+                  >
+                    <Avatar src={item.avatar} size={24} />
+                  </Badge>
+                  <span>{`${item.username}`}</span>
+                </$Horizontal>
+                <InputNumber
+                  addonBefore={
+                    <span
+                      onClick={() => {
+                        setPremiumChatGift((state) => {
+                          let curr = state[item.id] || 0;
+                          let next = curr - 1;
+                          if (next < 0) {
+                            next = 0;
+                          }
+                          return {
+                            ...state,
+                            [item.id]: next,
+                          };
+                        });
+                      }}
+                    >{`-`}</span>
+                  }
+                  addonAfter={
+                    <span
+                      onClick={() => {
+                        setPremiumChatGift((state) => {
+                          let curr = state[item.id] || 0;
+                          let next = curr + 1;
+                          if (next > 36) {
+                            next = 36;
+                          }
+                          return {
+                            ...state,
+                            [item.id]: next,
+                          };
+                        });
+                      }}
+                    >{`+`}</span>
+                  }
+                  value={premiumChatGift[item.id] || 0}
+                  min={0}
+                  max={36}
+                  style={{ maxWidth: "100px" }}
+                />
+              </$Horizontal>
+            )}
+          />
+        </$Vertical>
+      </Modal>
+    );
+  };
+
   if (isSettingsMode) {
     return (
       <$Vertical>
@@ -511,7 +670,12 @@ const ChatPage = () => {
               />
             </$Vertical>
             <$Vertical spacing={3}>
-              <label>{`Groupchat Members (${spotlightChatroom.participants.length}/12)`}</label>
+              <$Horizontal justifyContent="space-between">
+                <label>{`Groupchat Members (${spotlightChatroom.participants.length}/12)`}</label>
+                <a onClick={() => setUpgradePremiumModal(true)}>
+                  <i>Gift Premium</i>
+                </a>
+              </$Horizontal>
               <Dropdown
                 placement="top"
                 menu={{ items: filteredFriendships }}
@@ -542,15 +706,17 @@ const ChatPage = () => {
               </Dropdown>
               <List
                 itemLayout="horizontal"
-                dataSource={spotlightChatroom.participants}
+                dataSource={spotlightChatroom.participants.map((pid) =>
+                  getUserMirror(pid, globalUserMirror)
+                )}
                 renderItem={(item, index) => (
                   <$Horizontal
                     justifyContent="space-between"
                     style={{ padding: "10px 0px" }}
                   >
-                    <$Horizontal alignItems="center" spacing={2}>
-                      <Avatar size={24} />
-                      <span>{item}</span>
+                    <$Horizontal alignItems="center" spacing={3}>
+                      <Avatar src={item.avatar} size={24} />
+                      <span>{item.username}</span>
                     </$Horizontal>
                     <Dropdown
                       menu={{
@@ -558,11 +724,22 @@ const ChatPage = () => {
                           {
                             key: "view",
                             label: (
-                              <NavLink to={`/users?userID=${item}`}>
+                              <NavLink to={`/users?userID=${item.id}`}>
                                 <span style={{ border: "0px solid white" }}>
                                   View Profile
                                 </span>
                               </NavLink>
+                            ),
+                          },
+                          {
+                            key: "gift",
+                            label: (
+                              <span
+                                onClick={() => setUpgradePremiumModal(true)}
+                                style={{ border: "0px solid white" }}
+                              >
+                                Gift Premium
+                              </span>
                             ),
                           },
                           {
@@ -652,6 +829,7 @@ const ChatPage = () => {
         </Affix>
         <Spacer />
         {renderMuteModal()}
+        {renderUpgradePremiumModal()}
       </$Vertical>
     );
   }
@@ -664,7 +842,8 @@ const ChatPage = () => {
     ) {
       setIsFreeChatMode(!isFreeChatMode);
     } else {
-      message.info("At least 2 members need to have Premium");
+      // message.info("At least 2 members need to have Premium");
+      setUpgradePremiumModal(true);
     }
   };
 
@@ -692,53 +871,54 @@ const ChatPage = () => {
               renderChannelHeader={
                 friend
                   ? () => (
-                      <div
-                        style={{
-                          padding: isMobile ? "5px" : "0px",
-                          top: 0,
-                          position: "sticky",
-                        }}
-                      >
-                        <UserBadgeHeader
-                          user={{
-                            id: friend.userID,
-                            avatar: friend.avatar,
-                            displayName: friend.displayName,
-                            username: friend.username as Username,
+                      <Affix offsetTop={10}>
+                        <div
+                          style={{
+                            padding: isMobile ? "5px" : "0px",
+                            top: 0,
+                            position: "sticky",
                           }}
-                          glowColor={token.colorPrimaryText}
-                          backButton={true}
-                          backButtonAction={() =>
-                            navigate({
-                              pathname: `/app/chats`,
-                            })
-                          }
-                          actionButton={
-                            <$Horizontal spacing={2} alignItems="center">
-                              <Switch
-                                checkedChildren={"Pro"}
-                                unCheckedChildren={"Free"}
-                                checked={!isFreeChatMode}
-                                onChange={toggleFreeChatMode}
-                              />
-                              {isGroupChat ? (
-                                <SettingFilled
-                                  onClick={() => setIsSettingsMode(true)}
-                                  style={{
-                                    fontSize: "1.1rem",
-                                    color: token.colorTextDescription,
-                                  }}
+                        >
+                          <UserBadgeHeader
+                            user={{
+                              id: friend.userID,
+                              avatar: friend.avatar,
+                              displayName: friend.displayName,
+                              username: friend.username as Username,
+                            }}
+                            glowColor={token.colorPrimaryText}
+                            backButton={true}
+                            backButtonAction={() =>
+                              navigate({
+                                pathname: `/app/chats`,
+                              })
+                            }
+                            actionButton={
+                              <$Horizontal spacing={2} alignItems="center">
+                                <Switch
+                                  checkedChildren={"Pro"}
+                                  unCheckedChildren={"Free"}
+                                  checked={!isFreeChatMode}
+                                  onChange={toggleFreeChatMode}
                                 />
-                              ) : (
-                                <BellOutlined
-                                  onClick={() => setIsMuteModalOpen(true)}
-                                  style={{
-                                    fontSize: "1.1rem",
-                                    color: token.colorTextDescription,
-                                  }}
-                                />
-                              )}
-                              {/* <Dropdown.Button
+                                {isGroupChat ? (
+                                  <SettingFilled
+                                    onClick={() => setIsSettingsMode(true)}
+                                    style={{
+                                      fontSize: "1.1rem",
+                                      color: token.colorTextDescription,
+                                    }}
+                                  />
+                                ) : (
+                                  <BellOutlined
+                                    onClick={() => setIsMuteModalOpen(true)}
+                                    style={{
+                                      fontSize: "1.1rem",
+                                      color: token.colorTextDescription,
+                                    }}
+                                  />
+                                )}
+                                {/* <Dropdown.Button
                                 type="primary"
                                 menu={{ items }}
                                 arrow
@@ -753,10 +933,11 @@ const ChatPage = () => {
                                   </PP>
                                 </$Horizontal>
                               </Dropdown.Button> */}
-                            </$Horizontal>
-                          }
-                        />
-                      </div>
+                              </$Horizontal>
+                            }
+                          />
+                        </div>
+                      </Affix>
                     )
                   : undefined
               }
@@ -822,11 +1003,13 @@ const ChatPage = () => {
             />
             <FreeChatPanel
               chatRoomID={spotlightChatroom.chatRoomID as ChatRoomID}
+              toggleUpgradeChatModal={() => setUpgradePremiumModal(true)}
             />
           </div>
         )}
       </div>
       {renderMuteModal()}
+      {renderUpgradePremiumModal()}
     </$Vertical>
   );
 };

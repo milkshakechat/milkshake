@@ -29,8 +29,12 @@ const loremIpsum = lorem.replace(",", ".").split(".");
 
 interface FreeChatPanelProps {
   chatRoomID: ChatRoomID;
+  toggleUpgradeChatModal: () => void;
 }
-export const FreeChatPanel = ({ chatRoomID }: FreeChatPanelProps) => {
+export const FreeChatPanel = ({
+  chatRoomID,
+  toggleUpgradeChatModal,
+}: FreeChatPanelProps) => {
   const intl = useIntl();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -147,11 +151,10 @@ export const FreeChatPanel = ({ chatRoomID }: FreeChatPanelProps) => {
           message={
             <$Horizontal justifyContent="space-between">
               <span>Upgrade for full premium chat</span>
-              <NavLink to="/app/profile/settings">
-                <Button type="link" size="small">
-                  Upgrade
-                </Button>
-              </NavLink>
+
+              <Button onClick={toggleUpgradeChatModal} type="link" size="small">
+                Upgrade
+              </Button>
             </$Horizontal>
           }
           type="warning"

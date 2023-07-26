@@ -6,6 +6,7 @@ import {
   Friendship_Firestore,
   ChatRoom_Firestore,
   ChatRoomParticipantStatus,
+  MirrorPublicUser_Firestore,
 } from "@milkshakechat/helpers";
 import { create } from "zustand";
 
@@ -23,6 +24,7 @@ export interface UpdateSendBirdChannelMetadataArgsFE {
   previewText?: string;
   lastTimestamp?: number;
 }
+
 interface ChatListsState {
   chatsList: ChatRoomFE[];
   upsertChat: (
@@ -35,7 +37,15 @@ interface ChatListsState {
     userID: UserID
   ) => void;
   updateSendBirdMetadata: (diff: UpdateSendBirdChannelMetadataArgsFE) => void;
+  globalUserMirror: GlobalUserMirror;
+  upsertUserMirror: (user: MirrorPublicUser_Firestore) => void;
+  getUserMirror: (
+    userID: UserID,
+    global: GlobalUserMirror
+  ) => MirrorPublicUser_Firestore;
 }
+
+export type GlobalUserMirror = Record<UserID, MirrorPublicUser_Firestore>;
 
 export const useChatsListState = create<ChatListsState>()((set) => ({
   chatsList: [],
@@ -80,6 +90,24 @@ export const useChatsListState = create<ChatListsState>()((set) => ({
       });
       return { chatsList: chats };
     });
+  },
+  globalUserMirror: {},
+  upsertUserMirror: (user) => {
+    set((state) => {
+      return {
+        globalUserMirror: {
+          ...state.globalUserMirror,
+          [user.id]: user,
+        },
+      };
+    });
+  },
+  getUserMirror: (userID, globalUserMirror) => {
+    const user = globalUserMirror[userID] || {
+      ...notFoundUser,
+      id: userID,
+    };
+    return user;
   },
 }));
 
@@ -221,4 +249,11 @@ export const convertChatRoomFirestoreToGQL = (room: ChatRoom_Firestore) => {
     thumbnail: room.thumbnail || "",
   };
   return cv;
+};
+
+export const NOT_FOUND_USER_MIRROR_NAME = "unknown";
+const notFoundUser: MirrorPublicUser_Firestore = {
+  id: "" as UserID,
+  username: NOT_FOUND_USER_MIRROR_NAME as Username,
+  avatar: "",
 };

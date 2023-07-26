@@ -8,7 +8,7 @@ import { useFetchStoryFeedQuery } from "@/hooks/useStory";
 import useWebPermissions from "@/hooks/useWebPermissions";
 import { useChatsListState } from "@/state/chats.state";
 import { useUserState } from "@/state/user.state";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { shallow } from "zustand/shallow";
 import { useGraphqlClient } from "./GraphQLSocketProvider";
 import { useListWishlist } from "@/hooks/useWish";
@@ -17,6 +17,7 @@ import { useNotifications } from "@/hooks/useNotifications";
 import { useWallets } from "@/hooks/useWallets";
 import { useStripeHook } from "@/hooks/useStripeHook";
 import { useFetchSwipeFeed } from "@/hooks/useSwipe";
+import { UserID } from "@milkshakechat/helpers";
 
 interface Props {
   children: React.ReactNode;
@@ -73,6 +74,36 @@ export const UserInfoProvider = ({ children }: Props) => {
     //   document.removeEventListener("visibilitychange", handleVisibilityChange);
     // };
   }, []);
+
+  const refreshNonce = useRef(0);
+  const { chatsList, refreshAllChatPreviews } = useChatsListState(
+    (state) => ({
+      chatsList: state.chatsList,
+      refreshAllChatPreviews: state.refreshAllChatPreviews,
+    }),
+    shallow
+  );
+
+  const friendships = useUserState((state) => state.friendships);
+  const friendsRef = useRef(friendships);
+
+  // useEffect(() => {
+  //   const refresh = () => {
+  //     if (refreshNonce.current > 3) {
+  //       return;
+  //     }
+  //     if (selfUser) {
+  //       refreshAllChatPreviews(friendsRef.current, selfUser.id as UserID);
+  //       refreshNonce.current = refreshNonce.current + 1;
+  //     }
+  //   };
+
+  //   const intervalId = setInterval(refresh, 5000);
+
+  //   return () => {
+  //     clearInterval(intervalId); // Don't forget to clear interval on component unmount
+  //   };
+  // }, [selfUser]); // Empty dependency array ensures this effect runs once when component mounts and never again.
 
   // WARNING! The apollo refresh isnt working for some reason. seems to be common issue online
   const initialStartupQueries = ({ refresh }: { refresh: boolean }) => {

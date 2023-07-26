@@ -32,7 +32,12 @@ import {
   Affix,
 } from "antd";
 import { useEffect, useState } from "react";
-import { UserOutlined, ScanOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  ScanOutlined,
+  SearchOutlined,
+  LeftOutlined,
+} from "@ant-design/icons";
 import { useUserState } from "@/state/user.state";
 import {
   QRCODE_LOGO,
@@ -741,6 +746,16 @@ export const ContactsPage = () => {
     <>
       <LayoutInteriorHeader
         title={<PP>{"Contacts"}</PP>}
+        leftAction={
+          <Button
+            onClick={() => navigate("/app/chats")}
+            type="link"
+            icon={<LeftOutlined />}
+            style={{ color: token.colorTextSecondary }}
+          >
+            Back
+          </Button>
+        }
         rightAction={
           <Button
             onClick={() => setShowAddContactModal(true)}

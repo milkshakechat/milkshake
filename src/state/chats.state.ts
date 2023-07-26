@@ -100,9 +100,7 @@ const extrapolateChatPreviews = (
 
     const aliasTitle =
       chatRoom.title ||
-      `${participantContacts.map((fr) => fr.username).join(", ")} (${
-        chatRoom.participants.length
-      } people)`;
+      `${participantContacts.map((fr) => fr.username).join(", ")}`;
     const thumbnail = participantContacts[0]?.avatar || "";
 
     const chatFE: ChatRoomFE = {
@@ -120,9 +118,7 @@ const extrapolateChatPreview = (
   friendships: Friendship_Firestore[],
   userID: UserID
 ): ChatRoomFE => {
-  const participants = room.firestoreParticipantSearch.filter(
-    (id) => id !== userID
-  );
+  const participants = room.members.filter((id) => id !== userID);
 
   const participantContacts = participants
     .map((participantID) =>
@@ -131,16 +127,14 @@ const extrapolateChatPreview = (
     .filter((fr) => fr) as Friendship_Firestore[];
   const aliasTitle =
     room.title ||
-    `${participantContacts.map((fr) => fr.username).join(", ")} (${
-      room.firestoreParticipantSearch.length
-    } people)` ||
+    `${participantContacts.map((fr) => fr.username).join(", ")}` ||
     "";
   const thumbnail = participantContacts[0]?.avatar || "";
 
   const chatFE: ChatRoomFE = {
     ...room,
     chatRoomID: room.id,
-    participants: room.firestoreParticipantSearch as any[],
+    participants: room.members as any[],
     sendBirdParticipants: Object.keys(room.participants).reduce((acc, curr) => {
       const next = [...acc];
       const status = room.participants[curr as UserID];
@@ -169,9 +163,7 @@ export const extrapolateChatTitle = (
       friendships.find((fr) => fr.friendID === participantID)
     )
     .filter((fr) => fr) as Friendship_Firestore[];
-  const title = `${participantContacts.map((fr) => fr.username).join(", ")} (${
-    roomParticipants.length
-  } people)`;
+  const title = `${participantContacts.map((fr) => fr.username).join(", ")}`;
   return title;
 };
 
@@ -222,7 +214,7 @@ export const matchContactToChatroom = (
 export const convertChatRoomFirestoreToGQL = (room: ChatRoom_Firestore) => {
   const cv: ChatRoom = {
     chatRoomID: room.id,
-    participants: room.firestoreParticipantSearch as any[],
+    participants: room.members as any[],
     sendBirdChannelURL: room.sendBirdChannelURL,
     sendBirdParticipants: [],
     title: room.title || "",

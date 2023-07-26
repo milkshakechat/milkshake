@@ -433,6 +433,7 @@ export type Mutation = {
   updateChatSettings: UpdateChatSettingsResponse;
   updatePushToken: UpdatePushTokenResponse;
   updateWish: UpdateWishResponse;
+  upgradePremiumChat: UpgradePremiumChatResponse;
 };
 
 
@@ -528,6 +529,11 @@ export type MutationUpdatePushTokenArgs = {
 
 export type MutationUpdateWishArgs = {
   input: UpdateWishInput;
+};
+
+
+export type MutationUpgradePremiumChatArgs = {
+  input: UpgradePremiumChatInput;
 };
 
 export type NotificationGql = {
@@ -856,6 +862,18 @@ export type UpdateWishResponse = ResponseError | UpdateWishResponseSuccess;
 export type UpdateWishResponseSuccess = {
   __typename?: 'UpdateWishResponseSuccess';
   wish: Wish;
+};
+
+export type UpgradePremiumChatInput = {
+  months: Scalars['Int']['input'];
+  targetUserID: Scalars['UserID']['input'];
+};
+
+export type UpgradePremiumChatResponse = ResponseError | UpgradePremiumChatResponseSuccess;
+
+export type UpgradePremiumChatResponseSuccess = {
+  __typename?: 'UpgradePremiumChatResponseSuccess';
+  referenceID: Scalars['String']['output'];
 };
 
 export type User = {

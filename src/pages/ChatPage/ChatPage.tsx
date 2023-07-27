@@ -3,6 +3,7 @@ import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import {
   NavLink,
+  createSearchParams,
   useLocation,
   useNavigate,
   useSearchParams,
@@ -36,10 +37,15 @@ import {
   Space,
   Spin,
   Switch,
+  Tag,
   message,
   theme,
 } from "antd";
-import { useEnterChatRoom, useUpdateChatSettings } from "@/hooks/useChat";
+import {
+  useEnterChatRoom,
+  useGiftPremiumChat,
+  useUpdateChatSettings,
+} from "@/hooks/useChat";
 import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import {
   ChatRoomFE,
@@ -80,6 +86,7 @@ import React from "react";
 import { Affix } from "antd";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import { useWalletState } from "@/state/wallets.state";
+import { CaretLeftOutlined } from "@ant-design/icons";
 
 const ChatPage = () => {
   const intl = useIntl();
@@ -147,6 +154,7 @@ const ChatPage = () => {
 
   const {
     data: enterChatRoomData,
+    loading: enterChatRoomLoading,
     errors: enterChatRoomErrors,
     runQuery: enterChatRoomQuery,
   } = useEnterChatRoom();
@@ -161,15 +169,6 @@ const ChatPage = () => {
       setSpotlightChatroom({
         ...enterChatRoomData.chatRoom,
         title: enterChatRoomData.chatRoom.title || "",
-        aliasTitle: enterChatRoomData.chatRoom.title
-          ? enterChatRoomData.chatRoom.title
-          : extrapolateChatTitle(
-              enterChatRoomData.chatRoom
-                ? enterChatRoomData.chatRoom.participants
-                : [],
-              friendships,
-              selfUser?.id as UserID
-            ),
         thumbnail: enterChatRoomData.chatRoom
           ? enterChatRoomData.chatRoom.title
           : "",
@@ -212,6 +211,8 @@ const ChatPage = () => {
   const [premiumChatGift, setPremiumChatGift] = useState<
     Record<UserID, number>
   >({});
+
+  const { runMutation: runGiftPremiumChatMutation } = useGiftPremiumChat();
 
   const { chatRooms, getUserMirror, globalUserMirror } = useChatsListState(
     (state) => ({
@@ -298,6 +299,20 @@ const ChatPage = () => {
       };
     });
 
+  const otherParticipants = (spotlightChatroom?.participants || []).filter(
+    (p) => p !== selfUser?.id
+  );
+  const aliasTitle =
+    otherParticipants.length > 1
+      ? `${getUserMirror(otherParticipants[0], globalUserMirror).username}, ${
+          getUserMirror(otherParticipants[1], globalUserMirror).username
+        }${
+          otherParticipants.length > 2
+            ? ` & ${otherParticipants.length - 2} others`
+            : ""
+        }`
+      : getUserMirror(otherParticipants[0], globalUserMirror).username;
+
   const isGroupChat =
     spotlightChatroom && spotlightChatroom.participants.length > 2;
 
@@ -340,9 +355,10 @@ const ChatPage = () => {
     setIsMuteLoading(false);
   };
 
-  if (!spotlightChatroom) {
+  if (!spotlightChatroom || enterChatRoomLoading) {
     return <LoadingAnimation width="100%" height="100%" type="cookie" />;
   }
+  const amIAdmin = spotlightChatroom.admins.includes(selfUser?.id || "");
 
   const renderMuteModal = () => {
     return (
@@ -469,6 +485,26 @@ const ChatPage = () => {
               <Button
                 disabled={PREMIUM_CHAT_GIFT_TOTAL > USER_COOKIE_JAR_BALANCE}
                 type="primary"
+                loading={isSubmitting}
+                onClick={async () => {
+                  setIsSubmitting(true);
+                  await runGiftPremiumChatMutation({
+                    chatRoomID: spotlightChatroom.chatRoomID as ChatRoomID,
+                    targets: Object.keys(premiumChatGift).map((pid) => {
+                      const amount = premiumChatGift[pid as UserID] || 0;
+                      return {
+                        months: amount,
+                        targetUserID: pid as UserID,
+                      };
+                    }),
+                  });
+                  setIsSubmitting(false);
+                  message.success(
+                    "Bought premium chat for friends! Check your wallet confirmation in a few minutes."
+                  );
+                  setUpgradePremiumModal(false);
+                  setIsFreeChatMode(true);
+                }}
               >
                 Confirm Purchase
               </Button>
@@ -505,7 +541,7 @@ const ChatPage = () => {
                   <Badge
                     dot
                     color={
-                      spotlightChatroom.sendBirdParticipants.includes(item.id)
+                      item.hasPremiumChat
                         ? token.colorSuccess
                         : token.colorWarning
                     }
@@ -563,6 +599,8 @@ const ChatPage = () => {
     );
   };
 
+  console.log(`spotlightChatroom`, spotlightChatroom);
+
   if (isSettingsMode) {
     return (
       <$Vertical>
@@ -604,12 +642,10 @@ const ChatPage = () => {
                   overflow: "hidden" /* Hide the text that overflows */,
                   textOverflow:
                     "ellipsis" /* Show ellipsis when the text overflows */,
-                  maxWidth: isMobile ? "50vw" : "none",
+                  maxWidth: isMobile ? "50vw" : "35vw",
                 }}
               >
-                <PP>
-                  {spotlightChatroom.title || spotlightChatroom.aliasTitle}
-                </PP>
+                <PP>{spotlightChatroom.title || aliasTitle}</PP>
               </div>
             }
             rightAction={
@@ -642,27 +678,30 @@ const ChatPage = () => {
                 }}
                 beforeUpload={validateFile}
               >
-                <Button type="link" style={{ marginLeft: 16 }}>
-                  {isUploadingFile ? (
-                    <Space direction="horizontal">
-                      <Spin />
-                      <Spacer width="5px" />
+                {amIAdmin && (
+                  <Button type="link" style={{ marginLeft: 16 }}>
+                    {isUploadingFile ? (
+                      <Space direction="horizontal">
+                        <Spin />
+                        <Spacer width="5px" />
+                        <span>
+                          <PP>Uploading...</PP>
+                        </span>
+                      </Space>
+                    ) : (
                       <span>
-                        <PP>Uploading...</PP>
+                        <PP>Change Group Photo</PP>
                       </span>
-                    </Space>
-                  ) : (
-                    <span>
-                      <PP>Change Group Photo</PP>
-                    </span>
-                  )}
-                </Button>
+                    )}
+                  </Button>
+                )}
               </Upload>
             </$Horizontal>
             <$Vertical spacing={3}>
               <label>Groupchat Name</label>
               <Input
                 value={chatRoomTitle}
+                disabled={!amIAdmin}
                 onChange={(e) => {
                   setChatRoomTitle(e.target.value);
                   setShowUpdate(true);
@@ -676,39 +715,48 @@ const ChatPage = () => {
                   <i>Gift Premium</i>
                 </a>
               </$Horizontal>
-              <Dropdown
-                placement="top"
-                menu={{ items: filteredFriendships }}
-                dropdownRender={(menu) => (
-                  <div
-                    style={{
-                      width: "auto",
-                      backgroundColor: token.colorBgContainer,
-                      padding: "10px",
-                      boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.1)",
-                      maxHeight: "70vh",
-                      overflowY: "scroll",
-                    }}
-                  >
-                    {React.cloneElement(menu as React.ReactElement, {
-                      style: { boxShadow: "none" },
-                    })}
-                  </div>
-                )}
-              >
-                <Input
-                  prefix={<SearchOutlined />}
-                  addonAfter="Invite"
-                  placeholder={"Search Contact List"}
-                  value={searchString}
-                  onChange={(e) => setSearchString(e.target.value)}
-                />
-              </Dropdown>
+              {amIAdmin ? (
+                <Dropdown
+                  placement="top"
+                  menu={{ items: filteredFriendships }}
+                  dropdownRender={(menu) => (
+                    <div
+                      style={{
+                        width: "auto",
+                        backgroundColor: token.colorBgContainer,
+                        padding: "10px",
+                        boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.1)",
+                        maxHeight: "70vh",
+                        overflowY: "scroll",
+                      }}
+                    >
+                      {React.cloneElement(menu as React.ReactElement, {
+                        style: { boxShadow: "none" },
+                      })}
+                    </div>
+                  )}
+                >
+                  <Input
+                    prefix={<SearchOutlined />}
+                    addonAfter="Invite"
+                    placeholder={"Add Friend to Groupchat"}
+                    value={searchString}
+                    onChange={(e) => setSearchString(e.target.value)}
+                  />
+                </Dropdown>
+              ) : (
+                <i style={{ color: token.colorTextDescription }}>
+                  Only admins can invite their friends to a groupchat
+                </i>
+              )}
               <List
                 itemLayout="horizontal"
-                dataSource={spotlightChatroom.participants.map((pid) =>
-                  getUserMirror(pid, globalUserMirror)
-                )}
+                dataSource={spotlightChatroom.participants
+                  .map((pid) => getUserMirror(pid, globalUserMirror))
+                  .slice()
+                  .sort((a, b) =>
+                    spotlightChatroom.admins.includes(a.id) ? -1 : 1
+                  )}
                 renderItem={(item, index) => (
                   <$Horizontal
                     justifyContent="space-between"
@@ -717,68 +765,143 @@ const ChatPage = () => {
                     <$Horizontal alignItems="center" spacing={3}>
                       <Avatar src={item.avatar} size={24} />
                       <span>{item.username}</span>
+                      {spotlightChatroom.admins.includes(item.id) && (
+                        <Tag color="blue">Admin</Tag>
+                      )}
                     </$Horizontal>
                     <Dropdown
                       menu={{
-                        items: [
-                          {
-                            key: "view",
-                            label: (
-                              <NavLink to={`/users?userID=${item.id}`}>
-                                <span style={{ border: "0px solid white" }}>
-                                  View Profile
-                                </span>
-                              </NavLink>
-                            ),
-                          },
-                          {
-                            key: "gift",
-                            label: (
-                              <span
-                                onClick={() => setUpgradePremiumModal(true)}
-                                style={{ border: "0px solid white" }}
-                              >
-                                Gift Premium
-                              </span>
-                            ),
-                          },
-                          {
-                            key: "admin",
-                            label: (
-                              <Popconfirm
-                                title="Confirm admin?"
-                                description={`Are you sure you want to make them an admin? This cannot be undone`}
-                                onConfirm={() =>
-                                  message.info("Promoted to admin")
-                                }
-                                okText="Yes"
-                                cancelText="No"
-                              >
-                                <span style={{ border: "0px solid white" }}>
-                                  Make Admin
-                                </span>
-                              </Popconfirm>
-                            ),
-                          },
-                          {
-                            key: "remove",
-                            label: (
-                              <Popconfirm
-                                title="Confirm removal?"
-                                description={`Are you sure you want to remove them from this groupchat?`}
-                                onConfirm={() =>
-                                  message.info("Removed them from groupchat")
-                                }
-                                okText="Yes"
-                                cancelText="No"
-                              >
-                                <span style={{ border: "0px solid white" }}>
-                                  Remove
-                                </span>
-                              </Popconfirm>
-                            ),
-                          },
-                        ],
+                        items: amIAdmin
+                          ? [
+                              {
+                                key: "view",
+                                label: (
+                                  <NavLink to={`/users?userID=${item.id}`}>
+                                    <span style={{ border: "0px solid white" }}>
+                                      View Profile
+                                    </span>
+                                  </NavLink>
+                                ),
+                              },
+                              {
+                                key: "gift",
+                                label: (
+                                  <span
+                                    onClick={() => setUpgradePremiumModal(true)}
+                                    style={{ border: "0px solid white" }}
+                                  >
+                                    Gift Premium
+                                  </span>
+                                ),
+                              },
+                              {
+                                key: "admin",
+                                label: spotlightChatroom.admins.includes(
+                                  item.id
+                                ) ? null : (
+                                  <Popconfirm
+                                    title="Confirm admin?"
+                                    description={`Are you sure you want to make them an admin? This cannot be undone unless they resign as admin.`}
+                                    onConfirm={() =>
+                                      message.info("Promoted to admin")
+                                    }
+                                    okText="Yes"
+                                    cancelText="No"
+                                  >
+                                    <span style={{ border: "0px solid white" }}>
+                                      Make Admin
+                                    </span>
+                                  </Popconfirm>
+                                ),
+                              },
+                              {
+                                key: "remove",
+                                label:
+                                  item.id === selfUser?.id ? (
+                                    <Popconfirm
+                                      title="Confirm resign?"
+                                      description={`Are you sure you want to resign as admin?
+                                      You may only leave the chat by resigning first.
+                                      There must be at least 1 admin.`}
+                                      onConfirm={() =>
+                                        message.info(
+                                          "Resigned as groupchat admin"
+                                        )
+                                      }
+                                      okText="Yes"
+                                      cancelText="No"
+                                    >
+                                      <span
+                                        style={{ border: "0px solid white" }}
+                                      >
+                                        Resign Admin
+                                      </span>
+                                    </Popconfirm>
+                                  ) : (
+                                    <Popconfirm
+                                      title="Confirm removal?"
+                                      description={`Are you sure you want to remove them from this groupchat?`}
+                                      onConfirm={() =>
+                                        message.info(
+                                          "Removed them from groupchat"
+                                        )
+                                      }
+                                      okText="Yes"
+                                      cancelText="No"
+                                    >
+                                      <span
+                                        style={{ border: "0px solid white" }}
+                                      >
+                                        Remove
+                                      </span>
+                                    </Popconfirm>
+                                  ),
+                              },
+                            ]
+                          : [
+                              {
+                                key: "view",
+                                label: (
+                                  <NavLink to={`/users?userID=${item.id}`}>
+                                    <span style={{ border: "0px solid white" }}>
+                                      View Profile
+                                    </span>
+                                  </NavLink>
+                                ),
+                              },
+                              {
+                                key: "gift",
+                                label: (
+                                  <span
+                                    onClick={() => setUpgradePremiumModal(true)}
+                                    style={{ border: "0px solid white" }}
+                                  >
+                                    Gift Premium
+                                  </span>
+                                ),
+                              },
+                              {
+                                key: "leave",
+                                label:
+                                  item.id === selfUser?.id ? (
+                                    <Popconfirm
+                                      title="Confirm leave?"
+                                      description={`Are you sure you want to leave the groupchat? You can only rejoin if an admin friend re-invites you.`}
+                                      onConfirm={() =>
+                                        message.info("Left the groupchat")
+                                      }
+                                      okText="Yes"
+                                      cancelText="No"
+                                    >
+                                      <span
+                                        style={{ border: "0px solid white" }}
+                                      >
+                                        Leave Chat
+                                      </span>
+                                    </Popconfirm>
+                                  ) : null,
+                              },
+                            ],
                       }}
                     >
                       <EllipsisOutlined />
@@ -806,27 +929,29 @@ const ChatPage = () => {
             </Affix> */}
           </$Vertical>
         </div>
-        <Affix offsetBottom={0}>
-          <div
-            style={{
-              backgroundColor: token.colorBgContainer,
-              padding: "0px 20px",
-            }}
-          >
-            <Button
-              type="primary"
-              size="large"
-              disabled={!showUpdate}
+        {amIAdmin && (
+          <Affix offsetBottom={0}>
+            <div
               style={{
-                fontWeight: "bold",
-                width: "100%",
-                marginTop: "20px",
+                backgroundColor: token.colorBgContainer,
+                padding: "0px 20px",
               }}
             >
-              Update Settings
-            </Button>
-          </div>
-        </Affix>
+              <Button
+                type="primary"
+                size="large"
+                disabled={!showUpdate}
+                style={{
+                  fontWeight: "bold",
+                  width: "100%",
+                  marginTop: "20px",
+                }}
+              >
+                Update Settings
+              </Button>
+            </div>
+          </Affix>
+        )}
         <Spacer />
         {renderMuteModal()}
         {renderUpgradePremiumModal()}
@@ -844,6 +969,17 @@ const ChatPage = () => {
     } else {
       // message.info("At least 2 members need to have Premium");
       setUpgradePremiumModal(true);
+    }
+  };
+
+  const visitUser = (userID: UserID) => {
+    if (selfUser && userID !== selfUser.id) {
+      navigate({
+        pathname: `/user`,
+        search: createSearchParams({
+          userID,
+        }).toString(),
+      });
     }
   };
 
@@ -874,26 +1010,122 @@ const ChatPage = () => {
                       <Affix offsetTop={10}>
                         <div
                           style={{
-                            padding: isMobile ? "5px" : "0px",
+                            padding: isMobile ? "10px" : "5px 10px",
                             top: 0,
                             position: "sticky",
                           }}
                         >
-                          <UserBadgeHeader
-                            user={{
-                              id: friend.userID,
-                              avatar: friend.avatar,
-                              displayName: friend.displayName,
-                              username: friend.username as Username,
-                            }}
-                            glowColor={token.colorPrimaryText}
-                            backButton={true}
-                            backButtonAction={() =>
-                              navigate({
-                                pathname: `/app/chats`,
-                              })
-                            }
-                            actionButton={
+                          <$Vertical>
+                            <$Horizontal
+                              justifyContent="space-between"
+                              alignItems="center"
+                              style={{
+                                width: "100%",
+                                minWidth: "100%",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                              }}
+                              spacing={2}
+                            >
+                              <Button
+                                onClick={() => {
+                                  navigate(-1);
+                                }}
+                                icon={<CaretLeftOutlined />}
+                                style={{ marginRight: "15px" }}
+                              ></Button>
+                              <$Horizontal
+                                alignItems="center"
+                                style={{
+                                  flex: 1,
+                                  maxWidth: isMobile ? "50vw" : "none",
+                                  overflow: "hidden",
+                                }}
+                              >
+                                <$Horizontal
+                                  alignItems="center"
+                                  spacing={2}
+                                  style={{ flex: 1, cursor: "pointer" }}
+                                >
+                                  {otherParticipants.length > 1 ? (
+                                    <Avatar.Group>
+                                      <Avatar
+                                        src={
+                                          getUserMirror(
+                                            otherParticipants[0],
+                                            globalUserMirror
+                                          )?.avatar || ""
+                                        }
+                                        style={{
+                                          backgroundColor: token.colorPrimary,
+                                        }}
+                                      />
+                                      <Avatar
+                                        src={
+                                          getUserMirror(
+                                            otherParticipants[1],
+                                            globalUserMirror
+                                          )?.avatar || ""
+                                        }
+                                        style={{
+                                          backgroundColor: token.colorPrimary,
+                                        }}
+                                      />
+                                    </Avatar.Group>
+                                  ) : (
+                                    <Avatar
+                                      src={
+                                        getUserMirror(
+                                          otherParticipants[0],
+                                          globalUserMirror
+                                        )?.avatar || ""
+                                      }
+                                      onClick={(e) => {
+                                        if (e) {
+                                          e.stopPropagation();
+                                        }
+
+                                        navigate({
+                                          pathname: `/user`,
+                                          search: createSearchParams({
+                                            userID: otherParticipants[0],
+                                          }).toString(),
+                                        });
+                                      }}
+                                      icon={
+                                        <UserOutlined
+                                          style={{
+                                            color: token.colorPrimaryActive,
+                                          }}
+                                        />
+                                      }
+                                      style={{
+                                        backgroundColor: token.colorPrimaryBg,
+                                      }}
+                                    />
+                                  )}
+                                  {/* <$Vertical
+                                    style={{
+                                      whiteSpace: "nowrap",
+                                      textOverflow: "ellipsis",
+                                    }}
+                                    onClick={visitUser}
+                                  > */}
+                                  <PP>
+                                    <b
+                                      style={{
+                                        whiteSpace: "nowrap",
+                                        textOverflow: "ellipsis",
+                                        fontSize: "1rem",
+                                        overflow: "hidden",
+                                        maxWidth: isMobile ? "50vw" : "35vw",
+                                      }}
+                                    >
+                                      {spotlightChatroom.title || aliasTitle}
+                                    </b>
+                                  </PP>
+                                </$Horizontal>
+                              </$Horizontal>
                               <$Horizontal spacing={2} alignItems="center">
                                 <Switch
                                   checkedChildren={"Pro"}
@@ -918,24 +1150,9 @@ const ChatPage = () => {
                                     }}
                                   />
                                 )}
-                                {/* <Dropdown.Button
-                                type="primary"
-                                menu={{ items }}
-                                arrow
-                                onClick={() => setIsWishlistModalOpen(true)}
-                              >
-                                <$Horizontal alignItems="center">
-                                  <GiftFilled />
-                                  <PP>
-                                    <span style={{ marginLeft: "10px" }}>
-                                      {isMobile ? `Wishlist` : `Buy Wishlist`}
-                                    </span>
-                                  </PP>
-                                </$Horizontal>
-                              </Dropdown.Button> */}
                               </$Horizontal>
-                            }
-                          />
+                            </$Horizontal>
+                          </$Vertical>
                         </div>
                       </Affix>
                     )
@@ -968,9 +1185,7 @@ const ChatPage = () => {
                     maxWidth: "50vw",
                   }}
                 >
-                  <PP>
-                    {spotlightChatroom.title || spotlightChatroom.aliasTitle}
-                  </PP>
+                  <PP>{spotlightChatroom.title}</PP>
                 </div>
               }
               rightAction={

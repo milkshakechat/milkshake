@@ -9,6 +9,8 @@ import {
   SendFreeChatResponseSuccess,
   UpdateChatSettingsInput,
   UpdateChatSettingsResponseSuccess,
+  UpgradePremiumChatInput,
+  UpgradePremiumChatResponseSuccess,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import {
@@ -172,6 +174,7 @@ export const useRealtimeChatRooms = () => {
 
 export const useEnterChatRoom = () => {
   const [data, setData] = useState<EnterChatRoomResponseSuccess>();
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
   const existingChatsList = useChatsListState((state) => state.chatsList);
@@ -180,6 +183,7 @@ export const useEnterChatRoom = () => {
 
   const runQuery = async (args: EnterChatRoomInput) => {
     try {
+      setLoading(true);
       const ENTER_CHAT_ROOM = gql`
         query EnterChatRoomQuery($input: EnterChatRoomInput!) {
           enterChatRoom(input: $input) {
@@ -188,7 +192,7 @@ export const useEnterChatRoom = () => {
               chatRoom {
                 chatRoomID
                 participants
-                sendBirdParticipants
+                admins
                 sendBirdChannelURL
                 title
                 thumbnail
@@ -239,13 +243,15 @@ export const useEnterChatRoom = () => {
         //   userID: selfUser.id,
         // });
       }
+      setLoading(false);
     } catch (e) {
       console.log(e);
+      setLoading(false);
       setErrors(["no chat room found"]);
     }
   };
 
-  return { data, errors, runQuery };
+  return { data, loading, errors, runQuery };
 };
 
 export const useUpdateChatSettings = () => {
@@ -263,7 +269,6 @@ export const useUpdateChatSettings = () => {
               chatRoom {
                 chatRoomID
                 participants
-                sendBirdParticipants
                 sendBirdChannelURL
                 title
                 thumbnail
@@ -402,4 +407,63 @@ export const useRealtimeFreeChat = () => {
     getRealtimeFreeChatLogs,
     freeChatLogs,
   };
+};
+
+export const useGiftPremiumChat = () => {
+  const [data, setData] = useState<UpgradePremiumChatResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: UpgradePremiumChatInput) => {
+    setLoading(true);
+    try {
+      const UPGRADE_PREMIUM_CHAT = gql`
+        mutation UpgradePremiumChat($input: UpgradePremiumChatInput!) {
+          upgradePremiumChat(input: $input) {
+            __typename
+            ... on UpgradePremiumChatResponseSuccess {
+              referenceIDs
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<UpgradePremiumChatResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "upgradePremiumChat">>({
+              mutation: UPGRADE_PREMIUM_CHAT,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.upgradePremiumChat.__typename ===
+                "UpgradePremiumChatResponseSuccess"
+              ) {
+                resolve(data.upgradePremiumChat);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
 };

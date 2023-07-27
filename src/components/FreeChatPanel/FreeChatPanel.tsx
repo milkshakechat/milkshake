@@ -142,7 +142,7 @@ export const FreeChatPanel = ({
       </div>
       <div
         style={{
-          backgroundColor: token.colorBgBase,
+          backgroundColor: token.colorBgContainer,
           width: "100%",
           minHeight: isMobile ? "300px" : "300px",
         }}

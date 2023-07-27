@@ -8,7 +8,15 @@ import {
   useDemoSubscription,
 } from "@/hooks/useTemplateGQL";
 import { useUserState } from "@/state/user.state";
-import { Button, Result, Statistic, Tabs, TabsProps, theme } from "antd";
+import {
+  Button,
+  Result,
+  Statistic,
+  Switch,
+  Tabs,
+  TabsProps,
+  theme,
+} from "antd";
 import { useIntl } from "react-intl";
 import {
   createSearchParams,
@@ -28,6 +36,7 @@ import WalletPanel from "@/components/WalletPanel/WalletPanel";
 import { useWallets } from "@/hooks/useWallets";
 import { useWalletState } from "@/state/wallets.state";
 import shallow from "zustand/shallow";
+import { useState } from "react";
 
 enum viewModes {
   trading = "trading",
@@ -46,7 +55,7 @@ export const WalletPage = () => {
   const location = useLocation();
   const { token } = theme.useToken();
   const { recentTxs } = useWallets();
-
+  const [isNotifyAllowed, setIsNotifyAllowed] = useState(true);
   const { tradingWallet, escrowWallet } = useWalletState(
     (state) => ({
       tradingWallet: state.tradingWallet,
@@ -135,9 +144,12 @@ export const WalletPage = () => {
           }}
           actionButton={
             null
-            // <Button icon={<OrderedListOutlined />}>
-            //   <PP>Audiences</PP>
-            // </Button>
+            // <Switch
+            //   checkedChildren={"Tx Notify"}
+            //   unCheckedChildren={"Muted"}
+            //   checked={isNotifyAllowed}
+            //   onChange={setIsNotifyAllowed}
+            // />
           }
         />
         <Spacer />

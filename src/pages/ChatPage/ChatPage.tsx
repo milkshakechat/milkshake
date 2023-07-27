@@ -168,6 +168,9 @@ const ChatPage = () => {
     return url;
   };
 
+  const [optimisticInvitedFriends, setOptimisticInvitedFriends] = useState<
+    UserID[]
+  >([]);
   const [isSettingsMode, setIsSettingsMode] = useState(false);
 
   const {
@@ -335,10 +338,6 @@ const ChatPage = () => {
     );
   }
 
-  const inviteFriend = async (friend: Friendship_Firestore) => {
-    message.success("Invited friend to chat");
-  };
-
   const filteredFriendships = friendships
     .filter((fr) => {
       return (
@@ -357,13 +356,16 @@ const ChatPage = () => {
         key: fr.id,
         label: (
           <$Horizontal
-            justifyContent="space-between"
+            justifyContent="flex-start"
             alignItems="center"
             onClick={async (e) => {
               e.preventDefault();
               e.stopPropagation();
-              if (spotlightChatroom) {
-                inviteFriend(fr);
+              if (
+                spotlightChatroom &&
+                !optimisticInvitedFriends.includes(fr.friendID)
+              ) {
+                setOptimisticInvitedFriends((state) => [...state, fr.friendID]);
                 setSearchString("");
                 await runAddFriendMutation({
                   chatRoomID: spotlightChatroom.chatRoomID as ChatRoomID,
@@ -376,6 +378,7 @@ const ChatPage = () => {
             <span style={{ flex: 1 }}>
               {fr.friendNickname || `@${fr.username}`}
             </span>
+            {optimisticInvitedFriends.includes(fr.friendID) && <Spin />}
           </$Horizontal>
         ),
       };
@@ -397,7 +400,6 @@ const ChatPage = () => {
 
   const isGroupChat =
     spotlightChatroom && spotlightChatroom.participants.length > 2;
-
   enum SnoozeUntilEnum {
     "3hours" = "3hours",
     "1day" = "1day",
@@ -836,6 +838,11 @@ const ChatPage = () => {
                   .slice()
                   .sort((a, b) =>
                     spotlightChatroom.admins.includes(a.id) ? -1 : 1
+                  )
+                  .concat(
+                    optimisticInvitedFriends.map((pid) =>
+                      getUserMirror(pid, globalUserMirror)
+                    )
                   )}
                 renderItem={(item, index) => (
                   <$Horizontal
@@ -847,6 +854,9 @@ const ChatPage = () => {
                       <span>{item.username}</span>
                       {spotlightChatroom.admins.includes(item.id) && (
                         <Tag color="blue">Admin</Tag>
+                      )}
+                      {optimisticInvitedFriends.includes(item.id) && (
+                        <Tag color="yellow">Invite Sent</Tag>
                       )}
                     </$Horizontal>
                     <Dropdown
@@ -968,6 +978,8 @@ const ChatPage = () => {
                                         setLoadingMemberStatus((state) =>
                                           state.filter((s) => s !== item.id)
                                         );
+                                        // refresh the page
+                                        window.location.reload();
                                       }}
                                       okText="Yes"
                                       cancelText="No"
@@ -1152,167 +1164,176 @@ const ChatPage = () => {
               onChatHeaderActionClick={() => {
                 console.log(`onChatHeaderActionClick`);
               }}
-              renderChannelHeader={
-                friend
-                  ? () => (
-                      <Affix offsetTop={10}>
-                        <div
+              renderChannelHeader={() => (
+                <Affix offsetTop={10}>
+                  <div
+                    style={{
+                      padding: isMobile ? "10px" : "5px 10px",
+                      top: 0,
+                      position: "sticky",
+                    }}
+                  >
+                    <$Vertical>
+                      <$Horizontal
+                        justifyContent="space-between"
+                        alignItems="center"
+                        style={{
+                          width: "100%",
+                          minWidth: "100%",
+                          justifyContent: "flex-start",
+                          alignItems: "center",
+                        }}
+                        spacing={2}
+                      >
+                        <Button
+                          onClick={() => {
+                            navigate(-1);
+                          }}
+                          icon={<CaretLeftOutlined />}
+                          style={{ marginRight: "15px" }}
+                        ></Button>
+                        <$Horizontal
+                          alignItems="center"
                           style={{
-                            padding: isMobile ? "10px" : "5px 10px",
-                            top: 0,
-                            position: "sticky",
+                            flex: 1,
+                            maxWidth: isMobile ? "50vw" : "none",
+                            overflow: "hidden",
                           }}
                         >
-                          <$Vertical>
-                            <$Horizontal
-                              justifyContent="space-between"
-                              alignItems="center"
-                              style={{
-                                width: "100%",
-                                minWidth: "100%",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                              }}
-                              spacing={2}
-                            >
-                              <Button
-                                onClick={() => {
-                                  navigate(-1);
-                                }}
-                                icon={<CaretLeftOutlined />}
-                                style={{ marginRight: "15px" }}
-                              ></Button>
-                              <$Horizontal
-                                alignItems="center"
+                          <$Horizontal
+                            alignItems="center"
+                            spacing={2}
+                            style={{ flex: 1, cursor: "pointer" }}
+                          >
+                            {spotlightChatroom.thumbnail ? (
+                              <Avatar
+                                src={spotlightChatroom.thumbnail}
                                 style={{
-                                  flex: 1,
-                                  maxWidth: isMobile ? "50vw" : "none",
-                                  overflow: "hidden",
+                                  backgroundColor: token.colorPrimary,
                                 }}
-                              >
-                                <$Horizontal
-                                  alignItems="center"
-                                  spacing={2}
-                                  style={{ flex: 1, cursor: "pointer" }}
-                                >
-                                  {spotlightChatroom.thumbnail ? (
-                                    <Avatar
-                                      src={spotlightChatroom.thumbnail}
-                                      style={{
-                                        backgroundColor: token.colorPrimary,
-                                      }}
-                                    />
-                                  ) : otherParticipants.length > 1 ? (
-                                    <Avatar.Group>
-                                      <Avatar
-                                        src={
-                                          getUserMirror(
-                                            otherParticipants[0],
-                                            globalUserMirror
-                                          )?.avatar || ""
-                                        }
-                                        style={{
-                                          backgroundColor: token.colorPrimary,
-                                        }}
-                                      />
-                                      <Avatar
-                                        src={
-                                          getUserMirror(
-                                            otherParticipants[1],
-                                            globalUserMirror
-                                          )?.avatar || ""
-                                        }
-                                        style={{
-                                          backgroundColor: token.colorPrimary,
-                                        }}
-                                      />
-                                    </Avatar.Group>
-                                  ) : (
-                                    <Avatar
-                                      src={
-                                        getUserMirror(
-                                          otherParticipants[0],
-                                          globalUserMirror
-                                        )?.avatar || ""
-                                      }
-                                      onClick={(e) => {
-                                        if (e) {
-                                          e.stopPropagation();
-                                        }
+                              />
+                            ) : otherParticipants.length > 1 ? (
+                              <Avatar.Group>
+                                <Avatar
+                                  src={
+                                    getUserMirror(
+                                      otherParticipants[0],
+                                      globalUserMirror
+                                    )?.avatar || ""
+                                  }
+                                  style={{
+                                    backgroundColor: token.colorPrimary,
+                                  }}
+                                />
+                                <Avatar
+                                  src={
+                                    getUserMirror(
+                                      otherParticipants[1],
+                                      globalUserMirror
+                                    )?.avatar || ""
+                                  }
+                                  style={{
+                                    backgroundColor: token.colorPrimary,
+                                  }}
+                                />
+                              </Avatar.Group>
+                            ) : (
+                              <Avatar
+                                src={
+                                  getUserMirror(
+                                    otherParticipants[0],
+                                    globalUserMirror
+                                  )?.avatar || ""
+                                }
+                                onClick={(e) => {
+                                  if (e) {
+                                    e.stopPropagation();
+                                  }
 
-                                        navigate({
-                                          pathname: `/user`,
-                                          search: createSearchParams({
-                                            userID: otherParticipants[0],
-                                          }).toString(),
-                                        });
-                                      }}
-                                      icon={
-                                        <UserOutlined
-                                          style={{
-                                            color: token.colorPrimaryActive,
-                                          }}
-                                        />
-                                      }
-                                      style={{
-                                        backgroundColor: token.colorPrimaryBg,
-                                      }}
-                                    />
-                                  )}
-                                  {/* <$Vertical
+                                  navigate({
+                                    pathname: `/user`,
+                                    search: createSearchParams({
+                                      userID: otherParticipants[0],
+                                    }).toString(),
+                                  });
+                                }}
+                                icon={
+                                  <UserOutlined
+                                    style={{
+                                      color: token.colorPrimaryActive,
+                                    }}
+                                  />
+                                }
+                                style={{
+                                  backgroundColor: token.colorPrimaryBg,
+                                }}
+                              />
+                            )}
+                            {/* <$Vertical
                                     style={{
                                       whiteSpace: "nowrap",
                                       textOverflow: "ellipsis",
                                     }}
                                     onClick={visitUser}
                                   > */}
-                                  <PP>
-                                    <b
-                                      style={{
-                                        whiteSpace: "nowrap",
-                                        textOverflow: "ellipsis",
-                                        fontSize: "1rem",
-                                        overflow: "hidden",
-                                        maxWidth: isMobile ? "50vw" : "35vw",
-                                      }}
-                                    >
-                                      {spotlightChatroom.title || aliasTitle}
-                                    </b>
-                                  </PP>
-                                </$Horizontal>
-                              </$Horizontal>
-                              <$Horizontal spacing={2} alignItems="center">
-                                <Switch
-                                  checkedChildren={"Pro"}
-                                  unCheckedChildren={"Free"}
-                                  checked={!isFreeChatMode}
-                                  onChange={toggleFreeChatMode}
-                                />
-                                {isGroupChat ? (
-                                  <SettingFilled
-                                    onClick={() => setIsSettingsMode(true)}
-                                    style={{
-                                      fontSize: "1.1rem",
-                                      color: token.colorTextDescription,
-                                    }}
-                                  />
-                                ) : (
-                                  <BellOutlined
-                                    onClick={() => setIsMuteModalOpen(true)}
-                                    style={{
-                                      fontSize: "1.1rem",
-                                      color: token.colorTextDescription,
-                                    }}
-                                  />
-                                )}
-                              </$Horizontal>
-                            </$Horizontal>
-                          </$Vertical>
-                        </div>
-                      </Affix>
-                    )
-                  : undefined
-              }
+                            <PP>
+                              <b
+                                onClick={(e) => {
+                                  if (e) {
+                                    e.stopPropagation();
+                                  }
+                                  if (otherParticipants.length === 1) {
+                                    navigate({
+                                      pathname: `/user`,
+                                      search: createSearchParams({
+                                        userID: otherParticipants[0],
+                                      }).toString(),
+                                    });
+                                  }
+                                }}
+                                style={{
+                                  whiteSpace: "nowrap",
+                                  textOverflow: "ellipsis",
+                                  fontSize: "1rem",
+                                  overflow: "hidden",
+                                  maxWidth: isMobile ? "50vw" : "35vw",
+                                }}
+                              >
+                                {spotlightChatroom.title || aliasTitle}
+                              </b>
+                            </PP>
+                          </$Horizontal>
+                        </$Horizontal>
+                        <$Horizontal spacing={2} alignItems="center">
+                          <Switch
+                            checkedChildren={"Pro"}
+                            unCheckedChildren={"Free"}
+                            checked={!isFreeChatMode}
+                            onChange={toggleFreeChatMode}
+                          />
+                          {isGroupChat ? (
+                            <SettingFilled
+                              onClick={() => setIsSettingsMode(true)}
+                              style={{
+                                fontSize: "1.1rem",
+                                color: token.colorTextDescription,
+                              }}
+                            />
+                          ) : (
+                            <BellOutlined
+                              onClick={() => setIsMuteModalOpen(true)}
+                              style={{
+                                fontSize: "1.1rem",
+                                color: token.colorTextDescription,
+                              }}
+                            />
+                          )}
+                        </$Horizontal>
+                      </$Horizontal>
+                    </$Vertical>
+                  </div>
+                </Affix>
+              )}
             />
           </div>
         ) : (

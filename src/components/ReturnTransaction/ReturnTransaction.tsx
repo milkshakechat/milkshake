@@ -67,13 +67,13 @@ export const ReturnTransaction = ({
 
   const { runMutation: runRecallTransactionMutation } = useRecallTransaction();
 
-  const { tradingWallet } = useWalletState(
+  const { escrowWallet } = useWalletState(
     (state) => ({
-      tradingWallet: state.tradingWallet,
+      escrowWallet: state.escrowWallet,
     }),
     shallow
   );
-  const USER_COOKIE_JAR_BALANCE = tradingWallet?.balance || 0;
+  const USER_COOKIE_JAR_BALANCE = escrowWallet?.balance || 0;
   const targetDate = dayjs(tx?.date).add(90, "day");
   // check if now is after targetDate
   const isAfter = dayjs().isAfter(targetDate);

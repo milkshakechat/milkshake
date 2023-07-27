@@ -134,7 +134,7 @@ export const FreeChatPanel = ({
                     style={{ minWidth: "24px", minHeight: "24px" }}
                   />
                   <div style={{ width: "10px" }} />
-                  {msg.message}
+                  {msg?.message}
                 </div>
               </$Horizontal>
             );

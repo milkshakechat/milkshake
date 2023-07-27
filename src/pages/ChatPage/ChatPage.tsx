@@ -19,7 +19,11 @@ import {
   SettingFilled,
   LeftOutlined,
 } from "@ant-design/icons";
-import { ChatRoom, EnterChatRoomInput } from "@/api/graphql/types";
+import {
+  AdminChatSettingsInput,
+  ChatRoom,
+  EnterChatRoomInput,
+} from "@/api/graphql/types";
 import { useSendBirdChannel } from "@/hooks/useSendbird";
 import { UserMessage, UserMessageCreateParams } from "@sendbird/chat/message";
 import {
@@ -34,6 +38,7 @@ import {
   MenuProps,
   Modal,
   Popconfirm,
+  Result,
   Space,
   Spin,
   Switch,
@@ -42,8 +47,13 @@ import {
   theme,
 } from "antd";
 import {
+  useAddFriendToChat,
+  useAdminChatSettings,
   useEnterChatRoom,
   useGiftPremiumChat,
+  useLeaveChat,
+  usePromoteAdmin,
+  useResignAdmin,
   useUpdateChatSettings,
 } from "@/hooks/useChat";
 import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
@@ -87,6 +97,7 @@ import { Affix } from "antd";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import { useWalletState } from "@/state/wallets.state";
 import { CaretLeftOutlined } from "@ant-design/icons";
+import { ErrorLines } from "@/api/graphql/error-line";
 
 const ChatPage = () => {
   const intl = useIntl();
@@ -98,6 +109,7 @@ const ChatPage = () => {
   const chat = searchParams.get("chat");
   const { uploadFile } = useStorage();
   const [showUpdate, setShowUpdate] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [isMuteLoading, setIsMuteLoading] = useState<boolean>(false);
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -105,6 +117,12 @@ const ChatPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [chatRoomTitle, setChatRoomTitle] = useState("");
   const [upgradePremiumModal, setUpgradePremiumModal] = useState(false);
+
+  const { runMutation: runAddFriendMutation } = useAddFriendToChat();
+  const { runMutation: runLeaveChatMutation } = useLeaveChat();
+  const { runMutation: runResignAdminMutation } = useResignAdmin();
+  const { runMutation: runPromoteAdminMutation } = usePromoteAdmin();
+  const { runMutation: runAdminChatSettingsMutation } = useAdminChatSettings();
 
   const { tradingWallet } = useWalletState(
     (state) => ({
@@ -135,7 +153,7 @@ const ChatPage = () => {
       file: file as File,
       path: `users/${selfUser.id}/chatroom/${assetID}.png`,
     });
-    console.log(`assetID`, assetID);
+
     if (url && selfUser && selfUser.id) {
       const resized = getCompressedGroupPhotoUrl({
         userID: selfUser.id,
@@ -166,24 +184,25 @@ const ChatPage = () => {
       setIsAllowedPushLocalState(
         enterChatRoomData.chatRoom?.pushConfig?.allowPush || false
       );
+      queryForSpotlightChatroom();
+    }
+  }, [enterChatRoomData]);
+
+  const queryForSpotlightChatroom = async () => {
+    if (enterChatRoomData) {
       setSpotlightChatroom({
         ...enterChatRoomData.chatRoom,
         title: enterChatRoomData.chatRoom.title || "",
-        thumbnail: enterChatRoomData.chatRoom
-          ? enterChatRoomData.chatRoom.title
+        thumbnail: enterChatRoomData.chatRoom.thumbnail
+          ? enterChatRoomData.chatRoom.thumbnail
           : "",
         lastTimestamp: 0,
       });
     }
-  }, [enterChatRoomData]);
+  };
 
   useEffect(() => {
     if (spotlightChatroom && selfUser) {
-      console.log(`spotlightChatroom`, spotlightChatroom);
-      console.log(
-        `selfUser.sendBirdAccessToken`,
-        selfUser?.sendBirdAccessToken
-      );
       setIsFreeChatMode(
         spotlightChatroom.sendBirdChannelURL && selfUser.sendBirdAccessToken
           ? false
@@ -203,6 +222,8 @@ const ChatPage = () => {
 
   const { runMutation: runUpdateChatSettingsMutation } =
     useUpdateChatSettings();
+
+  const [loadingMemberStatus, setLoadingMemberStatus] = useState<UserID[]>([]);
 
   const [isMuteModalOpen, setIsMuteModalOpen] = useState<boolean>(false);
   const [isWishlistModalOpen, setIsWishlistModalOpen] =
@@ -254,7 +275,7 @@ const ChatPage = () => {
   };
   useEffect(() => {
     loadPageData();
-  }, [chat, loadPageData]);
+  }, [chat]);
   const [searchString, setSearchString] = useState("");
   const { screen, isMobile } = useWindowSize();
   const sendBirdAccessToken = selfUser?.sendBirdAccessToken || "";
@@ -264,8 +285,54 @@ const ChatPage = () => {
       ? (spotlightChatroom.sendBirdChannelURL as string) || ""
       : "";
 
+  const updateGroupchatAdminSettings = async () => {
+    if (!spotlightChatroom || !spotlightChatroom.chatRoomID) return;
+    setIsUpdating(true);
+    const params = {
+      chatRoomID: spotlightChatroom.chatRoomID as ChatRoomID,
+    };
+    if (
+      compressedAvatarUrl &&
+      spotlightChatroom.thumbnail !== compressedAvatarUrl
+    ) {
+      // @ts-ignore
+      params.thumbnail = compressedAvatarUrl;
+    }
+    if (spotlightChatroom.title !== chatRoomTitle) {
+      // @ts-ignore
+      params.title = chatRoomTitle;
+    }
+    await runAdminChatSettingsMutation(params);
+    message.success("Updated groupchat info");
+    setShowUpdate(false);
+    setIsUpdating(false);
+    // refresh the page
+    // window.location.reload();
+  };
+
   if (enterChatRoomErrors && enterChatRoomErrors.length > 0) {
-    return <PP>No Chat Room Found</PP>;
+    return (
+      <$Vertical
+        alignItems="center"
+        justifyContent="center"
+        style={{ height: "90vh" }}
+      >
+        <Result
+          status="warning"
+          title={"Chat not found"}
+          subTitle={
+            "You may not have permission to view this chat or it no longer exists."
+          }
+          extra={
+            <NavLink to="/app/chats">
+              <Button type="primary" key="console">
+                Go Back
+              </Button>
+            </NavLink>
+          }
+        />
+      </$Vertical>
+    );
   }
 
   const inviteFriend = async (friend: Friendship_Firestore) => {
@@ -279,6 +346,12 @@ const ChatPage = () => {
         fr.username.toLowerCase().includes(searchString.toLowerCase())
       );
     })
+    .filter((fr) => {
+      return (
+        spotlightChatroom &&
+        !spotlightChatroom.participants.includes(fr.friendID)
+      );
+    })
     .map((fr) => {
       return {
         key: fr.id,
@@ -286,9 +359,18 @@ const ChatPage = () => {
           <$Horizontal
             justifyContent="space-between"
             alignItems="center"
-            onClick={() => {
-              inviteFriend(fr);
-              setSearchString("");
+            onClick={async (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (spotlightChatroom) {
+                inviteFriend(fr);
+                setSearchString("");
+                await runAddFriendMutation({
+                  chatRoomID: spotlightChatroom.chatRoomID as ChatRoomID,
+                  friendID: fr.friendID,
+                });
+                message.success("Invited friend to chat");
+              }
             }}
           >
             <span style={{ flex: 1 }}>
@@ -599,8 +681,6 @@ const ChatPage = () => {
     );
   };
 
-  console.log(`spotlightChatroom`, spotlightChatroom);
-
   if (isSettingsMode) {
     return (
       <$Vertical>
@@ -770,6 +850,7 @@ const ChatPage = () => {
                       )}
                     </$Horizontal>
                     <Dropdown
+                      trigger={["click"]}
                       menu={{
                         items: amIAdmin
                           ? [
@@ -802,9 +883,22 @@ const ChatPage = () => {
                                   <Popconfirm
                                     title="Confirm admin?"
                                     description={`Are you sure you want to make them an admin? This cannot be undone unless they resign as admin.`}
-                                    onConfirm={() =>
-                                      message.info("Promoted to admin")
-                                    }
+                                    onConfirm={async () => {
+                                      setLoadingMemberStatus((state) => [
+                                        ...state,
+                                        item.id,
+                                      ]);
+                                      await runPromoteAdminMutation({
+                                        chatRoomID:
+                                          spotlightChatroom.chatRoomID as ChatRoomID,
+                                        memberID: item.id,
+                                      });
+                                      message.info("Promoted to admin");
+                                      await queryForSpotlightChatroom();
+                                      setLoadingMemberStatus((state) =>
+                                        state.filter((s) => s !== item.id)
+                                      );
+                                    }}
                                     okText="Yes"
                                     cancelText="No"
                                   >
@@ -823,11 +917,25 @@ const ChatPage = () => {
                                       description={`Are you sure you want to resign as admin?
                                       You may only leave the chat by resigning first.
                                       There must be at least 1 admin.`}
-                                      onConfirm={() =>
+                                      onConfirm={async () => {
+                                        setLoadingMemberStatus((state) => [
+                                          ...state,
+                                          item.id,
+                                        ]);
+                                        await runResignAdminMutation({
+                                          chatRoomID:
+                                            spotlightChatroom.chatRoomID as ChatRoomID,
+                                        });
                                         message.info(
                                           "Resigned as groupchat admin"
-                                        )
-                                      }
+                                        );
+                                        await queryForSpotlightChatroom();
+                                        setLoadingMemberStatus((state) =>
+                                          state.filter((s) => s !== item.id)
+                                        );
+                                        // refresh the page
+                                        window.location.reload();
+                                      }}
                                       okText="Yes"
                                       cancelText="No"
                                     >
@@ -837,17 +945,37 @@ const ChatPage = () => {
                                         Resign Admin
                                       </span>
                                     </Popconfirm>
-                                  ) : (
+                                  ) : spotlightChatroom.admins.includes(
+                                      item.id
+                                    ) ? null : (
                                     <Popconfirm
                                       title="Confirm removal?"
                                       description={`Are you sure you want to remove them from this groupchat?`}
-                                      onConfirm={() =>
+                                      onConfirm={async () => {
+                                        setLoadingMemberStatus((state) => [
+                                          ...state,
+                                          item.id,
+                                        ]);
+                                        await runLeaveChatMutation({
+                                          chatRoomID:
+                                            spotlightChatroom.chatRoomID,
+                                          targetUserID: item.id,
+                                        });
                                         message.info(
-                                          "Removed them from groupchat"
-                                        )
-                                      }
+                                          "Removed them from groupchat!"
+                                        );
+                                        await queryForSpotlightChatroom();
+                                        setLoadingMemberStatus((state) =>
+                                          state.filter((s) => s !== item.id)
+                                        );
+                                      }}
                                       okText="Yes"
                                       cancelText="No"
+                                      okButtonProps={{
+                                        loading: loadingMemberStatus.includes(
+                                          item.id
+                                        ),
+                                      }}
                                     >
                                       <span
                                         style={{ border: "0px solid white" }}
@@ -887,9 +1015,27 @@ const ChatPage = () => {
                                     <Popconfirm
                                       title="Confirm leave?"
                                       description={`Are you sure you want to leave the groupchat? You can only rejoin if an admin friend re-invites you.`}
-                                      onConfirm={() =>
-                                        message.info("Left the groupchat")
-                                      }
+                                      onConfirm={async () => {
+                                        setLoadingMemberStatus((state) => [
+                                          ...state,
+                                          selfUser.id,
+                                        ]);
+                                        await runLeaveChatMutation({
+                                          chatRoomID:
+                                            spotlightChatroom.chatRoomID,
+                                          targetUserID: selfUser.id,
+                                        });
+                                        message.info("Left the groupchat");
+                                        await queryForSpotlightChatroom();
+                                        setLoadingMemberStatus((state) =>
+                                          state.filter((s) => s !== selfUser.id)
+                                        );
+                                        navigate({
+                                          pathname: `/app/chats`,
+                                        });
+                                        // refresh the page
+                                        window.location.reload();
+                                      }}
                                       okText="Yes"
                                       cancelText="No"
                                     >
@@ -940,7 +1086,9 @@ const ChatPage = () => {
               <Button
                 type="primary"
                 size="large"
+                onClick={updateGroupchatAdminSettings}
                 disabled={!showUpdate}
+                loading={isUpdating}
                 style={{
                   fontWeight: "bold",
                   width: "100%",
@@ -1047,7 +1195,14 @@ const ChatPage = () => {
                                   spacing={2}
                                   style={{ flex: 1, cursor: "pointer" }}
                                 >
-                                  {otherParticipants.length > 1 ? (
+                                  {spotlightChatroom.thumbnail ? (
+                                    <Avatar
+                                      src={spotlightChatroom.thumbnail}
+                                      style={{
+                                        backgroundColor: token.colorPrimary,
+                                      }}
+                                    />
+                                  ) : otherParticipants.length > 1 ? (
                                     <Avatar.Group>
                                       <Avatar
                                         src={
@@ -1185,7 +1340,7 @@ const ChatPage = () => {
                     maxWidth: "50vw",
                   }}
                 >
-                  <PP>{spotlightChatroom.title}</PP>
+                  <PP>{spotlightChatroom.title || aliasTitle}</PP>
                 </div>
               }
               rightAction={

@@ -55,7 +55,9 @@ const ChatsList = ({ chatPreviews }: ChatsListProps) => {
               );
             })
             .sort((a, b) => b.lastTimestamp - a.lastTimestamp)}
-          renderItem={(item, index) => <ChatPreview preview={item} />}
+          renderItem={(item, index) => {
+            return <ChatPreview preview={item} />;
+          }}
         />
       </div>
     </$Vertical>

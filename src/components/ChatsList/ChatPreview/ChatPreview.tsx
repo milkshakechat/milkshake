@@ -52,7 +52,14 @@ const ChatPreview = ({ preview }: ChatPreviewProps) => {
       <List.Item.Meta
         avatar={
           <$Horizontal justifyContent="center" style={{ width: "70px" }}>
-            {otherParticipants.length > 1 ? (
+            {thumbnail ? (
+              <Avatar
+                src={thumbnail}
+                style={{
+                  backgroundColor: token.colorPrimary,
+                }}
+              />
+            ) : otherParticipants.length > 1 ? (
               <Avatar.Group>
                 <Avatar
                   src={

@@ -365,10 +365,10 @@ export const WishPage = () => {
             </$Horizontal>
             <Divider />
             {!isOwnProfile && (
-              <Affix offsetBottom={30}>
+              <Affix offsetBottom={0}>
                 <div
                   style={{
-                    backgroundColor: token.colorBgBase,
+                    backgroundColor: token.colorBgContainer,
                     display: "flex",
                     flexDirection: "row",
                     justifyContent: "space-between",
@@ -396,6 +396,7 @@ export const WishPage = () => {
                     <BookmarkIcon fill={`${token.colorPrimaryActive}`} />
                   </$Horizontal>
                 </div>
+                <Spacer />
               </Affix>
             )}
           </section>

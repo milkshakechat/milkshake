@@ -7,6 +7,7 @@ import { useUserState } from "@/state/user.state";
 import {
   PurchaseMainfestID,
   TransactionType,
+  UserID,
   Username,
   WishBuyFrequency,
 } from "@milkshakechat/helpers";
@@ -30,6 +31,7 @@ import PP from "@/i18n/PlaceholderPrint";
 import StoryUpload from "@/components/StoryUpload/StoryUpload";
 import {
   NavLink,
+  createSearchParams,
   useNavigate,
   useParams,
   useSearchParams,
@@ -84,6 +86,17 @@ const PurchasePage = () => {
   if (!selfUser || !purchaseManifest) {
     return <LoadingAnimation width="100%" height="100%" type="cookie" />;
   }
+  const goToChatPage = (participants: UserID[]) => {
+    const searchString = createSearchParams({
+      participants: encodeURIComponent(participants.join(",")),
+    }).toString();
+
+    navigate({
+      pathname: "/app/chats/chat",
+      search: searchString,
+    });
+  };
+
   console.log(`purchaseManifestTxs --> purchase page`, purchaseManifestTxs);
   return (
     <AppLayoutPadding
@@ -146,16 +159,21 @@ const PurchasePage = () => {
                   </$Vertical>
                 }
                 extra={
-                  purchaseManifest.transactionType === TransactionType.DEAL
+                  purchaseManifest.transactionType === TransactionType.DEAL ||
+                  purchaseManifest.transactionType === TransactionType.TRANSFER
                     ? [
-                        <NavLink
-                          key={"send-msg"}
-                          to={`/user?userID=${purchaseManifest.sellerUserID}`}
+                        <Button
+                          onClick={() => {
+                            goToChatPage([
+                              purchaseManifest.sellerUserID,
+                              selfUser.id,
+                            ]);
+                          }}
+                          type="primary"
+                          key="console"
                         >
-                          <Button type="primary" key="console">
-                            Send Message
-                          </Button>
-                        </NavLink>,
+                          Send Message
+                        </Button>,
                         <Button
                           onClick={() => setIsSuccessMode(false)}
                           key="view-reciept"

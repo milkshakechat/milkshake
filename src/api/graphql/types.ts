@@ -21,6 +21,31 @@ export type Scalars = {
   WalletAliasID: { input: any; output: any; }
 };
 
+export type AddFriendToChatInput = {
+  chatRoomID: Scalars['String']['input'];
+  friendID: Scalars['UserID']['input'];
+};
+
+export type AddFriendToChatResponse = AddFriendToChatResponseSuccess | ResponseError;
+
+export type AddFriendToChatResponseSuccess = {
+  __typename?: 'AddFriendToChatResponseSuccess';
+  status: Scalars['String']['output'];
+};
+
+export type AdminChatSettingsInput = {
+  chatRoomID: Scalars['String']['input'];
+  thumbnail?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type AdminChatSettingsResponse = AdminChatSettingsResponseSuccess | ResponseError;
+
+export type AdminChatSettingsResponseSuccess = {
+  __typename?: 'AdminChatSettingsResponseSuccess';
+  chatRoom: ChatRoom;
+};
+
 export type CancelSubscriptionInput = {
   purchaseManifestID: Scalars['String']['input'];
 };
@@ -292,6 +317,18 @@ export enum LanguageEnum {
   Vietnamese = 'vietnamese'
 }
 
+export type LeaveChatInput = {
+  chatRoomID: Scalars['String']['input'];
+  targetUserID: Scalars['UserID']['input'];
+};
+
+export type LeaveChatResponse = LeaveChatResponseSuccess | ResponseError;
+
+export type LeaveChatResponseSuccess = {
+  __typename?: 'LeaveChatResponseSuccess';
+  status: Scalars['String']['output'];
+};
+
 export type ListChatRoomsResponse = ListChatRoomsResponseSuccess | ResponseError;
 
 export type ListChatRoomsResponseSuccess = {
@@ -411,6 +448,8 @@ export type ModifyStoryResponseSuccess = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addFriendToChat: AddFriendToChatResponse;
+  adminChatSettings: AdminChatSettingsResponse;
   cancelSubscription: CancelSubscriptionResponse;
   createPaymentIntent: CreatePaymentIntentResponse;
   createSetupIntent: CreateSetupIntentResponse;
@@ -418,12 +457,15 @@ export type Mutation = {
   createWish: CreateWishResponse;
   demoMutation: DemoMutationResponse;
   interactStory: InteractStoryResponse;
+  leaveChat: LeaveChatResponse;
   manageFriendship: ManageFriendshipResponse;
   markNotificationsAsRead: MarkNotificationsAsReadResponse;
   modifyProfile: ModifyProfileResponse;
   modifyStory: ModifyStoryResponse;
+  promoteAdmin: PromoteAdminResponse;
   recallTransaction: RecallTransactionResponse;
   requestMerchantOnboarding: RequestMerchantOnboardingResponse;
+  resignAdmin: ResignAdminResponse;
   revokePushTokens: RevokePushTokensResponse;
   savePaymentMethod: SavePaymentMethodResponse;
   sendFreeChat: SendFreeChatResponse;
@@ -434,6 +476,16 @@ export type Mutation = {
   updatePushToken: UpdatePushTokenResponse;
   updateWish: UpdateWishResponse;
   upgradePremiumChat: UpgradePremiumChatResponse;
+};
+
+
+export type MutationAddFriendToChatArgs = {
+  input: AddFriendToChatInput;
+};
+
+
+export type MutationAdminChatSettingsArgs = {
+  input: AdminChatSettingsInput;
 };
 
 
@@ -467,6 +519,11 @@ export type MutationInteractStoryArgs = {
 };
 
 
+export type MutationLeaveChatArgs = {
+  input: LeaveChatInput;
+};
+
+
 export type MutationManageFriendshipArgs = {
   input: ManageFriendshipInput;
 };
@@ -487,8 +544,18 @@ export type MutationModifyStoryArgs = {
 };
 
 
+export type MutationPromoteAdminArgs = {
+  input: PromoteAdminInput;
+};
+
+
 export type MutationRecallTransactionArgs = {
   input: RecallTransactionInput;
+};
+
+
+export type MutationResignAdminArgs = {
+  input: ResignAdminInput;
 };
 
 
@@ -563,6 +630,18 @@ export enum PrivacyModeEnum {
   Private = 'private',
   Public = 'public'
 }
+
+export type PromoteAdminInput = {
+  chatRoomID: Scalars['String']['input'];
+  memberID: Scalars['UserID']['input'];
+};
+
+export type PromoteAdminResponse = PromoteAdminResponseSuccess | ResponseError;
+
+export type PromoteAdminResponseSuccess = {
+  __typename?: 'PromoteAdminResponseSuccess';
+  status: Scalars['String']['output'];
+};
 
 export type PushConfig = {
   __typename?: 'PushConfig';
@@ -667,6 +746,17 @@ export type RequestMerchantOnboardingResponse = RequestMerchantOnboardingRespons
 export type RequestMerchantOnboardingResponseSuccess = {
   __typename?: 'RequestMerchantOnboardingResponseSuccess';
   registrationUrl: Scalars['String']['output'];
+};
+
+export type ResignAdminInput = {
+  chatRoomID: Scalars['String']['input'];
+};
+
+export type ResignAdminResponse = ResignAdminResponseSuccess | ResponseError;
+
+export type ResignAdminResponseSuccess = {
+  __typename?: 'ResignAdminResponseSuccess';
+  status: Scalars['String']['output'];
 };
 
 export type ResponseError = {
@@ -1005,6 +1095,41 @@ export type UpgradePremiumChatMutationVariables = Exact<{
 
 
 export type UpgradePremiumChatMutation = { __typename?: 'Mutation', upgradePremiumChat: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpgradePremiumChatResponseSuccess', referenceIDs: Array<string> } };
+
+export type AddFriendToChatMutationVariables = Exact<{
+  input: AddFriendToChatInput;
+}>;
+
+
+export type AddFriendToChatMutation = { __typename?: 'Mutation', addFriendToChat: { __typename: 'AddFriendToChatResponseSuccess', status: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type LeaveChatMutationVariables = Exact<{
+  input: LeaveChatInput;
+}>;
+
+
+export type LeaveChatMutation = { __typename?: 'Mutation', leaveChat: { __typename: 'LeaveChatResponseSuccess', status: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type ResignAdminMutationVariables = Exact<{
+  input: ResignAdminInput;
+}>;
+
+
+export type ResignAdminMutation = { __typename?: 'Mutation', resignAdmin: { __typename: 'ResignAdminResponseSuccess', status: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type PromoteAdminMutationVariables = Exact<{
+  input: PromoteAdminInput;
+}>;
+
+
+export type PromoteAdminMutation = { __typename?: 'Mutation', promoteAdmin: { __typename: 'PromoteAdminResponseSuccess', status: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type AdminChatSettingsMutationVariables = Exact<{
+  input: AdminChatSettingsInput;
+}>;
+
+
+export type AdminChatSettingsMutation = { __typename?: 'Mutation', adminChatSettings: { __typename: 'AdminChatSettingsResponseSuccess', chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, admins: Array<any>, sendBirdChannelURL?: string | null, title: string, thumbnail: string } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type SendFriendRequestMutationVariables = Exact<{
   input: SendFriendRequestInput;

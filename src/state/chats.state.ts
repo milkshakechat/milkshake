@@ -149,7 +149,11 @@ const extrapolateChatPreview = (
     )
     .filter((fr) => fr) as Friendship_Firestore[];
 
-  const thumbnail = participantContacts[0]?.avatar || "";
+  const thumbnail = room.thumbnail
+    ? room.thumbnail
+    : participantContacts.length > 1
+    ? ""
+    : participantContacts[0]?.avatar;
 
   const chatFE: ChatRoomFE = {
     ...room,

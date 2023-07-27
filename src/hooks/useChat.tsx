@@ -1,10 +1,20 @@
 import { ErrorLine } from "@/api/graphql/error-line";
 import {
+  AddFriendToChatInput,
+  AddFriendToChatResponseSuccess,
+  AdminChatSettingsInput,
+  AdminChatSettingsResponseSuccess,
   EnterChatRoomInput,
   EnterChatRoomResponseSuccess,
+  LeaveChatInput,
+  LeaveChatResponseSuccess,
   ListChatRoomsResponseSuccess,
   Mutation,
+  PromoteAdminInput,
+  PromoteAdminResponseSuccess,
   Query,
+  ResignAdminInput,
+  ResignAdminResponseSuccess,
   SendFreeChatInput,
   SendFreeChatResponseSuccess,
   UpdateChatSettingsInput,
@@ -446,6 +456,303 @@ export const useGiftPremiumChat = () => {
                 "UpgradePremiumChatResponseSuccess"
               ) {
                 resolve(data.upgradePremiumChat);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+export const useAddFriendToChat = () => {
+  const [data, setData] = useState<AddFriendToChatResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: AddFriendToChatInput) => {
+    setLoading(true);
+    try {
+      const ADD_FRIEND_TO_CHAT = gql`
+        mutation AddFriendToChat($input: AddFriendToChatInput!) {
+          addFriendToChat(input: $input) {
+            __typename
+            ... on AddFriendToChatResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<AddFriendToChatResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "addFriendToChat">>({
+              mutation: ADD_FRIEND_TO_CHAT,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.addFriendToChat.__typename ===
+                "AddFriendToChatResponseSuccess"
+              ) {
+                resolve(data.addFriendToChat);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+export const useLeaveChat = () => {
+  const [data, setData] = useState<LeaveChatResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: LeaveChatInput) => {
+    setLoading(true);
+    try {
+      const LEAVE_CHAT = gql`
+        mutation LeaveChat($input: LeaveChatInput!) {
+          leaveChat(input: $input) {
+            __typename
+            ... on LeaveChatResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<LeaveChatResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "leaveChat">>({
+              mutation: LEAVE_CHAT,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (data?.leaveChat.__typename === "LeaveChatResponseSuccess") {
+                resolve(data.leaveChat);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+export const useResignAdmin = () => {
+  const [data, setData] = useState<ResignAdminResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: ResignAdminInput) => {
+    setLoading(true);
+    try {
+      const RESIGN_ADMIN = gql`
+        mutation ResignAdmin($input: ResignAdminInput!) {
+          resignAdmin(input: $input) {
+            __typename
+            ... on ResignAdminResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<ResignAdminResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "resignAdmin">>({
+              mutation: RESIGN_ADMIN,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.resignAdmin.__typename === "ResignAdminResponseSuccess"
+              ) {
+                resolve(data.resignAdmin);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+export const usePromoteAdmin = () => {
+  const [data, setData] = useState<PromoteAdminResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: PromoteAdminInput) => {
+    setLoading(true);
+    try {
+      const PROMOTE_ADMIN = gql`
+        mutation PromoteAdmin($input: PromoteAdminInput!) {
+          promoteAdmin(input: $input) {
+            __typename
+            ... on PromoteAdminResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<PromoteAdminResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "promoteAdmin">>({
+              mutation: PROMOTE_ADMIN,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.promoteAdmin.__typename === "PromoteAdminResponseSuccess"
+              ) {
+                resolve(data.promoteAdmin);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+export const useAdminChatSettings = () => {
+  const [data, setData] = useState<AdminChatSettingsResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: AdminChatSettingsInput) => {
+    setLoading(true);
+    try {
+      const ADMIN_CHAT_SETTINGS = gql`
+        mutation AdminChatSettings($input: AdminChatSettingsInput!) {
+          adminChatSettings(input: $input) {
+            __typename
+            ... on AdminChatSettingsResponseSuccess {
+              chatRoom {
+                chatRoomID
+                participants
+                admins
+                sendBirdChannelURL
+                title
+                thumbnail
+              }
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<AdminChatSettingsResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "adminChatSettings">>({
+              mutation: ADMIN_CHAT_SETTINGS,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.adminChatSettings.__typename ===
+                "AdminChatSettingsResponseSuccess"
+              ) {
+                resolve(data.adminChatSettings);
               }
               setLoading(false);
             })

@@ -51,7 +51,7 @@ const ChatPreview = ({ preview }: ChatPreviewProps) => {
     >
       <List.Item.Meta
         avatar={
-          <$Horizontal justifyContent="center" style={{ width: "70px" }}>
+          <$Horizontal justifyContent="center" style={{ width: "50px" }}>
             {thumbnail ? (
               <Avatar
                 src={thumbnail}

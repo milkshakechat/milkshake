@@ -264,9 +264,9 @@ export const RecallTransaction = ({
                     color: token.colorTextDescription,
                     fontSize: "0.9rem",
                   }}
-                >{`Are you sure you want to recall ${
+                >{`Are you sure you want to recall ${Math.abs(
                   tx?.amount || 0
-                } cookies? The other person will be notified of your cookie recall.`}</span>
+                )} cookies? The other person will be notified of your cookie recall.`}</span>
 
                 <span
                   style={{

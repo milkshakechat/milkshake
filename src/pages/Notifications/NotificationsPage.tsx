@@ -107,9 +107,6 @@ const NotificationsPage = () => {
                   new Date(a.createdAt).getTime()
                 );
               })
-              .sort((a, b) => {
-                return a.markedRead ? 1 : -1;
-              })
               .map((notif) => {
                 return {
                   id: notif.id,

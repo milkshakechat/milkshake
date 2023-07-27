@@ -57,6 +57,18 @@ export type CancelSubscriptionResponseSuccess = {
   status: Scalars['String']['output'];
 };
 
+export type CashOutTransactionInput = {
+  initiatorWallet: Scalars['String']['input'];
+  txMirrorID: Scalars['String']['input'];
+};
+
+export type CashOutTransactionResponse = CashOutTransactionResponseSuccess | ResponseError;
+
+export type CashOutTransactionResponseSuccess = {
+  __typename?: 'CashOutTransactionResponseSuccess';
+  referenceID: Scalars['String']['output'];
+};
+
 export type ChatRoom = {
   __typename?: 'ChatRoom';
   admins: Array<Scalars['UserID']['output']>;
@@ -452,6 +464,7 @@ export type Mutation = {
   addFriendToChat: AddFriendToChatResponse;
   adminChatSettings: AdminChatSettingsResponse;
   cancelSubscription: CancelSubscriptionResponse;
+  cashOutTransaction: CashOutTransactionResponse;
   createPaymentIntent: CreatePaymentIntentResponse;
   createSetupIntent: CreateSetupIntentResponse;
   createStory: CreateStoryResponse;
@@ -493,6 +506,11 @@ export type MutationAdminChatSettingsArgs = {
 
 export type MutationCancelSubscriptionArgs = {
   input: CancelSubscriptionInput;
+};
+
+
+export type MutationCashOutTransactionArgs = {
+  input: CashOutTransactionInput;
 };
 
 
@@ -1341,6 +1359,13 @@ export type TopUpWalletMutationVariables = Exact<{
 
 
 export type TopUpWalletMutation = { __typename?: 'Mutation', topUpWallet: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'TopUpWalletResponseSuccess', checkoutToken?: string | null, referenceID: string, purchaseManifestID: string } };
+
+export type CashOutTransactionMutationVariables = Exact<{
+  input: CashOutTransactionInput;
+}>;
+
+
+export type CashOutTransactionMutation = { __typename?: 'Mutation', cashOutTransaction: { __typename: 'CashOutTransactionResponseSuccess', referenceID: string } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type UpdatePushTokenMutationVariables = Exact<{
   input: UpdatePushTokenInput;

@@ -39,7 +39,14 @@ import { useWalletState } from "@/state/wallets.state";
 import gql from "graphql-tag";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { ErrorLine } from "@/api/graphql/error-line";
-import { RecallTransactionInput } from "../api/graphql/types";
+import {
+  CashOutTransactionInput,
+  CashOutTransactionResponseSuccess,
+} from "../api/graphql/types";
+import {
+  RecallTransactionInput,
+  DemoMutationInput,
+} from "../api/graphql/types";
 
 export const useWallets = () => {
   const selfUser = useUserState((state) => state.user);
@@ -494,6 +501,71 @@ export const useTopUpWallet = () => {
       );
       setData(result);
       return result;
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};
+
+export const useCashOutTransaction = () => {
+  const [data, setData] = useState<CashOutTransactionResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const addPendingTx = useWalletState((state) => state.addPendingTx);
+
+  const runMutation = async (args: CashOutTransactionInput) => {
+    setLoading(true);
+    try {
+      const CASH_OUT_TRANSACTION = gql`
+        mutation CashOutTransaction($input: CashOutTransactionInput!) {
+          cashOutTransaction(input: $input) {
+            __typename
+            ... on CashOutTransactionResponseSuccess {
+              referenceID
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<CashOutTransactionResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "cashOutTransaction">>({
+              mutation: CASH_OUT_TRANSACTION,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.cashOutTransaction.__typename ===
+                "CashOutTransactionResponseSuccess"
+              ) {
+                resolve(data.cashOutTransaction);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+      addPendingTx({
+        referenceID: result.referenceID as TxRefID,
+        originalTxMirrorID: args.txMirrorID as MirrorTransactionID,
+      });
     } catch (e) {
       console.log(e);
       setLoading(false);

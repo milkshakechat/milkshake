@@ -76,10 +76,9 @@ export const UserInfoProvider = ({ children }: Props) => {
   }, []);
 
   const refreshNonce = useRef(0);
-  const { chatsList, refreshAllChatPreviews } = useChatsListState(
+  const { chatsList } = useChatsListState(
     (state) => ({
       chatsList: state.chatsList,
-      refreshAllChatPreviews: state.refreshAllChatPreviews,
     }),
     shallow
   );

@@ -11,7 +11,6 @@ import {
 import { create } from "zustand";
 
 export interface ChatRoomFE extends ChatRoom {
-  aliasTitle: string;
   thumbnail: string;
   previewText?: string;
   unreadCount?: number;
@@ -32,10 +31,10 @@ interface ChatListsState {
     friendships: Friendship_Firestore[],
     userID: UserID
   ) => void;
-  refreshAllChatPreviews: (
-    friendships: Friendship_Firestore[],
-    userID: UserID
-  ) => void;
+  // refreshAllChatPreviews: (
+  //   friendships: Friendship_Firestore[],
+  //   userID: UserID
+  // ) => void;
   updateSendBirdMetadata: (diff: UpdateSendBirdChannelMetadataArgsFE) => void;
   globalUserMirror: GlobalUserMirror;
   upsertUserMirror: (user: MirrorPublicUser_Firestore) => void;
@@ -58,16 +57,16 @@ export const useChatsListState = create<ChatListsState>()((set) => ({
       return { chatsList: [chatFE, ...chats] };
     });
   },
-  refreshAllChatPreviews: (friendships, userID) => {
-    set((state) => {
-      const chatsFE = extrapolateChatPreviews(
-        state.chatsList,
-        friendships,
-        userID
-      );
-      return { chatsList: chatsFE };
-    });
-  },
+  // refreshAllChatPreviews: (friendships, userID) => {
+  //   set((state) => {
+  //     const chatsFE = extrapolateChatPreviews(
+  //       state.chatsList,
+  //       friendships,
+  //       userID
+  //     );
+  //     return { chatsList: chatsFE };
+  //   });
+  // },
   updateSendBirdMetadata: (diff) => {
     set((state) => {
       const chats = state.chatsList.map((ch) => {
@@ -126,15 +125,11 @@ const extrapolateChatPreviews = (
       .filter((fr) => fr) as Friendship_Firestore[];
     // console.log(`participantContacts`, participantContacts);
 
-    const aliasTitle =
-      chatRoom.title ||
-      `${participantContacts.map((fr) => fr.username).join(", ")}`;
     const thumbnail = participantContacts[0]?.avatar || "";
 
     const chatFE: ChatRoomFE = {
       ...chatRoom,
       title: chatRoom.title || "",
-      aliasTitle,
       thumbnail,
     };
     return chatFE;
@@ -153,27 +148,16 @@ const extrapolateChatPreview = (
       friendships.find((fr) => fr.friendID === participantID)
     )
     .filter((fr) => fr) as Friendship_Firestore[];
-  const aliasTitle =
-    room.title ||
-    `${participantContacts.map((fr) => fr.username).join(", ")}` ||
-    "";
+
   const thumbnail = participantContacts[0]?.avatar || "";
 
   const chatFE: ChatRoomFE = {
     ...room,
     chatRoomID: room.id,
     participants: room.members as any[],
-    sendBirdParticipants: Object.keys(room.participants).reduce((acc, curr) => {
-      const next = [...acc];
-      const status = room.participants[curr as UserID];
-      if (status && status === ChatRoomParticipantStatus.SENDBIRD_ALLOWED) {
-        next.push(curr as UserID);
-      }
-      return next;
-    }, [] as UserID[]),
     lastTimestamp: 0,
     title: room.title || "",
-    aliasTitle,
+
     previewText: "No preview available", // Update this as needed.
     thumbnail,
   };
@@ -244,9 +228,9 @@ export const convertChatRoomFirestoreToGQL = (room: ChatRoom_Firestore) => {
     chatRoomID: room.id,
     participants: room.members as any[],
     sendBirdChannelURL: room.sendBirdChannelURL,
-    sendBirdParticipants: [],
     title: room.title || "",
     thumbnail: room.thumbnail || "",
+    admins: room.admins as UserID[],
   };
   return cv;
 };
@@ -256,4 +240,5 @@ const notFoundUser: MirrorPublicUser_Firestore = {
   id: "" as UserID,
   username: NOT_FOUND_USER_MIRROR_NAME as Username,
   avatar: "",
+  hasPremiumChat: false,
 };

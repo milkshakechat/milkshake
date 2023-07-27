@@ -45,10 +45,9 @@ const ConversationsPage = () => {
   });
   const { token } = theme.useToken();
   const { width } = useWindowSize();
-  const { chatsList, refreshAllChatPreviews } = useChatsListState(
+  const { chatsList } = useChatsListState(
     (state) => ({
       chatsList: state.chatsList,
-      refreshAllChatPreviews: state.refreshAllChatPreviews,
     }),
     shallow
   );
@@ -62,23 +61,23 @@ const ConversationsPage = () => {
     friendsRef.current = friendships;
   }, [friendships]);
 
-  useEffect(() => {
-    const refresh = () => {
-      if (refreshNonce.current > 3) {
-        return;
-      }
-      if (selfUser) {
-        refreshAllChatPreviews(friendsRef.current, selfUser.id as UserID);
-        refreshNonce.current = refreshNonce.current + 1;
-      }
-    };
+  // useEffect(() => {
+  //   const refresh = () => {
+  //     if (refreshNonce.current > 3) {
+  //       return;
+  //     }
+  //     if (selfUser) {
+  //       refreshAllChatPreviews(friendsRef.current, selfUser.id as UserID);
+  //       refreshNonce.current = refreshNonce.current + 1;
+  //     }
+  //   };
 
-    const intervalId = setInterval(refresh, 5000);
+  //   const intervalId = setInterval(refresh, 5000);
 
-    return () => {
-      clearInterval(intervalId); // Don't forget to clear interval on component unmount
-    };
-  }, [selfUser]); // Empty dependency array ensures this effect runs once when component mounts and never again.
+  //   return () => {
+  //     clearInterval(intervalId); // Don't forget to clear interval on component unmount
+  //   };
+  // }, [selfUser]); // Empty dependency array ensures this effect runs once when component mounts and never again.
 
   const showingAlertBanner = !allowedPermissions.notifications;
 

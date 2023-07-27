@@ -350,6 +350,7 @@ export const TinderPage = () => {
                     width: "100%",
                     padding: "10px",
                     bottom: 0,
+                    backgroundColor: token.colorBgBase,
                   }}
                 >
                   <$Horizontal
@@ -626,7 +627,7 @@ export const TinderPage = () => {
         spacing={3}
         style={{
           height: isMobile ? "15vh" : "20vh",
-          backgroundColor: token.colorBgBase,
+          backgroundColor: token.colorBgContainer,
           zIndex: 1,
         }}
       >

@@ -34,11 +34,11 @@ export type CancelSubscriptionResponseSuccess = {
 
 export type ChatRoom = {
   __typename?: 'ChatRoom';
+  admins: Array<Scalars['UserID']['output']>;
   chatRoomID: Scalars['String']['output'];
   participants: Array<Scalars['UserID']['output']>;
   pushConfig?: Maybe<PushConfig>;
   sendBirdChannelURL?: Maybe<Scalars['String']['output']>;
-  sendBirdParticipants: Array<Scalars['UserID']['output']>;
   thumbnail: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
@@ -553,6 +553,11 @@ export type Ping = {
   timestamp: Scalars['String']['output'];
 };
 
+export type PremiumChatGiftReceiver = {
+  months: Scalars['Int']['input'];
+  targetUserID: Scalars['UserID']['input'];
+};
+
 export enum PrivacyModeEnum {
   Hidden = 'hidden',
   Private = 'private',
@@ -865,15 +870,15 @@ export type UpdateWishResponseSuccess = {
 };
 
 export type UpgradePremiumChatInput = {
-  months: Scalars['Int']['input'];
-  targetUserID: Scalars['UserID']['input'];
+  chatRoomID?: InputMaybe<Scalars['String']['input']>;
+  targets: Array<PremiumChatGiftReceiver>;
 };
 
 export type UpgradePremiumChatResponse = ResponseError | UpgradePremiumChatResponseSuccess;
 
 export type UpgradePremiumChatResponseSuccess = {
   __typename?: 'UpgradePremiumChatResponseSuccess';
-  referenceID: Scalars['String']['output'];
+  referenceIDs: Array<Scalars['String']['output']>;
 };
 
 export type User = {
@@ -978,14 +983,14 @@ export type EnterChatRoomQueryQueryVariables = Exact<{
 }>;
 
 
-export type EnterChatRoomQueryQuery = { __typename?: 'Query', enterChatRoom: { __typename: 'EnterChatRoomResponseSuccess', isNew: boolean, chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, title: string, thumbnail: string, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+export type EnterChatRoomQueryQuery = { __typename?: 'Query', enterChatRoom: { __typename: 'EnterChatRoomResponseSuccess', isNew: boolean, chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, admins: Array<any>, sendBirdChannelURL?: string | null, title: string, thumbnail: string, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
 
 export type UpdateChatSettingsMutationVariables = Exact<{
   input: UpdateChatSettingsInput;
 }>;
 
 
-export type UpdateChatSettingsMutation = { __typename?: 'Mutation', updateChatSettings: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpdateChatSettingsResponseSuccess', chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdParticipants: Array<any>, sendBirdChannelURL?: string | null, title: string, thumbnail: string, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } };
+export type UpdateChatSettingsMutation = { __typename?: 'Mutation', updateChatSettings: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpdateChatSettingsResponseSuccess', chatRoom: { __typename?: 'ChatRoom', chatRoomID: string, participants: Array<any>, sendBirdChannelURL?: string | null, title: string, thumbnail: string, pushConfig?: { __typename?: 'PushConfig', snoozeUntil?: string | null, allowPush?: boolean | null } | null } } };
 
 export type SendFreeChatMutationVariables = Exact<{
   input: SendFreeChatInput;
@@ -993,6 +998,13 @@ export type SendFreeChatMutationVariables = Exact<{
 
 
 export type SendFreeChatMutation = { __typename?: 'Mutation', sendFreeChat: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'SendFreeChatResponseSuccess', status: string } };
+
+export type UpgradePremiumChatMutationVariables = Exact<{
+  input: UpgradePremiumChatInput;
+}>;
+
+
+export type UpgradePremiumChatMutation = { __typename?: 'Mutation', upgradePremiumChat: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'UpgradePremiumChatResponseSuccess', referenceIDs: Array<string> } };
 
 export type SendFriendRequestMutationVariables = Exact<{
   input: SendFriendRequestInput;

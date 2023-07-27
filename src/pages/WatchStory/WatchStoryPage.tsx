@@ -23,7 +23,11 @@ import {
   message,
   notification,
 } from "antd";
-import { Story, StoryAttachmentType } from "@/api/graphql/types";
+import {
+  PokeActionType,
+  Story,
+  StoryAttachmentType,
+} from "@/api/graphql/types";
 import { useGetStory } from "@/hooks/useStory";
 import { StoryID, UserID, Username } from "@milkshakechat/helpers";
 import {
@@ -52,6 +56,7 @@ import shallow from "zustand/shallow";
 import { WATCH_STORY_BACK_HOME_ROUTE } from "@/config.env";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import QuickChat from "@/components/QuickChat/QuickChat";
+import { useSocialPoke } from "@/hooks/useFriendship";
 
 const EMPTY_PLAYER = {
   player: null,
@@ -93,6 +98,8 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
     shallow
   );
   const [liked, setLiked] = useState(false);
+
+  const { runMutation: runSocialPokeMutation } = useSocialPoke();
 
   const {
     /** @type {shaka.Player} */ player,
@@ -554,6 +561,11 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                       e.stopPropagation();
                       setLiked(true);
                       console.log(`like`);
+                      runSocialPokeMutation({
+                        pokeActionType: PokeActionType.LikeStory,
+                        resourceID: spotlightStory.id,
+                        targetUserID: spotlightStory.userID,
+                      });
                     }}
                     style={{
                       fontSize: "2rem",

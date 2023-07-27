@@ -16,6 +16,10 @@ import { useWindowSize } from "@/api/utils/screen";
 import { HeartFilled } from "@ant-design/icons";
 import BookmarkIcon from "../BookmarkIcon/BookmarkIcon";
 import LogoCookie from "../LogoText/LogoCookie";
+import {
+  WishBuyFrequency,
+  WishBuyFrequencyPrettyPrintShort,
+} from "@milkshakechat/helpers";
 
 export enum WishlistSortByEnum {
   favorite = "Favorite",
@@ -234,32 +238,44 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
                 }
               />
 
-              <$Horizontal alignItems="center" style={{ marginRight: "20px " }}>
+              <$Horizontal
+                spacing={2}
+                alignItems="center"
+                style={{ marginRight: "20px " }}
+              >
                 <LogoCookie width={"16px"} fill={`${token.colorPrimary}9A`} />
                 <span
                   style={{
-                    marginLeft: "10px",
                     fontSize: "1rem",
                     color: `${token.colorPrimary}`,
                   }}
                 >{`${item.cookiePrice}`}</span>
+                <span
+                  style={{
+                    fontSize: "0.7rem",
+                    color: `${token.colorPrimary}`,
+                  }}
+                >{`${WishBuyFrequencyPrettyPrintShort(
+                  item.buyFrequency as unknown as WishBuyFrequency
+                )}`}</span>
               </$Horizontal>
 
-              {viewingOwnProfile ? (
-                <NavLink to={`/app/wish/${item.id}/edit`}>
-                  <Button>Edit</Button>
-                </NavLink>
-              ) : null
-              // <Button
-              //   onClick={(e) => {
-              //     e.preventDefault();
-              //     e.stopPropagation();
-              //   }}
-              // >
-              //   Buy
-              // </Button>
+              {
+                viewingOwnProfile ? (
+                  <NavLink to={`/app/wish/${item.id}/edit`}>
+                    <Button>Edit</Button>
+                  </NavLink>
+                ) : null
+                // <Button
+                //   onClick={(e) => {
+                //     e.preventDefault();
+                //     e.stopPropagation();
+                //   }}
+                // >
+                //   Buy
+                // </Button>
               }
-
+              {/* 
               {!viewingOwnProfile && (
                 <div
                   onClick={(e) => {
@@ -270,7 +286,7 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
                 >
                   <BookmarkIcon fill={`${token.colorPrimaryActive}AA`} />
                 </div>
-              )}
+              )} */}
             </List.Item>
           </NavLink>
         )}

@@ -472,6 +472,7 @@ export type Mutation = {
   sendFreeChat: SendFreeChatResponse;
   sendFriendRequest: SendFriendRequestResponse;
   sendTransfer: SendTransferResponse;
+  socialPoke: SocialPokeResponse;
   topUpWallet: TopUpWalletResponse;
   updateChatSettings: UpdateChatSettingsResponse;
   updatePushToken: UpdatePushTokenResponse;
@@ -580,6 +581,11 @@ export type MutationSendTransferArgs = {
 };
 
 
+export type MutationSocialPokeArgs = {
+  input: SocialPokeInput;
+};
+
+
 export type MutationTopUpWalletArgs = {
   input: TopUpWalletInput;
 };
@@ -620,6 +626,11 @@ export type Ping = {
   __typename?: 'Ping';
   timestamp: Scalars['String']['output'];
 };
+
+export enum PokeActionType {
+  BookmarkWish = 'BOOKMARK_WISH',
+  LikeStory = 'LIKE_STORY'
+}
 
 export type PremiumChatGiftReceiver = {
   months: Scalars['Int']['input'];
@@ -820,6 +831,19 @@ export type SendTransferResponse = ResponseError | SendTransferResponseSuccess;
 export type SendTransferResponseSuccess = {
   __typename?: 'SendTransferResponseSuccess';
   referenceID: Scalars['String']['output'];
+};
+
+export type SocialPokeInput = {
+  pokeActionType: PokeActionType;
+  resourceID: Scalars['String']['input'];
+  targetUserID: Scalars['UserID']['input'];
+};
+
+export type SocialPokeResponse = ResponseError | SocialPokeResponseSuccess;
+
+export type SocialPokeResponseSuccess = {
+  __typename?: 'SocialPokeResponseSuccess';
+  status: Scalars['String']['output'];
 };
 
 export type Status = {
@@ -1152,6 +1176,13 @@ export type ManageFriendshipMutationVariables = Exact<{
 
 
 export type ManageFriendshipMutation = { __typename?: 'Mutation', manageFriendship: { __typename: 'ManageFriendshipResponseSuccess', status: FriendshipStatus } | { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } };
+
+export type SocialPokeMutationVariables = Exact<{
+  input: SocialPokeInput;
+}>;
+
+
+export type SocialPokeMutation = { __typename?: 'Mutation', socialPoke: { __typename: 'ResponseError', error: { __typename?: 'Status', message: string } } | { __typename: 'SocialPokeResponseSuccess', status: string } };
 
 export type CheckMerchantStatusQueryVariables = Exact<{
   input: CheckMerchantStatusInput;

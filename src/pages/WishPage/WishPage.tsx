@@ -1,6 +1,7 @@
 import { ErrorLines } from "@/api/graphql/error-line";
 import {
   MediaSet,
+  PokeActionType,
   Wish,
   WishBuyFrequency,
   WishTypeEnum as WishTypeEnumGQL,
@@ -53,6 +54,7 @@ import ConfirmPurchase from "@/components/ConfirmPurchase/ConfirmPurchase";
 import QuickChat from "@/components/QuickChat/QuickChat";
 import Countdown from "antd/es/statistic/Countdown";
 import { WishTypeEnum } from "../../api/graphql/types";
+import { useSocialPoke } from "@/hooks/useFriendship";
 
 export const WishPage = () => {
   const intl = useIntl();
@@ -64,6 +66,7 @@ export const WishPage = () => {
   const location = useLocation();
   const [api, contextHolder] = notification.useNotification();
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const { token } = theme.useToken();
   const [confirmPurchaseModalOpen, setConfirmPurchaseModalOpen] =
     useState(false);
@@ -78,6 +81,7 @@ export const WishPage = () => {
   const marketplaceWishlist = useWishState(
     (state) => state.marketplaceWishlist
   );
+  const { runMutation: runSocialPokeMutation } = useSocialPoke();
 
   useEffect(() => {
     if (wishIDFromURL) {
@@ -393,7 +397,23 @@ export const WishPage = () => {
                       marginLeft: "10px",
                     }}
                   >
-                    <BookmarkIcon fill={`${token.colorPrimaryActive}`} />
+                    <div
+                      onClick={() => {
+                        if (!isBookmarked) {
+                          runSocialPokeMutation({
+                            pokeActionType: PokeActionType.BookmarkWish,
+                            resourceID: spotlightWish.id,
+                            targetUserID: spotlightWish.creatorID,
+                          });
+                        }
+                        setIsBookmarked(!isBookmarked);
+                      }}
+                    >
+                      <BookmarkIcon
+                        filled={isBookmarked}
+                        fill={`${token.colorPrimaryActive}`}
+                      />
+                    </div>
                   </$Horizontal>
                 </div>
                 <Spacer />

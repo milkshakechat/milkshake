@@ -59,6 +59,7 @@ import LogoCookie from "@/components/LogoText/LogoCookie";
 import { WishlistSortByEnum } from "@/components/WishlistGallery/WishlistGallery";
 import {
   InteractStoryInput,
+  PokeActionType,
   StoryAuthor,
   SwipeStory,
   Wish,
@@ -75,6 +76,7 @@ import { useSwipeState } from "@/state/swipe.state";
 import { StoryAttachmentType } from "../../api/graphql/types";
 import dayjs from "dayjs";
 import { useInteractStory } from "@/hooks/useSwipe";
+import { useSocialPoke } from "@/hooks/useFriendship";
 
 type SwipeDirection = "left" | "right";
 export const TinderPage = () => {
@@ -88,7 +90,7 @@ export const TinderPage = () => {
   const [searchString, setSearchString] = useState("");
   const { token } = theme.useToken();
   const [localSwipeStack, setLocalSwipeStack] = useState<SwipeStory[]>([]);
-
+  const [bookmarked, setBookmarked] = useState<WishID[]>([]);
   const [quickChatUser, setQuickChatUser] = useState<{
     user: StoryAuthor | null;
     wishID: WishID;
@@ -116,6 +118,7 @@ export const TinderPage = () => {
 
   const [api, contextHolder] = notification.useNotification();
 
+  const { runMutation: runSocialPokeMutation } = useSocialPoke();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lastDirection, setLastDirection] = useState("");
   // used for outOfFrame closure
@@ -452,6 +455,22 @@ export const TinderPage = () => {
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
+                              if (
+                                swipeStory.wish &&
+                                !bookmarked.includes(
+                                  swipeStory.wish?.id as WishID
+                                )
+                              ) {
+                                runSocialPokeMutation({
+                                  pokeActionType: PokeActionType.BookmarkWish,
+                                  resourceID: swipeStory.wish.id,
+                                  targetUserID: swipeStory.wish.creatorID,
+                                });
+                                setBookmarked([
+                                  ...bookmarked,
+                                  swipeStory.wish?.id as WishID,
+                                ]);
+                              }
                             }}
                             style={{
                               marginRight: "10px",
@@ -459,7 +478,12 @@ export const TinderPage = () => {
                               paddingTop: "3px",
                             }}
                           >
-                            <BookmarkIcon fill={`rgba(256,256,256,0.5)`} />
+                            <BookmarkIcon
+                              fill={`rgba(256,256,256,0.5)`}
+                              filled={bookmarked.includes(
+                                swipeStory.wish?.id as WishID
+                              )}
+                            />
                           </div>
                           <$Vertical style={{ flex: 1 }}>
                             <$Horizontal>{`${swipeStory.wish.wishTitle} with ${swipeStory.wish.author?.displayName}`}</$Horizontal>

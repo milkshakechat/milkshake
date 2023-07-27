@@ -19,6 +19,8 @@ import {
   ManageFriendshipInput,
   EnterChatRoomResponseSuccess,
   EnterChatRoomInput,
+  SocialPokeResponseSuccess,
+  SocialPokeInput,
 } from "@/api/graphql/types";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { GraphQLError } from "graphql";
@@ -254,6 +256,62 @@ export const useManageFriendship = () => {
   };
 
   return { data, errors, runMutation };
+};
+
+export const useSocialPoke = () => {
+  const [data, setData] = useState<SocialPokeResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+
+  const runMutation = async (args: SocialPokeInput) => {
+    setLoading(true);
+    try {
+      const SOCIAL_POKE = gql`
+        mutation SocialPoke($input: SocialPokeInput!) {
+          socialPoke(input: $input) {
+            __typename
+            ... on SocialPokeResponseSuccess {
+              status
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<SocialPokeResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "socialPoke">>({
+              mutation: SOCIAL_POKE,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (data?.socialPoke.__typename === "SocialPokeResponseSuccess") {
+                resolve(data.socialPoke);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
 };
 
 // export const useFriendship = () => {

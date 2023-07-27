@@ -23,6 +23,8 @@ import {
   Tx_MirrorFireLedger,
   WalletAliasID,
   WalletID,
+  checkIfCashOutAble,
+  checkIfRecallable,
   placeholderImageThumbnail,
 } from "@milkshakechat/helpers";
 import { useState } from "react";
@@ -31,6 +33,7 @@ import dayjs from "dayjs";
 import RecallTransaction from "../RecallTransaction/RecallTransaction";
 import ReturnTransaction from "../ReturnTransaction/ReturnTransaction";
 import { useWalletState } from "@/state/wallets.state";
+import CashOutTransaction from "../CashOutTransaction/CashOutTransaction";
 
 export interface TransactionFE {
   id: MirrorTransactionID;
@@ -68,6 +71,7 @@ export const TransactionHistory = ({
   const [searchString, setSearchString] = useState("");
   const [txRecall, setTxRecall] = useState<TransactionFE | null>(null);
   const [txReturn, setTxReturn] = useState<TransactionFE | null>(null);
+  const [txCashOut, setCashOut] = useState<TransactionFE | null>(null);
   const pendingTxs = useWalletState((state) => state.pendingTxs);
 
   const filteredTransactions = txs
@@ -109,16 +113,14 @@ export const TransactionHistory = ({
   }
 
   const determineAction = (tx: TransactionFE) => {
+    console.log(`i am looking at tx`, tx);
+    console.log(
+      `checkIfCashOutAble(tx.createdAt) = ${checkIfCashOutAble(tx.createdAt)}`
+    );
+
     const targetDate = dayjs(tx?.date).add(1, "day");
     // check if now is after targetDate
-    const isAfter = dayjs().isAfter(targetDate);
 
-    if (tx.gotRecalled) {
-      if (tx.senderWalletID === walletAliasID) {
-        return [<span key={`action-${tx.id}`}>Recalled</span>];
-      }
-      return [<span key={`action-${tx.id}`}>Returned</span>];
-    }
     if (pendingTxs.map((tx) => tx.originalTxMirrorID).includes(tx.id)) {
       return [
         <span
@@ -129,31 +131,54 @@ export const TransactionHistory = ({
         </span>,
       ];
     }
-    if (isAfter) {
-      console.log(`isAfter`, isAfter);
+    if (tx.gotRecalled) {
+      if (tx.senderWalletID === walletAliasID) {
+        return [<span key={`action-${tx.id}`}>Recalled</span>];
+      }
+      return [<span key={`action-${tx.id}`}>Returned</span>];
+    }
+    if (tx.gotCashOut) {
+      if (tx.receiverWalletID === walletAliasID) {
+        return [<span key={`action-${tx.id}`}>Withdrawn</span>];
+      }
+    }
+    if (checkIfRecallable(tx.createdAt)) {
       if (tx.senderWalletID === walletAliasID) {
         return [
-          <span
+          <a
             onClick={() => setTxRecall(tx)}
             key={`action-${tx.id}`}
             style={{ color: token.colorTextDescription }}
           >
             Recall
-          </span>,
+          </a>,
         ];
       }
       return [
-        <span
+        <a
           onClick={() => setTxReturn(tx)}
           key={`action-${tx.id}`}
-          style={{ color: token.colorTextDescription }}
+          style={{ color: token.colorInfo }}
         >
           Return
-        </span>,
+        </a>,
       ];
     }
+    if (checkIfCashOutAble(tx.createdAt)) {
+      if (tx.receiverWalletID === walletAliasID) {
+        return [
+          <a
+            onClick={() => setCashOut(tx)}
+            key={`action-${tx.id}`}
+            style={{ color: token.colorInfo }}
+          >
+            Withdraw
+          </a>,
+        ];
+      }
+    }
 
-    if (tx.type === TransactionType.DEAL) {
+    if (tx.type === TransactionType.DEAL && checkIfRecallable(tx.createdAt)) {
       if (tx.senderWalletID === walletAliasID) {
         return [
           <a onClick={() => setTxRecall(tx)} key={`action-${tx.id}`}>
@@ -167,7 +192,10 @@ export const TransactionHistory = ({
         </a>,
       ];
     }
-    if (tx.type === TransactionType.TRANSFER) {
+    if (
+      tx.type === TransactionType.TRANSFER &&
+      checkIfRecallable(tx.createdAt)
+    ) {
       if (tx.senderWalletID === walletAliasID) {
         return [
           <a onClick={() => setTxRecall(tx)} key={`action-${tx.id}`}>
@@ -226,6 +254,7 @@ export const TransactionHistory = ({
                   <$Vertical>
                     <i>{dayjs().to(dayjs(tx.date))}</i>
                     <span>{tx.note}</span>
+                    <span>{tx.id}</span>
                   </$Vertical>
                 }
               />
@@ -252,6 +281,16 @@ export const TransactionHistory = ({
         }}
         onClose={() => setTxReturn(null)}
         tx={txReturn}
+      />
+      <CashOutTransaction
+        isOpen={!!txCashOut}
+        toggleOpen={(isOpen) => {
+          if (!isOpen) {
+            setCashOut(null);
+          }
+        }}
+        onClose={() => setCashOut(null)}
+        tx={txCashOut}
       />
     </$Vertical>
   );

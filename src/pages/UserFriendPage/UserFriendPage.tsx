@@ -174,7 +174,6 @@ export const UserFriendPage = () => {
         // skip utmAttribution for now
       });
       if (resp) {
-        message.success(<PP>Friend Request Sent!</PP>);
         setRecentlySentRequest(true);
       }
       setIsPending(false);
@@ -198,6 +197,9 @@ export const UserFriendPage = () => {
         <TimelineGallery
           stories={spotlightUser.stories}
           userID={spotlightUser.id}
+          handleSendFriendRequest={
+            recentlySentRequest ? undefined : handleSendFriendRequest
+          }
         />
       ),
     },

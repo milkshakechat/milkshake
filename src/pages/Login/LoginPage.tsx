@@ -12,6 +12,7 @@ import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   ConfirmationResult,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import config, { ADD_FRIEND_ONBOARDING_FIRST_TIME } from "@/config.env";
 import QuickNav from "@/components/QuickNav/QuickNav";
@@ -35,6 +36,7 @@ import { SUGARBABY_IMAGE } from "../Onboarding/OnboardingPage";
 const LoginPage = () => {
   const { token } = theme.useToken();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [displayStatus, setDisplayStatus] = useState<"signup" | "check_verify">(
     "signup"
@@ -43,7 +45,7 @@ const LoginPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
   const [showPinProceed, setShowPinProceed] = useState(false);
-
+  const [emailLoginMode, setEmailLoginMode] = useState(false);
   const confirmationResultRef = useRef<ConfirmationResult>();
   const fullLogin = useFullLoginProcedure();
   const navigate = useNavigate();
@@ -95,6 +97,29 @@ const LoginPage = () => {
         setRecaptchaNonce((nonce) => nonce + 1);
       });
   }, [email]);
+
+  const loginWithPassword = async () => {
+    setIsLoading(true);
+    signInWithEmailAndPassword(auth, email, password)
+      .then(async (result) => {
+        // Signed in
+        await fullLogin(result.user);
+        // navigate elsewhere
+        setTimeout(() => {
+          navigate("/app/profile");
+          setTimeout(() => {
+            refreshWebPage();
+          }, 500);
+        }, 1000);
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+        setIsLoading(false);
+      });
+  };
 
   // useEffect(() => {
   //   const interval = setInterval(() => {
@@ -168,6 +193,95 @@ const LoginPage = () => {
         });
     }
   };
+
+  if (emailLoginMode) {
+    return (
+      <Layout
+        style={{
+          backgroundColor: token.colorBgContainer,
+          color: token.colorTextBase,
+        }}
+      >
+        <$Vertical
+          alignItems="center"
+          style={{
+            flex: 1,
+            padding: "30px",
+            justifyContent: "flex-start",
+            alignItems: "center",
+            minHeight: "100vh",
+          }}
+        >
+          <Spacer height="5vh" flexOff />
+
+          <img
+            src={SUGARBABY_IMAGE}
+            style={{
+              width: isMobile ? "250px" : "350px",
+            }}
+          />
+
+          <$Vertical
+            style={{
+              fontWeight: 900,
+              fontSize: "2rem",
+              alignItems: "center",
+              fontStyle: "italic",
+              margin: "30px 0px 0px 0px",
+              color: token.colorPrimary,
+            }}
+          >
+            <div>Milkshake</div>
+            <div>Chat</div>
+          </$Vertical>
+          <Spacer height="5vh" flexOff />
+          <$Vertical spacing={3}>
+            <$Vertical spacing={1}>
+              <label
+                style={{ color: token.colorTextDescription, fontSize: "1rem" }}
+              >
+                Email
+              </label>
+              <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{ width: "100%", minWidth: "300px" }}
+              />
+            </$Vertical>
+            <$Vertical spacing={1}>
+              <label
+                style={{ color: token.colorTextDescription, fontSize: "1rem" }}
+              >
+                Password
+              </label>
+              <Input
+                value={password}
+                type="password"
+                onChange={(e) => setPassword(e.target.value)}
+                style={{ width: "100%", minWidth: "300px" }}
+              />
+            </$Vertical>
+            <Button
+              type="primary"
+              disabled={!email || !password}
+              style={{ fontWeight: "bold" }}
+              onClick={loginWithPassword}
+              loading={isLoading}
+            >
+              LOGIN
+            </Button>
+          </$Vertical>
+          <Button
+            type="ghost"
+            onClick={() => setEmailLoginMode(false)}
+            style={{ marginTop: "50px", color: token.colorTextDescription }}
+          >
+            Phone Login
+          </Button>
+        </$Vertical>
+      </Layout>
+    );
+  }
 
   return (
     <Layout
@@ -331,6 +445,13 @@ const LoginPage = () => {
             New User
           </i>
         </NavLink>
+        <Button
+          type="ghost"
+          onClick={() => setEmailLoginMode(true)}
+          style={{ marginTop: "50px", color: token.colorTextDescription }}
+        >
+          Email Login
+        </Button>
       </$Vertical>
     </Layout>
   );

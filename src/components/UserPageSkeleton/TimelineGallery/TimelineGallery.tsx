@@ -17,7 +17,7 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { useModifyStory } from "@/hooks/useStory";
-import { StoryID, UserID } from "@milkshakechat/helpers";
+import { FriendshipStatus, StoryID, UserID } from "@milkshakechat/helpers";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useUserState } from "@/state/user.state";
 import { Affix } from "antd";
@@ -30,6 +30,7 @@ import { Spacer } from "@/components/AppLayout/AppLayout";
 interface TimelineGalleryProps {
   stories: Story[];
   userID: UserID;
+  handleSendFriendRequest?: () => void;
 }
 
 const EMPTY_PLAYER = {
@@ -38,7 +39,11 @@ const EMPTY_PLAYER = {
   videoElement: null,
 };
 
-const TimelineGallery = ({ stories, userID }: TimelineGalleryProps) => {
+const TimelineGallery = ({
+  stories,
+  userID,
+  handleSendFriendRequest,
+}: TimelineGalleryProps) => {
   const { screen, isMobile } = useWindowSize();
   const intl = useIntl();
   const location = useLocation();
@@ -51,6 +56,8 @@ const TimelineGallery = ({ stories, userID }: TimelineGalleryProps) => {
   const myStories = groupUserStoriesByDateRange(
     stories.filter((s) => (showHidden ? true : s.showcase))
   );
+  const [mockLoading, setMockLoading] = useState(false);
+  const friendships = useUserState((state) => state.friendships);
   const viewingOwnProfile =
     selfUser && stories.every((s) => selfUser && s.userID === selfUser.id);
   const { runMutation: runModifyStoryMutation } = useModifyStory();
@@ -233,6 +240,9 @@ const TimelineGallery = ({ stories, userID }: TimelineGalleryProps) => {
       </$Vertical>
     );
   };
+  const isAcceptedFriend = friendships.find(
+    (fr) => fr.status === FriendshipStatus.ACCEPTED && fr.friendID === userID
+  );
 
   const togglePinStory = async (story: Story) => {
     setUpdatingStories([...updatingStories, story.id as StoryID]);
@@ -378,7 +388,28 @@ const TimelineGallery = ({ stories, userID }: TimelineGalleryProps) => {
                 Nothing to see yet
               </span>
             }
-          ></Empty>
+          >
+            {!isAcceptedFriend && handleSendFriendRequest && (
+              <Button
+                type="primary"
+                ghost
+                loading={mockLoading}
+                onClick={() => {
+                  setMockLoading(true);
+                  handleSendFriendRequest();
+                }}
+                style={{
+                  width: "150px",
+                  marginTop: "10px",
+                  fontWeight: "bold",
+                  color: token.colorPrimaryBorder,
+                  border: `2px solid ${token.colorPrimaryBorder}`,
+                }}
+              >
+                Add Friend
+              </Button>
+            )}
+          </Empty>
         </$Vertical>
       )}
       <Modal

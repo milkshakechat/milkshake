@@ -164,6 +164,9 @@ export const FreeChatPanel = ({
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value.slice(0, 149))}
           rows={3}
+          placeholder={
+            "Send a free silent message. Upgrade to Premium for unlimited full-featured chat."
+          }
         ></Input.TextArea>
         <Button
           type="primary"

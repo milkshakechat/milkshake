@@ -256,6 +256,7 @@ const LoginPage = () => {
               </label>
               <Input
                 value={password}
+                type="password"
                 onChange={(e) => setPassword(e.target.value)}
                 style={{ width: "100%", minWidth: "300px" }}
               />

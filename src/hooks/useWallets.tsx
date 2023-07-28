@@ -58,14 +58,22 @@ export const useWallets = () => {
   );
 
   useEffect(() => {
+    let unsubscribes: (() => void)[] = [];
     if (selfUser && selfUser.id) {
-      getRealtimeWallet();
-      getRealtimeTxs();
-      getRealtimePurchaseManifests();
-    }
+      const unsubs = getRealtimeWallets();
+      unsubs.forEach((u) => unsubscribes.push(u));
+      const unsubTX = getRealtimeTxs();
+      unsubscribes.push(unsubTX);
+      const unsubPMs = getRealtimePurchaseManifests();
+      unsubPMs.forEach((u) => unsubscribes.push(u));
+    } // Cleanup function
+    return () => {
+      unsubscribes.forEach((unsub) => unsub()); // Call the unsubscribe function when the component is unmounting
+    };
   }, [selfUser?.id]);
 
-  const getRealtimeWallet = async () => {
+  const getRealtimeWallets = () => {
+    const unsubs: (() => void)[] = [];
     if (selfUser) {
       if (selfUser.tradingWallet) {
         const unsub1 = onSnapshot(
@@ -78,6 +86,7 @@ export const useWallets = () => {
             setWallet(doc.data() as Wallet_MirrorFireLedger);
           }
         );
+        unsubs.push(unsub1);
       }
       if (selfUser.escrowWallet) {
         console.log(`getting escrow wallet...`);
@@ -92,11 +101,14 @@ export const useWallets = () => {
             setWallet(doc.data() as Wallet_MirrorFireLedger);
           }
         );
+        unsubs.push(unsub2);
       }
     }
+    return unsubs;
   };
 
-  const getRealtimeTxs = async () => {
+  const getRealtimeTxs = () => {
+    let unsub = () => {};
     if (selfUser) {
       if (selfUser.tradingWallet) {
         const q = query(
@@ -105,7 +117,7 @@ export const useWallets = () => {
           orderBy("createdAt", "desc"), // This will sort in descending order
           limit(100)
         );
-        onSnapshot(q, (docsSnap) => {
+        unsub = onSnapshot(q, (docsSnap) => {
           docsSnap.forEach((doc) => {
             const tx = doc.data() as Tx_MirrorFireLedger;
             // console.log(`tx`, tx);
@@ -116,9 +128,11 @@ export const useWallets = () => {
         });
       }
     }
+    return unsub;
   };
 
-  const getRealtimePurchaseManifests = async () => {
+  const getRealtimePurchaseManifests = () => {
+    const unsubs: (() => void)[] = [];
     if (selfUser) {
       // purchases
       const purch = query(
@@ -127,27 +141,30 @@ export const useWallets = () => {
         orderBy("createdAt", "desc"), // This will sort in descending order
         limit(100)
       );
-      onSnapshot(purch, (docsSnap) => {
+      const unsub1 = onSnapshot(purch, (docsSnap) => {
         docsSnap.forEach((doc) => {
           const pm = doc.data() as PurchaseMainfest_Firestore;
           // console.log(`tx`, tx);
           addPurchaseManifest(pm);
         });
       });
+      unsubs.push(unsub1);
       // sales
       const sale = query(
         collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
         where("sellerUserID", "==", selfUser.id),
         limit(100)
       );
-      onSnapshot(sale, (docsSnap) => {
+      const unsub2 = onSnapshot(sale, (docsSnap) => {
         docsSnap.forEach((doc) => {
           const pm = doc.data() as PurchaseMainfest_Firestore;
           // console.log(`tx`, tx);
           addPurchaseManifest(pm);
         });
       });
+      unsubs.push(unsub2);
     }
+    return unsubs;
   };
 
   return {

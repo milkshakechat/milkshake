@@ -46,11 +46,12 @@ export const FreeChatPanel = ({
   const [inputMessage, setInputMessage] = useState("");
   const [sendLoading, setSendLoading] = useState(false);
   const { runMutation: runSendFreeChatMutation } = useSendFreeChat();
-  const { freeChatLogs, getRealtimeFreeChatLogs } = useRealtimeFreeChat();
+  const { freeChatLogs } = useRealtimeFreeChat({
+    chatRoomID,
+  });
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    getRealtimeFreeChatLogs(chatRoomID);
     setTimeout(() => {
       const scrollContainer = scrollContainerRef.current;
       if (scrollContainer) {

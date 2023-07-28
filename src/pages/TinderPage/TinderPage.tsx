@@ -77,6 +77,7 @@ import { StoryAttachmentType } from "../../api/graphql/types";
 import dayjs from "dayjs";
 import { useInteractStory } from "@/hooks/useSwipe";
 import { useSocialPoke } from "@/hooks/useFriendship";
+import JankyCurtain from "@/components/JankyCurtain/JankyCurtain";
 
 type SwipeDirection = "left" | "right";
 export const TinderPage = () => {
@@ -117,6 +118,13 @@ export const TinderPage = () => {
   const { runMutation: runInteractStoryMutation } = useInteractStory();
 
   const [api, contextHolder] = notification.useNotification();
+
+  const [shinyLoading, setShinyLoading] = useState(true);
+  useEffect(() => {
+    setTimeout(() => {
+      setShinyLoading(false);
+    }, 400);
+  }, []);
 
   const { runMutation: runSocialPokeMutation } = useSocialPoke();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -724,6 +732,7 @@ export const TinderPage = () => {
           )
         }
       />
+      <JankyCurtain loading={shinyLoading} />
       {contextHolder}
     </>
   );

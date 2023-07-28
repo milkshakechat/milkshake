@@ -46,6 +46,8 @@ import WishlistGallery from "@/components/WishlistGallery/WishlistGallery";
 import { useWishState } from "@/state/wish.state";
 import { PrivacyModeEnum } from "@/api/graphql/types";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import React from "react";
+import JankyCurtain from "@/components/JankyCurtain/JankyCurtain";
 
 enum viewModes {
   qrCode = "qrCode",
@@ -57,7 +59,7 @@ const ProfilePage = () => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const view = searchParams.get("view");
-
+  const [shinyLoading, setShinyLoading] = useState(true);
   const viewMode =
     viewModes[view as keyof typeof viewModes] || viewModes.timeline;
   const user = useUserState((state) => state.user);
@@ -65,6 +67,12 @@ const ProfilePage = () => {
   const { screen, isMobile } = useWindowSize();
   const [showQRCode, setShowQRCode] = useState(false);
   const notifications = useNotificationsState((state) => state.notifications);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShinyLoading(false);
+    }, 400);
+  }, []);
 
   const myWishlist = useWishState((state) => state.myWishlist);
 
@@ -91,7 +99,7 @@ const ProfilePage = () => {
     },
   ];
   return (
-    <>
+    <div style={{ position: "relative" }}>
       <Alert
         message={
           <$Horizontal justifyContent="space-between">
@@ -112,7 +120,10 @@ const ProfilePage = () => {
             <NavLink to="/app/notifications">
               <$Horizontal>
                 <BellFilled
-                  style={{ color: token.colorBgSpotlight, fontSize: "1.2rem" }}
+                  style={{
+                    color: token.colorBgSpotlight,
+                    fontSize: "1.2rem",
+                  }}
                 />
                 <Badge
                   count={notifications.filter((n) => !n.markedRead).length}
@@ -336,7 +347,8 @@ const ProfilePage = () => {
           </Modal>
         </div>
       </AppLayoutPadding>
-    </>
+      <JankyCurtain loading={shinyLoading} />
+    </div>
   );
 };
 

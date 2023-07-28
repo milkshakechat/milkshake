@@ -155,7 +155,7 @@ export const useProfile = () => {
             .catch((graphQLError: Error) => {
               if (graphQLError) {
                 setErrors((errors) => [...errors, graphQLError.message]);
-                reject();
+                reject(graphQLError);
               }
             });
         }
@@ -405,24 +405,32 @@ export const useListFriendships = () => {
   const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
 
   useEffect(() => {
+    let unsubscribe: () => void;
     if (selfUser && selfUser.id) {
-      getRealtimeFriendships(selfUser.id);
+      unsubscribe = getRealtimeFriendships(selfUser.id);
     }
+    // Cleanup function
+    return () => {
+      if (unsubscribe) {
+        unsubscribe(); // Call the unsubscribe function when the component is unmounting
+      }
+    };
   }, [selfUser?.id]);
 
-  const getRealtimeFriendships = async (userID: UserID) => {
+  const getRealtimeFriendships = (userID: UserID) => {
     const q = query(
       collection(firestore, FirestoreCollection.FRIENDSHIPS),
       where("primaryUserID", "==", userID),
       limit(100)
     );
-    onSnapshot(q, (docsSnap) => {
+    const unsubscribe = onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
         const fr = doc.data() as Friendship_Firestore;
         setFriendships(fr);
         preloadImages([fr.avatar]);
       });
     });
+    return unsubscribe;
   };
 
   return {};

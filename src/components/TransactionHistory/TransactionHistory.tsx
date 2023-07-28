@@ -120,7 +120,13 @@ export const TransactionHistory = ({
 
     const targetDate = dayjs(tx?.date).add(1, "day");
     // check if now is after targetDate
-
+    if (
+      tx.type === TransactionType.CASH_OUT ||
+      tx.type === TransactionType.TOP_UP ||
+      tx.type === TransactionType.PREMIUM_CHAT
+    ) {
+      return [];
+    }
     if (pendingTxs.map((tx) => tx.originalTxMirrorID).includes(tx.id)) {
       return [
         <span

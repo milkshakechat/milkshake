@@ -34,6 +34,7 @@ import { ADD_FRIEND_ONBOARDING_FIRST_TIME, BRANDED_FONT } from "@/config.env";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import { $Horizontal } from "@/api/utils/spacing";
 import LogoCookie from "@/components/LogoText/LogoCookie";
+import JankyCurtain from "@/components/JankyCurtain/JankyCurtain";
 
 export const UserPublicPage = () => {
   const { username: usernameFromUrl } = useParams();
@@ -42,7 +43,12 @@ export const UserPublicPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isMobile } = useWindowSize();
-
+  const [shinyLoading, setShinyLoading] = useState(true);
+  useEffect(() => {
+    setTimeout(() => {
+      setShinyLoading(false);
+    }, 400);
+  }, []);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const {
     data: spotlightUser,
@@ -245,6 +251,7 @@ export const UserPublicPage = () => {
           </Button>
         </NavLink>
       </div>
+      <JankyCurtain loading={shinyLoading} />
     </div>
   );
 };

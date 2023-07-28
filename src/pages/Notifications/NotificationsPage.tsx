@@ -63,7 +63,7 @@ const NotificationsPage = () => {
               cancelText="No"
             >
               <$Horizontal>
-                <BellFilled />
+                <BellFilled style={{ fontSize: "1.3rem" }} />
                 <Badge
                   count={notifications.filter((n) => !n.markedRead).length}
                   style={{ margin: "0px 5px" }}
@@ -72,7 +72,7 @@ const NotificationsPage = () => {
             </Popconfirm>
           ) : (
             <$Horizontal>
-              <BellFilled />
+              <BellFilled style={{ fontSize: "1.2rem" }} />
               <Badge
                 count={notifications.filter((n) => !n.markedRead).length}
                 style={{ margin: "0px 5px" }}
@@ -158,7 +158,7 @@ const NotificationsPage = () => {
                         );
                       }}
                       style={{
-                        fontSize: "1.2rem",
+                        fontSize: "1.3rem",
                         color: token.colorTextPlaceholder,
                       }}
                     />

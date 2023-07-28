@@ -110,7 +110,7 @@ export const TinderPage = () => {
 
   useEffect(() => {
     if (localSwipeStack.length === 0 && swipeStack.length > 0) {
-      setLocalSwipeStack(swipeStack);
+      setLocalSwipeStack(swipeStack.slice(0, 30));
     }
   }, [swipeStack]);
 

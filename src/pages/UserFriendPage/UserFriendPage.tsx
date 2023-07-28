@@ -63,6 +63,7 @@ import {
   where,
 } from "firebase/firestore";
 import { firestore } from "@/api/firebase";
+import JankyCurtain from "@/components/JankyCurtain/JankyCurtain";
 
 enum viewModes {
   timeline = "timeline",
@@ -112,6 +113,12 @@ export const UserFriendPage = () => {
     runMutation: sendFriendRequestMutation,
   } = useSendFriendRequest();
 
+  const [shinyLoading, setShinyLoading] = useState(true);
+  useEffect(() => {
+    setTimeout(() => {
+      setShinyLoading(false);
+    }, 400);
+  }, []);
   // const getRelatedTxs = async () => {
   //   if (selfUser && spotlightUser) {
   //     const q1 = query(
@@ -415,6 +422,7 @@ export const UserFriendPage = () => {
           />
         </>
       </AppLayout>
+      <JankyCurtain loading={shinyLoading} />
       {contextHolder}
     </div>
   );

@@ -3,7 +3,12 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage } from "firebase/storage";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
-import { getFirestore } from "firebase/firestore";
+import {
+  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+} from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import config from "@/config.env";
@@ -17,6 +22,11 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 export const storage = getStorage(app);
 export const messaging = getMessaging(app);
+initializeFirestore(app, {
+  localCache: persistentLocalCache(
+    /*settings*/ { tabManager: persistentMultipleTabManager() }
+  ),
+});
 export const firestore = getFirestore(app);
 
 onMessage(messaging, (payload) => {

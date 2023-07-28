@@ -24,19 +24,26 @@ export const useNotifications = () => {
   );
 
   useEffect(() => {
+    let unsubscribe: () => void;
     if (selfUser && selfUser.id) {
-      getRealtimeNotifications(selfUser.id);
+      unsubscribe = getRealtimeNotifications(selfUser.id);
     }
+    // Cleanup function
+    return () => {
+      if (unsubscribe) {
+        unsubscribe(); // Call the unsubscribe function when the component is unmounting
+      }
+    };
   }, [selfUser?.id]);
 
-  const getRealtimeNotifications = async (userID: UserID) => {
+  const getRealtimeNotifications = (userID: UserID) => {
     const q = query(
       collection(firestore, FirestoreCollection.NOTIFICATIONS),
       where("recipientID", "==", userID),
       orderBy("createdAt", "desc"), // This will sort in descending order
       limit(100)
     );
-    onSnapshot(q, (docsSnap) => {
+    const unsubscribe = onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
         const notif = doc.data() as Notification_Firestore;
         const notifGQL = notifToGQL(notif);
@@ -44,6 +51,7 @@ export const useNotifications = () => {
         addNotifications([notifGQL]);
       });
     });
+    return unsubscribe;
   };
 
   return {};

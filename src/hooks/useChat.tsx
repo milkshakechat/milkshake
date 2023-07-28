@@ -142,18 +142,25 @@ export const useRealtimeChatRooms = () => {
     );
 
   useEffect(() => {
+    let unsubscribe: () => void;
     if (selfUser && selfUser.id) {
-      getRealtimeChatRooms(selfUser.id);
+      unsubscribe = getRealtimeChatRooms(selfUser.id);
     }
+    // Cleanup function
+    return () => {
+      if (unsubscribe) {
+        unsubscribe(); // Call the unsubscribe function when the component is unmounting
+      }
+    };
   }, [selfUser?.id]);
 
-  const getRealtimeChatRooms = async (userID: UserID) => {
+  const getRealtimeChatRooms = (userID: UserID) => {
     const q = query(
       collection(firestore, FirestoreCollection.CHAT_ROOMS),
       where("members", "array-contains", userID),
       limit(100)
     );
-    onSnapshot(q, (docsSnap) => {
+    const unsubscribe = onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
         const room = doc.data() as ChatRoom_Firestore;
         upsertChat(room, friendships, (selfUser?.id || "") as UserID);
@@ -177,6 +184,7 @@ export const useRealtimeChatRooms = () => {
         });
       });
     });
+    return unsubscribe; // Return the unsubscribe function
   };
 
   return {};
@@ -387,11 +395,20 @@ export const useSendFreeChat = () => {
   return { data, errors, loading, runMutation };
 };
 
-export const useRealtimeFreeChat = () => {
+export const useRealtimeFreeChat = ({
+  chatRoomID,
+}: {
+  chatRoomID: ChatRoomID;
+}) => {
   const selfUser = useUserState((state) => state.user);
   const [freeChatLogs, setFreeChatLogs] = useState<ChatLog_Firestore[]>([]);
 
-  const getRealtimeFreeChatLogs = async (chatRoomID: ChatRoomID) => {
+  useEffect(() => {
+    const unsub = getRealtimeFreeChatLogs(chatRoomID);
+    return unsub;
+  }, []);
+
+  const getRealtimeFreeChatLogs = (chatRoomID: ChatRoomID) => {
     console.log(
       `getRealtimeFreeChatLogs... chatRoomID=${chatRoomID} & userID=${selfUser?.id}`
     );
@@ -401,7 +418,7 @@ export const useRealtimeFreeChat = () => {
       orderBy("createdAt", "desc"), // This will sort in descending order
       limit(100)
     );
-    onSnapshot(q, (docsSnap) => {
+    const unsub = onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
         const log = doc.data() as ChatLog_Firestore;
 
@@ -411,6 +428,7 @@ export const useRealtimeFreeChat = () => {
         ]);
       });
     });
+    return unsub;
   };
 
   return {

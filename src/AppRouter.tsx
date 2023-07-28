@@ -63,6 +63,7 @@ import MerchantBankingRegistrationRefreshPage from "./pages/MerchantBankingRegis
 import MerchantBankingRegistrationInitPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationInitPage";
 import WalletPage from "./pages/WalletPage/WalletPage";
 import PurchasePage from "./pages/PurchasePage/PurchasePage";
+import OfflineBanner from "./components/OfflineBanner/OfflineBanner";
 
 const AppRouter = () => {
   const {
@@ -114,6 +115,7 @@ const AppRouter = () => {
           key={formatJSLocale}
           defaultLocale={localeEnumToFormatJSLocale[localeEnum.english]}
         >
+          <OfflineBanner />
           <AuthProtectProvider>
             <UserInfoProvider>
               <BrowserRouter>

@@ -3,6 +3,7 @@ import { createClient, Client, ClientOptions } from "graphql-ws";
 import config from "@/config.env";
 import { print } from "graphql";
 import { getAuth, onIdTokenChanged } from "firebase/auth";
+import { persistCache, LocalStorageWrapper } from "apollo3-cache-persist";
 import {
   ApolloLink,
   Operation,
@@ -77,10 +78,14 @@ export const GraphqlClientProvider = ({ children }: Props) => {
         shouldRetry: () => true,
         retryAttempts: Infinity,
       });
-
+      const cache = new InMemoryCache();
+      await persistCache({
+        cache,
+        storage: new LocalStorageWrapper(window.localStorage),
+      });
       const client = new ApolloClient({
         link: ApolloLink.from([httpLink, socketLink]),
-        cache: new InMemoryCache(),
+        cache,
       });
 
       setClient(client);

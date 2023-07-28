@@ -26,11 +26,13 @@ const useInterval = (callback: () => void, delay: number) => {
 interface LoadingAnimationProps {
   width: string;
   height: string;
+  fill?: string;
   type?: "cookie" | "text";
 }
 const LoadingAnimation = ({
   width = "100%",
   height = "100%",
+  fill,
   type = "cookie",
 }: LoadingAnimationProps) => {
   // const colors = [
@@ -60,7 +62,7 @@ const LoadingAnimation = ({
   //   setColor(colors[nextColorIndex]);
   // }, 2000);
   const { token } = theme.useToken();
-  const color = token.colorPrimary;
+  const color = fill ? fill : token.colorPrimary;
 
   return (
     <div

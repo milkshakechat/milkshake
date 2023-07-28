@@ -175,21 +175,25 @@ const SendBirdObservers = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    const ch = await getGroupChannel(sendBirdChannelURL);
-    updateSendBirdMetadata({
-      sendBirdChannelURL: ch.url,
-      previewText: (ch.lastMessage as any)
-        ? (ch.lastMessage as any).message
-        : "New Chat",
-      unreadCount: ch.unreadMessageCount,
-      lastTimestamp: ((ch.lastMessage as any) || {}).timestamp,
-    });
-    sdkInstance.groupChannel.addGroupChannelHandler(
-      sendBirdChannelURL,
-      groupChannelHandler
-    );
-    channelListenersRef.current[ch.url] = ch;
-    return ch;
+    try {
+      const ch = await getGroupChannel(sendBirdChannelURL);
+      updateSendBirdMetadata({
+        sendBirdChannelURL: ch.url,
+        previewText: (ch.lastMessage as any)
+          ? (ch.lastMessage as any).message
+          : "New Chat",
+        unreadCount: ch.unreadMessageCount,
+        lastTimestamp: ((ch.lastMessage as any) || {}).timestamp,
+      });
+      sdkInstance.groupChannel.addGroupChannelHandler(
+        sendBirdChannelURL,
+        groupChannelHandler
+      );
+      channelListenersRef.current[ch.url] = ch;
+      return ch;
+    } catch (e) {
+      console.log(e);
+    }
   };
   const unmountChannelObserver = async (url: SendBirdChannelURL) => {
     if (sdkInstance && sdkInstanceReadyForChannelObservation) {

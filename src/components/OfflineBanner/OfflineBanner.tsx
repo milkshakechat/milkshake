@@ -26,7 +26,7 @@ const OfflineBanner = ({ children }: OfflineBannerProps) => {
       if (isDismissed) {
         setIsDismissed(false);
       }
-    }, 120000);
+    }, 30000);
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
     return () => {

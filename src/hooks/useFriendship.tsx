@@ -28,6 +28,13 @@ import { ErrorLine } from "@/api/graphql/error-line";
 import { ObservableSubscription } from "@apollo/client/core";
 import { useUserState } from "@/state/user.state";
 import { shallow } from "zustand/shallow";
+import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import { firestore } from "@/api/firebase";
+import {
+  FirestoreCollection,
+  MirrorPublicUser_Firestore,
+  Username,
+} from "@milkshakechat/helpers";
 
 export const useSendFriendRequest = () => {
   const [data, setData] = useState<SendFriendRequestResponse>();
@@ -312,6 +319,39 @@ export const useSocialPoke = () => {
   };
 
   return { data, errors, loading, runMutation };
+};
+
+export const useSearchByUsername = () => {
+  const selfUser = useUserState((state) => state.user);
+  const [foundUser, setFoundUser] = useState<MirrorPublicUser_Firestore | null>(
+    null
+  );
+
+  const searchByExactUsername = async (username: Username) => {
+    const q = query(
+      collection(firestore, FirestoreCollection.MIRROR_USER),
+      where("username", "==", username),
+      limit(1)
+    );
+    const innerDocsSnap = await getDocs(q);
+    innerDocsSnap.forEach((doc) => {
+      const mirror = doc.data() as MirrorPublicUser_Firestore;
+      setFoundUser(mirror);
+    });
+    if (innerDocsSnap.empty) {
+      setFoundUser(null);
+    }
+  };
+
+  const clearSearchResult = () => {
+    setFoundUser(null);
+  };
+
+  return {
+    searchByExactUsername,
+    foundUser,
+    clearSearchResult,
+  };
 };
 
 // export const useFriendship = () => {

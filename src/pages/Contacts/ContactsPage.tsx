@@ -8,6 +8,7 @@ import {
 import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
 import {
   useManageFriendship,
+  useSearchByUsername,
   useSendFriendRequest,
   useViewPublicProfile,
 } from "@/hooks/useFriendship";
@@ -16,7 +17,6 @@ import PP from "@/i18n/PlaceholderPrint";
 import {
   Avatar,
   Badge,
-  Button,
   Dropdown,
   Input,
   List,
@@ -30,11 +30,13 @@ import {
   message,
   theme,
   Affix,
+  Button,
+  Result,
 } from "antd";
 import { useEffect, useState } from "react";
 import {
   UserOutlined,
-  ScanOutlined,
+  UserAddOutlined,
   SearchOutlined,
   LeftOutlined,
 } from "@ant-design/icons";
@@ -44,6 +46,7 @@ import {
   UserID,
   FriendshipStatus,
   Friendship_Firestore,
+  Username,
 } from "@milkshakechat/helpers";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import {
@@ -98,7 +101,10 @@ export const ContactsPage = () => {
       : ValidTabs.Friends;
   const location = useLocation();
   const { screen, isMobile } = useWindowSize();
-
+  const [searchPublicByUsernameString, setSearchPublicByUsernameString] =
+    useState("");
+  const [loadingSearchPublicByUsername, setLoadingSearchPublicByUsername] =
+    useState(false);
   const user = useUserState((state) => state.user);
 
   const { runMutation: runManageFriendship } = useManageFriendship();
@@ -110,6 +116,11 @@ export const ContactsPage = () => {
   const [searchString, setSearchString] = useState("");
   const [optimisticAccepted, setOptimisticAccepted] = useState<UserID[]>([]);
   const [optimisticDisabled, setOptimisticDisabled] = useState<UserID[]>([]);
+  const {
+    searchByExactUsername,
+    foundUser: foundUserByUsername,
+    clearSearchResult,
+  } = useSearchByUsername();
   const [targetOfDecline, setTargetOfDecline] =
     useState<Friendship_Firestore | null>(null);
   const [showAddContactModal, setShowAddContactModal] = useState(false);
@@ -411,6 +422,7 @@ export const ContactsPage = () => {
           <>
             <Input.Search
               placeholder={searchText}
+              value={searchString}
               allowClear
               onChange={(e) => setSearchString(e.target.value)}
               style={{ width: "100%" }}
@@ -760,9 +772,9 @@ export const ContactsPage = () => {
           <Button
             onClick={() => setShowAddContactModal(true)}
             type="primary"
-            icon={<ScanOutlined />}
+            icon={<UserAddOutlined />}
           >
-            Scan
+            Add
           </Button>
         }
       />
@@ -1207,106 +1219,251 @@ export const ContactsPage = () => {
       </Modal>
       <Modal
         open={showAddContactModal}
-        onCancel={() => setShowAddContactModal(false)}
-        title={
-          <PP>
-            <h3>Add me on Milkshake.chat</h3>
-          </PP>
-        }
-        style={{ overflow: "hidden" }}
-        footer={
-          <Space
-            direction="horizontal"
-            style={{ justifyContent: "space-between", width: "100%" }}
-          >
-            <Button onClick={() => setShowAddContactModal(false)} type="ghost">
-              Close
-            </Button>
-            <Button
-              onClick={() => {
-                if (user) {
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}/${user.username}`
-                  );
-                  message.success(<PP>Copied profile link!</PP>);
-                }
-              }}
-              type="primary"
-            >
-              <PP>Copy URL</PP>
-            </Button>
-          </Space>
-        }
+        onCancel={() => {
+          setShowAddContactModal(false);
+          clearSearchResult();
+          setSearchPublicByUsernameString("");
+        }}
+        style={{ overflow: "hidden", top: 20 }}
+        footer={null}
       >
         <div>
           {user && (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: isMobile ? "column" : "row",
-                alignItems: isMobile ? "flex-start" : "center",
-                justifyContent: "center",
-                gap: isMobile ? "15px" : "30px",
-              }}
-            >
-              <QRCode
-                bordered={false}
-                value={`${window.location}/add/${user.id}`}
-                color={token.colorText}
-                icon={QRCODE_LOGO}
-                {...{
-                  size: isMobile ? window.innerWidth - 100 : undefined,
-                  iconSize: isMobile
-                    ? (window.innerWidth - 100) / 4
-                    : undefined,
-                }}
-              />
-              <$Vertical alignItems="flex-start">
-                <$Horizontal
-                  justifyContent="flex-start"
-                  alignItems="flex-start"
-                >
-                  <Avatar
-                    src={user.avatar}
-                    size={isMobile ? 64 : 48}
-                    style={{ marginRight: "10px" }}
-                  />
-                  <$Vertical>
-                    <PP>
+            <Tabs
+              items={[
+                {
+                  key: "search",
+                  label: `Search`,
+                  children: (
+                    <$Vertical spacing={5}>
+                      <Input.Search
+                        placeholder="Exact Username Search"
+                        enterButton
+                        allowClear
+                        onChange={(e) =>
+                          setSearchPublicByUsernameString(e.target.value)
+                        }
+                        value={searchPublicByUsernameString}
+                        loading={loadingSearchPublicByUsername}
+                        onSearch={async () => {
+                          setLoadingSearchPublicByUsername(true);
+                          await searchByExactUsername(
+                            searchPublicByUsernameString as Username
+                          );
+                          setLoadingSearchPublicByUsername(false);
+                        }}
+                      />
+                      <$Vertical
+                        justifyContent="center"
+                        alignItems="center"
+                        style={{ height: "300px", minHeight: "300px" }}
+                      >
+                        {foundUserByUsername ? (
+                          <$Horizontal
+                            spacing={4}
+                            style={{
+                              flex: 1,
+                              cursor: "pointer",
+                              width: "100%",
+                              alignItems: "flex-start",
+                            }}
+                            alignItems="center"
+                          >
+                            <Avatar
+                              src={foundUserByUsername.avatar}
+                              style={{
+                                backgroundColor: token.colorPrimary,
+                                height: 90,
+                                width: 90,
+                                minHeight: 90,
+                                minWidth: 90,
+                              }}
+                              size={90}
+                            />
+                            <$Vertical
+                              style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                flex: 1,
+                              }}
+                            >
+                              <$Horizontal
+                                justifyContent="space-between"
+                                style={{ width: "100%" }}
+                              >
+                                <$Vertical style={{ flex: 1 }}>
+                                  <PP>
+                                    <b
+                                      style={{
+                                        fontSize: isMobile
+                                          ? "1.3rem"
+                                          : "1.6rem",
+                                        overflowWrap: "break-word",
+                                        wordBreak: "break-all",
+                                        whiteSpace: "normal",
+                                      }}
+                                    >
+                                      {foundUserByUsername.username}
+                                    </b>
+                                  </PP>
+                                  <PP>
+                                    <i
+                                      style={{
+                                        fontSize: isMobile ? "1rem" : "1.1rem",
+                                        marginTop: "0px",
+                                      }}
+                                    >{`@${foundUserByUsername.username}`}</i>
+                                  </PP>
+                                  <NavLink
+                                    to={`/${foundUserByUsername.username}`}
+                                  >
+                                    <Button
+                                      style={{
+                                        width: "100px",
+                                        marginTop: "10px",
+                                      }}
+                                    >
+                                      Visit Profile
+                                    </Button>
+                                  </NavLink>
+                                </$Vertical>
+                              </$Horizontal>
+                            </$Vertical>
+                          </$Horizontal>
+                        ) : (
+                          <Result
+                            icon={<UserOutlined />}
+                            title="Search Users"
+                            subTitle="Must be an exact username match"
+                          />
+                        )}
+                      </$Vertical>
+                    </$Vertical>
+                  ),
+                },
+                {
+                  key: "qrCode",
+                  label: `QR Code`,
+                  children: (
+                    <$Vertical>
                       <div
                         style={{
-                          fontSize: isMobile ? "1.3rem" : "1rem",
-                          fontWeight: 600,
+                          display: "flex",
+                          flexDirection: isMobile ? "column" : "row",
+                          alignItems: isMobile ? "flex-start" : "center",
+                          justifyContent: isMobile ? "center" : "flex-start",
+                          gap: isMobile ? "15px" : "30px",
                         }}
                       >
-                        {user.displayName}
+                        <QRCode
+                          bordered={false}
+                          value={`${window.location}/add/${user.id}`}
+                          color={token.colorText}
+                          icon={QRCODE_LOGO}
+                          {...{
+                            size: isMobile
+                              ? window.innerWidth - 100
+                              : undefined,
+                            iconSize: isMobile
+                              ? (window.innerWidth - 100) / 4
+                              : undefined,
+                          }}
+                        />
+                        <$Vertical
+                          alignItems="flex-start"
+                          style={{
+                            flexDirection: isMobile
+                              ? "column-reverse"
+                              : "column",
+                          }}
+                        >
+                          <$Horizontal
+                            justifyContent="flex-start"
+                            alignItems="flex-start"
+                          >
+                            <Avatar
+                              src={user.avatar}
+                              size={isMobile ? 64 : 48}
+                              style={{ marginRight: "10px" }}
+                            />
+                            <$Vertical>
+                              <PP>
+                                <div
+                                  style={{
+                                    fontSize: isMobile ? "1.3rem" : "1rem",
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {user.displayName}
+                                </div>
+                              </PP>
+                              <PP>
+                                <div
+                                  style={{
+                                    fontSize: isMobile ? "1rem" : "0.9rem",
+                                  }}
+                                >
+                                  {`@${user.username}`}
+                                </div>
+                              </PP>
+                            </$Vertical>
+                          </$Horizontal>
+                          <Spacer height={isMobile ? "20px" : "5px"} />
+                          <div
+                            style={{
+                              padding: "10px",
+                              fontSize: isMobile ? "1.2rem" : "1rem",
+                              backgroundColor: token.colorSuccessBg,
+                              color: token.colorSuccessText,
+                              fontWeight: 700,
+                              wordBreak: "break-all",
+                            }}
+                          >
+                            <PP>
+                              {user &&
+                                `🔒${"\u00A0"}${window.location.host}/${
+                                  user.username
+                                }`}
+                            </PP>
+                          </div>
+                        </$Vertical>
                       </div>
-                    </PP>
-                    <PP>
-                      <div style={{ fontSize: isMobile ? "1rem" : "0.9rem" }}>
-                        {`@${user.username}`}
-                      </div>
-                    </PP>
-                  </$Vertical>
-                </$Horizontal>
-                <Spacer height={isMobile ? "20px" : "5px"} />
-                <div
-                  style={{
-                    padding: "10px",
-                    fontSize: isMobile ? "1.2rem" : "1rem",
-                    backgroundColor: token.colorSuccessBg,
-                    color: token.colorSuccessText,
-                    fontWeight: 700,
-                    wordBreak: "break-all",
-                  }}
-                >
-                  <PP>
-                    {user &&
-                      `🔒${"\u00A0"}${window.location.host}/${user.username}`}
-                  </PP>
-                </div>
-              </$Vertical>
-            </div>
+                      <Spacer />
+                      <Space
+                        direction="horizontal"
+                        style={{
+                          justifyContent: "space-between",
+                          width: "100%",
+                        }}
+                      >
+                        <Button
+                          onClick={() => {
+                            if (user) {
+                              navigator.clipboard.writeText(
+                                `${window.location.origin}/${user.username}`
+                              );
+                              message.success(<PP>Copied profile link!</PP>);
+                            }
+                          }}
+                          type="primary"
+                          style={{ marginLeft: isMobile ? "0px" : "10px" }}
+                        >
+                          <PP>Copy URL</PP>
+                        </Button>
+                        {isMobile ? (
+                          <Button
+                            onClick={() => setShowAddContactModal(false)}
+                            type="ghost"
+                          >
+                            Close
+                          </Button>
+                        ) : null}
+                      </Space>
+                    </$Vertical>
+                  ),
+                },
+              ]}
+            />
           )}
           <Spacer />
         </div>

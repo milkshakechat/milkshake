@@ -47,6 +47,12 @@ export const useStoryCreate = () => {
                 createdAt
                 expiresAt
                 linkedWishID
+                location {
+                  title
+                  geoHash
+                  latitude
+                  longitude
+                }
                 attachments {
                   id
                   thumbnail
@@ -131,6 +137,12 @@ export const useGetStory = () => {
                 createdAt
                 expiresAt
                 linkedWishID
+                location {
+                  title
+                  geoHash
+                  latitude
+                  longitude
+                }
                 attachments {
                   id
                   thumbnail
@@ -220,6 +232,12 @@ export const useFetchStoryFeedQuery = () => {
                 createdAt
                 expiresAt
                 linkedWishID
+                location {
+                  title
+                  geoHash
+                  latitude
+                  longitude
+                }
                 attachments {
                   id
                   thumbnail
@@ -311,6 +329,12 @@ export const useModifyStory = () => {
                 createdAt
                 expiresAt
                 linkedWishID
+                location {
+                  title
+                  geoHash
+                  latitude
+                  longitude
+                }
                 attachments {
                   id
                   thumbnail

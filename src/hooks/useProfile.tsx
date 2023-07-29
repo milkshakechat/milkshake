@@ -94,6 +94,16 @@ export const useProfile = () => {
                     tradingWallet
                     escrowWallet
                     defaultPaymentMethodID
+                    location {
+                      title
+                      geoHash
+                      latitude
+                      longitude
+                    }
+                    currency
+                    prefGeoBias
+                    prefAboutMe
+                    prefLookingFor
                     stories {
                       id
                       userID
@@ -254,9 +264,22 @@ export const useUpdateProfile = () => {
                 displayName
                 bio
                 link
+                email
                 language
                 themeColor
                 privacyMode
+                location {
+                  title
+                  geoHash
+                  latitude
+                  longitude
+                }
+                currency
+                gender
+                interestedIn
+                prefGeoBias
+                prefAboutMe
+                prefLookingFor
               }
             }
             ... on ResponseError {

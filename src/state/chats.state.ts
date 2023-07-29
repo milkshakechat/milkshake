@@ -161,8 +161,7 @@ const extrapolateChatPreview = (
     participants: room.members as any[],
     lastTimestamp: 0,
     title: room.title || "",
-
-    previewText: "No preview available", // Update this as needed.
+    previewText: room.freeChatPreview || "No Preview Available",
     thumbnail,
   };
   return chatFE;

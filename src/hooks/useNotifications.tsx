@@ -11,14 +11,22 @@ import {
   onSnapshot,
   limit,
   orderBy,
+  getDoc,
+  startAt,
+  QueryDocumentSnapshot,
+  getDocs,
+  QuerySnapshot,
+  startAfter,
 } from "firebase/firestore";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUserState } from "@/state/user.state";
 import { useNotificationsState } from "@/state/notifications.state";
 import { NotificationGql } from "@/api/graphql/types";
 
 export const useNotifications = () => {
   const selfUser = useUserState((state) => state.user);
+  const lastFoundRef = useRef<QueryDocumentSnapshot>();
+  const [isLoading, setIsLoading] = useState(false);
   const addNotifications = useNotificationsState(
     (state) => state.addNotifications
   );
@@ -26,7 +34,8 @@ export const useNotifications = () => {
   useEffect(() => {
     let unsubscribe: () => void;
     if (selfUser && selfUser.id) {
-      unsubscribe = getRealtimeNotifications(selfUser.id);
+      unsubscribe = listenRealtimeNotifications();
+      paginateNotifications();
     }
     // Cleanup function
     return () => {
@@ -36,25 +45,55 @@ export const useNotifications = () => {
     };
   }, [selfUser?.id]);
 
-  const getRealtimeNotifications = (userID: UserID) => {
-    const q = query(
+  const DEFAULT_BATCH_SIZE_NOTIFS = 30;
+
+  const listenRealtimeNotifications = () => {
+    if (!selfUser) return () => {};
+    let q = query(
       collection(firestore, FirestoreCollection.NOTIFICATIONS),
-      where("recipientID", "==", userID),
+      where("recipientID", "==", selfUser.id),
       orderBy("createdAt", "desc"), // This will sort in descending order
-      limit(100)
+      limit(DEFAULT_BATCH_SIZE_NOTIFS)
     );
     const unsubscribe = onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
         const notif = doc.data() as Notification_Firestore;
         const notifGQL = notifToGQL(notif);
-
         addNotifications([notifGQL]);
       });
     });
     return unsubscribe;
   };
 
-  return {};
+  const paginateNotifications = () => {
+    if (!selfUser) return () => {};
+    setIsLoading(true);
+    let q = query(
+      collection(firestore, FirestoreCollection.NOTIFICATIONS),
+      where("recipientID", "==", selfUser.id),
+      orderBy("createdAt", "desc"), // This will sort in descending order
+      limit(DEFAULT_BATCH_SIZE_NOTIFS)
+    );
+    if (lastFoundRef.current) {
+      q = query(q, startAfter(lastFoundRef.current));
+    }
+    // Get paginated data
+    getDocs(q).then((docsSnap: QuerySnapshot) => {
+      docsSnap.forEach((doc) => {
+        lastFoundRef.current = doc;
+        const notif = doc.data() as Notification_Firestore;
+        const notifGQL = notifToGQL(notif);
+        addNotifications([notifGQL]);
+        setIsLoading(false);
+      });
+    });
+  };
+
+  return {
+    paginateNotifications,
+    isLoading,
+    DEFAULT_BATCH_SIZE_NOTIFS,
+  };
 };
 
 const notifToGQL = (notif: Notification_Firestore): NotificationGql => {

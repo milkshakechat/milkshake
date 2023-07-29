@@ -18,8 +18,13 @@ import {
   limit,
   doc,
   orderBy,
+  QueryDocumentSnapshot,
+  startAt,
+  startAfter,
+  getDocs,
+  QuerySnapshot,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUserState } from "@/state/user.state";
 import { useNotificationsState } from "@/state/notifications.state";
 import {
@@ -39,6 +44,7 @@ import { useWalletState } from "@/state/wallets.state";
 import gql from "graphql-tag";
 import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import { ErrorLine } from "@/api/graphql/error-line";
+import shallow from "zustand/shallow";
 import {
   CashOutTransactionInput,
   CashOutTransactionResponseSuccess,
@@ -50,21 +56,36 @@ import {
 
 export const useWallets = () => {
   const selfUser = useUserState((state) => state.user);
-  const [recentTxs, setRecentTxs] = useState<Tx_MirrorFireLedger[]>([]);
+
+  const lastFoundTxRef = useRef<QueryDocumentSnapshot>();
+  const [isLoadingTx, setIsLoadingTx] = useState(false);
+
+  const lastFoundPmBuyRef = useRef<QueryDocumentSnapshot>();
+  const lastFoundPmSellRef = useRef<QueryDocumentSnapshot>();
+  const [isLoadingPm, setIsLoadingPm] = useState(false);
 
   const setWallet = useWalletState((state) => state.setWallet);
-  const addPurchaseManifest = useWalletState(
-    (state) => state.addPurchaseManifest
-  );
+  const { addPurchaseManifest, addRecentTx, recentTxs, recentPms } =
+    useWalletState(
+      (state) => ({
+        addPurchaseManifest: state.addPurchaseManifest,
+        addRecentTx: state.addRecentTx,
+        recentTxs: state.recentTxs,
+        recentPms: state.purchaseManifests,
+      }),
+      shallow
+    );
 
   useEffect(() => {
     let unsubscribes: (() => void)[] = [];
     if (selfUser && selfUser.id) {
       const unsubs = getRealtimeWallets();
       unsubs.forEach((u) => unsubscribes.push(u));
-      const unsubTX = getRealtimeTxs();
+      const unsubTX = listenRealtimeTxs();
+      paginateRecentTxs();
       unsubscribes.push(unsubTX);
-      const unsubPMs = getRealtimePurchaseManifests();
+      const unsubPMs = listenRealtimePurchaseManifests();
+      paginatePurchaseManifests();
       unsubPMs.forEach((u) => unsubscribes.push(u));
     } // Cleanup function
     return () => {
@@ -107,23 +128,24 @@ export const useWallets = () => {
     return unsubs;
   };
 
-  const getRealtimeTxs = () => {
+  const DEFAULT_BATCH_SIZE_TX = 50;
+
+  const listenRealtimeTxs = () => {
     let unsub = () => {};
     if (selfUser) {
       if (selfUser.tradingWallet) {
-        const q = query(
+        let q = query(
           collection(firestore, FirestoreCollection.MIRROR_TX),
           where("ownerID", "==", selfUser.id),
           orderBy("createdAt", "desc"), // This will sort in descending order
-          limit(100)
+          limit(DEFAULT_BATCH_SIZE_TX)
         );
         unsub = onSnapshot(q, (docsSnap) => {
           docsSnap.forEach((doc) => {
             const tx = doc.data() as Tx_MirrorFireLedger;
             // console.log(`tx`, tx);
-            setRecentTxs((txs) =>
-              txs.filter((t) => t.id !== tx.id).concat([tx])
-            );
+            addRecentTx(tx);
+            setIsLoadingTx(false);
           });
         });
       }
@@ -131,7 +153,34 @@ export const useWallets = () => {
     return unsub;
   };
 
-  const getRealtimePurchaseManifests = () => {
+  const paginateRecentTxs = () => {
+    if (selfUser) {
+      if (selfUser.tradingWallet) {
+        setIsLoadingTx(true);
+        let q = query(
+          collection(firestore, FirestoreCollection.MIRROR_TX),
+          where("ownerID", "==", selfUser.id),
+          orderBy("createdAt", "desc"), // This will sort in descending order
+          limit(DEFAULT_BATCH_SIZE_TX)
+        );
+        if (lastFoundTxRef.current) {
+          q = query(q, startAfter(lastFoundTxRef.current));
+        }
+        getDocs(q).then((docsSnap: QuerySnapshot) => {
+          docsSnap.forEach((doc) => {
+            lastFoundTxRef.current = doc;
+            const tx = doc.data() as Tx_MirrorFireLedger;
+            // console.log(`tx`, tx);
+            addRecentTx(tx);
+            setIsLoadingTx(false);
+          });
+        });
+      }
+    }
+  };
+
+  const DEFAULT_BATCH_SIZE_PM = 30;
+  const listenRealtimePurchaseManifests = () => {
     const unsubs: (() => void)[] = [];
     if (selfUser) {
       // purchases
@@ -139,7 +188,7 @@ export const useWallets = () => {
         collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
         where("buyerUserID", "==", selfUser.id),
         orderBy("createdAt", "desc"), // This will sort in descending order
-        limit(100)
+        limit(DEFAULT_BATCH_SIZE_PM)
       );
       const unsub1 = onSnapshot(purch, (docsSnap) => {
         docsSnap.forEach((doc) => {
@@ -150,11 +199,14 @@ export const useWallets = () => {
       });
       unsubs.push(unsub1);
       // sales
-      const sale = query(
+      let sale = query(
         collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
         where("sellerUserID", "==", selfUser.id),
-        limit(100)
+        limit(DEFAULT_BATCH_SIZE_PM)
       );
+      if (lastFoundPmSellRef.current) {
+        sale = query(sale, startAt(lastFoundPmSellRef.current));
+      }
       const unsub2 = onSnapshot(sale, (docsSnap) => {
         docsSnap.forEach((doc) => {
           const pm = doc.data() as PurchaseMainfest_Firestore;
@@ -166,9 +218,58 @@ export const useWallets = () => {
     }
     return unsubs;
   };
+  const paginatePurchaseManifests = () => {
+    if (selfUser) {
+      setIsLoadingPm(true);
+      // purchases
+      let purch = query(
+        collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
+        where("buyerUserID", "==", selfUser.id),
+        orderBy("createdAt", "desc"), // This will sort in descending order
+        limit(DEFAULT_BATCH_SIZE_PM)
+      );
+      if (lastFoundPmBuyRef.current) {
+        purch = query(purch, startAt(lastFoundPmBuyRef.current));
+      }
+      getDocs(purch).then((docsSnap: QuerySnapshot) => {
+        docsSnap.forEach((doc) => {
+          lastFoundPmBuyRef.current = doc;
+          const pm = doc.data() as PurchaseMainfest_Firestore;
+          // console.log(`tx`, tx);
+          addPurchaseManifest(pm);
+          setIsLoadingPm(false);
+        });
+      });
+      // sales
+      let sale = query(
+        collection(firestore, FirestoreCollection.PURCHASE_MANIFESTS),
+        where("sellerUserID", "==", selfUser.id),
+        limit(DEFAULT_BATCH_SIZE_PM)
+      );
+      if (lastFoundPmSellRef.current) {
+        sale = query(sale, startAt(lastFoundPmSellRef.current));
+      }
+      getDocs(sale).then((docsSnap: QuerySnapshot) => {
+        docsSnap.forEach((doc) => {
+          lastFoundPmSellRef.current = doc;
+          const pm = doc.data() as PurchaseMainfest_Firestore;
+          // console.log(`tx`, tx);
+          addPurchaseManifest(pm);
+          setIsLoadingPm(false);
+        });
+      });
+    }
+  };
 
   return {
     recentTxs,
+    recentPms,
+    paginateRecentTxs,
+    isLoadingTx,
+    paginatePurchaseManifests,
+    isLoadingPm,
+    DEFAULT_BATCH_SIZE_TX,
+    DEFAULT_BATCH_SIZE_PM,
   };
 };
 

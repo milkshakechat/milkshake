@@ -168,6 +168,7 @@ export const FreeChatPanel = ({
           placeholder={
             "Send a free silent message. Upgrade to Premium for unlimited full-featured chat."
           }
+          onPressEnter={isMobile ? () => {} : sendFreeChatMessage}
         ></Input.TextArea>
         <Button
           type="primary"

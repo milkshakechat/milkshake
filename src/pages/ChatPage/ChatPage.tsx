@@ -98,6 +98,7 @@ import LogoCookie from "@/components/LogoText/LogoCookie";
 import { useWalletState } from "@/state/wallets.state";
 import { CaretLeftOutlined } from "@ant-design/icons";
 import { ErrorLines } from "@/api/graphql/error-line";
+import { set } from "lodash";
 
 const ChatPage = () => {
   const intl = useIntl();
@@ -107,6 +108,7 @@ const ChatPage = () => {
   const [searchParams] = useSearchParams();
   const selfUser = useUserState((state) => state.user);
   const chat = searchParams.get("chat");
+  const [loadingChatPanel, setLoadingChatPanel] = useState(true);
   const { uploadFile } = useStorage();
   const [showUpdate, setShowUpdate] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -123,6 +125,8 @@ const ChatPage = () => {
   const { runMutation: runResignAdminMutation } = useResignAdmin();
   const { runMutation: runPromoteAdminMutation } = usePromoteAdmin();
   const { runMutation: runAdminChatSettingsMutation } = useAdminChatSettings();
+
+  console.log(`====== chat =====`, chat);
 
   const { tradingWallet } = useWalletState(
     (state) => ({
@@ -187,12 +191,6 @@ const ChatPage = () => {
       setIsAllowedPushLocalState(
         enterChatRoomData.chatRoom?.pushConfig?.allowPush || false
       );
-      queryForSpotlightChatroom();
-    }
-  }, [enterChatRoomData]);
-
-  const queryForSpotlightChatroom = async () => {
-    if (enterChatRoomData) {
       setSpotlightChatroom({
         ...enterChatRoomData.chatRoom,
         title: enterChatRoomData.chatRoom.title || "",
@@ -202,7 +200,7 @@ const ChatPage = () => {
         lastTimestamp: 0,
       });
     }
-  };
+  }, [enterChatRoomData]);
 
   useEffect(() => {
     if (spotlightChatroom && selfUser) {
@@ -220,6 +218,7 @@ const ChatPage = () => {
           };
         }, {})
       );
+      setLoadingChatPanel(false);
     }
   }, [spotlightChatroom]);
 
@@ -251,23 +250,18 @@ const ChatPage = () => {
   const friend = matchContactToChatroom({
     userID: selfUser?.id,
     chatroomID:
-      (enterChatRoomData?.chatRoom.chatRoomID as ChatRoomID) ||
-      ("" as ChatRoomID),
+      (spotlightChatroom?.chatRoomID as ChatRoomID) || ("" as ChatRoomID),
     chatRooms: chatRooms,
     friendships,
   });
   const { token } = theme.useToken();
-
-  useEffect(() => {
-    loadPageData();
-  }, []);
 
   const PREMIUM_CHAT_GIFT_TOTAL = Object.values(premiumChatGift).reduce(
     (acc, curr) => acc + curr,
     0
   );
 
-  const loadPageData = () => {
+  const queryForSpotlightChatroom = () => {
     const args: EnterChatRoomInput = {
       chatRoomID: chat || "",
       // @ts-ignore (our graphql schema typegen is treating gql scalar as ts any)
@@ -277,7 +271,8 @@ const ChatPage = () => {
     enterChatRoomQuery(args);
   };
   useEffect(() => {
-    loadPageData();
+    setLoadingChatPanel(true);
+    queryForSpotlightChatroom();
   }, [chat]);
   const [searchString, setSearchString] = useState("");
   const { screen, isMobile } = useWindowSize();
@@ -429,7 +424,7 @@ const ChatPage = () => {
         break;
     }
     await runUpdateChatSettingsMutation({
-      chatRoomID: enterChatRoomData?.chatRoom.chatRoomID as ChatRoomID,
+      chatRoomID: spotlightChatroom?.chatRoomID as ChatRoomID,
       allowPush,
       snoozeUntil: snoozeUntilTime ? snoozeUntilTime.toString() : undefined,
     });
@@ -439,7 +434,7 @@ const ChatPage = () => {
     setIsMuteLoading(false);
   };
 
-  if (!spotlightChatroom || enterChatRoomLoading) {
+  if (!spotlightChatroom || enterChatRoomLoading || loadingChatPanel) {
     return <LoadingAnimation width="100%" height="100%" type="cookie" />;
   }
   const amIAdmin = spotlightChatroom.admins.includes(selfUser?.id || "");
@@ -1352,6 +1347,16 @@ const ChatPage = () => {
               }
               title={
                 <div
+                  onClick={() => {
+                    if (otherParticipants.length === 1) {
+                      navigate({
+                        pathname: `/user`,
+                        search: createSearchParams({
+                          userID: otherParticipants[0],
+                        }).toString(),
+                      });
+                    }
+                  }}
                   style={{
                     whiteSpace:
                       "nowrap" /* Ensures that text will stay on one line */,

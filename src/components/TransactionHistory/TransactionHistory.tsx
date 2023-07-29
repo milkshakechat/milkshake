@@ -8,7 +8,8 @@ import {
   useDemoSubscription,
 } from "@/hooks/useTemplateGQL";
 import { useUserState } from "@/state/user.state";
-import { Avatar, Input, List, Skeleton, theme } from "antd";
+import { Avatar, Button, Divider, Input, List, Skeleton, theme } from "antd";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useIntl } from "react-intl";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import PP from "@/i18n/PlaceholderPrint";
@@ -34,6 +35,7 @@ import RecallTransaction from "../RecallTransaction/RecallTransaction";
 import ReturnTransaction from "../ReturnTransaction/ReturnTransaction";
 import { useWalletState } from "@/state/wallets.state";
 import CashOutTransaction from "../CashOutTransaction/CashOutTransaction";
+import { useWallets } from "@/hooks/useWallets";
 
 export interface TransactionFE {
   id: MirrorTransactionID;
@@ -73,6 +75,9 @@ export const TransactionHistory = ({
   const [txReturn, setTxReturn] = useState<TransactionFE | null>(null);
   const [txCashOut, setCashOut] = useState<TransactionFE | null>(null);
   const pendingTxs = useWalletState((state) => state.pendingTxs);
+
+  const { paginateRecentTxs, isLoadingTx, DEFAULT_BATCH_SIZE_TX, recentTxs } =
+    useWallets();
 
   const filteredTransactions = txs
     .map((tx) => {
@@ -154,7 +159,7 @@ export const TransactionHistory = ({
           <a
             onClick={() => setTxRecall(tx)}
             key={`action-${tx.id}`}
-            style={{ color: token.colorTextDescription }}
+            style={{ color: token.colorInfo }}
           >
             Recall
           </a>,
@@ -187,7 +192,11 @@ export const TransactionHistory = ({
     if (tx.type === TransactionType.DEAL && checkIfRecallable(tx.createdAt)) {
       if (tx.senderWalletID === walletAliasID) {
         return [
-          <a onClick={() => setTxRecall(tx)} key={`action-${tx.id}`}>
+          <a
+            onClick={() => setTxRecall(tx)}
+            key={`action-${tx.id}`}
+            style={{ color: token.colorInfo }}
+          >
             Recall
           </a>,
         ];
@@ -204,7 +213,11 @@ export const TransactionHistory = ({
     ) {
       if (tx.senderWalletID === walletAliasID) {
         return [
-          <a onClick={() => setTxRecall(tx)} key={`action-${tx.id}`}>
+          <a
+            onClick={() => setTxRecall(tx)}
+            key={`action-${tx.id}`}
+            style={{ color: token.colorInfo }}
+          >
             Recall
           </a>,
         ];
@@ -227,47 +240,85 @@ export const TransactionHistory = ({
         onChange={(e) => setSearchString(e.target.value)}
         placeholder="Search transactions"
       />
-      <List
-        itemLayout="horizontal"
-        dataSource={filteredTransactions}
-        renderItem={(tx) => (
-          <List.Item actions={determineAction(tx)}>
-            <Skeleton avatar title={false} loading={false} active>
-              <List.Item.Meta
-                avatar={
-                  <Avatar
-                    icon={tx.amount < 0 ? <MinusOutlined /> : <PlusOutlined />}
-                    style={{
-                      backgroundColor:
-                        tx.amount < 0 ? token.colorWarning : token.colorInfo,
-                    }}
+      <div id="scrollableDiv" style={{ overflow: "auto", height: "100%" }}>
+        <InfiniteScroll
+          dataLength={filteredTransactions.length}
+          next={paginateRecentTxs}
+          hasMore={!(recentTxs.length < DEFAULT_BATCH_SIZE_TX)}
+          loader={
+            <$Horizontal
+              justifyContent="center"
+              style={{
+                textAlign: "center",
+                width: "100%",
+                padding: "20px",
+              }}
+            >
+              <Button loading={isLoadingTx} onClick={paginateRecentTxs}>
+                Load More
+              </Button>
+            </$Horizontal>
+          }
+          endMessage={
+            <$Horizontal
+              justifyContent="center"
+              style={{
+                textAlign: "center",
+                width: "100%",
+                padding: "20px",
+              }}
+            >
+              <Divider plain>End of List</Divider>
+            </$Horizontal>
+          }
+          scrollableTarget="scrollableDiv"
+        >
+          <List
+            itemLayout="horizontal"
+            dataSource={filteredTransactions}
+            renderItem={(tx) => (
+              <List.Item actions={determineAction(tx)}>
+                <Skeleton avatar title={false} loading={false} active>
+                  <List.Item.Meta
+                    avatar={
+                      <Avatar
+                        icon={
+                          tx.amount < 0 ? <MinusOutlined /> : <PlusOutlined />
+                        }
+                        style={{
+                          backgroundColor:
+                            tx.amount < 0
+                              ? token.colorWarning
+                              : token.colorInfo,
+                        }}
+                      />
+                    }
+                    title={
+                      <span
+                        onClick={() => {
+                          if (tx.purchaseManifestID) {
+                            navigate({
+                              pathname: `/app/wallet/purchase/${tx.purchaseManifestID}`,
+                            });
+                          }
+                        }}
+                      >{`${tx.title.slice(0, isMobile ? 50 : 999)}${
+                        isMobile ? ".." : ""
+                      }`}</span>
+                    }
+                    description={
+                      <$Vertical>
+                        <i>{dayjs().to(dayjs(tx.date))}</i>
+                        <span>{tx.note}</span>
+                      </$Vertical>
+                    }
                   />
-                }
-                title={
-                  <span
-                    onClick={() => {
-                      if (tx.purchaseManifestID) {
-                        navigate({
-                          pathname: `/app/wallet/purchase/${tx.purchaseManifestID}`,
-                        });
-                      }
-                    }}
-                  >{`${tx.title.slice(0, isMobile ? 50 : 999)}${
-                    isMobile ? ".." : ""
-                  }`}</span>
-                }
-                description={
-                  <$Vertical>
-                    <i>{dayjs().to(dayjs(tx.date))}</i>
-                    <span>{tx.note}</span>
-                    <span>{tx.id}</span>
-                  </$Vertical>
-                }
-              />
-            </Skeleton>
-          </List.Item>
-        )}
-      />
+                </Skeleton>
+              </List.Item>
+            )}
+          />
+        </InfiniteScroll>
+      </div>
       <RecallTransaction
         isOpen={!!txRecall}
         toggleOpen={(isOpen) => {

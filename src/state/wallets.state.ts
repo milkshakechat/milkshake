@@ -4,6 +4,7 @@ import {
   MirrorTransactionID,
   TxRefID,
   PurchaseMainfest_Firestore,
+  Tx_MirrorFireLedger,
 } from "@milkshakechat/helpers";
 import { create } from "zustand";
 
@@ -20,6 +21,8 @@ interface WalletsState {
   pendingTxs: PendingTxFE[];
   purchaseManifests: PurchaseMainfest_Firestore[];
   addPurchaseManifest: (manifest: PurchaseMainfest_Firestore) => void;
+  recentTxs: Tx_MirrorFireLedger[];
+  addRecentTx: (tx: Tx_MirrorFireLedger) => void;
 }
 
 export const useWalletState = create<WalletsState>()((set) => ({
@@ -53,6 +56,12 @@ export const useWalletState = create<WalletsState>()((set) => ({
         ),
         purchaseManifest,
       ],
+    }));
+  },
+  recentTxs: [],
+  addRecentTx: (tx) => {
+    set((state) => ({
+      recentTxs: [...state.recentTxs.filter((t) => t.id !== tx.id), tx],
     }));
   },
 }));

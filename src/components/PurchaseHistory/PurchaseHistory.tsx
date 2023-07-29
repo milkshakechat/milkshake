@@ -12,15 +12,25 @@ import {
 import { useState } from "react";
 import {
   SearchOutlined,
-  ShoppingOutlined,
-  HistoryOutlined,
   EyeInvisibleOutlined,
   EyeOutlined,
+  HistoryOutlined,
+  ShoppingOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Input, List, Skeleton, message, theme } from "antd";
+import InfiniteScroll from "react-infinite-scroll-component";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Input,
+  List,
+  Skeleton,
+  message,
+  theme,
+} from "antd";
 import { useWindowSize } from "@/api/utils/screen";
 import dayjs from "dayjs";
-import { useCancelSubscription } from "@/hooks/useWallets";
+import { useCancelSubscription, useWallets } from "@/hooks/useWallets";
 import { NavLink } from "react-router-dom";
 
 interface PurchaseHistoryProps {
@@ -36,6 +46,13 @@ const PurchaseHistory = ({
   const { screen, isMobile } = useWindowSize();
   const [showStopped, setShowStopped] = useState(true);
   const { token } = theme.useToken();
+
+  const {
+    paginatePurchaseManifests,
+    isLoadingPm,
+    DEFAULT_BATCH_SIZE_PM,
+    recentPms,
+  } = useWallets();
 
   const determineAction = (pm: PurchaseMainfest_Firestore) => {
     if (checkIfEscrowWallet(wallet.walletAliasID)) {
@@ -104,7 +121,7 @@ const PurchaseHistory = ({
           style={{ flex: 1 }}
         />
         {showStopped ? (
-          <EyeOutlined
+          <ShoppingOutlined
             onClick={() => setShowStopped(false)}
             style={{
               fontSize: "1.3rem",
@@ -113,7 +130,7 @@ const PurchaseHistory = ({
             }}
           />
         ) : (
-          <EyeInvisibleOutlined
+          <HistoryOutlined
             onClick={() => setShowStopped(true)}
             style={{
               fontSize: "1.3rem",
@@ -123,59 +140,95 @@ const PurchaseHistory = ({
           />
         )}
       </$Horizontal>
-      <List
-        itemLayout="horizontal"
-        dataSource={filteredPurchaseManifests}
-        renderItem={(pm) => (
-          <div key={pm.id}>
-            <NavLink to={`/app/wallet/purchase/${pm.id}`}>
-              <List.Item actions={determineAction(pm)}>
-                <Skeleton avatar title={false} loading={false} active>
-                  <List.Item.Meta
-                    avatar={
-                      <Avatar
-                        icon={
-                          pm.agreedBuyFrequency ===
-                          WishBuyFrequency.ONE_TIME ? (
-                            <ShoppingOutlined />
-                          ) : (
-                            <HistoryOutlined />
-                          )
+      <div id="scrollableDiv" style={{ overflow: "auto", height: "100%" }}>
+        <InfiniteScroll
+          dataLength={filteredPurchaseManifests.length}
+          next={paginatePurchaseManifests}
+          hasMore={!(recentPms.length < DEFAULT_BATCH_SIZE_PM)}
+          loader={
+            <$Horizontal
+              justifyContent="center"
+              style={{
+                textAlign: "center",
+                width: "100%",
+                padding: "20px",
+              }}
+            >
+              <Button loading={isLoadingPm} onClick={paginatePurchaseManifests}>
+                Load More
+              </Button>
+            </$Horizontal>
+          }
+          endMessage={
+            <$Horizontal
+              justifyContent="center"
+              style={{
+                textAlign: "center",
+                width: "100%",
+                padding: "20px",
+              }}
+            >
+              <Divider plain>End of List</Divider>
+            </$Horizontal>
+          }
+          scrollableTarget="scrollableDiv"
+        >
+          <List
+            itemLayout="horizontal"
+            dataSource={filteredPurchaseManifests}
+            renderItem={(pm) => (
+              <div key={pm.id}>
+                <NavLink to={`/app/wallet/purchase/${pm.id}`}>
+                  <List.Item actions={determineAction(pm)}>
+                    <Skeleton avatar title={false} loading={false} active>
+                      <List.Item.Meta
+                        avatar={
+                          <Avatar
+                            icon={
+                              pm.agreedBuyFrequency ===
+                              WishBuyFrequency.ONE_TIME ? (
+                                <ShoppingOutlined />
+                              ) : (
+                                <HistoryOutlined />
+                              )
+                            }
+                            style={{
+                              backgroundColor:
+                                pm.agreedBuyFrequency ===
+                                WishBuyFrequency.ONE_TIME
+                                  ? token.colorSuccess
+                                  : token.colorInfo,
+                            }}
+                          />
                         }
-                        style={{
-                          backgroundColor:
-                            pm.agreedBuyFrequency === WishBuyFrequency.ONE_TIME
-                              ? token.colorSuccess
-                              : token.colorInfo,
-                        }}
+                        title={
+                          <span>{`${(pm.title || "").slice(
+                            0,
+                            isMobile ? 70 : 999
+                          )}${(pm.title || "").length > 70 ? ".." : ""}`}</span>
+                        }
+                        description={
+                          <$Vertical>
+                            <i>
+                              {dayjs().to(
+                                dayjs((pm.createdAt as any).seconds * 1000)
+                              )}
+                            </i>
+                            <span>{`${(pm.note || "").slice(
+                              0,
+                              isMobile ? 100 : 999
+                            )}${isMobile ? ".." : ""}`}</span>
+                          </$Vertical>
+                        }
                       />
-                    }
-                    title={
-                      <span>{`${(pm.title || "").slice(
-                        0,
-                        isMobile ? 70 : 999
-                      )}${(pm.title || "").length > 70 ? ".." : ""}`}</span>
-                    }
-                    description={
-                      <$Vertical>
-                        <i>
-                          {dayjs().to(
-                            dayjs((pm.createdAt as any).seconds * 1000)
-                          )}
-                        </i>
-                        <span>{`${(pm.note || "").slice(
-                          0,
-                          isMobile ? 100 : 999
-                        )}${isMobile ? ".." : ""}`}</span>
-                      </$Vertical>
-                    }
-                  />
-                </Skeleton>
-              </List.Item>
-            </NavLink>
-          </div>
-        )}
-      />
+                    </Skeleton>
+                  </List.Item>
+                </NavLink>
+              </div>
+            )}
+          />
+        </InfiniteScroll>
+      </div>
     </$Vertical>
   );
 };

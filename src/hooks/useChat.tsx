@@ -409,9 +409,6 @@ export const useRealtimeFreeChat = ({
   }, []);
 
   const getRealtimeFreeChatLogs = (chatRoomID: ChatRoomID) => {
-    console.log(
-      `getRealtimeFreeChatLogs... chatRoomID=${chatRoomID} & userID=${selfUser?.id}`
-    );
     const q = query(
       collection(firestore, FirestoreCollection.CHAT_LOGS),
       where("chatRoomID", "==", chatRoomID),

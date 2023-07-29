@@ -65,7 +65,7 @@ export const QuickChat = ({
   onClose,
   textPlaceholder,
   user,
-  suggestedCookies = 0,
+  suggestedCookies = 1,
   actionButton,
   openNotification,
 }: QuickChatProps) => {

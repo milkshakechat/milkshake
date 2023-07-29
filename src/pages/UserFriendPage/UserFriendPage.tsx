@@ -231,7 +231,18 @@ export const UserFriendPage = () => {
           loading={isPending}
           onClick={
             isAcceptedFriend
-              ? () => setChatDrawerOpen(true)
+              ? () => {
+                  const searchString = createSearchParams({
+                    participants: encodeURIComponent(
+                      [spotlightUser.id, selfUser.id].join(",")
+                    ),
+                  }).toString();
+
+                  navigate({
+                    pathname: "/app/chats/chat",
+                    search: searchString,
+                  });
+                }
               : handleSendFriendRequest
           }
           disabled={recentlySentRequest}
@@ -242,22 +253,8 @@ export const UserFriendPage = () => {
               {
                 key: "send-message",
                 label: (
-                  <Button
-                    onClick={() => {
-                      const searchString = createSearchParams({
-                        participants: encodeURIComponent(
-                          [spotlightUser.id, selfUser.id].join(",")
-                        ),
-                      }).toString();
-
-                      navigate({
-                        pathname: "/app/chats/chat",
-                        search: searchString,
-                      });
-                    }}
-                    type="ghost"
-                  >
-                    Chat
+                  <Button onClick={() => setChatDrawerOpen(true)} type="ghost">
+                    Message
                   </Button>
                 ),
               },
@@ -297,7 +294,7 @@ export const UserFriendPage = () => {
             ],
           }}
         >
-          {isAcceptedFriend ? "Message" : "Add Friend"}
+          {isAcceptedFriend ? "Chat" : "Add Friend"}
         </Dropdown.Button>
       </div>
     );

@@ -20,7 +20,7 @@ import {
   CheckCircleFilled,
   DownOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RcFile } from "antd/es/upload";
 import useStorage from "@/hooks/useStorage";
 import { useUserState } from "@/state/user.state";
@@ -42,7 +42,12 @@ import {
 } from "@milkshakechat/helpers";
 import { useWishState } from "@/state/wish.state";
 import React from "react";
-import { SearchOutlined } from "@ant-design/icons";
+import {
+  SearchOutlined,
+  EnvironmentFilled,
+  HeartFilled,
+  FireFilled,
+} from "@ant-design/icons";
 import LogoCookie from "../LogoText/LogoCookie";
 import { Spacer } from "../AppLayout/AppLayout";
 
@@ -76,6 +81,31 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
   const navigate = useNavigate();
   const [searchString, setSearchString] = useState("");
   const myWishlist = useWishState((state) => state.myWishlist);
+  const [locationSearchString, setLocationSearchString] = useState("");
+  const [locationPredictions, setLocationPredictions] = useState<
+    google.maps.places.QueryAutocompletePrediction[]
+  >([]);
+  const [locationPlaceID, setLocationPlaceID] = useState("");
+
+  useEffect(() => {
+    // Initialize the Autocomplete Service
+    const autoCompleteService =
+      new window.google.maps.places.AutocompleteService();
+
+    if (locationSearchString === "") {
+      setLocationPredictions([]);
+    } else {
+      autoCompleteService.getPlacePredictions(
+        { input: locationSearchString },
+        (predictions: google.maps.places.QueryAutocompletePrediction[]) => {
+          console.log(`predictions`, predictions);
+          if (predictions) {
+            setLocationPredictions(predictions);
+          }
+        }
+      );
+    }
+  }, [locationSearchString]);
 
   const filteredWishlist = myWishlist
     .filter((wish) => {
@@ -245,10 +275,67 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
       >
         <Input
           suffix={<SearchOutlined />}
-          addonBefore="Wish"
+          addonBefore={<FireFilled />}
           placeholder={"Attach Wish (Optional)"}
           value={searchString}
           onChange={(e) => setSearchString(e.target.value)}
+        />
+      </Dropdown>
+    );
+  };
+
+  const renderAttachLocation = () => {
+    return (
+      <Dropdown
+        placement="top"
+        menu={{
+          items: locationPredictions.map((loc) => {
+            return {
+              key: loc.description,
+              label: (
+                <div
+                  style={{
+                    flex: 1,
+                    fontSize: "1.rem",
+                    color: token.colorText,
+                    width: "100%",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setLocationPlaceID(loc.place_id || "");
+                    setLocationSearchString(loc.description);
+                  }}
+                >
+                  <span> {loc.description}</span>
+                </div>
+              ),
+            };
+          }),
+        }}
+        dropdownRender={(menu) => (
+          <div
+            style={{
+              width: "auto",
+              backgroundColor: token.colorBgContainer,
+              padding: "10px",
+              boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.1)",
+              maxHeight: "70vh",
+              overflowY: "scroll",
+            }}
+          >
+            {React.cloneElement(menu as React.ReactElement, {
+              style: { boxShadow: "none" },
+            })}
+          </div>
+        )}
+      >
+        <Input
+          suffix={<SearchOutlined />}
+          placeholder="Location"
+          value={locationSearchString}
+          onChange={(e) => setLocationSearchString(e.target.value)}
+          addonBefore={<EnvironmentFilled />}
         />
       </Dropdown>
     );
@@ -266,10 +353,13 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
         },
         linkedWishID,
         allowSwipe,
+        geoPlaceID: locationPlaceID ? locationPlaceID : undefined,
       });
       if (story) {
         setUploadedStory(story.story.id as StoryID);
         setSubmitted(true);
+        setLocationPlaceID("");
+        setLocationSearchString("");
       }
     }
   };
@@ -317,7 +407,7 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
 
   const renderCaptionsPanel = () => {
     return (
-      <$Vertical style={{ marginBottom: "10px" }}>
+      <$Vertical>
         <Input.TextArea
           placeholder={"Caption"}
           rows={2}
@@ -412,8 +502,11 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
         {renderMediaPanel()}
       </div>
 
-      {renderCaptionsPanel()}
-      {renderAttachWish()}
+      <$Vertical spacing={2}>
+        {renderCaptionsPanel()}
+        {renderAttachWish()}
+        {renderAttachLocation()}
+      </$Vertical>
       {renderSubmitButton()}
     </$Vertical>
   );

@@ -9,6 +9,7 @@ import {
   Divider,
   Dropdown,
   Form,
+  Input,
   MenuProps,
   Modal,
   Select,
@@ -17,7 +18,7 @@ import {
   message,
   theme,
 } from "antd";
-import { LeftOutlined, DownOutlined } from "@ant-design/icons";
+import { LeftOutlined, DownOutlined, EditOutlined } from "@ant-design/icons";
 import { useWindowSize, ScreenSize } from "@/api/utils/screen";
 import { useNavigate, NavLink } from "react-router-dom";
 import StyleConfigPanel from "@/components/StyleConfigPanel/StyleConfigPanel";
@@ -67,11 +68,13 @@ interface ProfileSettingsInitialFormValue {
   privacyMode: privacyModeEnum;
   themeColor: ThemeColorHex;
   language: localeEnum;
+  email: string;
 }
 const PROFILE_SETTINGS_INITIAL_FORM_VALUE = {
   privacyMode: privacyModeEnum.private,
   themeColor: defaultThemeColorHex,
   language: localeEnum.english,
+  email: "",
 };
 
 const ProfileSettingsPage = () => {
@@ -83,7 +86,8 @@ const ProfileSettingsPage = () => {
   const navigate = useNavigate();
   const [showUpdate, setShowUpdate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { screen } = useWindowSize();
+  const [email, setEmail] = useState("");
+
   const { runMutation: updatePushTokenMutation } = useUpdatePushToken();
   const { runMutation: revokePushTokensMutation } = useRevokeAllPushTokens();
   const {
@@ -99,6 +103,7 @@ const ProfileSettingsPage = () => {
     shallow
   );
 
+  const { screen, isMobile } = useWindowSize();
   const [isRequestNotificationModalOpen, setIsRequestNotificationModalOpen] =
     useState(false);
   const [isRequestCameraModalOpen, setIsRequestCameraModalOpen] =
@@ -108,7 +113,7 @@ const ProfileSettingsPage = () => {
   const [isClearPermissionModalOpen, setIsClearPermissionModalOpen] =
     useState(false);
   const [isInstallAppModalOpen, setIsInstallAppModalOpen] = useState(false);
-
+  const [enableEditEmail, setEnableEditEmail] = useState(false);
   const {
     allowedPermissions,
     requestPushPermission,
@@ -205,9 +210,11 @@ const ProfileSettingsPage = () => {
         themeColor: user.themeColor,
         language: user.language as unknown as localeEnum,
         privacyMode: user.privacyMode as unknown as privacyModeEnum,
+        email: user.email,
       };
       setInitialFormValues(initValues);
       form.setFieldsValue(initValues);
+      setEmail(user.email);
     }
   }, [user]);
 
@@ -291,9 +298,11 @@ const ProfileSettingsPage = () => {
       privacyMode: values.privacyMode as unknown as PrivacyModeEnum,
       language: values.language as unknown as LanguageEnum,
       themeColor: themeColor,
+      email: email !== user?.email ? email : undefined,
     });
     setShowUpdate(false);
     setIsSubmitting(false);
+    setEnableEditEmail(false);
     message.success("Settings updated!");
   };
 
@@ -572,11 +581,19 @@ const ProfileSettingsPage = () => {
               </h3>
               <i style={{ color: token.colorTextSecondary }}>
                 <PP>
-                  Connect your bank to receive payouts from your Milkshake when
-                  you cash out cookies.
+                  Connect your bank to receive payouts from Milkshake when you
+                  cash out cookies.
                 </PP>
               </i>
               <Spacer />
+              <Form.Item name="currency">
+                <Input
+                  placeholder="$ US Dollar"
+                  value="US Dollar"
+                  disabled
+                  style={{ maxWidth: isMobile ? "none" : "350px" }}
+                />
+              </Form.Item>
               <Form.Item name="setupBanking">
                 <NavLink to="/app/profile/settings/merchant/banking-registration-init">
                   <Button>
@@ -587,6 +604,24 @@ const ProfileSettingsPage = () => {
             </Form.Item>
             <Form.Item name="divider" {...noLabelFieldProps}>
               <Divider />
+              <Form.Item name="email">
+                <Input
+                  addonBefore={
+                    <EditOutlined
+                      onClick={() => setEnableEditEmail(!enableEditEmail)}
+                    />
+                  }
+                  placeholder="Email"
+                  type="email"
+                  value={email}
+                  disabled={!enableEditEmail}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setShowUpdate(true);
+                  }}
+                  style={{ maxWidth: isMobile ? "none" : "350px" }}
+                />
+              </Form.Item>
               {user && user.id && (
                 <PP>
                   <i
@@ -601,13 +636,6 @@ const ProfileSettingsPage = () => {
                 </PP>
               )}
               <br />
-              {user && user.email && (
-                <PP>
-                  <i style={{ color: token.colorTextSecondary }}>
-                    {user.email}
-                  </i>
-                </PP>
-              )}
               {user && user.phone && (
                 <PP>
                   <i style={{ color: token.colorTextSecondary }}>

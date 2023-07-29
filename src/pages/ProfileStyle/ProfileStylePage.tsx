@@ -6,6 +6,8 @@ import AppLayout, {
 import {
   Avatar,
   Button,
+  Divider,
+  Dropdown,
   Form,
   Input,
   Layout,
@@ -13,13 +15,14 @@ import {
   Select,
   Space,
   Spin,
+  Switch,
   Upload,
   message,
   theme,
 } from "antd";
 import { useUserState } from "@/state/user.state";
 import { useWindowSize, ScreenSize } from "@/api/utils/screen";
-import { LeftOutlined, UserOutlined } from "@ant-design/icons";
+import { LeftOutlined, UserOutlined, SearchOutlined } from "@ant-design/icons";
 import { RcFile } from "antd/es/upload";
 import useStorage from "@/hooks/useStorage";
 import { v4 as uuidv4 } from "uuid";
@@ -40,14 +43,26 @@ import {
   getCompressedAvatarUrl,
   privacyModeEnum,
 } from "@milkshakechat/helpers";
-import { ModifyProfileInput, PrivacyModeEnum } from "@/api/graphql/types";
+import {
+  GenderEnum,
+  ModifyProfileInput,
+  PrivacyModeEnum,
+} from "@/api/graphql/types";
 import useSharedTranslations from "@/i18n/useSharedTranslations";
 import { cid } from "./i18n/types.i18n.ProfileStylePage";
 import { useIntl } from "react-intl";
 import config from "@/config.env";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
+import PP from "@/i18n/PlaceholderPrint";
+import { $Horizontal, $Vertical } from "@/api/utils/spacing";
+import React from "react";
 
 const formLayout = "horizontal";
+declare global {
+  interface Window {
+    google: any;
+  }
+}
 
 interface ProfileStyleInitialFormValue {
   displayName: string;
@@ -60,6 +75,8 @@ const PROFILE_STYLE_INITIAL_FORM_VALUE = {
   username: "",
   bio: "",
   link: "",
+  prefAboutMe: "",
+  prefLookingFor: "",
 };
 
 const usernameRules: Rule[] = [
@@ -107,6 +124,13 @@ const ProfileStylePage = () => {
   const { screen } = useWindowSize();
   const { uploadFile } = useStorage();
 
+  const [locationSearchString, setLocationSearchString] = useState("");
+  const [locationPredictions, setLocationPredictions] = useState<
+    google.maps.places.QueryAutocompletePrediction[]
+  >([]);
+  const [locationPlaceID, setLocationPlaceID] = useState("");
+  const [prefAboutMe, setPrefAboutMe] = useState("");
+  const [prefLookingFor, setPrefLookingFor] = useState("");
   const [isUploadingFile, setIsUploadingFile] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -114,6 +138,8 @@ const ProfileStylePage = () => {
   const [privacyTip, setPrivacyTip] = useState("");
   const [usernameValue, setUsernameValue] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [gender, setGender] = useState<GenderEnum>();
+  const [interestedIn, setInterestedIn] = useState<GenderEnum[]>([]);
   const [initialFormValues, setInitialFormValues] =
     useState<ProfileStyleInitialFormValue>(PROFILE_STYLE_INITIAL_FORM_VALUE);
   const { backButtonText, updateButtonText } = useSharedTranslations();
@@ -126,12 +152,32 @@ const ProfileStylePage = () => {
     screen === ScreenSize.mobile
       ? { wrapperCol: { span: 24 } }
       : { wrapperCol: { span: 20, offset: 4 } };
-
+  const [enforceLocationBias, setEnforceLocationBias] = useState(false);
   const {
     data: checkUsernameAvailableData,
     errors: checkUsernameAvailableErrors,
     runQuery: runCheckUsernameAvailableQuery,
   } = useCheckUsernameAvailable();
+
+  useEffect(() => {
+    // Initialize the Autocomplete Service
+    const autoCompleteService =
+      new window.google.maps.places.AutocompleteService();
+
+    if (locationSearchString === "") {
+      setLocationPredictions([]);
+    } else {
+      autoCompleteService.getPlacePredictions(
+        { input: locationSearchString },
+        (predictions: google.maps.places.QueryAutocompletePrediction[]) => {
+          console.log(`predictions`, predictions);
+          if (predictions) {
+            setLocationPredictions(predictions);
+          }
+        }
+      );
+    }
+  }, [locationSearchString]);
 
   const editProfileText = intl.formatMessage({
     id: `title.${cid}`,
@@ -196,9 +242,15 @@ const ProfileStylePage = () => {
         bio: user.bio,
         link: user.link,
         privacyMode: user.privacyMode as unknown as privacyModeEnum,
+        prefAboutMe: user.prefAboutMe || "",
+        prefLookingFor: user.prefLookingFor || "",
       };
       setInitialFormValues(initValues);
+      setLocationSearchString(user.location?.title ? user.location.title : "");
+      setGender(user.gender);
+      setInterestedIn(user.interestedIn);
       form.setFieldsValue(initValues);
+      setEnforceLocationBias(user.prefGeoBias ? true : false);
     }
   }, [user]);
 
@@ -268,6 +320,24 @@ const ProfileStylePage = () => {
     };
     if (compressedAvatarUrl) {
       data.avatar = compressedAvatarUrl;
+    }
+    if (locationPlaceID) {
+      data.geoPlaceID = locationPlaceID;
+    }
+    if (gender && gender !== user?.gender) {
+      data.gender = gender;
+    }
+    if (interestedIn && interestedIn !== user?.interestedIn) {
+      data.interestedIn = interestedIn;
+    }
+    if (prefAboutMe && prefAboutMe !== user?.prefAboutMe) {
+      data.prefAboutMe = prefAboutMe;
+    }
+    if (prefLookingFor && prefLookingFor !== user?.prefLookingFor) {
+      data.prefLookingFor = prefLookingFor;
+    }
+    if (enforceLocationBias !== user?.prefGeoBias) {
+      data.prefGeoBias = enforceLocationBias;
     }
     await runUpdateProfileMutation(data);
     setShowUpdate(false);
@@ -392,6 +462,164 @@ const ProfileStylePage = () => {
             </Form.Item>
             <Form.Item label={linkText} name="link" rules={linkRules}>
               <Input placeholder="Link to Website" />
+            </Form.Item>
+            <Form.Item {...buttonItemLayout}>
+              <Divider />
+              <h3>
+                <PP>Hidden Preferences</PP>
+              </h3>
+              <i style={{ color: token.colorTextSecondary }}>
+                <PP>
+                  {`Let Milkshake help find people you like. Only you can see these preferences.`}
+                </PP>
+              </i>
+            </Form.Item>
+            <Form.Item
+              label={<PP>{`Location`}</PP>}
+              name="location"
+              tooltip={
+                <PP>
+                  When enabled, you will only see stories and people from your
+                  chosen location. You can change this anytime.
+                </PP>
+              }
+            >
+              <Dropdown
+                placement="top"
+                menu={{
+                  items: locationPredictions.map((loc) => {
+                    return {
+                      key: loc.description,
+                      label: (
+                        <div
+                          style={{
+                            flex: 1,
+                            fontSize: "1.rem",
+                            color: token.colorText,
+                            width: "100%",
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setLocationPlaceID(loc.place_id || "");
+                            setLocationSearchString(loc.description);
+                            setShowUpdate(true);
+                          }}
+                        >
+                          <span> {loc.description}</span>
+                        </div>
+                      ),
+                    };
+                  }),
+                }}
+                dropdownRender={(menu) => (
+                  <div
+                    style={{
+                      width: "auto",
+                      backgroundColor: token.colorBgContainer,
+                      padding: "10px",
+                      boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.1)",
+                      maxHeight: "70vh",
+                      overflowY: "scroll",
+                    }}
+                  >
+                    {React.cloneElement(menu as React.ReactElement, {
+                      style: { boxShadow: "none" },
+                    })}
+                  </div>
+                )}
+              >
+                <Input
+                  suffix={<SearchOutlined />}
+                  placeholder="Anywhere in the World"
+                  value={locationSearchString}
+                  onChange={(e) => setLocationSearchString(e.target.value)}
+                  addonBefore={
+                    <Switch
+                      checkedChildren={"ON"}
+                      unCheckedChildren={"OFF"}
+                      checked={enforceLocationBias}
+                      onChange={() => {
+                        setEnforceLocationBias(!enforceLocationBias);
+                        setShowUpdate(true);
+                      }}
+                    />
+                  }
+                />
+              </Dropdown>
+            </Form.Item>
+            <Form.Item {...buttonItemLayout}>
+              <$Horizontal spacing={2}>
+                <$Vertical
+                  spacing={2}
+                  alignItems="flex-start"
+                  style={{ flex: 1 }}
+                >
+                  <label style={{ textAlign: "left" }}>I am a...</label>
+                  <Select
+                    onChange={(gender) => {
+                      setGender(gender);
+                      setShowUpdate(true);
+                    }}
+                    value={gender}
+                    options={[
+                      { value: "male", label: "Man" },
+                      { value: "female", label: "Woman" },
+                      { value: "other", label: "Other" },
+                    ]}
+                  />
+                </$Vertical>
+                <$Vertical
+                  spacing={2}
+                  alignItems="flex-start"
+                  style={{ flex: 1 }}
+                >
+                  <label style={{ textAlign: "left" }}>Interested in...</label>
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    value={interestedIn}
+                    showSearch={false}
+                    onChange={(genders) => {
+                      setInterestedIn(genders);
+                      setShowUpdate(true);
+                    }}
+                    options={[
+                      { value: "female", label: "Women" },
+                      { value: "male", label: "Men" },
+                      { value: "other", label: "Other" },
+                    ]}
+                    style={{ textAlign: "center" }}
+                  />
+                </$Vertical>
+              </$Horizontal>
+            </Form.Item>
+
+            <Form.Item
+              label={<PP>My Interests</PP>}
+              name="prefAboutMe"
+              rules={bioRules}
+            >
+              <Input.TextArea
+                rows={3}
+                placeholder="List some things you like or make you special (both good and bad)"
+                style={{ resize: "none" }}
+                value={prefAboutMe}
+                onChange={(e) => setPrefAboutMe(e.target.value)}
+              />
+            </Form.Item>
+            <Form.Item
+              label={<PP>Looking For</PP>}
+              name="prefLookingFor"
+              rules={bioRules}
+            >
+              <Input.TextArea
+                rows={3}
+                placeholder="Describe what you are looking for"
+                style={{ resize: "none" }}
+                value={prefLookingFor}
+                onChange={(e) => setPrefLookingFor(e.target.value)}
+              />
             </Form.Item>
           </Form>
         ) : (

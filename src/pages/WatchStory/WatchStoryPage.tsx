@@ -40,6 +40,7 @@ import {
   HeartFilled,
   MessageFilled,
   WalletOutlined,
+  EnvironmentFilled,
 } from "@ant-design/icons";
 import { Spacer } from "@/components/AppLayout/AppLayout";
 import VideoPlayer, {
@@ -429,11 +430,21 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   strokeColor={token.colorPrimaryActive}
                   style={{ width: "100%", flex: 1 }}
                 />
-                <i
-                  style={{ marginTop: "5px", color: token.colorWhite }}
-                >{`Posted ${dayjs().to(
-                  dayjs(spotlightStory.createdAt)
-                )} (${getTimeRemaining(spotlightStory.expiresAt)})`}</i>
+                {spotlightStory.location ? (
+                  <$Horizontal
+                    spacing={2}
+                    style={{ marginTop: "5px", color: token.colorWhite }}
+                  >
+                    <EnvironmentFilled />
+                    <b>{`${spotlightStory.location.title}`}</b>
+                  </$Horizontal>
+                ) : (
+                  <i
+                    style={{ marginTop: "5px", color: token.colorWhite }}
+                  >{`Posted ${dayjs().to(
+                    dayjs(spotlightStory.createdAt)
+                  )} (${getTimeRemaining(spotlightStory.expiresAt)})`}</i>
+                )}
               </$Vertical>
               <div>
                 <Dropdown
@@ -487,8 +498,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
               alignItems: "flex-end",
             }}
           >
-            <$Horizontal
-              spacing={3}
+            <$Vertical
               style={{
                 zIndex: 1,
                 position: "absolute",
@@ -497,34 +507,42 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                 color: token.colorWhite,
               }}
             >
-              <Avatar
-                src={spotlightStory.author.avatar}
-                style={{ backgroundColor: token.colorPrimaryText }}
-                size="large"
-                onClick={visitUser}
-              />
-              <$Vertical
-                style={{
-                  whiteSpace: "nowrap",
-                  textOverflow: "ellipsis",
-                }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  visitUser();
-                }}
-              >
-                <PP>
-                  <b>
-                    {spotlightStory.author.displayName ||
-                      spotlightStory.author.username}
-                  </b>
-                </PP>
-                <PP>
-                  <i>{`@${spotlightStory.author.username}`}</i>
-                </PP>
-              </$Vertical>
-            </$Horizontal>
+              {/* {spotlightStory.location && (
+                <$Horizontal spacing={2} style={{ marginBottom: "20px" }}>
+                  <EnvironmentFilled />
+                  <b>{`${spotlightStory.location.title}`}</b>
+                </$Horizontal>
+              )} */}
+              <$Horizontal spacing={3}>
+                <Avatar
+                  src={spotlightStory.author.avatar}
+                  style={{ backgroundColor: token.colorPrimaryText }}
+                  size="large"
+                  onClick={visitUser}
+                />
+                <$Vertical
+                  style={{
+                    whiteSpace: "nowrap",
+                    textOverflow: "ellipsis",
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    visitUser();
+                  }}
+                >
+                  <PP>
+                    <b>
+                      {spotlightStory.author.displayName ||
+                        spotlightStory.author.username}
+                    </b>
+                  </PP>
+                  <PP>
+                    <i>{`@${spotlightStory.author.username}`}</i>
+                  </PP>
+                </$Vertical>
+              </$Horizontal>
+            </$Vertical>
             <$Vertical
               style={{
                 zIndex: 1,

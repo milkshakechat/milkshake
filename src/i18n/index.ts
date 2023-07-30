@@ -1,4 +1,4 @@
-import { localeEnum } from "@milkshakechat/helpers";
+import { localeEnum, privacyModeEnum } from "@milkshakechat/helpers";
 import { MessageFormatElement } from "react-intl";
 
 export const localeLabelText: Record<localeEnum, string> = {
@@ -82,3 +82,29 @@ export const formatJSLocaleToLocaleEnum: Record<string, localeEnum> = {
 export type FormatJSMessageMap =
   | Record<string, string>
   | Record<string, MessageFormatElement[]>;
+
+export const mapPrivacyModeEnumToI18n = (
+  privacyMode: privacyModeEnum
+): string => {
+  switch (privacyMode) {
+    case privacyModeEnum.public:
+      return "privacyModeEnum.public.___shared";
+    case privacyModeEnum.private:
+      return "privacyModeEnum.private.___shared";
+    case privacyModeEnum.hidden:
+      return "privacyModeEnum.hidden.___shared";
+  }
+};
+
+export const mapPrivacyModeEnumToI18nHelpTip = (
+  privacyMode: privacyModeEnum
+): string => {
+  switch (privacyMode) {
+    case privacyModeEnum.public:
+      return "privacyModeEnum_helpTip.public.___shared";
+    case privacyModeEnum.private:
+      return "privacyModeEnum_helpTip.private.___shared";
+    case privacyModeEnum.hidden:
+      return "privacyModeEnum_helpTip.hidden.___shared";
+  }
+};

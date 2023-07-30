@@ -1,0 +1,51 @@
+
+export const cid = "___ChatPage";
+export interface i18n_Mapping {
+  "alertAllowNotif.___ChatPage": string;
+"alertMutedNotif.___ChatPage": string;
+"infoUploading.___ChatPage": string;
+"btnMute3Hours.___ChatPage": string;
+"btnUnMute.___ChatPage": string;
+"btnMute1Day.___ChatPage": string;
+"btnMuteIndef.___ChatPage": string;
+"labelYourBalance.___ChatPage": string;
+"alertBoughtPremiumChat.___ChatPage": string;
+"btnConfirmPurchase.___ChatPage": string;
+"labelGiftPremiumLong.___ChatPage": string;
+"infoBuyPremium.___ChatPage": string;
+"labelYourBalanceCookies.___ChatPage": string;
+"btnCancel.___ChatPage": string;
+"btnMute.___ChatPage": string;
+"btnUnmute.___ChatPage": string;
+"labelUploading.___ChatPage": string;
+"labelChangeGroupPhoto.___ChatPage": string;
+"labelGroupchatName.___ChatPage": string;
+"labelGroupchatMembers.___ChatPage": string;
+"labelGiftPremium.___ChatPage": string;
+"btnInvite.___ChatPage": string;
+"labelAddFriendChat.___ChatPage": string;
+"infoOnlyAdminsInvite.___ChatPage": string;
+"tagAdmin.___ChatPage": string;
+"tagInviteSent.___ChatPage": string;
+"menuViewProfile.___ChatPage": string;
+"menuMakeAdmin.___ChatPage": string;
+"popConfirmResignTitle.___ChatPage": string;
+"popConfirmResignBody.___ChatPage": string;
+"alertResignedAdmin.___ChatPage": string;
+"labelResignAdmin.___ChatPage": string;
+"popConfirmRemoval.___ChatPage": string;
+"infoRemoveMember.___ChatPage": string;
+"alertRemovedMember.___ChatPage": string;
+"btnYes.___ChatPage": string;
+"btnNo.___ChatPage": string;
+"btnRemove.___ChatPage": string;
+"btnViewProfile.___ChatPage": string;
+"btnConfirmLeave.___ChatPage": string;
+"infoLeaveGroupchat.___ChatPage": string;
+"alertLeftGroupchat.___ChatPage": string;
+"menuLeaveChat.___ChatPage": string;
+"linkUpdateSettings.___ChatPage": string;
+"switchLabelPro.___ChatPage": string;
+"switchLabelFree.___ChatPage": string;
+}
+  

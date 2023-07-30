@@ -25,6 +25,7 @@ import useWebPermissions from "@/hooks/useWebPermissions";
 import { useEffect, useRef, useState } from "react";
 import { UserID } from "@milkshakechat/helpers";
 import ChatPage from "../ChatPage/ChatPage";
+import { cid } from "./i18n/types.i18n.ChatsPage";
 
 const ConversationsPage = () => {
   const intl = useIntl();
@@ -54,8 +55,16 @@ const ConversationsPage = () => {
   const refreshNonce = useRef(0);
 
   const friendships = useUserState((state) => state.friendships);
-
   const friendsRef = useRef(friendships);
+
+  const _txt_explainEnablePush = intl.formatMessage({
+    id: `explainEnablePush.${cid}`,
+    defaultMessage: "Please enable push notifications",
+  });
+  const _txt_labelSettings = intl.formatMessage({
+    id: `labelSettings.${cid}`,
+    defaultMessage: "Settings",
+  });
 
   useEffect(() => {
     friendsRef.current = friendships;
@@ -87,10 +96,10 @@ const ConversationsPage = () => {
         <Alert
           message={
             <$Horizontal justifyContent="space-between">
-              <span>Please enable push notifications</span>
+              <span>{_txt_explainEnablePush}</span>
               <NavLink to="/app/profile/settings">
                 <Button type="link" size="small">
-                  Settings
+                  {_txt_labelSettings}
                 </Button>
               </NavLink>
             </$Horizontal>

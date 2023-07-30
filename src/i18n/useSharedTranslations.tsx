@@ -1,9 +1,9 @@
 import { useIntl } from "react-intl";
+import { cid as shared_cid } from "@/i18n/i18n/types.i18n.shared";
 import {
   mapPrivacyModeEnumToI18n,
   mapPrivacyModeEnumToI18nHelpTip,
-  cid as shared_cid,
-} from "@/i18n/i18n/types.i18n.shared";
+} from "./index";
 import {
   PrivacySettingsExplaination,
   privacyModeEnum,

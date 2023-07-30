@@ -39,7 +39,7 @@ import { Dropdown } from "antd";
 import { useWalletState } from "@/state/wallets.state";
 import shallow from "zustand/shallow";
 import { useCreatePaymentIntent, useTopUpWallet } from "@/hooks/useWallets";
-import AddPaymentMethodModal from "../AddPaymentMethodModal/AddPaymentMethodModal";
+import AddPaymentMethodModal from "../AddPaymentMethodModal/AddPaymentMethodModalStripe";
 import {
   CardElement,
   Elements,
@@ -52,6 +52,12 @@ import {
   useStripeHook,
   useStripeSetupIntent,
 } from "@/hooks/useStripeHook";
+import AddPaymentMethodModalRecurly from "../AddPaymentMethodModal/AddPaymentMethodModalRecurly";
+import config from "@/config.env";
+import {
+  RecurlyProvider,
+  Elements as RecurlyElements,
+} from "@recurly/react-recurly";
 
 interface TopUpWalletProps {
   isOpen: boolean;
@@ -94,7 +100,7 @@ const TopUpWallet = ({
   const [suggestedPrice, setSuggestedPrice] = useState(DEFAULT_SUGGESTED_TOPUP);
   const [suggestMode, setSuggestMode] = useState(false);
   const [purchaseNote, setPurchaseNote] = useState("");
-  const stripe = useStripe();
+  // const stripe = useStripe();
   const [noteMode, setNoteMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<ErrorLine[]>([]);
@@ -124,62 +130,62 @@ const TopUpWallet = ({
   };
 
   const checkoutPurchase = async () => {
-    console.log(`checkoutPurchase`);
-    console.log(`stripe`, stripe);
-    console.log(`defaultPaymentMethodID`, defaultPaymentMethodID);
-    setSuggestMode(false);
-    if (!selfUser || !stripe || stripe === null) {
-      return;
-    }
-    if (defaultPaymentMethodID === null) {
-      setAddPaymentMethodModalOpen(true);
-      return;
-    } else {
-      setIsLoading(true);
-      const res = await runTopUpWalletMutation({
-        amount: suggestedPrice,
-      });
-      if (!res) {
-        setIsLoading(false);
-        message.error("Failed to purchase wish");
-        return;
-      }
-      if (res.checkoutToken) {
-        console.log(`---> res`, res);
-        const confirmationRes = await stripe.confirmCardPayment(
-          res.checkoutToken,
-          {
-            payment_method: defaultPaymentMethodID,
-          }
-        );
-        if (confirmationRes.error) {
-          console.log(`error`, confirmationRes.error);
-          setErrors([confirmationRes.error.message as ErrorLine]);
-        }
-        console.log(`confirmationRes`, confirmationRes);
-        if (confirmationRes.paymentIntent?.status === "succeeded") {
-          openNotification();
-          setIsLoading(false);
-          toggleOpen(false);
-          navigate({
-            pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
-            search: createSearchParams({
-              mode: "success",
-            }).toString(),
-          });
-        }
-      } else if (res.referenceID) {
-        openNotification();
-        setIsLoading(false);
-        toggleOpen(false);
-        navigate({
-          pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
-          search: createSearchParams({
-            mode: "success",
-          }).toString(),
-        });
-      }
-    }
+    // console.log(`checkoutPurchase`);
+    // console.log(`stripe`, stripe);
+    // console.log(`defaultPaymentMethodID`, defaultPaymentMethodID);
+    // setSuggestMode(false);
+    // if (!selfUser || !stripe || stripe === null) {
+    //   return;
+    // }
+    // if (defaultPaymentMethodID === null) {
+    //   setAddPaymentMethodModalOpen(true);
+    //   return;
+    // } else {
+    //   setIsLoading(true);
+    //   const res = await runTopUpWalletMutation({
+    //     amount: suggestedPrice,
+    //   });
+    //   if (!res) {
+    //     setIsLoading(false);
+    //     message.error("Failed to purchase wish");
+    //     return;
+    //   }
+    //   if (res.checkoutToken) {
+    //     console.log(`---> res`, res);
+    //     const confirmationRes = await stripe.confirmCardPayment(
+    //       res.checkoutToken,
+    //       {
+    //         payment_method: defaultPaymentMethodID,
+    //       }
+    //     );
+    //     if (confirmationRes.error) {
+    //       console.log(`error`, confirmationRes.error);
+    //       setErrors([confirmationRes.error.message as ErrorLine]);
+    //     }
+    //     console.log(`confirmationRes`, confirmationRes);
+    //     if (confirmationRes.paymentIntent?.status === "succeeded") {
+    //       openNotification();
+    //       setIsLoading(false);
+    //       toggleOpen(false);
+    //       navigate({
+    //         pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
+    //         search: createSearchParams({
+    //           mode: "success",
+    //         }).toString(),
+    //       });
+    //     }
+    //   } else if (res.referenceID) {
+    //     openNotification();
+    //     setIsLoading(false);
+    //     toggleOpen(false);
+    //     navigate({
+    //       pathname: `/app/wallet/purchase/${res.purchaseManifestID}`,
+    //       search: createSearchParams({
+    //         mode: "success",
+    //       }).toString(),
+    //     });
+    //   }
+    // }
   };
 
   return (
@@ -370,26 +376,38 @@ const TopUpWallet = ({
         </$Horizontal>
       )}
 
-      <AddPaymentMethodModal
-        isOpen={addPaymentMethodModalOpen}
+      <AddPaymentMethodModalRecurly
+        isOpen={true || addPaymentMethodModalOpen}
         toggleOpen={setAddPaymentMethodModalOpen}
       />
     </Drawer>
   );
 };
 
-const TopUpWalletHOC = (args: TopUpWalletProps) => {
-  const { stripePromise, initStripe } = useStripeHook();
+// const TopUpWalletHOCStripe = (args: TopUpWalletProps) => {
+//   const { stripePromise, initStripe } = useStripeHook();
 
-  useEffect(() => {
-    initStripe();
-  }, []);
+//   useEffect(() => {
+//     initStripe();
+//   }, []);
 
+//   return (
+//     <Elements stripe={stripePromise}>
+//       <TopUpWallet {...args} />
+//     </Elements>
+//   );
+// };
+
+const TopUpWalletHOCRecurly = (args: TopUpWalletProps) => {
   return (
-    <Elements stripe={stripePromise}>
-      <TopUpWallet {...args} />
-    </Elements>
+    // @ts-ignore
+    <RecurlyProvider publicKey={config.RECURLY.publicKey}>
+      {/* @ts-ignore */}
+      <RecurlyElements>
+        <TopUpWallet {...args} />
+      </RecurlyElements>
+    </RecurlyProvider>
   );
 };
 
-export default TopUpWalletHOC;
+export default TopUpWalletHOCRecurly;

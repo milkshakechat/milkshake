@@ -39,7 +39,7 @@ import { Dropdown } from "antd";
 import { useWalletState } from "@/state/wallets.state";
 import shallow from "zustand/shallow";
 import { useCreatePaymentIntent } from "@/hooks/useWallets";
-import AddPaymentMethodModal from "../AddPaymentMethodModal/AddPaymentMethodModal";
+import AddPaymentMethodModal from "../AddPaymentMethodModal/AddPaymentMethodModalStripe";
 import {
   CardElement,
   Elements,
@@ -531,7 +531,7 @@ const ConfirmPurchase = ({
   );
 };
 
-const ConfirmPurchaseHOC = (args: ConfirmPurchaseProps) => {
+const ConfirmPurchaseHOCStripe = (args: ConfirmPurchaseProps) => {
   const { stripePromise, initStripe } = useStripeHook();
 
   useEffect(() => {
@@ -545,4 +545,4 @@ const ConfirmPurchaseHOC = (args: ConfirmPurchaseProps) => {
   );
 };
 
-export default ConfirmPurchaseHOC;
+export default ConfirmPurchaseHOCStripe;

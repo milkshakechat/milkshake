@@ -33,6 +33,7 @@ import SendBirdService from "@/api/sendbird";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { ConfigProvider, RadioChangeEvent, theme } from "antd";
 
+// import { RecurlyProvider } from "@recurly/react-recurly";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import ProfilePage from "@/pages/Profile/ProfilePage";
 import ProfileStylePage from "@/pages/ProfileStyle/ProfileStylePage";
@@ -63,7 +64,8 @@ import MerchantBankingRegistrationRefreshPage from "./pages/MerchantBankingRegis
 import MerchantBankingRegistrationInitPage from "./pages/MerchantBankingRegistration/MerchantBankingRegistrationInitPage";
 import WalletPage from "./pages/WalletPage/WalletPage";
 import PurchasePage from "./pages/PurchasePage/PurchasePage";
-import OfflineBanner from "./components/OfflineBanner/OfflineBanner";
+import OfflineBanner from "@/components/OfflineBanner/OfflineBanner";
+import config from "@/config.env";
 
 const AppRouter = () => {
   const {

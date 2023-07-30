@@ -32,7 +32,7 @@ interface AddPaymentMethodProps {
   isOpen: boolean;
   toggleOpen: (bool: boolean) => void;
 }
-export const AddPaymentMethodModal = ({
+export const AddPaymentMethodModalStripe = ({
   isOpen,
   toggleOpen,
 }: AddPaymentMethodProps) => {
@@ -60,7 +60,7 @@ export const AddPaymentMethodModal = ({
     </Modal>
   );
 };
-export default AddPaymentMethodModal;
+export default AddPaymentMethodModalStripe;
 
 interface AddPaymentPanelProps {
   toggleOpen: (bool: boolean) => void;

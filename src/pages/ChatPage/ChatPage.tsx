@@ -99,6 +99,7 @@ import { useWalletState } from "@/state/wallets.state";
 import { CaretLeftOutlined } from "@ant-design/icons";
 import { ErrorLines } from "@/api/graphql/error-line";
 import { set } from "lodash";
+import { cid } from "./i18n/types.i18n.ChatPage";
 
 const ChatPage = () => {
   const intl = useIntl();
@@ -126,7 +127,219 @@ const ChatPage = () => {
   const { runMutation: runPromoteAdminMutation } = usePromoteAdmin();
   const { runMutation: runAdminChatSettingsMutation } = useAdminChatSettings();
 
-  console.log(`====== chat =====`, chat);
+  const _txt_alertAllowNotif = intl.formatMessage({
+    id: `alertAllowNotif.${cid}`,
+    defaultMessage: "Allowed Notifications",
+  });
+  const _txt_alertMutedNotif = intl.formatMessage({
+    id: `alertMutedNotif.${cid}`,
+    defaultMessage: "Muted Notifications",
+  });
+  const _txt_infoUploading = intl.formatMessage({
+    id: `infoUploading.${cid}`,
+    defaultMessage: "Uploading...",
+  });
+  const _txt_labelChangeGroupPhoto = intl.formatMessage({
+    id: `labelChangeGroupPhoto.${cid}`,
+    defaultMessage: "Change Group Photo",
+  });
+  const _txt_btnMute3Hours = intl.formatMessage({
+    id: `btnMute3Hours.${cid}`,
+    defaultMessage: "Mute for 3 hours",
+  });
+  const _txt_btnUnMute = intl.formatMessage({
+    id: `btnUnMute.${cid}`,
+    defaultMessage: "Unmute",
+  });
+  const _txt_btnMute1Day = intl.formatMessage({
+    id: `btnMute1Day.${cid}`,
+    defaultMessage: "Mute for 1 day",
+  });
+  const _txt_btnMuteIndef = intl.formatMessage({
+    id: `btnMuteIndef.${cid}`,
+    defaultMessage: "Mute Indefinately",
+  });
+  const _txt_labelYourBalance = intl.formatMessage({
+    id: `labelYourBalance.${cid}`,
+    defaultMessage: "Your Balance",
+  });
+  const _txt_alertBoughtPremiumChat = intl.formatMessage({
+    id: `alertBoughtPremiumChat.${cid}`,
+    defaultMessage:
+      "Bought premium chat for friends! Check your wallet confirmation in a few minutes.",
+  });
+  const _txt_btnConfirmPurchase = intl.formatMessage({
+    id: `btnConfirmPurchase.${cid}`,
+    defaultMessage: "Confirm Purchase",
+  });
+  const _txt_labelGiftPremiumLong = intl.formatMessage({
+    id: `labelGiftPremiumLong.${cid}`,
+    defaultMessage: "Gift Premium Chat",
+  });
+  const _txt_infoBuyPremium = intl.formatMessage({
+    id: `infoBuyPremium.${cid}`,
+    defaultMessage:
+      "Buy Premium Chat for your group members. 1 month = 1 cookie",
+  });
+  const _txt_labelYourBalanceCookies = intl.formatMessage({
+    id: `labelYourBalanceCookies.${cid}`,
+    defaultMessage: "cookies",
+  });
+  const _txt_btnCancel = intl.formatMessage({
+    id: `btnCancel.${cid}`,
+    defaultMessage: "Cancel",
+  });
+  const _txt_btnMute = intl.formatMessage({
+    id: `btnMute.${cid}`,
+    defaultMessage: "Mute",
+  });
+  const _txt_labelGroupchatName = intl.formatMessage({
+    id: `labelGroupchatName.${cid}`,
+    defaultMessage: "Groupchat Name",
+  });
+  const _txt_labelGroupchatMembers = intl.formatMessage({
+    id: `labelGroupchatMembers.${cid}`,
+    defaultMessage: "Groupchat Members",
+  });
+  const _txt_labelGiftPremium = intl.formatMessage({
+    id: `labelGiftPremium.${cid}`,
+    defaultMessage: "Gift Premium",
+  });
+  const _txt_btnInvite = intl.formatMessage({
+    id: `btnInvite.${cid}`,
+    defaultMessage: "Invite",
+  });
+  const _txt_labelAddFriendChat = intl.formatMessage({
+    id: `labelAddFriendChat.${cid}`,
+    defaultMessage: "Add Friend to Groupchat",
+  });
+  const _txt_infoOnlyAdminsInvite = intl.formatMessage({
+    id: `infoOnlyAdminsInvite.${cid}`,
+    defaultMessage: "Only admins can invite their friends to a groupchat",
+  });
+  const _txt_tagAdmin = intl.formatMessage({
+    id: `tagAdmin.${cid}`,
+    defaultMessage: "Admin",
+  });
+  const _txt_tagInviteSent = intl.formatMessage({
+    id: `tagInviteSent.${cid}`,
+    defaultMessage: "Invite Sent",
+  });
+  const _txt_menuMakeAdmin = intl.formatMessage({
+    id: `menuMakeAdmin.${cid}`,
+    defaultMessage: "Make Admin",
+  });
+  const _txt_popConfirmResignTitle = intl.formatMessage({
+    id: `popConfirmResignTitle.${cid}`,
+    defaultMessage: "Confirm resign?",
+  });
+  const _txt_popConfirmResignBody = intl.formatMessage({
+    id: `popConfirmResignBody.${cid}`,
+    defaultMessage:
+      "Are you sure you want to resign as admin? You may only leave the chat by resigning first. There must be at least 1 admin.",
+  });
+  const _txt_alertResignedAdmin = intl.formatMessage({
+    id: `alertResignedAdmin.${cid}`,
+    defaultMessage: "Resigned as groupchat admin",
+  });
+  const _txt_labelResignAdmin = intl.formatMessage({
+    id: `labelResignAdmin.${cid}`,
+    defaultMessage: "Resign Admin",
+  });
+  const _txt_popConfirmRemoval = intl.formatMessage({
+    id: `popConfirmRemoval.${cid}`,
+    defaultMessage: "Confirm removal?",
+  });
+  const _txt_infoRemoveMember = intl.formatMessage({
+    id: `infoRemoveMember.${cid}`,
+    defaultMessage: "Are you sure you want to remove them from this groupchat?",
+  });
+  const _txt_alertRemovedMember = intl.formatMessage({
+    id: `alertRemovedMember.${cid}`,
+    defaultMessage: "Removed them from groupchat!",
+  });
+  const _txt_btnYes = intl.formatMessage({
+    id: `btnYes.${cid}`,
+    defaultMessage: "Yes",
+  });
+  const _txt_btnNo = intl.formatMessage({
+    id: `btnNo.${cid}`,
+    defaultMessage: "No",
+  });
+  const _txt_btnRemove = intl.formatMessage({
+    id: `btnRemove.${cid}`,
+    defaultMessage: "Remove",
+  });
+  const _txt_btnViewProfile = intl.formatMessage({
+    id: `btnViewProfile.${cid}`,
+    defaultMessage: "View Profile",
+  });
+  const _txt_btnConfirmLeave = intl.formatMessage({
+    id: `btnConfirmLeave.${cid}`,
+    defaultMessage: "Confirm leave?",
+  });
+  const _txt_infoLeaveGroupchat = intl.formatMessage({
+    id: `infoLeaveGroupchat.${cid}`,
+    defaultMessage:
+      "Are you sure you want to leave the groupchat? You can only rejoin if an admin friend re-invites you.",
+  });
+  const _txt_alertLeftGroupchat = intl.formatMessage({
+    id: `alertLeftGroupchat.${cid}`,
+    defaultMessage: "Left the groupchat",
+  });
+  const _txt_menuLeaveChat = intl.formatMessage({
+    id: `menuLeaveChat.${cid}`,
+    defaultMessage: "Leave Chat",
+  });
+  const _txt_linkUpdateSettings = intl.formatMessage({
+    id: `linkUpdateSettings.${cid}`,
+    defaultMessage: "Update Settings",
+  });
+  const _txt_switchLabelPro = intl.formatMessage({
+    id: `switchLabelPro.${cid}`,
+    defaultMessage: "Pro",
+  });
+  const _txt_switchLabelFree = intl.formatMessage({
+    id: `switchLabelFree.${cid}`,
+    defaultMessage: "Free",
+  });
+  const _txt_labelIsNotPNG = intl.formatMessage({
+    id: `labelIsNotPNG.${cid}`,
+    defaultMessage: "is not a png file",
+  });
+  const _txt_alertUpdatedGroupchatInfo = intl.formatMessage({
+    id: `alertUpdatedGroupchatInfo.${cid}`,
+    defaultMessage: "Updated groupchat info",
+  });
+  const _txt_alertInvitedFriendAlert = intl.formatMessage({
+    id: `alertInvitedFriendAlert.${cid}`,
+    defaultMessage: "Invited friend to chat",
+  });
+  const _txt_alertNtoifsEnabled = intl.formatMessage({
+    id: `alertNtoifsEnabled.${cid}`,
+    defaultMessage: "Notifications enabled",
+  });
+  const _txt_alertMutedNofifs = intl.formatMessage({
+    id: `alertMutedNofifs.${cid}`,
+    defaultMessage: "Muted notifications",
+  });
+  const _txt_alertPromotedAdminn = intl.formatMessage({
+    id: `alertPromotedAdminn.${cid}`,
+    defaultMessage: "Promoted to admin",
+  });
+  const _txt_resChatNotFound = intl.formatMessage({
+    id: `resChatNotFound.${cid}`,
+    defaultMessage: "Chat not found",
+  });
+  const _txt_resNoPermViewChat = intl.formatMessage({
+    id: `resNoPermViewChat.${cid}`,
+    defaultMessage:
+      "You may not have permission to view this chat or it no longer exists.",
+  });
+  const _txt_btnGoBackk = intl.formatMessage({
+    id: `btnGoBackk.${cid}`,
+    defaultMessage: "Go Back",
+  });
 
   const { tradingWallet } = useWalletState(
     (state) => ({
@@ -143,7 +356,7 @@ const ChatPage = () => {
   const [spotlightChatroom, setSpotlightChatroom] = useState<ChatRoomFE>();
   const validateFile = (file: File) => {
     if (file.type in ["image/png", "image/jpeg", "image/jpg"]) {
-      message.error(`${file.name} is not a png file`);
+      message.error(`${file.name} ${_txt_labelIsNotPNG}`);
       return false;
     }
     return true;
@@ -301,7 +514,7 @@ const ChatPage = () => {
       params.title = chatRoomTitle;
     }
     await runAdminChatSettingsMutation(params);
-    message.success("Updated groupchat info");
+    message.success(_txt_alertUpdatedGroupchatInfo);
     setShowUpdate(false);
     setIsUpdating(false);
     // refresh the page
@@ -317,14 +530,12 @@ const ChatPage = () => {
       >
         <Result
           status="warning"
-          title={"Chat not found"}
-          subTitle={
-            "You may not have permission to view this chat or it no longer exists."
-          }
+          title={_txt_resChatNotFound}
+          subTitle={_txt_resNoPermViewChat}
           extra={
             <NavLink to="/app/chats">
               <Button type="primary" key="console">
-                Go Back
+                {_txt_btnGoBackk}
               </Button>
             </NavLink>
           }
@@ -366,7 +577,7 @@ const ChatPage = () => {
                   chatRoomID: spotlightChatroom.chatRoomID as ChatRoomID,
                   friendID: fr.friendID,
                 });
-                message.success("Invited friend to chat");
+                message.success(_txt_alertInvitedFriendAlert);
               }
             }}
           >
@@ -428,7 +639,7 @@ const ChatPage = () => {
       allowPush,
       snoozeUntil: snoozeUntilTime ? snoozeUntilTime.toString() : undefined,
     });
-    message.info(allowPush ? `Notifications enabled` : `Muted notifications`);
+    message.info(allowPush ? _txt_alertNtoifsEnabled : _txt_alertMutedNofifs);
     setIsAllowedPushLocalState(allowPush);
     setIsMuteModalOpen(false);
     setIsMuteLoading(false);
@@ -457,11 +668,9 @@ const ChatPage = () => {
                 margin: "20px",
               }}
             >
-              {isPushAllowedLocalState ? (
-                <PP>Allowed Notifications</PP>
-              ) : (
-                <PP>Muted Notifications</PP>
-              )}
+              {isPushAllowedLocalState
+                ? _txt_alertAllowNotif
+                : _txt_alertMutedNotif}
             </div>
           </$Vertical>
 
@@ -479,7 +688,7 @@ const ChatPage = () => {
               style={{ width: "100%" }}
               disabled={isMuteLoading}
             >
-              Mute for 3 hours
+              {_txt_btnMute3Hours}
             </Button>
           ) : (
             <Button
@@ -495,7 +704,7 @@ const ChatPage = () => {
               style={{ width: "100%" }}
               disabled={isMuteLoading}
             >
-              Unmute
+              {_txt_btnUnMute}
             </Button>
           )}
 
@@ -511,7 +720,7 @@ const ChatPage = () => {
             style={{ width: "100%" }}
             disabled={isMuteLoading}
           >
-            Mute for 1 day
+            {_txt_btnMute1Day}
           </Button>
           <Button
             onClick={() => {
@@ -525,7 +734,7 @@ const ChatPage = () => {
             disabled={isMuteLoading}
             loading={isMuteLoading}
           >
-            Mute Indefinately
+            {_txt_btnMuteIndef}
           </Button>
         </$Vertical>
       </Modal>
@@ -545,7 +754,7 @@ const ChatPage = () => {
             spacing={4}
           >
             {!isMobile && (
-              <$Horizontal>{`Your Balance: ${USER_COOKIE_JAR_BALANCE}`}</$Horizontal>
+              <$Horizontal>{`${_txt_labelYourBalance}: ${USER_COOKIE_JAR_BALANCE}`}</$Horizontal>
             )}
             <$Horizontal spacing={4}>
               <$Horizontal alignItems="center" spacing={2}>
@@ -578,14 +787,12 @@ const ChatPage = () => {
                     }),
                   });
                   setIsSubmitting(false);
-                  message.success(
-                    "Bought premium chat for friends! Check your wallet confirmation in a few minutes."
-                  );
+                  message.success(_txt_alertBoughtPremiumChat);
                   setUpgradePremiumModal(false);
                   setIsFreeChatMode(true);
                 }}
               >
-                Confirm Purchase
+                {_txt_btnConfirmPurchase}
               </Button>
             </$Horizontal>
           </$Horizontal>
@@ -593,13 +800,11 @@ const ChatPage = () => {
       >
         <$Vertical style={{ padding: "20px", gap: "10px" }}>
           <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
-            Gift Premium Chat
+            {_txt_labelGiftPremiumLong}
           </span>
-          <span>
-            Buy Premium Chat for your group members. 1 month = 1 cookie
-          </span>
+          <span>{_txt_infoBuyPremium}</span>
           {isMobile && (
-            <span>{`Your Balance: ${USER_COOKIE_JAR_BALANCE} cookies`}</span>
+            <span>{`${_txt_labelYourBalance}: ${USER_COOKIE_JAR_BALANCE} ${_txt_labelYourBalanceCookies}`}</span>
           )}
           <Spacer height="10px" />
           <List
@@ -707,7 +912,7 @@ const ChatPage = () => {
                   icon={<LeftOutlined />}
                   style={{ color: token.colorTextSecondary }}
                 >
-                  Cancel
+                  {_txt_btnCancel}
                 </Button>
               )
             }
@@ -722,12 +927,12 @@ const ChatPage = () => {
                   maxWidth: isMobile ? "50vw" : "35vw",
                 }}
               >
-                <PP>{spotlightChatroom.title || aliasTitle}</PP>
+                {spotlightChatroom.title || aliasTitle}
               </div>
             }
             rightAction={
               <Button onClick={() => setIsMuteModalOpen(true)}>
-                {isPushAllowedLocalState ? `Mute` : `Unmute`}
+                {isPushAllowedLocalState ? _txt_btnMute : _txt_btnUnMute}
               </Button>
             }
           />
@@ -761,21 +966,17 @@ const ChatPage = () => {
                       <Space direction="horizontal">
                         <Spin />
                         <Spacer width="5px" />
-                        <span>
-                          <PP>Uploading...</PP>
-                        </span>
+                        <span>{_txt_infoUploading}</span>
                       </Space>
                     ) : (
-                      <span>
-                        <PP>Change Group Photo</PP>
-                      </span>
+                      <span>{_txt_labelChangeGroupPhoto}</span>
                     )}
                   </Button>
                 )}
               </Upload>
             </$Horizontal>
             <$Vertical spacing={3}>
-              <label>Groupchat Name</label>
+              <label>{_txt_labelGroupchatName}</label>
               <Input
                 value={chatRoomTitle}
                 disabled={!amIAdmin}
@@ -787,9 +988,9 @@ const ChatPage = () => {
             </$Vertical>
             <$Vertical spacing={3}>
               <$Horizontal justifyContent="space-between">
-                <label>{`Groupchat Members (${spotlightChatroom.participants.length}/12)`}</label>
+                <label>{`${_txt_labelGroupchatMembers} (${spotlightChatroom.participants.length}/12)`}</label>
                 <a onClick={() => setUpgradePremiumModal(true)}>
-                  <i>Gift Premium</i>
+                  <i>{_txt_labelGiftPremium}</i>
                 </a>
               </$Horizontal>
               {amIAdmin ? (
@@ -815,15 +1016,15 @@ const ChatPage = () => {
                 >
                   <Input
                     prefix={<SearchOutlined />}
-                    addonAfter="Invite"
-                    placeholder={"Add Friend to Groupchat"}
+                    addonAfter={_txt_btnInvite}
+                    placeholder={_txt_labelAddFriendChat}
                     value={searchString}
                     onChange={(e) => setSearchString(e.target.value)}
                   />
                 </Dropdown>
               ) : (
                 <i style={{ color: token.colorTextDescription }}>
-                  Only admins can invite their friends to a groupchat
+                  {_txt_infoOnlyAdminsInvite}
                 </i>
               )}
               <List
@@ -848,10 +1049,10 @@ const ChatPage = () => {
                       <Avatar src={item.avatar} size={24} />
                       <span>{item.username}</span>
                       {spotlightChatroom.admins.includes(item.id) && (
-                        <Tag color="blue">Admin</Tag>
+                        <Tag color="blue">{_txt_tagAdmin}</Tag>
                       )}
                       {optimisticInvitedFriends.includes(item.id) && (
-                        <Tag color="yellow">Invite Sent</Tag>
+                        <Tag color="yellow">{_txt_tagInviteSent}</Tag>
                       )}
                     </$Horizontal>
                     <Dropdown
@@ -864,7 +1065,7 @@ const ChatPage = () => {
                                 label: (
                                   <NavLink to={`/users?userID=${item.id}`}>
                                     <span style={{ border: "0px solid white" }}>
-                                      View Profile
+                                      {_txt_btnViewProfile}
                                     </span>
                                   </NavLink>
                                 ),
@@ -898,17 +1099,17 @@ const ChatPage = () => {
                                           spotlightChatroom.chatRoomID as ChatRoomID,
                                         memberID: item.id,
                                       });
-                                      message.info("Promoted to admin");
+                                      message.info(_txt_alertPromotedAdminn);
                                       await queryForSpotlightChatroom();
                                       setLoadingMemberStatus((state) =>
                                         state.filter((s) => s !== item.id)
                                       );
                                     }}
-                                    okText="Yes"
-                                    cancelText="No"
+                                    okText={_txt_btnYes}
+                                    cancelText={_txt_btnNo}
                                   >
                                     <span style={{ border: "0px solid white" }}>
-                                      Make Admin
+                                      {_txt_menuMakeAdmin}
                                     </span>
                                   </Popconfirm>
                                 ),
@@ -918,10 +1119,8 @@ const ChatPage = () => {
                                 label:
                                   item.id === selfUser?.id ? (
                                     <Popconfirm
-                                      title="Confirm resign?"
-                                      description={`Are you sure you want to resign as admin?
-                                      You may only leave the chat by resigning first.
-                                      There must be at least 1 admin.`}
+                                      title={_txt_popConfirmResignTitle}
+                                      description={_txt_popConfirmResignBody}
                                       onConfirm={async () => {
                                         setLoadingMemberStatus((state) => [
                                           ...state,
@@ -931,9 +1130,7 @@ const ChatPage = () => {
                                           chatRoomID:
                                             spotlightChatroom.chatRoomID as ChatRoomID,
                                         });
-                                        message.info(
-                                          "Resigned as groupchat admin"
-                                        );
+                                        message.info(_txt_alertResignedAdmin);
                                         await queryForSpotlightChatroom();
                                         setLoadingMemberStatus((state) =>
                                           state.filter((s) => s !== item.id)
@@ -941,21 +1138,21 @@ const ChatPage = () => {
                                         // refresh the page
                                         window.location.reload();
                                       }}
-                                      okText="Yes"
-                                      cancelText="No"
+                                      okText={_txt_btnYes}
+                                      cancelText={_txt_btnNo}
                                     >
                                       <span
                                         style={{ border: "0px solid white" }}
                                       >
-                                        Resign Admin
+                                        {_txt_labelResignAdmin}
                                       </span>
                                     </Popconfirm>
                                   ) : spotlightChatroom.admins.includes(
                                       item.id
                                     ) ? null : (
                                     <Popconfirm
-                                      title="Confirm removal?"
-                                      description={`Are you sure you want to remove them from this groupchat?`}
+                                      title={_txt_popConfirmRemoval}
+                                      description={_txt_infoRemoveMember}
                                       onConfirm={async () => {
                                         setLoadingMemberStatus((state) => [
                                           ...state,
@@ -966,9 +1163,7 @@ const ChatPage = () => {
                                             spotlightChatroom.chatRoomID,
                                           targetUserID: item.id,
                                         });
-                                        message.info(
-                                          "Removed them from groupchat!"
-                                        );
+                                        message.info(_txt_alertRemovedMember);
                                         await queryForSpotlightChatroom();
                                         setLoadingMemberStatus((state) =>
                                           state.filter((s) => s !== item.id)
@@ -976,8 +1171,8 @@ const ChatPage = () => {
                                         // refresh the page
                                         window.location.reload();
                                       }}
-                                      okText="Yes"
-                                      cancelText="No"
+                                      okText={_txt_btnYes}
+                                      cancelText={_txt_btnNo}
                                       okButtonProps={{
                                         loading: loadingMemberStatus.includes(
                                           item.id
@@ -987,7 +1182,7 @@ const ChatPage = () => {
                                       <span
                                         style={{ border: "0px solid white" }}
                                       >
-                                        Remove
+                                        {_txt_btnRemove}
                                       </span>
                                     </Popconfirm>
                                   ),
@@ -1020,8 +1215,8 @@ const ChatPage = () => {
                                 label:
                                   item.id === selfUser?.id ? (
                                     <Popconfirm
-                                      title="Confirm leave?"
-                                      description={`Are you sure you want to leave the groupchat? You can only rejoin if an admin friend re-invites you.`}
+                                      title={_txt_btnConfirmLeave}
+                                      description={_txt_infoLeaveGroupchat}
                                       onConfirm={async () => {
                                         setLoadingMemberStatus((state) => [
                                           ...state,
@@ -1032,7 +1227,7 @@ const ChatPage = () => {
                                             spotlightChatroom.chatRoomID,
                                           targetUserID: selfUser.id,
                                         });
-                                        message.info("Left the groupchat");
+                                        message.info(_txt_alertLeftGroupchat);
                                         await queryForSpotlightChatroom();
                                         setLoadingMemberStatus((state) =>
                                           state.filter((s) => s !== selfUser.id)
@@ -1043,13 +1238,13 @@ const ChatPage = () => {
                                         // refresh the page
                                         window.location.reload();
                                       }}
-                                      okText="Yes"
-                                      cancelText="No"
+                                      okText={_txt_btnYes}
+                                      cancelText={_txt_btnNo}
                                     >
                                       <span
                                         style={{ border: "0px solid white" }}
                                       >
-                                        Leave Chat
+                                        {_txt_menuLeaveChat}
                                       </span>
                                     </Popconfirm>
                                   ) : null,
@@ -1102,7 +1297,7 @@ const ChatPage = () => {
                   marginTop: "20px",
                 }}
               >
-                Update Settings
+                {_txt_linkUpdateSettings}
               </Button>
             </div>
           </Affix>
@@ -1271,38 +1466,37 @@ const ChatPage = () => {
                                     }}
                                     onClick={visitUser}
                                   > */}
-                            <PP>
-                              <b
-                                onClick={(e) => {
-                                  if (e) {
-                                    e.stopPropagation();
-                                  }
-                                  if (otherParticipants.length === 1) {
-                                    navigate({
-                                      pathname: `/user`,
-                                      search: createSearchParams({
-                                        userID: otherParticipants[0],
-                                      }).toString(),
-                                    });
-                                  }
-                                }}
-                                style={{
-                                  whiteSpace: "nowrap",
-                                  textOverflow: "ellipsis",
-                                  fontSize: "1rem",
-                                  overflow: "hidden",
-                                  maxWidth: isMobile ? "50vw" : "35vw",
-                                }}
-                              >
-                                {spotlightChatroom.title || aliasTitle}
-                              </b>
-                            </PP>
+
+                            <b
+                              onClick={(e) => {
+                                if (e) {
+                                  e.stopPropagation();
+                                }
+                                if (otherParticipants.length === 1) {
+                                  navigate({
+                                    pathname: `/user`,
+                                    search: createSearchParams({
+                                      userID: otherParticipants[0],
+                                    }).toString(),
+                                  });
+                                }
+                              }}
+                              style={{
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                fontSize: "1rem",
+                                overflow: "hidden",
+                                maxWidth: isMobile ? "50vw" : "35vw",
+                              }}
+                            >
+                              {spotlightChatroom.title || aliasTitle}
+                            </b>
                           </$Horizontal>
                         </$Horizontal>
                         <$Horizontal spacing={2} alignItems="center">
                           <Switch
-                            checkedChildren={"Pro"}
-                            unCheckedChildren={"Free"}
+                            checkedChildren={_txt_switchLabelPro}
+                            unCheckedChildren={_txt_switchLabelFree}
                             checked={!isFreeChatMode}
                             onChange={toggleFreeChatMode}
                           />
@@ -1366,14 +1560,14 @@ const ChatPage = () => {
                     maxWidth: "50vw",
                   }}
                 >
-                  <PP>{spotlightChatroom.title || aliasTitle}</PP>
+                  {spotlightChatroom.title || aliasTitle}
                 </div>
               }
               rightAction={
                 <$Horizontal alignItems="center" spacing={2}>
                   <Switch
-                    checkedChildren={"Pro"}
-                    unCheckedChildren={"Free"}
+                    checkedChildren={_txt_switchLabelPro}
+                    unCheckedChildren={_txt_switchLabelFree}
                     checked={!isFreeChatMode}
                     onChange={toggleFreeChatMode}
                   />

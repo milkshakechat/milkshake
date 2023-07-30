@@ -5,6 +5,7 @@ import { PWA_PERMISSIONS_DIAGRAMS } from "@milkshakechat/helpers";
 import { Button, Modal, Image, Space } from "antd";
 import { useUserAgent } from "@oieduardorabelo/use-user-agent";
 import React from "react";
+import { useIntl } from "react-intl";
 
 interface RequestNotificationModalProps {
   isOpen: boolean;
@@ -23,6 +24,15 @@ const RequestPermissionModal = ({
   diagram,
 }: RequestNotificationModalProps) => {
   const { screen } = useWindowSize();
+  const intl = useIntl();
+  const _txt_requestAgainBtn = intl.formatMessage({
+    id: `requestAgainBtn.___ProfileSettingsPage`,
+    defaultMessage: "Request Again",
+  });
+  const _txt_cancelBtn = intl.formatMessage({
+    id: `cancelButton.___shared`,
+    defaultMessage: "Cancel",
+  });
 
   return (
     <Modal
@@ -56,12 +66,12 @@ const RequestPermissionModal = ({
 
           {requestPermissions && (
             <Button type="primary" onClick={requestPermissions}>
-              <PP>Request Again</PP>
+              {_txt_requestAgainBtn}
             </Button>
           )}
 
           <Button onClick={() => setOpen(false)} type="ghost">
-            <PP>Cancel</PP>
+            {_txt_cancelBtn}
           </Button>
         </div>
       </div>

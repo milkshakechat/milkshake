@@ -1,10 +1,51 @@
 
 export const cid = "___ProfileSettingsPage";
 export interface i18n_Mapping {
-  "title.___ProfileSettingsPage": string;
-"languageLabel.___ProfileSettingsPage": string;
-"themeLabel.___ProfileSettingsPage": string;
-"privacyLabel.___ProfileSettingsPage": string;
-"logout.___ProfileSettingsPage": string;
+  "alertAllowNotif.___ProfileSettingsPage": string;
+"alertMutedNotif.___ProfileSettingsPage": string;
+"infoUploading.___ProfileSettingsPage": string;
+"labelChangeGroupPhoto.___ProfileSettingsPage": string;
+"btnMute3Hours.___ProfileSettingsPage": string;
+"btnUnMute.___ProfileSettingsPage": string;
+"btnMute1Day.___ProfileSettingsPage": string;
+"btnMuteIndef.___ProfileSettingsPage": string;
+"labelYourBalance.___ProfileSettingsPage": string;
+"alertBoughtPremiumChat.___ProfileSettingsPage": string;
+"btnConfirmPurchase.___ProfileSettingsPage": string;
+"labelGiftPremiumLong.___ProfileSettingsPage": string;
+"infoBuyPremium.___ProfileSettingsPage": string;
+"labelYourBalanceCookies.___ProfileSettingsPage": string;
+"btnCancel.___ProfileSettingsPage": string;
+"btnMute.___ProfileSettingsPage": string;
+"btnUnmute.___ProfileSettingsPage": string;
+"labelUploading.___ProfileSettingsPage": string;
+"labelGroupchatName.___ProfileSettingsPage": string;
+"labelGroupchatMembers.___ProfileSettingsPage": string;
+"labelGiftPremium.___ProfileSettingsPage": string;
+"btnInvite.___ProfileSettingsPage": string;
+"labelAddFriendChat.___ProfileSettingsPage": string;
+"infoOnlyAdminsInvite.___ProfileSettingsPage": string;
+"tagAdmin.___ProfileSettingsPage": string;
+"tagInviteSent.___ProfileSettingsPage": string;
+"menuViewProfile.___ProfileSettingsPage": string;
+"menuMakeAdmin.___ProfileSettingsPage": string;
+"popConfirmResignTitle.___ProfileSettingsPage": string;
+"popConfirmResignBody.___ProfileSettingsPage": string;
+"alertResignedAdmin.___ProfileSettingsPage": string;
+"labelResignAdmin.___ProfileSettingsPage": string;
+"popConfirmRemoval.___ProfileSettingsPage": string;
+"infoRemoveMember.___ProfileSettingsPage": string;
+"alertRemovedMember.___ProfileSettingsPage": string;
+"btnYes.___ProfileSettingsPage": string;
+"btnNo.___ProfileSettingsPage": string;
+"btnRemove.___ProfileSettingsPage": string;
+"btnViewProfile.___ProfileSettingsPage": string;
+"btnConfirmLeave.___ProfileSettingsPage": string;
+"infoLeaveGroupchat.___ProfileSettingsPage": string;
+"alertLeftGroupchat.___ProfileSettingsPage": string;
+"menuLeaveChat.___ProfileSettingsPage": string;
+"linkUpdateSettings.___ProfileSettingsPage": string;
+"switchLabelPro.___ProfileSettingsPage": string;
+"switchLabelFree.___ProfileSettingsPage": string;
 }
   

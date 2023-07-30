@@ -510,6 +510,11 @@ export const LayoutInteriorHeader = ({
   const { token } = theme.useToken();
   const { screen } = useWindowSize();
   const navigate = useNavigate();
+  const intl = useIntl();
+  const backButtonText = intl.formatMessage({
+    id: `backButtonHeader.___shared`,
+    defaultMessage: "Back",
+  });
   return (
     <Layout.Header
       style={{
@@ -534,7 +539,7 @@ export const LayoutInteriorHeader = ({
           icon={<LeftOutlined />}
           style={{ color: token.colorTextSecondary }}
         >
-          Back
+          {backButtonText}
         </Button>
       )}
 

@@ -138,6 +138,104 @@ const ProfileSettingsPage = () => {
     defaultMessage: "Settings",
   });
 
+  const editProfileText = intl.formatMessage({
+    id: `editProfile.${cid}`,
+    defaultMessage: "Edit Profile",
+  });
+
+  const _txt_appPermisions = intl.formatMessage({
+    id: `appPermisions.${cid}`,
+    defaultMessage: "App Permissions",
+  });
+  const _txt_whyPermissions = intl.formatMessage({
+    id: `whyPermissions.${cid}`,
+    defaultMessage:
+      "Click button to request permissions such as notifications, camera & microphone",
+  });
+  const _txt_switchPushNotifInfo = intl.formatMessage({
+    id: `switchPushNotifInfo.${cid}`,
+    defaultMessage: "Enable push notifications (recommended)",
+  });
+  const _txt_switchEnableCameraInfo = intl.formatMessage({
+    id: `switchEnableCameraInfo.${cid}`,
+    defaultMessage: "Enable camera",
+  });
+  const _txt_switchEnableMicrophoneInfo = intl.formatMessage({
+    id: `switchEnableMicrophoneInfo.${cid}`,
+    defaultMessage: "Enable Microphone",
+  });
+  const _txt_switchEnablePushNotif = intl.formatMessage({
+    id: `switchEnablePushNotif.${cid}`,
+    defaultMessage: "Enable",
+  });
+  const _txt_switchRevokePushNotif = intl.formatMessage({
+    id: `switchRevokePushNotif.${cid}`,
+    defaultMessage: "Revoke",
+  });
+  const _txt_switchOnLabel = intl.formatMessage({
+    id: `switchOnLabel.${cid}`,
+    defaultMessage: "ON",
+  });
+  const _txt_switchOffLabel = intl.formatMessage({
+    id: `switchOffLabel.${cid}`,
+    defaultMessage: "OFF",
+  });
+  const _txt_confirmRevokePermissions = intl.formatMessage({
+    id: `confirmRevokePermissions.${cid}`,
+    defaultMessage: "Revoke Permissions",
+  });
+  const _txt_manuallyRevokeInfo = intl.formatMessage({
+    id: `manuallyRevokeInfo.${cid}`,
+    defaultMessage:
+      "Manually revoke permissions using the site settings in your browser",
+  });
+  const _txt_followGIFInfo = intl.formatMessage({
+    id: `followGIFInfo.${cid}`,
+    defaultMessage: "Follow the GIF instructions",
+  });
+  const _txt_titleAllowCamera = intl.formatMessage({
+    id: `titleAllowCamera.${cid}`,
+    defaultMessage: "Allow Camera",
+  });
+  const _txt_explainAllowCamera = intl.formatMessage({
+    id: `explainAllowCamera.${cid}`,
+    defaultMessage:
+      "Allow camera to take photos and videos to share with friends",
+  });
+  const _txt_gifEnableInfo = intl.formatMessage({
+    id: `gifEnableInfo.${cid}`,
+    defaultMessage: `Follow the GIF to enable or click "Request Again"`,
+  });
+  const _txt_titleMicrophoneLabel = intl.formatMessage({
+    id: `titleMicrophoneLabel.${cid}`,
+    defaultMessage: "Allow Microphone",
+  });
+  const _txt_explainAllowMicrophone = intl.formatMessage({
+    id: `explainAllowMicrophone.${cid}`,
+    defaultMessage: "Allow microphone to send voice messages in chat",
+  });
+  const _txt_btnInstallApp = intl.formatMessage({
+    id: `btnInstallApp.${cid}`,
+    defaultMessage: "Install App",
+  });
+  const _txt_explainConnectBank = intl.formatMessage({
+    id: `explainConnectBank.${cid}`,
+    defaultMessage:
+      "Connect your bank to receive payouts from Milkshake when you cash out cookies.",
+  });
+  const _txt_btnManageBanking = intl.formatMessage({
+    id: `btnManageBanking.${cid}`,
+    defaultMessage: "Manage Banking",
+  });
+  const _txt_titleProfile = intl.formatMessage({
+    id: `titleProfile.${cid}`,
+    defaultMessage: "Profile",
+  });
+  const _txt_langChangedTo = intl.formatMessage({
+    id: `langChangedTo.${cid}`,
+    defaultMessage: "Language changed to",
+  });
+
   const languageText = intl.formatMessage({
     id: `languageLabel.${cid}`,
     defaultMessage: "Language",
@@ -155,6 +253,31 @@ const ProfileSettingsPage = () => {
   const logoutText = intl.formatMessage({
     id: `logout.${cid}`,
     defaultMessage: "Log Out",
+  });
+  const _txt_titleEnableNotifs = intl.formatMessage({
+    id: `titleEnableNotifs.${cid}`,
+    defaultMessage: "Enable Notifications",
+  });
+  const _txt_explainPushNotifs = intl.formatMessage({
+    id: `explainPushNotifs.${cid}`,
+    defaultMessage:
+      "Get notified when you receive a message offline (Recommended)",
+  });
+  const _txt_titleInstallApp = intl.formatMessage({
+    id: `titleInstallApp.${cid}`,
+    defaultMessage: "Install App on Device",
+  });
+  const _txt_explainInstallApp = intl.formatMessage({
+    id: `explainInstallApp.${cid}`,
+    defaultMessage: "_____",
+  });
+  const _txt_titleBanking = intl.formatMessage({
+    id: `titleBanking.${cid}`,
+    defaultMessage: "Banking & Payouts",
+  });
+  const _txt_alertCopiedUserID = intl.formatMessage({
+    id: `alertCopiedUserID.${cid}`,
+    defaultMessage: "Copied your USER ID",
   });
 
   const {
@@ -188,7 +311,7 @@ const ProfileSettingsPage = () => {
     });
     setShowUpdate(false);
     setIsSubmitting(false);
-    message.success(`Language changed to ${localeLabelText[lang]}`);
+    message.success(`${_txt_langChangedTo} ${localeLabelText[lang]}`);
   };
   const [initialFormValues, setInitialFormValues] =
     useState<ProfileSettingsInitialFormValue>(
@@ -347,7 +470,7 @@ const ProfileSettingsPage = () => {
             onFinish={submitForm}
             style={{ width: "100%" }}
           >
-            <Form.Item label={<PP>Profile</PP>} name="profile">
+            <Form.Item label={_txt_titleProfile} name="profile">
               {user && (
                 <$Horizontal style={{ flex: 1 }}>
                   <$Horizontal
@@ -365,16 +488,13 @@ const ProfileSettingsPage = () => {
                         textOverflow: "ellipsis",
                       }}
                     >
-                      <PP>
-                        <b>{user.displayName || user.username}</b>
-                      </PP>
-                      <PP>
-                        <i>{`@${user.username}`}</i>
-                      </PP>
+                      <b>{user.displayName || user.username}</b>
+
+                      <i>{`@${user.username}`}</i>
                     </$Vertical>
                   </$Horizontal>
                   <NavLink to="/app/profile/style">
-                    <Button type="link">Edit Profile</Button>
+                    <Button type="link">{editProfileText}</Button>
                   </NavLink>
                 </$Horizontal>
               )}
@@ -450,22 +570,17 @@ const ProfileSettingsPage = () => {
             </Form.Item>
             <Form.Item {...noLabelFieldProps}>
               <Divider />
-              <h3>
-                <PP>App Permissions</PP>
-              </h3>
+              <h3>{_txt_appPermisions}</h3>
               <i style={{ color: token.colorTextSecondary }}>
-                <PP>
-                  Click button to request permissions such as notifications,
-                  camera & microphone
-                </PP>
+                {_txt_whyPermissions}
               </i>
               <Spacer />
               <Form.Item name="requestPermissionsButton">
                 <Space direction="vertical">
                   <Space direction="horizontal">
                     <Switch
-                      checkedChildren={<PP>ON</PP>}
-                      unCheckedChildren={<PP>OFF</PP>}
+                      checkedChildren={_txt_switchOnLabel}
+                      unCheckedChildren={_txt_switchOffLabel}
                       checked={allowedPermissions.notifications}
                       onChange={(e) => {
                         if (e) {
@@ -476,7 +591,7 @@ const ProfileSettingsPage = () => {
                         }
                       }}
                     />
-                    <PP>{`Enable push notifications (recommended)`}</PP>
+                    {_txt_switchPushNotifInfo}
                     {localStoragePushToken ? (
                       <Button
                         onClick={async () => {
@@ -504,7 +619,7 @@ const ProfileSettingsPage = () => {
                         }}
                         type="link"
                       >
-                        <PP>Revoke</PP>
+                        {_txt_switchRevokePushNotif}
                       </Button>
                     ) : (
                       <Button
@@ -514,14 +629,14 @@ const ProfileSettingsPage = () => {
                         }}
                         type="link"
                       >
-                        <PP>Enable</PP>
+                        {_txt_switchEnablePushNotif}
                       </Button>
                     )}
                   </Space>
                   <Space direction="horizontal">
                     <Switch
-                      checkedChildren={<PP>ON</PP>}
-                      unCheckedChildren={<PP>OFF</PP>}
+                      checkedChildren={_txt_switchOnLabel}
+                      unCheckedChildren={_txt_switchOffLabel}
                       checked={allowedPermissions.camera}
                       onChange={(e) => {
                         if (e) {
@@ -532,12 +647,12 @@ const ProfileSettingsPage = () => {
                         }
                       }}
                     />
-                    <PP>{`Enable camera`}</PP>
+                    {_txt_switchEnableCameraInfo}
                   </Space>
                   <Space direction="horizontal">
                     <Switch
-                      checkedChildren={<PP>ON</PP>}
-                      unCheckedChildren={<PP>OFF</PP>}
+                      checkedChildren={_txt_switchOnLabel}
+                      unCheckedChildren={_txt_switchOffLabel}
                       checked={allowedPermissions.microphone}
                       onChange={(e) => {
                         if (e) {
@@ -548,21 +663,16 @@ const ProfileSettingsPage = () => {
                         }
                       }}
                     />
-                    <PP>{`Enable Microphone`}</PP>
+                    {_txt_switchEnableMicrophoneInfo}
                   </Space>
                 </Space>
               </Form.Item>
             </Form.Item>
             <Form.Item {...noLabelFieldProps}>
               <Divider />
-              <h3>
-                <PP>Install App to Device</PP>
-              </h3>
+              <h3>{_txt_titleInstallApp}</h3>
               <i style={{ color: token.colorTextSecondary }}>
-                <PP>
-                  Add Milkshake to your iOS/Android device home screen for a
-                  better experience.
-                </PP>
+                {_txt_explainInstallApp}
               </i>
               <Spacer />
               <Form.Item name="requestPermissionsButton">
@@ -570,20 +680,15 @@ const ProfileSettingsPage = () => {
                   onClick={() => setIsInstallAppModalOpen(true)}
                   type="primary"
                 >
-                  <PP>Install App</PP>
+                  {_txt_btnInstallApp}
                 </Button>
               </Form.Item>
             </Form.Item>
             <Form.Item {...noLabelFieldProps}>
               <Divider />
-              <h3>
-                <PP>Banking & Payouts</PP>
-              </h3>
+              <h3>{_txt_titleBanking}</h3>
               <i style={{ color: token.colorTextSecondary }}>
-                <PP>
-                  Connect your bank to receive payouts from Milkshake when you
-                  cash out cookies.
-                </PP>
+                {_txt_explainConnectBank}
               </i>
               <Spacer />
               <Form.Item name="currency">
@@ -596,9 +701,7 @@ const ProfileSettingsPage = () => {
               </Form.Item>
               <Form.Item name="setupBanking">
                 <NavLink to="/app/profile/settings/merchant/banking-registration-init">
-                  <Button>
-                    <PP>Manage Banking</PP>
-                  </Button>
+                  <Button>{_txt_btnManageBanking}</Button>
                 </NavLink>
               </Form.Item>
             </Form.Item>
@@ -623,25 +726,19 @@ const ProfileSettingsPage = () => {
                 />
               </Form.Item>
               {user && user.id && (
-                <PP>
-                  <i
-                    onClick={() => {
-                      navigator.clipboard.writeText(user.id);
-                      message.info("Copied your USER ID");
-                    }}
-                    style={{ color: token.colorTextSecondary }}
-                  >
-                    {`UserID ${user.id}`}
-                  </i>
-                </PP>
+                <i
+                  onClick={() => {
+                    navigator.clipboard.writeText(user.id);
+                    message.info(_txt_alertCopiedUserID);
+                  }}
+                  style={{ color: token.colorTextSecondary }}
+                >
+                  {`UserID ${user.id}`}
+                </i>
               )}
               <br />
               {user && user.phone && (
-                <PP>
-                  <i style={{ color: token.colorTextSecondary }}>
-                    {user.phone}
-                  </i>
-                </PP>
+                <i style={{ color: token.colorTextSecondary }}>{user.phone}</i>
               )}
             </Form.Item>
             <Form.Item name="logoutButton" {...noLabelFieldProps}>
@@ -654,21 +751,13 @@ const ProfileSettingsPage = () => {
             isOpen={isRequestNotificationModalOpen}
             setOpen={setIsRequestNotificationModalOpen}
             requestPermissions={requestPushPermission}
-            title={
-              <PP>
-                <h3>Enable Notifications</h3>
-              </PP>
-            }
+            title={<h3>{_txt_titleEnableNotifs}</h3>}
             description={
               <>
-                <PP>
-                  <i>
-                    Get notified when you receive a message offline
-                    (Recommended)
-                  </i>
-                </PP>
+                <i>{_txt_explainPushNotifs}</i>
+
                 <Spacer height="20px" />
-                <PP> Follow the GIF to enable or click "Request Again"</PP>
+                {_txt_gifEnableInfo}
               </>
             }
             diagram={determinePermissionsDiagramToShow()}
@@ -677,20 +766,13 @@ const ProfileSettingsPage = () => {
             isOpen={isRequestCameraModalOpen}
             setOpen={setIsRequestCameraModalOpen}
             requestPermissions={requestCameraAccess}
-            title={
-              <PP>
-                <h3>Allow Camera</h3>
-              </PP>
-            }
+            title={_txt_titleAllowCamera}
             description={
               <>
-                <PP>
-                  <i>
-                    Allow camera to take photos and videos to share with friends
-                  </i>
-                </PP>
+                <i>{_txt_explainAllowCamera}</i>
+
                 <Spacer height="20px" />
-                <PP> Follow the GIF to enable or click "Request Again"</PP>
+                {_txt_gifEnableInfo}
               </>
             }
             diagram={determinePermissionsDiagramToShow()}
@@ -699,18 +781,13 @@ const ProfileSettingsPage = () => {
             isOpen={isRequestMicrophoneModalOpen}
             setOpen={setIsRequestMicrophoneModalOpen}
             requestPermissions={requestMicrophoneAccess}
-            title={
-              <PP>
-                <h3>Allow Microphone</h3>
-              </PP>
-            }
+            title={<h3>{_txt_titleMicrophoneLabel}</h3>}
             description={
               <>
-                <PP>
-                  <i>Allow microphone to send voice messages in chat</i>
-                </PP>
+                <i>{_txt_explainAllowMicrophone}</i>
+
                 <Spacer height="20px" />
-                <PP> Follow the GIF to enable or click "Request Again"</PP>
+                {_txt_gifEnableInfo}
               </>
             }
             diagram={determinePermissionsDiagramToShow()}
@@ -718,21 +795,13 @@ const ProfileSettingsPage = () => {
           <RequestPermissionModal
             isOpen={isClearPermissionModalOpen}
             setOpen={setIsClearPermissionModalOpen}
-            title={
-              <PP>
-                <h3>Revoke Permissions</h3>
-              </PP>
-            }
+            title={<h3>{_txt_confirmRevokePermissions}</h3>}
             description={
               <>
-                <PP>
-                  <i>
-                    Manually revoke permissions using the site settings in your
-                    browser
-                  </i>
-                </PP>
+                <i>{_txt_manuallyRevokeInfo}</i>
+
                 <Spacer height="20px" />
-                <PP> Follow the GIF instructions</PP>
+                {_txt_followGIFInfo}
               </>
             }
             diagram={determinePermissionsDiagramToShow()}
@@ -740,11 +809,7 @@ const ProfileSettingsPage = () => {
           <RequestPermissionModal
             isOpen={isInstallAppModalOpen}
             setOpen={setIsInstallAppModalOpen}
-            title={
-              <PP>
-                <h3>Install App on Device</h3>
-              </PP>
-            }
+            title={<h3>{_txt_titleInstallApp}</h3>}
             description={
               <>
                 <PP>
@@ -754,7 +819,7 @@ const ProfileSettingsPage = () => {
                   </i>
                 </PP>
                 <Spacer height="20px" />
-                <PP> Follow the GIF instructions</PP>
+                {_txt_followGIFInfo}
               </>
             }
             diagram={PWA_PERMISSIONS_DIAGRAMS.MOBILE_SAFARI_ADD_HOME_SCREEN}

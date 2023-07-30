@@ -79,41 +79,6 @@ const PROFILE_STYLE_INITIAL_FORM_VALUE = {
   prefLookingFor: "",
 };
 
-const usernameRules: Rule[] = [
-  { required: true, message: "You must have a username!" },
-  {
-    min: 2,
-    message: "Username must be more than 1 character",
-  },
-  {
-    max: 30,
-    message: "Username must be less than 30 characters",
-  },
-  {
-    pattern: /^[A-Za-z0-9_.]*$/,
-    message:
-      "Username can only contain letters, numbers, periods and underscores",
-  },
-];
-const bioRules: Rule[] = [
-  {
-    max: 120,
-    message: "Bio must be less than 120 characters",
-  },
-];
-const linkRules: Rule[] = [
-  {
-    type: "url",
-    message: "Must be a valid URL",
-  },
-];
-const displayNameRules: Rule[] = [
-  {
-    max: 40,
-    message: "Display must be less than 40 characters",
-  },
-];
-
 const ProfileStylePage = () => {
   const [form] = Form.useForm();
   const user = useUserState((state) => state.user);
@@ -201,6 +166,14 @@ const ProfileStylePage = () => {
     id: `username.${cid}`,
     defaultMessage: "Username",
   });
+  const _txt_switchOnLabel = intl.formatMessage({
+    id: `switchOnLabel.ProfileSettingsPage`,
+    defaultMessage: "ON",
+  });
+  const _txt_switchOffLabel = intl.formatMessage({
+    id: `switchOffLabel.ProfileSettingsPage`,
+    defaultMessage: "OFF",
+  });
 
   const bioText = intl.formatMessage({
     id: `bio.${cid}`,
@@ -221,6 +194,157 @@ const ProfileStylePage = () => {
     id: `usernameUnavailable.${cid}`,
     defaultMessage: "Username is not available",
   });
+
+  const _txt_titleHiddenPref = intl.formatMessage({
+    id: `titleHiddenPref.${cid}`,
+    defaultMessage: "Hidden Preferences",
+  });
+  const _txt_explainHiddenPref = intl.formatMessage({
+    id: `explainHiddenPref.${cid}`,
+    defaultMessage:
+      "Let Milkshake help find people you like. Only you can see these preferences.",
+  });
+  const _txt_labelLoc = intl.formatMessage({
+    id: `labelLoc.${cid}`,
+    defaultMessage: "Location",
+  });
+  const _txt_tooltipLoc = intl.formatMessage({
+    id: `tooltipLoc.${cid}`,
+    defaultMessage:
+      "When enabled, you will only see stories and people from your chosen location. You can change this anytime.",
+  });
+  const _txt_labelIAmA = intl.formatMessage({
+    id: `labelIAmA.${cid}`,
+    defaultMessage: "I am a...",
+  });
+  const _txt_labelInterestedIn = intl.formatMessage({
+    id: `labelInterestedIn.${cid}`,
+    defaultMessage: "Interested in...",
+  });
+  const _txt_optionMan = intl.formatMessage({
+    id: `optionMan.${cid}`,
+    defaultMessage: "Man",
+  });
+  const _txt_optionWoman = intl.formatMessage({
+    id: `optionWoman.${cid}`,
+    defaultMessage: "Woman",
+  });
+  const _txt_optionMen = intl.formatMessage({
+    id: `optionMen.${cid}`,
+    defaultMessage: "Men",
+  });
+  const _txt_optionWomen = intl.formatMessage({
+    id: `optionWomen.${cid}`,
+    defaultMessage: "Women",
+  });
+  const _txt_optionOther = intl.formatMessage({
+    id: `optionOther.${cid}`,
+    defaultMessage: "Other",
+  });
+  const _txt_labelMyInterests = intl.formatMessage({
+    id: `labelMyInterests.${cid}`,
+    defaultMessage: "My Interests",
+  });
+  const _txt_labelLookingFor = intl.formatMessage({
+    id: `labelLookingFor.${cid}`,
+    defaultMessage: "Looking For",
+  });
+  const _txt_placeholderLinkWebsite = intl.formatMessage({
+    id: `placeholderLinkWebsite.${cid}`,
+    defaultMessage: "Link to Website",
+  });
+  const _txt_placeholderLoc = intl.formatMessage({
+    id: `placeholderLoc.${cid}`,
+    defaultMessage: "Anywhere in the world",
+  });
+  const _txt_placeholderMyInterests = intl.formatMessage({
+    id: `placeholderMyInterests.${cid}`,
+    defaultMessage:
+      "List some things you like or make you special (both good and bad)",
+  });
+  const _txt_placeholderLookingFor = intl.formatMessage({
+    id: `placeholderLookingFor.${cid}`,
+    defaultMessage: "Describe what you are looking for",
+  });
+  const _txt_placeholderPublicBio = intl.formatMessage({
+    id: `placeholderPublicBio.${cid}`,
+    defaultMessage: "Public Biography",
+  });
+  const _txt_placeholderDisplayName = intl.formatMessage({
+    id: `placeholderDisplayName.${cid}`,
+    defaultMessage: "Public Display Name",
+  });
+  const _txt_placeholderUsername = intl.formatMessage({
+    id: `placeholderUsername.${cid}`,
+    defaultMessage: "Public Username",
+  });
+  const _txt_errorMsgUsername = intl.formatMessage({
+    id: `errorMsgUsername.${cid}`,
+    defaultMessage: "You must have a username!",
+  });
+  const _txt_errorMsgUsernameChar = intl.formatMessage({
+    id: `errorMsgUsernameChar.${cid}`,
+    defaultMessage: "Username must be more than 1 character",
+  });
+  const _txt_errorMsgMaxChar = intl.formatMessage({
+    id: `errorMsgMaxChar.${cid}`,
+    defaultMessage: "Username must be less than 30 characters",
+  });
+  const _txt_errorMsgValidChar = intl.formatMessage({
+    id: `errorMsgValidChar.${cid}`,
+    defaultMessage:
+      "Username can only contain letters, numbers, periods and underscores",
+  });
+  const _txt_errorMsgBioChar = intl.formatMessage({
+    id: `errorMsgBioChar.${cid}`,
+    defaultMessage: "Bio must be less than 120 characters",
+  });
+  const _txt_errorMsgUrl = intl.formatMessage({
+    id: `errorMsgUrl.${cid}`,
+    defaultMessage: "Must be a valid URL",
+  });
+  const _txt_errorMsgDisplayName = intl.formatMessage({
+    id: `errorMsgDisplayName.${cid}`,
+    defaultMessage: "Display must be less than 50 characters",
+  });
+  const _txt_alertProfileUpdated = intl.formatMessage({
+    id: `alertProfileUpdated.${cid}`,
+    defaultMessage: "Profile updated!",
+  });
+
+  const usernameRules: Rule[] = [
+    { required: true, message: _txt_errorMsgUsername },
+    {
+      min: 2,
+      message: _txt_errorMsgUsernameChar,
+    },
+    {
+      max: 30,
+      message: _txt_errorMsgMaxChar,
+    },
+    {
+      pattern: /^[A-Za-z0-9_.]*$/,
+      message: _txt_errorMsgValidChar,
+    },
+  ];
+  const bioRules: Rule[] = [
+    {
+      max: 120,
+      message: _txt_errorMsgBioChar,
+    },
+  ];
+  const linkRules: Rule[] = [
+    {
+      type: "url",
+      message: _txt_errorMsgUrl,
+    },
+  ];
+  const displayNameRules: Rule[] = [
+    {
+      max: 50,
+      message: _txt_errorMsgDisplayName,
+    },
+  ];
 
   const formItemLayout =
     screen === ScreenSize.mobile
@@ -342,7 +466,7 @@ const ProfileStylePage = () => {
     await runUpdateProfileMutation(data);
     setShowUpdate(false);
     setIsSubmitting(false);
-    message.success("Profile updated!");
+    message.success(_txt_alertProfileUpdated);
   };
 
   return (
@@ -424,7 +548,7 @@ const ProfileStylePage = () => {
               name="displayName"
               rules={displayNameRules}
             >
-              <Input placeholder="Public Display Name" />
+              <Input placeholder={_txt_placeholderDisplayName} />
             </Form.Item>
             <Form.Item
               label={usernameText}
@@ -432,7 +556,7 @@ const ProfileStylePage = () => {
               rules={usernameRules}
             >
               <Input
-                placeholder="Public Username"
+                placeholder={_txt_placeholderUsername}
                 onChange={handleUsernameChange}
                 style={{ width: "100%" }}
               />
@@ -456,33 +580,24 @@ const ProfileStylePage = () => {
             <Form.Item label={bioText} name="bio" rules={bioRules}>
               <Input.TextArea
                 rows={3}
-                placeholder="Public Biography"
+                placeholder={_txt_placeholderPublicBio}
                 style={{ resize: "none" }}
               />
             </Form.Item>
             <Form.Item label={linkText} name="link" rules={linkRules}>
-              <Input placeholder="Link to Website" />
+              <Input placeholder={_txt_placeholderLinkWebsite} />
             </Form.Item>
             <Form.Item {...buttonItemLayout}>
               <Divider />
-              <h3>
-                <PP>Hidden Preferences</PP>
-              </h3>
+              <h3>{_txt_titleHiddenPref}</h3>
               <i style={{ color: token.colorTextSecondary }}>
-                <PP>
-                  {`Let Milkshake help find people you like. Only you can see these preferences.`}
-                </PP>
+                {_txt_explainHiddenPref}
               </i>
             </Form.Item>
             <Form.Item
-              label={<PP>{`Location`}</PP>}
+              label={_txt_labelLoc}
               name="location"
-              tooltip={
-                <PP>
-                  When enabled, you will only see stories and people from your
-                  chosen location. You can change this anytime.
-                </PP>
-              }
+              tooltip={_txt_tooltipLoc}
             >
               <Dropdown
                 placement="top"
@@ -531,13 +646,13 @@ const ProfileStylePage = () => {
               >
                 <Input
                   suffix={<SearchOutlined />}
-                  placeholder="Anywhere in the World"
+                  placeholder={_txt_placeholderLoc}
                   value={locationSearchString}
                   onChange={(e) => setLocationSearchString(e.target.value)}
                   addonBefore={
                     <Switch
-                      checkedChildren={"ON"}
-                      unCheckedChildren={"OFF"}
+                      checkedChildren={_txt_switchOnLabel}
+                      unCheckedChildren={_txt_switchOffLabel}
                       checked={enforceLocationBias}
                       onChange={() => {
                         setEnforceLocationBias(!enforceLocationBias);
@@ -555,7 +670,7 @@ const ProfileStylePage = () => {
                   alignItems="flex-start"
                   style={{ flex: 1 }}
                 >
-                  <label style={{ textAlign: "left" }}>I am a...</label>
+                  <label style={{ textAlign: "left" }}>{_txt_labelIAmA}</label>
                   <Select
                     onChange={(gender) => {
                       setGender(gender);
@@ -563,9 +678,9 @@ const ProfileStylePage = () => {
                     }}
                     value={gender}
                     options={[
-                      { value: "male", label: "Man" },
-                      { value: "female", label: "Woman" },
-                      { value: "other", label: "Other" },
+                      { value: "male", label: _txt_optionMan },
+                      { value: "female", label: _txt_optionWoman },
+                      { value: "other", label: _txt_optionOther },
                     ]}
                   />
                 </$Vertical>
@@ -574,7 +689,9 @@ const ProfileStylePage = () => {
                   alignItems="flex-start"
                   style={{ flex: 1 }}
                 >
-                  <label style={{ textAlign: "left" }}>Interested in...</label>
+                  <label style={{ textAlign: "left" }}>
+                    {_txt_labelInterestedIn}
+                  </label>
                   <Select
                     mode="multiple"
                     allowClear
@@ -585,9 +702,9 @@ const ProfileStylePage = () => {
                       setShowUpdate(true);
                     }}
                     options={[
-                      { value: "female", label: "Women" },
-                      { value: "male", label: "Men" },
-                      { value: "other", label: "Other" },
+                      { value: "female", label: _txt_optionWomen },
+                      { value: "male", label: _txt_optionMen },
+                      { value: "other", label: _txt_optionOther },
                     ]}
                     style={{ textAlign: "center" }}
                   />
@@ -596,26 +713,26 @@ const ProfileStylePage = () => {
             </Form.Item>
 
             <Form.Item
-              label={<PP>My Interests</PP>}
+              label={_txt_labelMyInterests}
               name="prefAboutMe"
               rules={bioRules}
             >
               <Input.TextArea
                 rows={3}
-                placeholder="List some things you like or make you special (both good and bad)"
+                placeholder={_txt_placeholderMyInterests}
                 style={{ resize: "none" }}
                 value={prefAboutMe}
                 onChange={(e) => setPrefAboutMe(e.target.value)}
               />
             </Form.Item>
             <Form.Item
-              label={<PP>Looking For</PP>}
+              label={_txt_labelLookingFor}
               name="prefLookingFor"
               rules={bioRules}
             >
               <Input.TextArea
                 rows={3}
-                placeholder="Describe what you are looking for"
+                placeholder={_txt_placeholderLookingFor}
                 style={{ resize: "none" }}
                 value={prefLookingFor}
                 onChange={(e) => setPrefLookingFor(e.target.value)}

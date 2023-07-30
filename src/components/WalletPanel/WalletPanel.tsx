@@ -128,17 +128,29 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
           extra={
             wallet.type === WalletType.TRADING
               ? [
-                  <Button
-                    type="primary"
-                    ghost
-                    size="large"
-                    key="console"
-                    block
-                    onClick={() => setShowTopUpWallet(true)}
-                    style={{ maxWidth: "250px" }}
+                  <$Vertical
+                    spacing={3}
+                    alignItems="center"
+                    style={{ alignItems: "center" }}
                   >
-                    Recharge
-                  </Button>,
+                    <i
+                      style={{
+                        fontSize: "1rem",
+                        color: token.colorPrimary,
+                      }}
+                    >{`Equal to $${cookieToUSD(wallet.balance)} USD`}</i>
+                    <Button
+                      type="primary"
+                      ghost
+                      size="large"
+                      key="console"
+                      block
+                      onClick={() => setShowTopUpWallet(true)}
+                      style={{ maxWidth: "250px" }}
+                    >
+                      Recharge
+                    </Button>
+                  </$Vertical>,
                 ]
               : [
                   <i

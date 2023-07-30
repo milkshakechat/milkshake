@@ -44,7 +44,7 @@ const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
     "usernameUnavailable.___ProfileStylePage": "Tên người dùng không khả dụng",
     "title.___ProfileSettingsPage": "Cài đặt",
     "languageLabel.___ProfileSettingsPage": "Ngôn ngữ",
-    "themeLabel.___ProfileSettingsPage": "Chủ đề",
+    "themeLabel.___ProfileSettingsPage": "chủ đề",
     "privacyLabel.___ProfileSettingsPage": "Sự riêng tư",
     "logout.___ProfileSettingsPage": "Đăng xuất",
     "updateButtonHeader.___shared": "Cập nhật",
@@ -121,7 +121,6 @@ const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
     "privacyModeEnum_helpTip.public.___shared": "공개 프로필은 모든 사람으로부터 메시지를 받을 수 있으며 사용자 이름은 모든 사람이 볼 수 있습니다.",
     "privacyModeEnum_helpTip.private.___shared": "비공개 프로필은 수락된 친구의 메시지만 받을 수 있습니다. 여전히 사용자 이름으로 찾을 수 있습니다.",
     "privacyModeEnum_helpTip.hidden.___shared": "숨겨진 프로필은 사용자 이름으로 찾을 수 없습니다. 메시지를 받으려면 친구를 추가하거나 특별한 비공개 초대 링크를 사용해야 합니다.",
-    "title.___TemplateComponent": "TemplateComponent (한국어)",
     "new_story_sidebar.___AppLayout": "새로 업로드",
     "messages_sidebar.___AppLayout": "대화",
     "notifications_sidebar.___AppLayout": "알림",
@@ -262,6 +261,105 @@ const COMPILED_LANGUAGE_MAPPINGS: Record<string, any> = {
     "contacts_sidebar.___AppLayout": "جهات الاتصال",
     "wishlists_sidebar.___AppLayout": "الهدايا",
     "settings_sidebar.___AppLayout": "إعدادات"
+  },
+  "ur": {
+    "title.___ProfileSettingsPage": "ترتیبات",
+    "languageLabel.___ProfileSettingsPage": "زبان",
+    "themeLabel.___ProfileSettingsPage": "خیالیہ",
+    "privacyLabel.___ProfileSettingsPage": "رازداری",
+    "logout.___ProfileSettingsPage": "لاگ آوٹ"
+  },
+  "uk": {
+    "title.___ProfileSettingsPage": "Налаштування",
+    "languageLabel.___ProfileSettingsPage": "Мова",
+    "themeLabel.___ProfileSettingsPage": "Тема",
+    "privacyLabel.___ProfileSettingsPage": "Конфіденційність",
+    "logout.___ProfileSettingsPage": "Вийти"
+  },
+  "tr": {
+    "title.___ProfileSettingsPage": "Ayarlar",
+    "languageLabel.___ProfileSettingsPage": "Dil",
+    "themeLabel.___ProfileSettingsPage": "Tema",
+    "privacyLabel.___ProfileSettingsPage": "Mahremiyet",
+    "logout.___ProfileSettingsPage": "Çıkış Yap"
+  },
+  "tl-ph": {
+    "title.___ProfileSettingsPage": "Mga setting",
+    "languageLabel.___ProfileSettingsPage": "Wika",
+    "themeLabel.___ProfileSettingsPage": "Tema",
+    "privacyLabel.___ProfileSettingsPage": "Pagkapribado",
+    "logout.___ProfileSettingsPage": "Log Out"
+  },
+  "ru": {
+    "title.___ProfileSettingsPage": "Настройки",
+    "languageLabel.___ProfileSettingsPage": "Язык",
+    "themeLabel.___ProfileSettingsPage": "Тема",
+    "privacyLabel.___ProfileSettingsPage": "Конфиденциальность",
+    "logout.___ProfileSettingsPage": "Выйти",
+    "title.___TemplateComponent": "TemplateComponent (中文)"
+  },
+  "pt": {
+    "title.___ProfileSettingsPage": "Configurações",
+    "languageLabel.___ProfileSettingsPage": "Linguagem",
+    "themeLabel.___ProfileSettingsPage": "Tema",
+    "privacyLabel.___ProfileSettingsPage": "Privacidade",
+    "logout.___ProfileSettingsPage": "Sair"
+  },
+  "pl": {
+    "title.___ProfileSettingsPage": "Ustawienia",
+    "languageLabel.___ProfileSettingsPage": "Język",
+    "themeLabel.___ProfileSettingsPage": "Temat",
+    "privacyLabel.___ProfileSettingsPage": "Prywatność",
+    "logout.___ProfileSettingsPage": "Wyloguj"
+  },
+  "ms": {
+    "title.___ProfileSettingsPage": "tetapan",
+    "languageLabel.___ProfileSettingsPage": "Bahasa",
+    "themeLabel.___ProfileSettingsPage": "Tema",
+    "privacyLabel.___ProfileSettingsPage": "Privasi",
+    "logout.___ProfileSettingsPage": "Log keluar"
+  },
+  "it": {
+    "title.___ProfileSettingsPage": "Impostazioni",
+    "languageLabel.___ProfileSettingsPage": "Lingua",
+    "themeLabel.___ProfileSettingsPage": "Tema",
+    "privacyLabel.___ProfileSettingsPage": "Riservatezza",
+    "logout.___ProfileSettingsPage": "Disconnettersi"
+  },
+  "id": {
+    "title.___ProfileSettingsPage": "Pengaturan",
+    "languageLabel.___ProfileSettingsPage": "Bahasa",
+    "themeLabel.___ProfileSettingsPage": "Tema",
+    "privacyLabel.___ProfileSettingsPage": "Pribadi",
+    "logout.___ProfileSettingsPage": "Keluar"
+  },
+  "hi": {
+    "title.___ProfileSettingsPage": "Settings",
+    "languageLabel.___ProfileSettingsPage": "भाषा",
+    "themeLabel.___ProfileSettingsPage": "थीम",
+    "privacyLabel.___ProfileSettingsPage": "गोपनीयता",
+    "logout.___ProfileSettingsPage": "लॉग आउट"
+  },
+  "fr": {
+    "title.___ProfileSettingsPage": "Paramètres",
+    "languageLabel.___ProfileSettingsPage": "Langue",
+    "themeLabel.___ProfileSettingsPage": "Thème",
+    "privacyLabel.___ProfileSettingsPage": "Confidentialité",
+    "logout.___ProfileSettingsPage": "Se déconnecter"
+  },
+  "de": {
+    "title.___ProfileSettingsPage": "Einstellungen",
+    "languageLabel.___ProfileSettingsPage": "Sprache",
+    "themeLabel.___ProfileSettingsPage": "Thema",
+    "privacyLabel.___ProfileSettingsPage": "Privatsphäre",
+    "logout.___ProfileSettingsPage": "Ausloggen"
+  },
+  "bn": {
+    "title.___ProfileSettingsPage": "সেটিংস",
+    "languageLabel.___ProfileSettingsPage": "ভাষা",
+    "themeLabel.___ProfileSettingsPage": "থিম",
+    "privacyLabel.___ProfileSettingsPage": "গোপনীয়তা",
+    "logout.___ProfileSettingsPage": "প্রস্থান"
   }
 };
  export default COMPILED_LANGUAGE_MAPPINGS;

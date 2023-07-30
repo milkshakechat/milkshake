@@ -51,6 +51,9 @@ const devConfig: ConfigEnv = {
   LEDGER: {
     recallGracePeriodDays: 90,
   },
+  RECURLY: {
+    publicKey: "ewr1-0KlTbTH6D6WpJie58E2hxk",
+  },
 };
 const stagingConfig: ConfigEnv = {
   GRAPHQL_SOCKET_SERVER:
@@ -87,6 +90,9 @@ const stagingConfig: ConfigEnv = {
   },
   LEDGER: {
     recallGracePeriodDays: 90,
+  },
+  RECURLY: {
+    publicKey: "ewr1-0KlTbTH6D6WpJie58E2hxk",
   },
 };
 const prodConfig: ConfigEnv = {
@@ -125,6 +131,9 @@ const prodConfig: ConfigEnv = {
   LEDGER: {
     recallGracePeriodDays: 90,
   },
+  RECURLY: {
+    publicKey: "ewr1-0KlTbTH6D6WpJie58E2hxk",
+  },
 };
 
 interface ConfigEnv {
@@ -153,6 +162,9 @@ interface ConfigEnv {
       priceInUSDCents: 1299;
       paymentLink: string;
     };
+  };
+  RECURLY: {
+    publicKey: string;
   };
   LEDGER: {
     recallGracePeriodDays: number;

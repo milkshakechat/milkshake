@@ -151,3 +151,68 @@ export const useStripeAttachCard = () => {
 
   return { data, errors, loading, runMutation };
 };
+
+export const useRecurlyAttachCard = () => {
+  const [data, setData] = useState<SavePaymentMethodResponseSuccess>();
+  const [errors, setErrors] = useState<ErrorLine[]>([]);
+  const [loading, setLoading] = useState(false);
+  const client = useGraphqlClient();
+  const updateDefaultPaymentMethod = useUserState(
+    (state) => state.updateDefaultPaymentMethod
+  );
+
+  const runMutation = async (args: SavePaymentMethodInput) => {
+    setLoading(true);
+    try {
+      const SAVE_PAYMENT_METHOD = gql`
+        mutation SavePaymentMethod($input: SavePaymentMethodInput!) {
+          savePaymentMethod(input: $input) {
+            __typename
+            ... on SavePaymentMethodResponseSuccess {
+              paymentMethodID
+            }
+            ... on ResponseError {
+              error {
+                message
+              }
+            }
+          }
+        }
+      `;
+      const result = await new Promise<SavePaymentMethodResponseSuccess>(
+        (resolve, reject) => {
+          client
+            .mutate<Pick<Mutation, "savePaymentMethod">>({
+              mutation: SAVE_PAYMENT_METHOD,
+              variables: { input: args },
+            })
+            .then(({ data }) => {
+              if (
+                data?.savePaymentMethod.__typename ===
+                "SavePaymentMethodResponseSuccess"
+              ) {
+                resolve(data.savePaymentMethod);
+              }
+              setLoading(false);
+            })
+            .catch((graphQLError: Error) => {
+              if (graphQLError) {
+                setErrors((errors) => [...errors, graphQLError.message]);
+                reject();
+              }
+              setLoading(false);
+            });
+        }
+      );
+      setData(result);
+      updateDefaultPaymentMethod(
+        result.paymentMethodID as StripePaymentMethodID
+      );
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
+    }
+  };
+
+  return { data, errors, loading, runMutation };
+};

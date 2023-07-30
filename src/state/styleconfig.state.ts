@@ -8,19 +8,47 @@ import viVN from "antd/locale/vi_VN"; // vietnamese
 import jaJP from "antd/locale/ja_JP"; // japanese
 import koKR from "antd/locale/ko_KR"; // korean
 import arEG from "antd/locale/ar_EG"; // arabic
+import ruRU from "antd/locale/ru_RU"; // russian
+import frFR from "antd/locale/fr_FR"; // french
+import deDE from "antd/locale/de_DE"; // german
+import itIT from "antd/locale/it_IT"; // italian
+import hiIN from "antd/locale/hi_IN"; // hindi
+import plPL from "antd/locale/pl_PL"; // polish
+import trTR from "antd/locale/tr_TR"; // turkish
+import ptPT from "antd/locale/pt_PT"; // portuguese
+// import tlPH from "antd/locale/tl_PH"; // tagalog (missing from antd)
+import idID from "antd/locale/id_ID"; // indonesian
+import ukUA from "antd/locale/uk_UA"; // ukrainian
+import bnBD from "antd/locale/bn_BD"; // bengali
+import msMY from "antd/locale/ms_MY"; // malaysian
+import urPK from "antd/locale/ur_PK"; // urdu
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import weekOfYear from "dayjs/plugin/weekOfYear";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import duration from "dayjs/plugin/duration";
-import "dayjs/locale/en";
-import "dayjs/locale/zh";
-import "dayjs/locale/ar";
-import "dayjs/locale/es";
-import "dayjs/locale/th";
-import "dayjs/locale/vi";
-import "dayjs/locale/ja";
-import "dayjs/locale/ko";
+import "dayjs/locale/en"; // 1
+import "dayjs/locale/zh"; // 2
+import "dayjs/locale/ar"; // 3
+import "dayjs/locale/es"; // 4
+import "dayjs/locale/th"; // 5
+import "dayjs/locale/vi"; // 6
+import "dayjs/locale/ja"; // 7
+import "dayjs/locale/ko"; // 8
+import "dayjs/locale/fr"; // 9
+import "dayjs/locale/de"; // 10
+import "dayjs/locale/it"; // 11
+import "dayjs/locale/ru"; // 12
+import "dayjs/locale/hi"; // 13
+import "dayjs/locale/pl"; // 14
+import "dayjs/locale/tr"; // 15
+import "dayjs/locale/pt"; // 16
+import "dayjs/locale/tl-ph"; // 17
+import "dayjs/locale/id"; // 18
+import "dayjs/locale/uk"; // 19
+import "dayjs/locale/bn"; // 20
+import "dayjs/locale/ms"; // 21
+import "dayjs/locale/ur"; // 22
 import { ThemeConfig, theme } from "antd";
 import { MappingAlgorithm } from "antd/lib/config-provider/context";
 import {
@@ -139,6 +167,34 @@ const determineAntLocale = (locale: localeEnum): Locale => {
       return koKR;
     case localeEnum.arabic:
       return arEG;
+    case localeEnum.russian:
+      return ruRU;
+    case localeEnum.french:
+      return frFR;
+    case localeEnum.german:
+      return deDE;
+    case localeEnum.italian:
+      return itIT;
+    case localeEnum.hindi:
+      return hiIN;
+    case localeEnum.polish:
+      return plPL;
+    case localeEnum.turkish:
+      return trTR;
+    case localeEnum.portuguese:
+      return ptPT;
+    case localeEnum.tagalog: // tagalog missing from antd
+      return enUS;
+    case localeEnum.indonesian:
+      return idID;
+    case localeEnum.ukrainian:
+      return ukUA;
+    case localeEnum.bengali:
+      return bnBD;
+    case localeEnum.malaysian:
+      return msMY;
+    case localeEnum.urdu:
+      return urPK;
 
     default:
       return enUS;
@@ -162,6 +218,34 @@ const handleLocaleChange = (locale: localeEnum) => {
     dayjs.locale("ja");
   } else if (locale === localeEnum.korean) {
     dayjs.locale("ko");
+  } else if (locale === localeEnum.french) {
+    dayjs.locale("fr");
+  } else if (locale === localeEnum.german) {
+    dayjs.locale("de");
+  } else if (locale === localeEnum.italian) {
+    dayjs.locale("it");
+  } else if (locale === localeEnum.russian) {
+    dayjs.locale("ru");
+  } else if (locale === localeEnum.hindi) {
+    dayjs.locale("hi");
+  } else if (locale === localeEnum.polish) {
+    dayjs.locale("pl");
+  } else if (locale === localeEnum.turkish) {
+    dayjs.locale("tr");
+  } else if (locale === localeEnum.portuguese) {
+    dayjs.locale("pt");
+  } else if (locale === localeEnum.tagalog) {
+    dayjs.locale("tl-ph");
+  } else if (locale === localeEnum.indonesian) {
+    dayjs.locale("id");
+  } else if (locale === localeEnum.ukrainian) {
+    dayjs.locale("uk");
+  } else if (locale === localeEnum.bengali) {
+    dayjs.locale("bn");
+  } else if (locale === localeEnum.malaysian) {
+    dayjs.locale("ms");
+  } else if (locale === localeEnum.urdu) {
+    dayjs.locale("ur");
   } else if (locale === localeEnum.arabic) {
     dayjs.locale("ar");
   }

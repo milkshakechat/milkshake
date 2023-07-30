@@ -19,7 +19,7 @@
     "@apollo/client": "^3.7.15",
     "@builder.io/partytown": "^0.8.0",
     "@graphql-codegen/cli": "^4.0.1",
-    "@milkshakechat/helpers": "^1.0.277",
+    "@milkshakechat/helpers": "^1.0.286-i18n",
     "@oieduardorabelo/use-user-agent": "^5.0.1",
     "@react-spring/web": "^9.5.5",
     "@sendbird/chat": "^4.9.0",

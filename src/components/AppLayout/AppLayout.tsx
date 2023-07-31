@@ -103,42 +103,58 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   );
   const { token } = theme.useToken();
 
-  const newStoryText = intl.formatMessage({
-    id: `new_story_sidebar.${cid}`,
-    defaultMessage: "New Story",
+  const _txt_dating_5ad = intl.formatMessage({
+    id: "_txt_dating_5ad.___AppLayout",
+    defaultMessage: "Dating",
   });
-  const messagesText = intl.formatMessage({
-    id: `messages_sidebar.${cid}`,
+  const _txt_wallet_20a = intl.formatMessage({
+    id: "_txt_wallet_20a.___AppLayout",
+    defaultMessage: "Wallet",
+  });
+  const _txt_logOut_745 = intl.formatMessage({
+    id: "_txt_logOut_745.___AppLayout",
+    defaultMessage: "Log Out",
+  });
+  const _txt_confirmLogout_31a = intl.formatMessage({
+    id: "_txt_confirmLogout_31a.___AppLayout",
+    defaultMessage: "Confirm Logout",
+  });
+  const _txt_areYouSureYouWantToLogOut_bcc = intl.formatMessage({
+    id: "_txt_areYouSureYouWantToLogOut_bcc.___AppLayout",
+    defaultMessage: "Are you sure you want to log out?",
+  });
+  const _txt_messages_sidebar = intl.formatMessage({
+    id: "_txt_messages_sidebar.___AppLayout",
     defaultMessage: "Chats",
   });
-  const notificationsText = intl.formatMessage({
-    id: `notifications_sidebar.${cid}`,
+  const _txt_notifications_sidebar = intl.formatMessage({
+    id: "_txt_notifications_sidebar.___AppLayout",
     defaultMessage: "Notifications",
   });
-  const accountText = intl.formatMessage({
-    id: `account_sidebar.${cid}`,
+  const _txt_account_sidebar = intl.formatMessage({
+    id: "_txt_account_sidebar.___AppLayout",
     defaultMessage: "Account",
   });
-  const profileText = intl.formatMessage({
-    id: `profile_sidebar.${cid}`,
+  const _txt_profile_sidebar = intl.formatMessage({
+    id: "_txt_profile_sidebar.___AppLayout",
     defaultMessage: "Profile",
   });
-  const contactsText = intl.formatMessage({
-    id: `contacts_sidebar.${cid}`,
+  const _txt_contacts_sidebar = intl.formatMessage({
+    id: "_txt_contacts_sidebar.___AppLayout",
     defaultMessage: "Contacts",
   });
-  const wishlistsText = intl.formatMessage({
-    id: `wishlists_sidebar.${cid}`,
+  const _txt_wishlists_sidebar = intl.formatMessage({
+    id: "_txt_wishlists_sidebar.___AppLayout",
     defaultMessage: "Wishlists",
   });
-  const settingsText = intl.formatMessage({
-    id: `settings_sidebar.${cid}`,
+  const _txt_settings_sidebar = intl.formatMessage({
+    id: "_txt_settings_sidebar.___AppLayout",
     defaultMessage: "Settings",
   });
 
   const items = [
     getItem(
-      <NavLink to="/app/swipe">{<PP>Dating</PP>}</NavLink>,
+      <NavLink to="/app/swipe">{_txt_dating_5ad}</NavLink>,
       "date",
       "/app/swipe",
       <FireOutlined style={{ fontSize: "1rem" }} />
@@ -151,7 +167,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
         }
       >
         <$Horizontal alignItems="center">
-          {messagesText}
+          {_txt_messages_sidebar}
           <Badge count={totalUnreadChatsCount} style={{ margin: "0px 5px" }} />
         </$Horizontal>
       </NavLink>,
@@ -162,7 +178,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
     getItem(
       <NavLink to="/app/notifications">
         <$Horizontal alignItems="center">
-          {notificationsText}
+          {_txt_notifications_sidebar}
           <Badge
             count={notifications.filter((n) => !n.markedRead).length}
             style={{ margin: "0px 5px" }}
@@ -180,14 +196,14 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           isPending ? "pending" : isActive ? "active" : ""
         }
       >
-        <PP>Wallet</PP>
+        {_txt_wallet_20a}
       </NavLink>,
       "wallet",
       "/app/wallet",
       <WalletOutlined style={{ fontSize: "1rem" }} />
     ),
     getItem(
-      <NavLink to="/app/profile">{accountText}</NavLink>,
+      <NavLink to="/app/profile">{_txt_account_sidebar}</NavLink>,
       "account",
       "/app",
       <UserOutlined style={{ fontSize: "1rem" }} />,
@@ -199,7 +215,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               isPending ? "pending" : isActive ? "active" : ""
             }
           >
-            {profileText}
+            {_txt_profile_sidebar}
           </NavLink>,
           "profile",
           "/app/profile"
@@ -211,7 +227,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               isPending ? "pending" : isActive ? "active" : ""
             }
           >
-            {contactsText}
+            {_txt_contacts_sidebar}
           </NavLink>,
           "contacts",
           "/app/friends"
@@ -224,7 +240,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               isPending ? "pending" : isActive ? "active" : ""
             }
           >
-            {wishlistsText}
+            {_txt_wishlists_sidebar}
           </NavLink>,
           "wishlists",
           "/app/profile?view=wishlist"
@@ -236,22 +252,22 @@ const AppLayout = ({ children }: AppLayoutProps) => {
               isPending ? "pending" : isActive ? "active" : ""
             }
           >
-            {settingsText}
+            {_txt_settings_sidebar}
           </NavLink>,
           "settings",
           "/app/profile/settings"
         ),
         getItem(
           <Popconfirm
-            title="Confirm Logout"
-            description="Are you sure you want to log out?"
+            title={_txt_confirmLogout_31a}
+            description={_txt_areYouSureYouWantToLogOut_bcc}
             onConfirm={async () => {
               navigate("/app/logout");
             }}
             okText="Yes"
             cancelText="No"
           >
-            Log Out
+            {_txt_logOut_745}
           </Popconfirm>,
           "logout",
           "/app/logout"

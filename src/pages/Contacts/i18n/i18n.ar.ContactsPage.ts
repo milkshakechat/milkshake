@@ -1,0 +1,65 @@
+import { i18n_Mapping } from "./types.i18n.ContactsPage";
+
+export const importLanguage = (): i18n_Mapping => {
+  const language: i18n_Mapping = {
+    "alertSentFriendRequest.___ContactsPage": "أرسل طلب صداقة",
+    "alertWaitingForAcceptance.___ContactsPage": "في انتظار القبول",
+    "alertDeclinedRequest.___ContactsPage": "طلب مرفوض",
+    "alertBlockedUser.___ContactsPage": "مستخدم محظور",
+    "labelNotFriends.___ContactsPage": "ليس أصدقاء",
+    "labelFriendRequestSent.___ContactsPage": "تم ارسال طلب صداقة",
+    "labelSearchContacts.___ContactsPage": "اتصالات بحث",
+    "labelFriends.___ContactsPage": "أصدقاء",
+    "btnCancel.___ContactsPage": "يلغي",
+    "btnGroupChat.___ContactsPage": "مجموعة محادثة",
+    "btnViewProfile.___ContactsPage": "عرض الصفحة الشخصية",
+    "btnRemove.___ContactsPage": "يزيل",
+    "btnBlock.___ContactsPage": "حاجز",
+    "btnChat.___ContactsPage": "محادثة",
+    "btnStartGroupChat.___ContactsPage": "ابدأ الدردشة الجماعية",
+    "labelRequests.___ContactsPage": "الطلبات",
+    "btnSendAgain.___ContactsPage": "أعد الإرسال",
+    "btnUnblock.___ContactsPage": "رفع الحظر",
+    "btnDecline.___ContactsPage": "انخفاض",
+    "alertAcceptedRequest.___ContactsPage": "تم قبول طلب الصداقة",
+    "btnAccept.___ContactsPage": "يقبل",
+    "btnAddFriend.___ContactsPage": "أضف صديق",
+    "labelContacts.___ContactsPage": "جهات الاتصال",
+    "btnBack.___ContactsPage": "خلف",
+    "btnAdd.___ContactsPage": "يضيف",
+    "alertDeclinedRequest2.___ContactsPage": "طلب صداقة مرفوض",
+    "btnConfirmDecline.___ContactsPage": "نعم ارفض",
+    "labelHighlightDecline.___ContactsPage": "انخفاض",
+    "labelAreYouSure.___ContactsPage": "هل أنت متأكد أنك تريد",
+    "labelThisFriendRequest.___ContactsPage": "طلب الصداقة هذا؟",
+    "alertRemovedFriends.___ContactsPage": "تمت إزالته من الأصدقاء",
+    "btnYesRemove.___ContactsPage": "نعم ، قم بإزالة",
+    "btnBoldRemove.___ContactsPage": "يزيل",
+    "labelRemoveFriendExplain.___ContactsPage":
+      "هذا الصديق؟ سيتعين عليهم قبول طلب صداقة جديد إذا كنت تريد الدردشة.",
+    "btnYesBlock.___ContactsPage": "نعم بلوك",
+    "btnBoldBlock.___ContactsPage": "حاجز",
+    "labelRemoveFriendConfirmm.___ContactsPage":
+      "هذا الاتصال؟ لن يتمكنوا من إرسال رسائل أو طلبات صداقة إليك.",
+    "btnYesUnblock.___ContactsPage": "نعم ، قم بإلغاء الحظر",
+    "labelBoldUnblock.___ContactsPage": "رفع الحظر",
+    "labelConfirmUnblockK.___ContactsPage":
+      "هذا الاتصال؟ سيكونون قادرين على رؤيتك موجود.",
+    "btnNo.___ContactsPage": "لا",
+    "alertCancelledRequest.___ContactsPage": "تم إلغاء طلب الصداقة",
+    "btnYesCancel.___ContactsPage": "نعم إلغاء",
+    "labelBoldCancel.___ContactsPage": "يلغي",
+    "labelConfirmCancelExplain.___ContactsPage":
+      "طلب صداقتك؟ يمكنك إرسال واحدة أخرى لاحقًا.",
+    "btnSearch.___ContactsPage": "يبحث",
+    "btnSearchLabel.___ContactsPage": "البحث الدقيق عن اسم المستخدم",
+    "btnVisitProfile.___ContactsPage": "قم بزيارة الملف الشخصي",
+    "labelSearchUsers.___ContactsPage": "بحث في المستخدمين",
+    "alertMustExactMatch.___ContactsPage":
+      "يجب أن يكون اسم مستخدم مطابقًا تمامًا",
+    "alertCopieidProfileLink.___ContactsPage": "رابط الملف الشخصي المنسوخ!",
+    "btnCopyURL.___ContactsPage": "إنسخ الرابط",
+    "btnClose.___ContactsPage": "يغلق",
+  };
+  return language;
+};

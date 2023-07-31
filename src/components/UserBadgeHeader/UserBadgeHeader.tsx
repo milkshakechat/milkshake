@@ -80,12 +80,9 @@ const UserBadgeHeader = ({
               }}
               onClick={visitUser}
             >
-              <PP>
-                <b>{user.displayName || user.username}</b>
-              </PP>
-              <PP>
-                <i>{`@${user.username}`}</i>
-              </PP>
+              <b>{user.displayName || user.username}</b>
+
+              <i>{`@${user.username}`}</i>
             </$Vertical>
           </$Horizontal>
         </$Horizontal>

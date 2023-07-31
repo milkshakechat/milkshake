@@ -27,6 +27,10 @@ const AboutSection = ({ user, glowColor, actionButton }: AboutSectionProps) => {
   const { token } = theme.useToken();
   const navigate = useNavigate();
   const avatarSize = isMobile ? window.innerWidth / 5 : 100;
+  const _txt_editProfile_e45 = intl.formatMessage({
+    id: "_txt_editProfile_e45.___AboutSection",
+    defaultMessage: "Edit Profile",
+  });
   return (
     <$Vertical>
       <$Horizontal
@@ -76,26 +80,22 @@ const AboutSection = ({ user, glowColor, actionButton }: AboutSectionProps) => {
         >
           <$Horizontal justifyContent="space-between" style={{ width: "100%" }}>
             <$Vertical style={{ flex: 1 }}>
-              <PP>
-                <b
-                  style={{
-                    fontSize: isMobile ? "1.3rem" : "1.6rem",
-                    overflowWrap: "break-word",
-                    wordBreak: "break-all",
-                    whiteSpace: "normal",
-                  }}
-                >
-                  {user.displayName || user.username}
-                </b>
-              </PP>
-              <PP>
-                <i
-                  style={{
-                    fontSize: isMobile ? "1rem" : "1.1rem",
-                    marginTop: "5px",
-                  }}
-                >{`@${user.username}`}</i>
-              </PP>
+              <b
+                style={{
+                  fontSize: isMobile ? "1.3rem" : "1.6rem",
+                  overflowWrap: "break-word",
+                  wordBreak: "break-all",
+                  whiteSpace: "normal",
+                }}
+              >
+                {user.displayName || user.username}
+              </b>
+              <i
+                style={{
+                  fontSize: isMobile ? "1rem" : "1.1rem",
+                  marginTop: "5px",
+                }}
+              >{`@${user.username}`}</i>
             </$Vertical>
           </$Horizontal>
           {currentAuthUser && currentAuthUser.id === user.id && (
@@ -109,7 +109,7 @@ const AboutSection = ({ user, glowColor, actionButton }: AboutSectionProps) => {
                 size="small"
                 style={{ margin: isMobile ? "10px 0px" : "20px 0px" }}
               >
-                Edit Profile
+                {_txt_editProfile_e45}
               </Button>
             </NavLink>
           )}

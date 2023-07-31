@@ -1,0 +1,65 @@
+import { i18n_Mapping } from "./types.i18n.ContactsPage";
+
+export const importLanguage = (): i18n_Mapping => {
+  const language: i18n_Mapping = {
+    "alertSentFriendRequest.___ContactsPage": "친구 요청을 보냈습니다",
+    "alertWaitingForAcceptance.___ContactsPage": "승인 대기 중",
+    "alertDeclinedRequest.___ContactsPage": "거부된 요청",
+    "alertBlockedUser.___ContactsPage": "차단된 사용자",
+    "labelNotFriends.___ContactsPage": "친구 아님",
+    "labelFriendRequestSent.___ContactsPage": "친구 요청이 전송",
+    "labelSearchContacts.___ContactsPage": "연락처 검색",
+    "labelFriends.___ContactsPage": "친구",
+    "btnCancel.___ContactsPage": "취소",
+    "btnGroupChat.___ContactsPage": "그룹 채팅",
+    "btnViewProfile.___ContactsPage": "프로필보기",
+    "btnRemove.___ContactsPage": "제거하다",
+    "btnBlock.___ContactsPage": "차단하다",
+    "btnChat.___ContactsPage": "채팅",
+    "btnStartGroupChat.___ContactsPage": "그룹 채팅 시작",
+    "labelRequests.___ContactsPage": "요청",
+    "btnSendAgain.___ContactsPage": "다시 보내기",
+    "btnUnblock.___ContactsPage": "차단 해제",
+    "btnDecline.___ContactsPage": "감소",
+    "alertAcceptedRequest.___ContactsPage": "수락된 친구 요청",
+    "btnAccept.___ContactsPage": "수용하다",
+    "btnAddFriend.___ContactsPage": "친구 추가",
+    "labelContacts.___ContactsPage": "콘택트 렌즈",
+    "btnBack.___ContactsPage": "뒤쪽에",
+    "btnAdd.___ContactsPage": "추가하다",
+    "alertDeclinedRequest2.___ContactsPage": "거부된 친구 요청",
+    "btnConfirmDecline.___ContactsPage": "예, 거절합니다",
+    "labelHighlightDecline.___ContactsPage": "감소",
+    "labelAreYouSure.___ContactsPage": "정말로 하시겠습니까?",
+    "labelThisFriendRequest.___ContactsPage": "이 친구신청?",
+    "alertRemovedFriends.___ContactsPage": "친구에서 삭제됨",
+    "btnYesRemove.___ContactsPage": "예, 제거합니다",
+    "btnBoldRemove.___ContactsPage": "제거하다",
+    "labelRemoveFriendExplain.___ContactsPage":
+      "이 친구? 채팅을 하려면 새 친구 요청을 수락해야 합니다.",
+    "btnYesBlock.___ContactsPage": "예, 차단합니다",
+    "btnBoldBlock.___ContactsPage": "차단하다",
+    "labelRemoveFriendConfirmm.___ContactsPage":
+      "이 연락처? 메시지나 친구 요청을 보낼 수 없습니다.",
+    "btnYesUnblock.___ContactsPage": "예, 차단을 해제합니다",
+    "labelBoldUnblock.___ContactsPage": "차단 해제",
+    "labelConfirmUnblockK.___ContactsPage":
+      "이 연락처? 그들은 당신이 존재하는 것을 볼 수 있을 것입니다.",
+    "btnNo.___ContactsPage": "아니요",
+    "alertCancelledRequest.___ContactsPage": "취소된 친구 요청",
+    "btnYesCancel.___ContactsPage": "예, 취소합니다",
+    "labelBoldCancel.___ContactsPage": "취소",
+    "labelConfirmCancelExplain.___ContactsPage":
+      "당신의 친구 요청? 나중에 다른 것을 보낼 수 있습니다.",
+    "btnSearch.___ContactsPage": "찾다",
+    "btnSearchLabel.___ContactsPage": "정확한 사용자 이름 검색",
+    "btnVisitProfile.___ContactsPage": "프로필 방문",
+    "labelSearchUsers.___ContactsPage": "사용자 검색",
+    "alertMustExactMatch.___ContactsPage":
+      "사용자 이름이 정확히 일치해야 합니다.",
+    "alertCopieidProfileLink.___ContactsPage": "프로필 링크 복사했습니다!",
+    "btnCopyURL.___ContactsPage": "URL 복사",
+    "btnClose.___ContactsPage": "닫다",
+  };
+  return language;
+};

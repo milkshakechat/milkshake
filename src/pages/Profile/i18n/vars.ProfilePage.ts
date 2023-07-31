@@ -1,0 +1,12 @@
+// import { useIntl } from "react-intl";
+// const intl = useIntl();
+// const _txt_timeline_1aa = intl.formatMessage({ id: "_txt_timeline_1aa", defaultMessage: "Timeline" });
+// const _txt_wishlist_6e5 = intl.formatMessage({ id: "_txt_wishlist_6e5", defaultMessage: "Wishlist" });
+// const _txt_upgradeToPremiumForVipBenefits_956 = intl.formatMessage({ id: "_txt_upgradeToPremiumForVipBenefits_956", defaultMessage: "Upgrade to Premium for VIP benefits" });
+// const _txt_view_e40 = intl.formatMessage({ id: "_txt_view_e40", defaultMessage: "View" });
+// const _txt_addMeOnMilkshakeclub_892 = intl.formatMessage({ id: "_txt_addMeOnMilkshakeclub_892", defaultMessage: "Add me on Milkshake.Club" });
+// const _txt_copiedProfileLink_4d9 = intl.formatMessage({ id: "_txt_copiedProfileLink_4d9", defaultMessage: "Copied profile link!" });
+// const _txt_copy_aa7 = intl.formatMessage({ id: "_txt_copy_aa7", defaultMessage: "Copy" });
+// const _txt_close_196 = intl.formatMessage({ id: "_txt_close_196", defaultMessage: "Close" });
+// const _txt_hiddenProfilesCantBeFoundByUsername_f0a = intl.formatMessage({ id: "_txt_hiddenProfilesCantBeFoundByUsername_f0a", defaultMessage: "Hidden profiles can't be found by username" });
+export const varsComponentName = "ProfilePage";

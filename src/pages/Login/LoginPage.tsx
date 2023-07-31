@@ -32,6 +32,8 @@ import { useWindowSize } from "@/api/utils/screen";
 import PP from "@/i18n/PlaceholderPrint";
 import "../Onboarding/sugardaddy.jpg";
 import { SUGARBABY_IMAGE } from "../Onboarding/OnboardingPage";
+import { QuickLanguageBanner } from "@/components/QuickLanguage/QuickLanguage";
+import { useIntl } from "react-intl";
 
 const LoginPage = () => {
   const { token } = theme.useToken();
@@ -55,6 +57,55 @@ const LoginPage = () => {
   const auth = getAuth();
   const [recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier>();
+  const intl = useIntl();
+  const _txt_email_d63 = intl.formatMessage({
+    id: "_txt_email_d63.___LoginPage",
+    defaultMessage: "Email",
+  });
+  const _txt_password_274 = intl.formatMessage({
+    id: "_txt_password_274.___LoginPage",
+    defaultMessage: "Password",
+  });
+  const _txt_login_752 = intl.formatMessage({
+    id: "_txt_login_752.___LoginPage",
+    defaultMessage: "LOGIN",
+  });
+  const _txt_phoneLogin_5c6 = intl.formatMessage({
+    id: "_txt_phoneLogin_5c6.___LoginPage",
+    defaultMessage: "Phone Login",
+  });
+  const _txt_checkSmsCodeSentTo_eef = intl.formatMessage({
+    id: "_txt_checkSmsCodeSentTo_eef.___LoginPage",
+    defaultMessage: "Check SMS Code sent to",
+  });
+  const _txt_code_8cd = intl.formatMessage({
+    id: "_txt_code_8cd.___LoginPage",
+    defaultMessage: "Code",
+  });
+  const _txt_phone_7ce = intl.formatMessage({
+    id: "_txt_phone_7ce.___LoginPage",
+    defaultMessage: "Phone",
+  });
+  const _txt_verify_e74 = intl.formatMessage({
+    id: "_txt_verify_e74.___LoginPage",
+    defaultMessage: "VERIFY",
+  });
+  const _txt_reset_486 = intl.formatMessage({
+    id: "_txt_reset_486.___LoginPage",
+    defaultMessage: "reset",
+  });
+  const _txt_loginPhone_5bd = intl.formatMessage({
+    id: "_txt_loginPhone_5bd.___LoginPage",
+    defaultMessage: "LOGIN PHONE",
+  });
+  const _txt_newUser_b69 = intl.formatMessage({
+    id: "_txt_newUser_b69.___LoginPage",
+    defaultMessage: "New User",
+  });
+  const _txt_emailLogin_d6f = intl.formatMessage({
+    id: "_txt_emailLogin_d6f.___LoginPage",
+    defaultMessage: "Email Login",
+  });
 
   const captchaRef = useCallback((node: HTMLDivElement) => {
     if (node !== null) {
@@ -141,14 +192,13 @@ const LoginPage = () => {
     ""
   )}`;
   const signupWithPhone = () => {
-    console.log(`computedPhone`, computedPhone);
     if (recaptchaVerifier) {
       setIsLoading(true);
       signInWithPhoneNumber(auth, computedPhone, recaptchaVerifier)
         .then((confirmationResult) => {
           // SMS sent. Prompt user to type the code from the message, then sign the
           // user in with confirmationResult.confirm(code).
-          console.log(`confirmationResult`, confirmationResult);
+
           confirmationResultRef.current = confirmationResult;
           setShowPinProceed(true);
           setIsLoading(false);
@@ -171,7 +221,6 @@ const LoginPage = () => {
       confirmationResultRef.current
         .confirm(phoneCode)
         .then(async (result: any) => {
-          console.log(`phone code verify result`, result);
           // You can access the new user via result.user
           console.log(result.user);
           await fullLogin(result.user);
@@ -232,7 +281,7 @@ const LoginPage = () => {
             }}
           >
             <div>Milkshake</div>
-            <div>Chat</div>
+            <div>Club</div>
           </$Vertical>
           <Spacer height="5vh" flexOff />
           <$Vertical spacing={3}>
@@ -240,7 +289,7 @@ const LoginPage = () => {
               <label
                 style={{ color: token.colorTextDescription, fontSize: "1rem" }}
               >
-                Email
+                {_txt_email_d63}
               </label>
               <Input
                 value={email}
@@ -252,7 +301,7 @@ const LoginPage = () => {
               <label
                 style={{ color: token.colorTextDescription, fontSize: "1rem" }}
               >
-                Password
+                {_txt_password_274}
               </label>
               <Input
                 value={password}
@@ -268,7 +317,7 @@ const LoginPage = () => {
               onClick={loginWithPassword}
               loading={isLoading}
             >
-              LOGIN
+              {_txt_login_752}
             </Button>
           </$Vertical>
           <Button
@@ -276,7 +325,7 @@ const LoginPage = () => {
             onClick={() => setEmailLoginMode(false)}
             style={{ marginTop: "50px", color: token.colorTextDescription }}
           >
-            Phone Login
+            {_txt_phoneLogin_5c6}
           </Button>
         </$Vertical>
       </Layout>
@@ -284,13 +333,15 @@ const LoginPage = () => {
   }
 
   return (
-    <Layout
-      style={{
-        backgroundColor: token.colorBgContainer,
-        color: token.colorTextBase,
-      }}
-    >
-      {/* <LayoutLogoHeader
+    <>
+      <QuickLanguageBanner />
+      <Layout
+        style={{
+          backgroundColor: token.colorBgContainer,
+          color: token.colorTextBase,
+        }}
+      >
+        {/* <LayoutLogoHeader
         rightAction={
           <NavLink to="/app/friends">
             <SearchOutlined
@@ -299,161 +350,161 @@ const LoginPage = () => {
           </NavLink>
         }
       /> */}
-      <$Vertical
-        style={{
-          flex: 1,
-          padding: "30px",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          minHeight: "100vh",
-        }}
-      >
-        <Spacer height="5vh" flexOff />
-
-        <img
-          src={SUGARBABY_IMAGE}
-          style={{
-            width: isMobile ? "250px" : "350px",
-          }}
-        />
-
         <$Vertical
           style={{
-            fontWeight: 900,
-            fontSize: "2rem",
+            flex: 1,
+            padding: "30px",
+            justifyContent: "flex-start",
             alignItems: "center",
-            fontStyle: "italic",
-            margin: "30px 0px 0px 0px",
-            color: token.colorPrimary,
+            minHeight: "100vh",
           }}
         >
-          <div>Milkshake</div>
-          <div>Chat</div>
-        </$Vertical>
-        <Spacer height="5vh" flexOff />
+          <Spacer height="5vh" flexOff />
 
-        <$Vertical style={{ maxWidth: isMobile ? "none" : "600px" }}>
-          {showPinProceed && (
-            <span
-              style={{ fontSize: "1rem", marginBottom: "10px" }}
-            >{`Check ${computedPhone} for SMS Code`}</span>
-          )}
-          {!showPinProceed && (
-            <div ref={captchaRef} style={{ margin: "10px 0px" }} />
-          )}
-          {showPinProceed ? (
-            <Input
-              placeholder="Code"
-              type="tel"
-              value={phoneCode}
-              onChange={(e) => setPhoneCode(e.target.value)}
-              disabled={submitted}
-              style={{ fontSize: "1.3rem" }}
-            ></Input>
-          ) : (
-            <$Horizontal spacing={1} alignItems="center">
-              <ReactFlagsSelect
-                selected={selectedCountry}
-                onSelect={(code) => {
-                  console.log(`code`, code);
-                  setSelectedCountry(code);
-                  const phoneInput = document.getElementById("phone-input");
-                  if (phoneInput) {
-                    phoneInput.focus();
-                  }
-                }}
-                selectedSize={14}
-                fullWidth={false}
-                showSecondaryOptionLabel={false}
-                showSelectedLabel={false}
-                placeholder={<Us />}
-              />
+          <img
+            src={SUGARBABY_IMAGE}
+            style={{
+              width: isMobile ? "250px" : "350px",
+            }}
+          />
+
+          <$Vertical
+            style={{
+              fontWeight: 900,
+              fontSize: "2rem",
+              alignItems: "center",
+              fontStyle: "italic",
+              margin: "30px 0px 0px 0px",
+              color: token.colorPrimary,
+            }}
+          >
+            <div>Milkshake</div>
+            <div>Chat</div>
+          </$Vertical>
+          <Spacer height="5vh" flexOff />
+
+          <$Vertical style={{ maxWidth: isMobile ? "none" : "600px" }}>
+            {showPinProceed && (
+              <span
+                style={{ fontSize: "1rem", marginBottom: "10px" }}
+              >{`${_txt_checkSmsCodeSentTo_eef} ${computedPhone}`}</span>
+            )}
+            {!showPinProceed && (
+              <div ref={captchaRef} style={{ margin: "10px 0px" }} />
+            )}
+            {showPinProceed ? (
               <Input
-                id="phone-input"
-                placeholder="Phone"
+                placeholder={_txt_code_8cd}
                 type="tel"
-                value={phoneNumber}
-                onChange={(e) =>
-                  setPhoneNumber(
-                    e.target.value.replace("-", "").replace(" ", "").replace(
-                      // replace any non-numeric characters with empty string
-                      /\D/g,
-                      ""
-                    )
-                  )
-                }
+                value={phoneCode}
+                onChange={(e) => setPhoneCode(e.target.value)}
                 disabled={submitted}
                 style={{ fontSize: "1.3rem" }}
               ></Input>
-            </$Horizontal>
-          )}
+            ) : (
+              <$Horizontal spacing={1} alignItems="center">
+                <ReactFlagsSelect
+                  selected={selectedCountry}
+                  onSelect={(code) => {
+                    setSelectedCountry(code);
+                    const phoneInput = document.getElementById("phone-input");
+                    if (phoneInput) {
+                      phoneInput.focus();
+                    }
+                  }}
+                  selectedSize={14}
+                  fullWidth={false}
+                  showSecondaryOptionLabel={false}
+                  showSelectedLabel={false}
+                  placeholder={<Us />}
+                />
+                <Input
+                  id="phone-input"
+                  placeholder={_txt_phone_7ce}
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) =>
+                    setPhoneNumber(
+                      e.target.value.replace("-", "").replace(" ", "").replace(
+                        // replace any non-numeric characters with empty string
+                        /\D/g,
+                        ""
+                      )
+                    )
+                  }
+                  disabled={submitted}
+                  style={{ fontSize: "1.3rem" }}
+                ></Input>
+              </$Horizontal>
+            )}
 
-          {showPinProceed ? (
-            <>
+            {showPinProceed ? (
+              <>
+                <Button
+                  type="primary"
+                  size="large"
+                  loading={isLoading}
+                  onClick={verifyPhonePin}
+                  disabled={submitted || phoneCode.length < 6}
+                  style={{
+                    fontWeight: "bold",
+                    width: "100%",
+                    margin: "10px 0px",
+                    backgroundColor: "#fcba03",
+                  }}
+                >
+                  {_txt_verify_e74}
+                </Button>
+                <span
+                  onClick={() => setShowPinProceed(false)}
+                  style={{
+                    color: token.colorTextDisabled,
+                    margin: "10px 0px",
+                    fontStyle: "italic",
+                  }}
+                >
+                  {_txt_reset_486}
+                </span>
+              </>
+            ) : (
               <Button
                 type="primary"
                 size="large"
                 loading={isLoading}
-                onClick={verifyPhonePin}
-                disabled={submitted || phoneCode.length < 6}
+                onClick={signupWithPhone}
+                disabled={submitted || phoneNumber.length < 9}
                 style={{
                   fontWeight: "bold",
                   width: "100%",
                   margin: "10px 0px",
-                  backgroundColor: "#fcba03",
                 }}
               >
-                VERIFY
+                {_txt_loginPhone_5bd}
               </Button>
-              <span
-                onClick={() => setShowPinProceed(false)}
-                style={{
-                  color: token.colorTextDisabled,
-                  margin: "10px 0px",
-                  fontStyle: "italic",
-                }}
-              >
-                reset
-              </span>
-            </>
-          ) : (
-            <Button
-              type="primary"
-              size="large"
-              loading={isLoading}
-              onClick={signupWithPhone}
-              disabled={submitted || phoneNumber.length < 9}
+            )}
+          </$Vertical>
+
+          <Spacer height="20px" flexOff />
+          <NavLink to="/app/signup/onboarding">
+            <i
               style={{
-                fontWeight: "bold",
-                width: "100%",
-                margin: "10px 0px",
+                color: token.colorPrimaryActive,
+                fontSize: "1.1rem",
               }}
             >
-              LOGIN PHONE
-            </Button>
-          )}
-        </$Vertical>
-
-        <Spacer height="20px" flexOff />
-        <NavLink to="/app/signup/onboarding">
-          <i
-            style={{
-              color: token.colorPrimaryActive,
-              fontSize: "1.1rem",
-            }}
+              {_txt_newUser_b69}
+            </i>
+          </NavLink>
+          <Button
+            type="ghost"
+            onClick={() => setEmailLoginMode(true)}
+            style={{ marginTop: "50px", color: token.colorTextDescription }}
           >
-            New User
-          </i>
-        </NavLink>
-        <Button
-          type="ghost"
-          onClick={() => setEmailLoginMode(true)}
-          style={{ marginTop: "50px", color: token.colorTextDescription }}
-        >
-          Email Login
-        </Button>
-      </$Vertical>
-    </Layout>
+            {_txt_emailLogin_d6f}
+          </Button>
+        </$Vertical>
+      </Layout>
+    </>
   );
 };
 

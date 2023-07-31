@@ -65,6 +65,91 @@ export const RecallTransaction = ({
   const [api, contextHolder] = notification.useNotification();
   const [isLoading, setIsLoading] = useState(false);
 
+  const _txt_pastProtection_3d2 = intl.formatMessage({
+    id: "_txt_pastProtection_3d2.___RecallTransaction",
+    defaultMessage: "Past Protection",
+  });
+  const _txt_final_f24 = intl.formatMessage({
+    id: "_txt_final_f24.___RecallTransaction",
+    defaultMessage: "Final",
+  });
+  const _txt_okay_797 = intl.formatMessage({
+    id: "_txt_okay_797.___RecallTransaction",
+    defaultMessage: "Okay",
+  });
+  const _txt_transactionPending_5dc = intl.formatMessage({
+    id: "_txt_transactionPending_5dc.___RecallTransaction",
+    defaultMessage: "Transaction Pending",
+  });
+  const _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_d2c =
+    intl.formatMessage({
+      id: "_txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_d2c.___RecallTransaction",
+      defaultMessage:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+    });
+  const _txt_finalized_a27 = intl.formatMessage({
+    id: "_txt_finalized_a27.___RecallTransaction",
+    defaultMessage: "Finalized",
+  });
+  const _txt_recallCookies_208 = intl.formatMessage({
+    id: "_txt_recallCookies_208.___RecallTransaction",
+    defaultMessage: "Recall Cookies?",
+  });
+  const _txt_cancel_5ae = intl.formatMessage({
+    id: "_txt_cancel_5ae.___RecallTransaction",
+    defaultMessage: "Cancel",
+  });
+  const _txt_recallCookies_d45 = intl.formatMessage({
+    id: "_txt_recallCookies_d45.___RecallTransaction",
+    defaultMessage: "Recall Cookies",
+  });
+  const _txt_note_71e = intl.formatMessage({
+    id: "_txt_note_71e.___RecallTransaction",
+    defaultMessage: "Note",
+  });
+  const _txt_addANoteToYourRecall_233 = intl.formatMessage({
+    id: "_txt_addANoteToYourRecall_233.___RecallTransaction",
+    defaultMessage: "Add a note to your recall",
+  });
+  const _txt_save_be9 = intl.formatMessage({
+    id: "_txt_save_be9.___RecallTransaction",
+    defaultMessage: "Save",
+  });
+  const _txt_youCanNoLongerRecallThese_c05 = intl.formatMessage({
+    id: "_txt_youCanNoLongerRecallThese_c05.___RecallTransaction",
+    defaultMessage: "You can no longer recall these ",
+  });
+  const _txt_CookiesAsYouAreAlreadyPastTheDaysOfRefundProtection_e94 =
+    intl.formatMessage({
+      id: "_txt_CookiesAsYouAreAlreadyPastTheDaysOfRefundProtection_e94.___RecallTransaction",
+      defaultMessage:
+        " cookies as you are already past the 90 days of refund protection",
+    });
+  const _txt_areYouSureYouWantToRecall_f37 = intl.formatMessage({
+    id: "_txt_areYouSureYouWantToRecall_f37.___RecallTransaction",
+    defaultMessage: "Are you sure you want to recall ",
+  });
+  const _txt_CookiesTheOtherPersonWillBeNotifiedOfYourCookieRecall_c1b =
+    intl.formatMessage({
+      id: "_txt_CookiesTheOtherPersonWillBeNotifiedOfYourCookieRecall_c1b.___RecallTransaction",
+      defaultMessage:
+        " cookies? The other person will be notified of your cookie recall.",
+    });
+  const _txt_milkshakeProtectsYouWithRefundsWithinDaysOfOnlineDatingProtectionEnds_7f1 =
+    intl.formatMessage({
+      id: "_txt_milkshakeProtectsYouWithRefundsWithinDaysOfOnlineDatingProtectionEnds_7f1.___RecallTransaction",
+      defaultMessage:
+        "Milkshake protects you with 100% refunds within 90 days of online dating. Protection ends: ",
+    });
+  const _txt_newAccountBalance_185 = intl.formatMessage({
+    id: "_txt_newAccountBalance_185.___RecallTransaction",
+    defaultMessage: "New Account Balance",
+  });
+  const _txt_recallCookies_f4d = intl.formatMessage({
+    id: "_txt_recallCookies_f4d.___RecallTransaction",
+    defaultMessage: "RECALL COOKIES",
+  });
+
   const { tradingWallet } = useWalletState(
     (state) => ({
       tradingWallet: state.tradingWallet,
@@ -83,11 +168,11 @@ export const RecallTransaction = ({
     // Convert createdAt to dayjs object and add 90 days
 
     if (isAfter) {
-      return <Tag color="purple">{"Past Protection"}</Tag>;
+      return <Tag color="purple">{_txt_pastProtection_3d2}</Tag>;
     }
     // Compute the "time until" string
     const timeUntilString = targetDate.fromNow();
-    return <Tag color="green">{`Final ${timeUntilString}`}</Tag>;
+    return <Tag color="green">{`${_txt_final_f24} ${timeUntilString}`}</Tag>;
   };
 
   const recallTx = async () => {
@@ -109,14 +194,14 @@ export const RecallTransaction = ({
     const btn = (
       <Space>
         <Button type="primary" size="small" onClick={() => api.destroy(key)}>
-          Okay
+          {_txt_okay_797}
         </Button>
       </Space>
     );
     api.open({
-      message: "Transaction Sent",
+      message: _txt_transactionPending_5dc,
       description:
-        "Check your notifications in a minute to see confirmation of your transaction.",
+        _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_d2c,
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
@@ -129,7 +214,7 @@ export const RecallTransaction = ({
 
   return (
     <Drawer
-      title={isAfter ? "Finalized" : "Recall Cookies?"}
+      title={isAfter ? _txt_finalized_a27 : _txt_recallCookies_208}
       placement="bottom"
       width={500}
       onClose={() => {
@@ -142,7 +227,7 @@ export const RecallTransaction = ({
       extra={
         <Space>
           {isMobile && <div>{daysProtectionLeft()}</div>}
-          {!isMobile && <Button onClick={onClose}>Cancel</Button>}
+          {!isMobile && <Button onClick={onClose}>{_txt_cancel_5ae}</Button>}
         </Space>
       }
     >
@@ -161,7 +246,7 @@ export const RecallTransaction = ({
           <$Vertical>
             <$Horizontal justifyContent="space-between">
               <Statistic
-                title={`Recall Cookies`}
+                title={_txt_recallCookies_d45}
                 value={tx?.amount ? Math.abs(tx.amount) : 0}
                 prefix={<LogoCookie width="20px" />}
                 style={{ flex: 1 }}
@@ -196,7 +281,7 @@ export const RecallTransaction = ({
                         marginLeft: "5px",
                       }}
                     >
-                      Note
+                      {_txt_note_71e}
                     </span>
                   </$Horizontal>
                 )}
@@ -209,7 +294,7 @@ export const RecallTransaction = ({
                   rows={2}
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
-                  placeholder="Add a note to your recall"
+                  placeholder={_txt_addANoteToYourRecall_233}
                   style={{ resize: "none", margin: "10px 0px" }}
                 />
                 <$Horizontal
@@ -223,8 +308,8 @@ export const RecallTransaction = ({
                     bottom: -20,
                   }}
                 >
-                  <span>Cancel</span>
-                  <span>Save</span>
+                  <span>{_txt_cancel_5ae}</span>
+                  <span>{_txt_save_be9}</span>
                 </$Horizontal>
               </$Vertical>
             ) : null}
@@ -253,9 +338,9 @@ export const RecallTransaction = ({
                     color: token.colorTextDescription,
                     fontSize: "0.9rem",
                   }}
-                >{`You can no longer recall these ${
+                >{`${_txt_youCanNoLongerRecallThese_c05} ${
                   tx?.amount || 0
-                } cookies as you are already past the 90 days of refund protection`}</span>
+                } ${_txt_CookiesAsYouAreAlreadyPastTheDaysOfRefundProtection_e94}`}</span>
               </>
             ) : (
               <>
@@ -264,16 +349,16 @@ export const RecallTransaction = ({
                     color: token.colorTextDescription,
                     fontSize: "0.9rem",
                   }}
-                >{`Are you sure you want to recall ${Math.abs(
+                >{`${_txt_areYouSureYouWantToRecall_f37} ${Math.abs(
                   tx?.amount || 0
-                )} cookies? The other person will be notified of your cookie recall.`}</span>
+                )} ${_txt_CookiesTheOtherPersonWillBeNotifiedOfYourCookieRecall_c1b}`}</span>
 
                 <span
                   style={{
                     color: token.colorTextDescription,
                     fontSize: "0.9rem",
                   }}
-                >{`Milkshake protects you with 100% refunds within 90 days of online dating. Protection ends ${targetDate.fromNow()}`}</span>
+                >{`${_txt_milkshakeProtectsYouWithRefundsWithinDaysOfOnlineDatingProtectionEnds_7f1} ${targetDate.fromNow()}`}</span>
               </>
             )}
 
@@ -284,14 +369,14 @@ export const RecallTransaction = ({
                 alignItems={noteMode ? "flex-end" : "flex-start"}
               >
                 <Statistic
-                  title="New Account Balance"
+                  title={_txt_newAccountBalance_185}
                   value={USER_COOKIE_JAR_BALANCE}
                   suffix={<span>{`+ ${Math.abs(tx?.amount || 0)}`}</span>}
                   precision={0}
                 />
                 {!isMobile && (
                   <div>
-                    <Tag color="green">{`Final ${targetDate.fromNow()}`}</Tag>
+                    <Tag color="green">{`${_txt_final_f24} ${targetDate.fromNow()}`}</Tag>
                   </div>
                 )}
               </$Horizontal>
@@ -307,7 +392,9 @@ export const RecallTransaction = ({
               disabled={!withinGracePeriod}
               loading={isLoading}
             >
-              {withinGracePeriod ? "RECALL COOKIES" : "Past Protection"}
+              {withinGracePeriod
+                ? _txt_recallCookies_f4d
+                : _txt_pastProtection_3d2}
             </Button>
             {isMobile && (
               <Button
@@ -320,7 +407,7 @@ export const RecallTransaction = ({
                   color: token.colorTextDescription,
                 }}
               >
-                Cancel
+                {_txt_cancel_5ae}
               </Button>
             )}
             {isMobile && <Spacer />}

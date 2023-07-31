@@ -1,0 +1,65 @@
+import { i18n_Mapping } from "./types.i18n.ContactsPage";
+
+export const importLanguage = (): i18n_Mapping => {
+  const language: i18n_Mapping = {
+    "alertSentFriendRequest.___ContactsPage": "Envié una solicitud de amistad",
+    "alertWaitingForAcceptance.___ContactsPage": "Esperando aceptación",
+    "alertDeclinedRequest.___ContactsPage": "Solicitud rechazada",
+    "alertBlockedUser.___ContactsPage": "usuario bloqueado",
+    "labelNotFriends.___ContactsPage": "No amigos",
+    "labelFriendRequestSent.___ContactsPage": "Solicitud de amistad enviada",
+    "labelSearchContacts.___ContactsPage": "Buscar contactos",
+    "labelFriends.___ContactsPage": "Amigos",
+    "btnCancel.___ContactsPage": "Cancelar",
+    "btnGroupChat.___ContactsPage": "Grupo de chat",
+    "btnViewProfile.___ContactsPage": "Ver perfil",
+    "btnRemove.___ContactsPage": "Eliminar",
+    "btnBlock.___ContactsPage": "Bloquear",
+    "btnChat.___ContactsPage": "Charlar",
+    "btnStartGroupChat.___ContactsPage": "Iniciar chat grupal",
+    "labelRequests.___ContactsPage": "Peticiones",
+    "btnSendAgain.___ContactsPage": "Enviar de nuevo",
+    "btnUnblock.___ContactsPage": "Desatascar",
+    "btnDecline.___ContactsPage": "Rechazar",
+    "alertAcceptedRequest.___ContactsPage": "solicitud de amistad aceptada",
+    "btnAccept.___ContactsPage": "Aceptar",
+    "btnAddFriend.___ContactsPage": "Añadir amigo",
+    "labelContacts.___ContactsPage": "Contactos",
+    "btnBack.___ContactsPage": "Atrás",
+    "btnAdd.___ContactsPage": "Agregar",
+    "alertDeclinedRequest2.___ContactsPage": "Solicitud de amistad rechazada",
+    "btnConfirmDecline.___ContactsPage": "Sí, rechazar",
+    "labelHighlightDecline.___ContactsPage": "RECHAZAR",
+    "labelAreYouSure.___ContactsPage": "Estás seguro que quieres",
+    "labelThisFriendRequest.___ContactsPage": "esta solicitud de amistad?",
+    "alertRemovedFriends.___ContactsPage": "Eliminado de amigos",
+    "btnYesRemove.___ContactsPage": "Sí, quitar",
+    "btnBoldRemove.___ContactsPage": "ELIMINAR",
+    "labelRemoveFriendExplain.___ContactsPage":
+      "¿este amigo? Tendrán que aceptar una nueva solicitud de amistad si quieres chatear.",
+    "btnYesBlock.___ContactsPage": "Sí, bloque",
+    "btnBoldBlock.___ContactsPage": "BLOQUEAR",
+    "labelRemoveFriendConfirmm.___ContactsPage":
+      "este contacto? No podrán enviarte mensajes ni solicitudes de amistad.",
+    "btnYesUnblock.___ContactsPage": "Sí, Desbloquear",
+    "labelBoldUnblock.___ContactsPage": "DESATASCAR",
+    "labelConfirmUnblockK.___ContactsPage":
+      "este contacto? Ellos podrán verte existir.",
+    "btnNo.___ContactsPage": "No",
+    "alertCancelledRequest.___ContactsPage": "Solicitud de amistad cancelada",
+    "btnYesCancel.___ContactsPage": "Sí, Cancelar",
+    "labelBoldCancel.___ContactsPage": "CANCELAR",
+    "labelConfirmCancelExplain.___ContactsPage":
+      "tu solicitud de amistad? Puedes enviar otro más tarde.",
+    "btnSearch.___ContactsPage": "Buscar",
+    "btnSearchLabel.___ContactsPage": "Búsqueda exacta de nombre de usuario",
+    "btnVisitProfile.___ContactsPage": "Visitar perfil",
+    "labelSearchUsers.___ContactsPage": "Buscar usuarios",
+    "alertMustExactMatch.___ContactsPage":
+      "Debe ser una coincidencia exacta de nombre de usuario",
+    "alertCopieidProfileLink.___ContactsPage": "Enlace de perfil copiado!",
+    "btnCopyURL.___ContactsPage": "Copiar URL",
+    "btnClose.___ContactsPage": "Cerca",
+  };
+  return language;
+};

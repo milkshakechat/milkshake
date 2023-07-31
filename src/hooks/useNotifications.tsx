@@ -31,6 +31,10 @@ export const useNotifications = () => {
     (state) => state.addNotifications
   );
 
+  const { tokenID } = useUserState((state) => ({
+    tokenID: state.idToken,
+  }));
+
   useEffect(() => {
     let unsubscribe: () => void;
     if (selfUser && selfUser.id) {
@@ -48,7 +52,7 @@ export const useNotifications = () => {
   const DEFAULT_BATCH_SIZE_NOTIFS = 30;
 
   const listenRealtimeNotifications = () => {
-    if (!selfUser) return () => {};
+    if (!selfUser || !tokenID) return () => {};
     let q = query(
       collection(firestore, FirestoreCollection.NOTIFICATIONS),
       where("recipientID", "==", selfUser.id),
@@ -66,7 +70,7 @@ export const useNotifications = () => {
   };
 
   const paginateNotifications = () => {
-    if (!selfUser) return () => {};
+    if (!selfUser || !tokenID) return () => {};
     setIsLoading(true);
     let q = query(
       collection(firestore, FirestoreCollection.NOTIFICATIONS),

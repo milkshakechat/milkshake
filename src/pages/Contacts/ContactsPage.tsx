@@ -59,23 +59,8 @@ import {
 } from "react-router-dom";
 import { ScreenSize, useWindowSize } from "@/api/utils/screen";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
-
-const subtitle = (status: FriendshipStatus) => {
-  switch (status) {
-    case FriendshipStatus.ACCEPTED:
-      return "";
-    case FriendshipStatus.GOT_REQUEST:
-      return <PP>Sent a friend request</PP>;
-    case FriendshipStatus.SENT_REQUEST:
-      return <PP>Waiting for acceptance</PP>;
-    case FriendshipStatus.DECLINED:
-      return <PP>Declined request</PP>;
-    case FriendshipStatus.BLOCKED:
-      return <PP>Blocked user</PP>;
-    default:
-      return <PP>Not Friends</PP>;
-  }
-};
+import { cid } from "./i18n/types.i18n.ContactsPage";
+import { useIntl } from "react-intl";
 
 const sortStatusPriority: Record<FriendshipStatus, number> = {
   [FriendshipStatus.ACQUAINTANCE]: 0,
@@ -101,12 +86,13 @@ export const ContactsPage = () => {
       : ValidTabs.Friends;
   const location = useLocation();
   const { screen, isMobile } = useWindowSize();
+
   const [searchPublicByUsernameString, setSearchPublicByUsernameString] =
     useState("");
   const [loadingSearchPublicByUsername, setLoadingSearchPublicByUsername] =
     useState(false);
   const user = useUserState((state) => state.user);
-
+  const intl = useIntl();
   const { runMutation: runManageFriendship } = useManageFriendship();
   const [groupChatMode, setGroupChatMode] = useState(false);
   const [selectedParticipants, setSelectedParticipants] = useState<UserID[]>(
@@ -141,15 +127,252 @@ export const ContactsPage = () => {
     runMutation: sendFriendRequestMutation,
   } = useSendFriendRequest();
   const friendships = useUserState((state) => state.friendships);
-  console.log(`got friendships`, friendships);
+
+  const _txt_alertSentFriendRequest = intl.formatMessage({
+    id: `alertSentFriendRequest.${cid}`,
+    defaultMessage: "Sent a friend request",
+  });
+  const _txt_alertWaitingForAcceptance = intl.formatMessage({
+    id: `alertWaitingForAcceptance.${cid}`,
+    defaultMessage: "Waiting for acceptance",
+  });
+  const _txt_alertDeclinedRequest = intl.formatMessage({
+    id: `alertDeclinedRequest.${cid}`,
+    defaultMessage: "Declined request",
+  });
+  const _txt_alertBlockedUser = intl.formatMessage({
+    id: `alertBlockedUser.${cid}`,
+    defaultMessage: "Blocked user",
+  });
+  const _txt_labelNotFriends = intl.formatMessage({
+    id: `labelNotFriends.${cid}`,
+    defaultMessage: "Not Friends",
+  });
+  const _txt_labelFriendRequestSent = intl.formatMessage({
+    id: `labelFriendRequestSent.${cid}`,
+    defaultMessage: "Friend Request Sent",
+  });
+  const _txt_labelSearchContacts = intl.formatMessage({
+    id: `labelSearchContacts.${cid}`,
+    defaultMessage: "Search Contacts",
+  });
+  const _txt_labelFriends = intl.formatMessage({
+    id: `labelFriends.${cid}`,
+    defaultMessage: "Friends",
+  });
+  const _txt_btnCancel = intl.formatMessage({
+    id: `btnCancel.${cid}`,
+    defaultMessage: "Cancel",
+  });
+  const _txt_btnGroupChat = intl.formatMessage({
+    id: `btnGroupChat.${cid}`,
+    defaultMessage: "Group Chat",
+  });
+  const _txt_btnViewProfile = intl.formatMessage({
+    id: `btnViewProfile.${cid}`,
+    defaultMessage: "View Profile",
+  });
+  const _txt_btnRemove = intl.formatMessage({
+    id: `btnRemove.${cid}`,
+    defaultMessage: "Remove",
+  });
+  const _txt_btnBlock = intl.formatMessage({
+    id: `btnBlock.${cid}`,
+    defaultMessage: "Block",
+  });
+  const _txt_btnChat = intl.formatMessage({
+    id: `btnChat.${cid}`,
+    defaultMessage: "Chat",
+  });
+  const _txt_btnStartGroupChat = intl.formatMessage({
+    id: `btnStartGroupChat.${cid}`,
+    defaultMessage: "Start Group Chat",
+  });
+  const _txt_labelRequests = intl.formatMessage({
+    id: `labelRequests.${cid}`,
+    defaultMessage: "Requests",
+  });
+  const _txt_btnSendAgain = intl.formatMessage({
+    id: `btnSendAgain.${cid}`,
+    defaultMessage: "Send Again",
+  });
+  const _txt_btnUnblock = intl.formatMessage({
+    id: `btnUnblock.${cid}`,
+    defaultMessage: "Unblock",
+  });
+  const _txt_btnDecline = intl.formatMessage({
+    id: `btnDecline.${cid}`,
+    defaultMessage: "Decline",
+  });
+  const _txt_alertAcceptedRequest = intl.formatMessage({
+    id: `alertAcceptedRequest.${cid}`,
+    defaultMessage: "Accepted friend request",
+  });
+  const _txt_btnAccept = intl.formatMessage({
+    id: `btnAccept.${cid}`,
+    defaultMessage: "Accept",
+  });
+  const _txt_btnAddFriend = intl.formatMessage({
+    id: `btnAddFriend.${cid}`,
+    defaultMessage: "Add Friend",
+  });
+  const _txt_labelContacts = intl.formatMessage({
+    id: `labelContacts.${cid}`,
+    defaultMessage: "Contacts",
+  });
+  const _txt_btnBack = intl.formatMessage({
+    id: `btnBack.${cid}`,
+    defaultMessage: "Back",
+  });
+  const _txt_btnAdd = intl.formatMessage({
+    id: `btnAdd.${cid}`,
+    defaultMessage: "Add",
+  });
+  const _txt_alertDeclinedRequest2 = intl.formatMessage({
+    id: `alertDeclinedRequest.${cid}`,
+    defaultMessage: "Declined friend request",
+  });
+  const _txt_btnConfirmDecline = intl.formatMessage({
+    id: `btnConfirmDecline.${cid}`,
+    defaultMessage: "Yes, Decline",
+  });
+  const _txt_labelHighlightDecline = intl.formatMessage({
+    id: `labelHighlightDecline.${cid}`,
+    defaultMessage: "DECLINE",
+  });
+  const _txt_labelAreYouSure = intl.formatMessage({
+    id: `labelAreYouSure.${cid}`,
+    defaultMessage: "Are you sure you want to",
+  });
+  const _txt_labelThisFriendRequest = intl.formatMessage({
+    id: `labelThisFriendRequest.${cid}`,
+    defaultMessage: "this friend request?",
+  });
+  const _txt_alertRemovedFriends = intl.formatMessage({
+    id: `alertRemovedFriends.${cid}`,
+    defaultMessage: "Removed from friends",
+  });
+  const _txt_btnYesRemove = intl.formatMessage({
+    id: `btnYesRemove.${cid}`,
+    defaultMessage: "Yes, Remove",
+  });
+  const _txt_btnBoldRemove = intl.formatMessage({
+    id: `btnBoldRemove.${cid}`,
+    defaultMessage: "REMOVE",
+  });
+  const _txt_labelRemoveFriendExplain = intl.formatMessage({
+    id: `labelRemoveFriendExplain.${cid}`,
+    defaultMessage:
+      "this friend? They will have to accept a new friend request if you want to chat.",
+  });
+  const _txt_btnYesBlock = intl.formatMessage({
+    id: `btnYesBlock.${cid}`,
+    defaultMessage: "Yes, Block",
+  });
+  const _txt_btnBoldBlock = intl.formatMessage({
+    id: `btnBoldBlock.${cid}`,
+    defaultMessage: "BLOCK",
+  });
+  const _txt_labelRemoveFriendConfirmm = intl.formatMessage({
+    id: `labelRemoveFriendConfirmm.${cid}`,
+    defaultMessage:
+      "this contact? They will not be able to send you messages or friend requests.",
+  });
+  const _txt_btnYesUnblock = intl.formatMessage({
+    id: `btnYesUnblock.${cid}`,
+    defaultMessage: "Yes, Unblock",
+  });
+  const _txt_labelBoldUnblock = intl.formatMessage({
+    id: `labelBoldUnblock.${cid}`,
+    defaultMessage: "UNBLOCK",
+  });
+  const _txt_labelConfirmUnblockK = intl.formatMessage({
+    id: `labelConfirmUnblockK.${cid}`,
+    defaultMessage: "this contact? They will be able to see you exist.",
+  });
+  const _txt_btnNo = intl.formatMessage({
+    id: `btnNo.${cid}`,
+    defaultMessage: "No",
+  });
+  const _txt_alertCancelledRequest = intl.formatMessage({
+    id: `alertCancelledRequest.${cid}`,
+    defaultMessage: "Cancelled friend request",
+  });
+  const _txt_btnYesCancel = intl.formatMessage({
+    id: `btnYesCancel.${cid}`,
+    defaultMessage: "Yes, Cancel",
+  });
+  const _txt_labelBoldCancel = intl.formatMessage({
+    id: `labelBoldCancel.${cid}`,
+    defaultMessage: "CANCEL",
+  });
+  const _txt_labelConfirmCancelExplain = intl.formatMessage({
+    id: `labelConfirmCancelExplain.${cid}`,
+    defaultMessage: "your friend request? You can send another one later.",
+  });
+  const _txt_btnSearch = intl.formatMessage({
+    id: `btnSearch.${cid}`,
+    defaultMessage: "Search",
+  });
+  const _txt_btnSearchLabel = intl.formatMessage({
+    id: `btnSearchLabel.${cid}`,
+    defaultMessage: "Exact Username Search",
+  });
+  const _txt_labelQRCode = intl.formatMessage({
+    id: `labelQRCode.${cid}`,
+    defaultMessage: "QR Code",
+  });
+
+  const _txt_btnVisitProfile = intl.formatMessage({
+    id: `btnVisitProfile.${cid}`,
+    defaultMessage: "Visit Profile",
+  });
+  const _txt_labelSearchUsers = intl.formatMessage({
+    id: `labelSearchUsers.${cid}`,
+    defaultMessage: "Search Users",
+  });
+  const _txt_alertMustExactMatch = intl.formatMessage({
+    id: `alertMustExactMatch.${cid}`,
+    defaultMessage: "Must be an exact username match",
+  });
+  const _txt_alertCopieidProfileLink = intl.formatMessage({
+    id: `alertCopieidProfileLink.${cid}`,
+    defaultMessage: "Copied profile link!",
+  });
+  const _txt_btnCopyURL = intl.formatMessage({
+    id: `btnCopyURL.${cid}`,
+    defaultMessage: "Copy URL",
+  });
+  const _txt_btnClose = intl.formatMessage({
+    id: `btnClose.${cid}`,
+    defaultMessage: "Close",
+  });
+
+  const subtitle = (status: FriendshipStatus) => {
+    switch (status) {
+      case FriendshipStatus.ACCEPTED:
+        return "";
+      case FriendshipStatus.GOT_REQUEST:
+        return _txt_alertSentFriendRequest;
+      case FriendshipStatus.SENT_REQUEST:
+        return _txt_alertWaitingForAcceptance;
+      case FriendshipStatus.DECLINED:
+        return _txt_alertDeclinedRequest;
+      case FriendshipStatus.BLOCKED:
+        return _txt_alertBlockedUser;
+      default:
+        return _txt_labelNotFriends;
+    }
+  };
+
   const addFriend = async (userID: UserID) => {
     setLoadingManageFriendships((prev) => [...prev, userID]);
     await sendFriendRequestMutation({
-      note: "Added from Global Directory",
+      note: "",
       recipientID: userID,
     });
     setLoadingManageFriendships((prev) => prev.filter((id) => id !== userID));
-    message.info("Friend Request Sent");
+    message.info(_txt_labelFriendRequestSent);
   };
 
   const renderRow = (fr: Friendship_Firestore, actions: React.ReactNode[]) => {
@@ -279,7 +502,7 @@ export const ContactsPage = () => {
   }
 
   const renderContactsList = () => {
-    const searchText = "Search Contacts"; // <P>Search Contacts</P>;
+    const searchText = _txt_labelSearchContacts;
     const handleFilter = (fr: Friendship_Firestore) => {
       return (
         fr.friendNickname.toLowerCase().includes(searchString.toLowerCase()) ||
@@ -293,7 +516,7 @@ export const ContactsPage = () => {
         label: `${
           friendships.filter((fr) => fr.status === FriendshipStatus.ACCEPTED)
             .length
-        } Friends`,
+        } ${_txt_labelFriends}`,
         children: (
           <>
             <$Horizontal spacing={2}>
@@ -314,7 +537,7 @@ export const ContactsPage = () => {
                 }}
                 ghost
               >
-                {groupChatMode ? "Cancel" : `Group Chat`}
+                {groupChatMode ? _txt_btnCancel : _txt_btnGroupChat}
               </Button>
             </$Horizontal>
             <Spacer />
@@ -333,7 +556,9 @@ export const ContactsPage = () => {
                           key: "view-profile",
                           label: (
                             <NavLink to={`/user?userID=${item.friendID}`}>
-                              <Button type="ghost">View Profile</Button>
+                              <Button type="ghost">
+                                {_txt_btnViewProfile}
+                              </Button>
                             </NavLink>
                           ),
                         },
@@ -347,7 +572,7 @@ export const ContactsPage = () => {
                               onClick={() => setTargetOfRemoval(item)}
                               type="ghost"
                             >
-                              Remove
+                              {_txt_btnRemove}
                             </Button>
                           ),
                         },
@@ -361,7 +586,7 @@ export const ContactsPage = () => {
                               onClick={() => setTargetOfBlock(item)}
                               type="ghost"
                             >
-                              Block
+                              {_txt_btnBlock}
                             </Button>
                           ),
                         },
@@ -374,7 +599,7 @@ export const ContactsPage = () => {
                       }
                     }}
                   >
-                    Chat
+                    {_txt_btnChat}
                   </Dropdown.Button>,
                 ]);
               }}
@@ -396,7 +621,7 @@ export const ContactsPage = () => {
                       marginTop: "20px",
                     }}
                   >
-                    Start Group Chat
+                    {_txt_btnStartGroupChat}
                   </Button>
                 </div>
               </Affix>
@@ -408,7 +633,7 @@ export const ContactsPage = () => {
         key: ValidTabs.Requests,
         label: (
           <$Horizontal spacing={2} alignItems="center">
-            <span style={{ marginRight: "5px" }}>Requests</span>
+            <span style={{ marginRight: "5px" }}>{_txt_labelRequests}</span>
             <Badge
               count={
                 friendships.filter(
@@ -454,7 +679,7 @@ export const ContactsPage = () => {
                           }}
                           style={{ minWidth: "100px" }}
                         >
-                          <PP>Chat</PP>
+                          {_txt_btnChat}
                         </Button>,
                       ];
                     }
@@ -464,7 +689,7 @@ export const ContactsPage = () => {
                           onClick={() => console.log(`Go to friend page...`)}
                           type="link"
                         >
-                          <PP>View Profile</PP>
+                          {_txt_btnViewProfile}
                         </Button>
                       </NavLink>,
                       <Button
@@ -477,7 +702,7 @@ export const ContactsPage = () => {
                         }}
                         style={{ minWidth: "100px" }}
                       >
-                        <PP>Chat</PP>
+                        {_txt_btnChat}
                       </Button>,
                     ];
                   }
@@ -491,7 +716,9 @@ export const ContactsPage = () => {
                               key: "view-profile",
                               label: (
                                 <NavLink to={`/user?userID=${item.friendID}`}>
-                                  <Button type="ghost">View Profile</Button>
+                                  <Button type="ghost">
+                                    {_txt_btnViewProfile}
+                                  </Button>
                                 </NavLink>
                               ),
                             },
@@ -505,7 +732,7 @@ export const ContactsPage = () => {
                                   onClick={() => setTargetOfBlock(item)}
                                   type="ghost"
                                 >
-                                  Block
+                                  {_txt_btnBlock}
                                 </Button>
                               ),
                             },
@@ -515,7 +742,7 @@ export const ContactsPage = () => {
                           item.friendID
                         )}
                       >
-                        Send Again
+                        {_txt_btnSendAgain}
                       </Dropdown.Button>,
                     ];
                   }
@@ -528,7 +755,7 @@ export const ContactsPage = () => {
                         onClick={() => setTargetOfUnblock(item)}
                         type="link"
                       >
-                        <PP>Unblock</PP>
+                        {_txt_btnUnblock}
                       </Button>,
                     ];
                   }
@@ -542,7 +769,9 @@ export const ContactsPage = () => {
                               key: "view-profile",
                               label: (
                                 <NavLink to={`/user?userID=${item.friendID}`}>
-                                  <Button type="ghost">View Profile</Button>
+                                  <Button type="ghost">
+                                    {_txt_btnViewProfile}
+                                  </Button>
                                 </NavLink>
                               ),
                             },
@@ -556,7 +785,7 @@ export const ContactsPage = () => {
                                   onClick={() => setTargetOfCancel(item)}
                                   type="ghost"
                                 >
-                                  Cancel
+                                  {_txt_btnCancel}
                                 </Button>
                               ),
                             },
@@ -570,7 +799,7 @@ export const ContactsPage = () => {
                                   onClick={() => setTargetOfBlock(item)}
                                   type="ghost"
                                 >
-                                  Block
+                                  {_txt_btnBlock}
                                 </Button>
                               ),
                             },
@@ -580,7 +809,7 @@ export const ContactsPage = () => {
                           item.friendID
                         )}
                       >
-                        Send Again
+                        {_txt_btnSendAgain}
                       </Dropdown.Button>,
                     ];
                   }
@@ -601,7 +830,7 @@ export const ContactsPage = () => {
                                     onClick={() => setTargetOfDecline(item)}
                                     type="ghost"
                                   >
-                                    Decline
+                                    {_txt_btnDecline}
                                   </Button>
                                 ),
                               },
@@ -615,7 +844,7 @@ export const ContactsPage = () => {
                                     onClick={() => setTargetOfBlock(item)}
                                     type="ghost"
                                   >
-                                    Block
+                                    {_txt_btnBlock}
                                   </Button>
                                 ),
                               },
@@ -623,7 +852,9 @@ export const ContactsPage = () => {
                                 key: "view-profile",
                                 label: (
                                   <NavLink to={`/user?userID=${item.friendID}`}>
-                                    <Button type="ghost">View Profile</Button>
+                                    <Button type="ghost">
+                                      {_txt_btnViewProfile}
+                                    </Button>
                                   </NavLink>
                                 ),
                               },
@@ -645,14 +876,14 @@ export const ContactsPage = () => {
                               ...prev,
                               item.friendID,
                             ]);
-                            message.success(`Accepted friend request`);
+                            message.success(_txt_alertAcceptedRequest);
                           }}
                           loading={loadingManageFriendships.includes(
                             item.friendID
                           )}
                           disabled={optimisticDisabled.includes(item.friendID)}
                         >
-                          Accept
+                          {_txt_btnAccept}
                         </Dropdown.Button>,
                       ];
                     }
@@ -664,7 +895,7 @@ export const ContactsPage = () => {
                         onClick={() => setTargetOfDecline(item)}
                         type="link"
                       >
-                        Decline
+                        {_txt_btnDecline}
                       </Button>,
                       <Button
                         loading={loadingManageFriendships.includes(
@@ -686,11 +917,11 @@ export const ContactsPage = () => {
                             ...prev,
                             item.friendID,
                           ]);
-                          message.success(`Accepted friend request`);
+                          message.success(_txt_alertAcceptedRequest);
                         }}
                         type="primary"
                       >
-                        <PP>Accept</PP>
+                        {_txt_btnAccept}
                       </Button>,
                     ];
                   }
@@ -704,7 +935,9 @@ export const ContactsPage = () => {
                             key: "view-profile",
                             label: (
                               <NavLink to={`/user?userID=${item.friendID}`}>
-                                <Button type="ghost">View Profile</Button>
+                                <Button type="ghost">
+                                  {_txt_btnViewProfile}
+                                </Button>
                               </NavLink>
                             ),
                           },
@@ -718,14 +951,14 @@ export const ContactsPage = () => {
                                 onClick={() => setTargetOfBlock(item)}
                                 type="ghost"
                               >
-                                Block
+                                {_txt_btnBlock}
                               </Button>
                             ),
                           },
                         ],
                       }}
                     >
-                      Add Friend
+                      {_txt_btnAddFriend}
                     </Dropdown.Button>,
                   ];
                 };
@@ -742,7 +975,6 @@ export const ContactsPage = () => {
         defaultActiveKey={initialTab ? initialTab : "friends"}
         items={tabs}
         onChange={(tab) => {
-          console.log(`Changing tab... ${tab}`);
           navigate({
             pathname: location.pathname,
             search: createSearchParams({
@@ -757,7 +989,7 @@ export const ContactsPage = () => {
   return (
     <>
       <LayoutInteriorHeader
-        title={<PP>{"Contacts"}</PP>}
+        title={_txt_labelContacts}
         leftAction={
           <Button
             onClick={() => navigate("/app/chats")}
@@ -765,7 +997,7 @@ export const ContactsPage = () => {
             icon={<LeftOutlined />}
             style={{ color: token.colorTextSecondary }}
           >
-            Back
+            {_txt_btnBack}
           </Button>
         }
         rightAction={
@@ -774,7 +1006,7 @@ export const ContactsPage = () => {
             type="primary"
             icon={<UserAddOutlined />}
           >
-            Add
+            {_txt_btnAdd}
           </Button>
         }
       />
@@ -790,7 +1022,7 @@ export const ContactsPage = () => {
             style={{ justifyContent: "space-between", width: "100%" }}
           >
             <Button onClick={() => setTargetOfDecline(null)} type="link">
-              <PP>Cancel</PP>
+              {_txt_btnCancel}
             </Button>
             <div>
               {!isMobile && (
@@ -804,7 +1036,7 @@ export const ContactsPage = () => {
                   }}
                   type="link"
                 >
-                  <PP>Block</PP>
+                  {_txt_btnBlock}
                 </Button>
               )}
 
@@ -832,14 +1064,14 @@ export const ContactsPage = () => {
                       ...prev,
                       targetOfDecline.friendID,
                     ]);
-                    message.info(`Declined friend request`);
+                    message.info(_txt_alertDeclinedRequest2);
                     setTargetOfDecline(null);
                   }
                 }}
                 type="primary"
                 danger
               >
-                <PP>Yes, Decline</PP>
+                {_txt_btnConfirmDecline}
               </Button>
             </div>
           </Space>
@@ -875,9 +1107,11 @@ export const ContactsPage = () => {
         >
           <PP>
             <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
-              Are you sure you want to{" "}
-              <b style={{ color: token.colorErrorText }}>DECLINE</b> this friend
-              request?
+              {_txt_labelAreYouSure}{" "}
+              <b style={{ color: token.colorErrorText }}>
+                {_txt_labelHighlightDecline}
+              </b>{" "}
+              {_txt_labelThisFriendRequest}
             </span>
           </PP>
         </$Vertical>
@@ -891,7 +1125,7 @@ export const ContactsPage = () => {
             style={{ justifyContent: "flex-end", width: "100%" }}
           >
             <Button onClick={() => setTargetOfRemoval(null)} type="link">
-              <PP>Cancel</PP>
+              {_txt_btnCancel}
             </Button>
             <Button
               loading={
@@ -917,14 +1151,14 @@ export const ContactsPage = () => {
                     ...prev,
                     targetOfRemoval.friendID,
                   ]);
-                  message.info(`Removed from friends`);
+                  message.info(_txt_alertRemovedFriends);
                   setTargetOfRemoval(null);
                 }
               }}
               type="primary"
               danger
             >
-              <PP>Yes, Remove</PP>
+              {_txt_btnYesRemove}
             </Button>
           </Space>
         }
@@ -959,9 +1193,11 @@ export const ContactsPage = () => {
         >
           <PP>
             <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
-              Are you sure you want to{" "}
-              <b style={{ color: token.colorErrorText }}>REMOVE</b> this friend?
-              They will have to accept a new friend request if you want to chat.
+              {_txt_labelAreYouSure}{" "}
+              <b style={{ color: token.colorErrorText }}>
+                {_txt_btnBoldRemove}
+              </b>{" "}
+              {_txt_labelRemoveFriendExplain}
             </span>
           </PP>
         </$Vertical>
@@ -975,7 +1211,7 @@ export const ContactsPage = () => {
             style={{ justifyContent: "flex-end", width: "100%" }}
           >
             <Button onClick={() => setTargetOfBlock(null)} type="link">
-              <PP>Cancel</PP>
+              {_txt_btnCancel}
             </Button>
             <Button
               loading={
@@ -1008,7 +1244,7 @@ export const ContactsPage = () => {
               type="primary"
               danger
             >
-              <PP>Yes, Block</PP>
+              {_txt_btnYesBlock}
             </Button>
           </Space>
         }
@@ -1042,9 +1278,9 @@ export const ContactsPage = () => {
         >
           <PP>
             <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
-              Are you sure you want to{" "}
-              <b style={{ color: token.colorErrorText }}>BLOCK</b> this contact?
-              They will not be able to send you messages or friend requests.
+              {_txt_labelAreYouSure}{" "}
+              <b style={{ color: token.colorErrorText }}>{_txt_btnBoldBlock}</b>{" "}
+              {_txt_labelRemoveFriendConfirmm}
             </span>
           </PP>
         </$Vertical>
@@ -1058,7 +1294,7 @@ export const ContactsPage = () => {
             style={{ justifyContent: "flex-end", width: "100%" }}
           >
             <Button onClick={() => setTargetOfUnblock(null)} type="link">
-              <PP>Cancel</PP>
+              {_txt_btnCancel}
             </Button>
             <Button
               loading={
@@ -1091,7 +1327,7 @@ export const ContactsPage = () => {
               type="primary"
               danger
             >
-              <PP>Yes, Unblock</PP>
+              {_txt_btnYesUnblock}
             </Button>
           </Space>
         }
@@ -1126,9 +1362,11 @@ export const ContactsPage = () => {
         >
           <PP>
             <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
-              Are you sure you want to{" "}
-              <b style={{ color: token.colorWarningText }}>UNBLOCK</b> this
-              contact? They will be able to see you exist.
+              {_txt_labelAreYouSure}{" "}
+              <b style={{ color: token.colorWarningText }}>
+                {_txt_labelBoldUnblock}
+              </b>{" "}
+              {_txt_labelConfirmUnblockK}
             </span>
           </PP>
         </$Vertical>
@@ -1142,7 +1380,7 @@ export const ContactsPage = () => {
             style={{ justifyContent: "flex-end", width: "100%" }}
           >
             <Button onClick={() => setTargetOfCancel(null)} type="link">
-              <PP>No</PP>
+              {_txt_btnNo}
             </Button>
             <Button
               loading={
@@ -1168,14 +1406,14 @@ export const ContactsPage = () => {
                     ...prev,
                     targetOfCancel.friendID,
                   ]);
-                  message.info(`Cancelled friend request`);
+                  message.info(_txt_alertCancelledRequest);
                   setTargetOfCancel(null);
                 }
               }}
               type="primary"
               danger
             >
-              <PP>Yes, Cancel</PP>
+              {_txt_btnYesCancel}
             </Button>
           </Space>
         }
@@ -1210,9 +1448,11 @@ export const ContactsPage = () => {
         >
           <PP>
             <span style={{ fontSize: "1.1rem", textAlign: "center" }}>
-              Are you sure you want to{" "}
-              <b style={{ color: token.colorErrorText }}>CANCEL</b> your friend
-              request? You can send another one later.
+              {_txt_labelAreYouSure}{" "}
+              <b style={{ color: token.colorErrorText }}>
+                {_txt_labelBoldCancel}
+              </b>{" "}
+              {_txt_labelConfirmCancelExplain}
             </span>
           </PP>
         </$Vertical>
@@ -1233,11 +1473,11 @@ export const ContactsPage = () => {
               items={[
                 {
                   key: "search",
-                  label: `Search`,
+                  label: _txt_btnSearch,
                   children: (
                     <$Vertical spacing={5}>
                       <Input.Search
-                        placeholder="Exact Username Search"
+                        placeholder={_txt_btnSearchLabel}
                         enterButton
                         allowClear
                         onChange={(e) =>
@@ -1323,7 +1563,7 @@ export const ContactsPage = () => {
                                         marginTop: "10px",
                                       }}
                                     >
-                                      Visit Profile
+                                      {_txt_btnVisitProfile}
                                     </Button>
                                   </NavLink>
                                 </$Vertical>
@@ -1333,8 +1573,8 @@ export const ContactsPage = () => {
                         ) : (
                           <Result
                             icon={<UserOutlined />}
-                            title="Search Users"
-                            subTitle="Must be an exact username match"
+                            title={_txt_labelSearchUsers}
+                            subTitle={_txt_alertMustExactMatch}
                           />
                         )}
                       </$Vertical>
@@ -1343,7 +1583,7 @@ export const ContactsPage = () => {
                 },
                 {
                   key: "qrCode",
-                  label: `QR Code`,
+                  label: _txt_labelQRCode,
                   children: (
                     <$Vertical>
                       <div
@@ -1442,20 +1682,20 @@ export const ContactsPage = () => {
                               navigator.clipboard.writeText(
                                 `${window.location.origin}/${user.username}`
                               );
-                              message.success(<PP>Copied profile link!</PP>);
+                              message.success(_txt_alertCopieidProfileLink);
                             }
                           }}
                           type="primary"
                           style={{ marginLeft: isMobile ? "0px" : "10px" }}
                         >
-                          <PP>Copy URL</PP>
+                          {_txt_btnCopyURL}
                         </Button>
                         {isMobile ? (
                           <Button
                             onClick={() => setShowAddContactModal(false)}
                             type="ghost"
                           >
-                            Close
+                            {_txt_btnClose}
                           </Button>
                         ) : null}
                       </Space>

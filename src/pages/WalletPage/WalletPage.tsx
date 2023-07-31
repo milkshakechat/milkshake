@@ -64,10 +64,14 @@ export const WalletPage = () => {
     shallow
   );
 
-  console.log(`recentTxs`, recentTxs);
-  console.log(`selfUser`, selfUser);
-  console.log(`tradingWallet`, tradingWallet);
-  console.log(`escrowWallet`, escrowWallet);
+  const _txt_mainWallet_a49 = intl.formatMessage({
+    id: "_txt_mainWallet_a49.___WalletPage",
+    defaultMessage: "Main Wallet",
+  });
+  const _txt_holdingWallet_f7e = intl.formatMessage({
+    id: "_txt_holdingWallet_f7e.___WalletPage",
+    defaultMessage: "Holding Wallet",
+  });
 
   if (!selfUser || !tradingWallet || !escrowWallet) {
     return <LoadingAnimation width="100%" height="100%" type="cookie" />;
@@ -83,8 +87,6 @@ export const WalletPage = () => {
   );
 
   const onChange = (view: string) => {
-    console.log(view);
-    console.log(`Changing view... ${view}`);
     navigate({
       pathname: location.pathname,
       search: createSearchParams({
@@ -92,16 +94,10 @@ export const WalletPage = () => {
       }).toString(),
     });
   };
-  console.log(
-    `recentTxs for main wallet with purch manifest 2010f116-4c00-409d-bd7b-efdbde9be798`,
-    recentTxs.filter(
-      (tx) => tx.purchaseManifestID === "2010f116-4c00-409d-bd7b-efdbde9be798"
-    )
-  );
   const items: TabsProps["items"] = [
     {
       key: "trading",
-      label: `Main Wallet`,
+      label: _txt_mainWallet_a49,
       children: (
         <WalletPanel
           wallet={tradingWallet}
@@ -111,7 +107,7 @@ export const WalletPage = () => {
     },
     {
       key: "escrow",
-      label: `Holding Wallet`,
+      label: _txt_holdingWallet_f7e,
       children: (
         <WalletPanel
           wallet={escrowWallet}

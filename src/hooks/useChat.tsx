@@ -140,7 +140,9 @@ export const useRealtimeChatRooms = () => {
       }),
       shallow
     );
-
+  const { tokenID } = useUserState((state) => ({
+    tokenID: state.idToken,
+  }));
   useEffect(() => {
     let unsubscribe: () => void;
     if (selfUser && selfUser.id) {
@@ -155,6 +157,10 @@ export const useRealtimeChatRooms = () => {
   }, [selfUser?.id]);
 
   const getRealtimeChatRooms = (userID: UserID) => {
+    console.log("selfUser", selfUser);
+    console.log("selfUser.id", selfUser?.id);
+    console.log("tokenID", tokenID);
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
     const q = query(
       collection(firestore, FirestoreCollection.CHAT_ROOMS),
       where("members", "array-contains", userID),
@@ -197,6 +203,7 @@ export const useEnterChatRoom = () => {
   const client = useGraphqlClient();
   const existingChatsList = useChatsListState((state) => state.chatsList);
   const selfUser = useUserState((state) => state.user);
+  const idToken = useUserState((state) => state.idToken);
   const friendships = useUserState((state) => state.friendships);
 
   const runQuery = async (args: EnterChatRoomInput) => {
@@ -403,12 +410,17 @@ export const useRealtimeFreeChat = ({
   const selfUser = useUserState((state) => state.user);
   const [freeChatLogs, setFreeChatLogs] = useState<ChatLog_Firestore[]>([]);
 
+  const { tokenID } = useUserState((state) => ({
+    tokenID: state.idToken,
+  }));
+
   useEffect(() => {
     const unsub = getRealtimeFreeChatLogs(chatRoomID);
     return unsub;
   }, []);
 
   const getRealtimeFreeChatLogs = (chatRoomID: ChatRoomID) => {
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
     const q = query(
       collection(firestore, FirestoreCollection.CHAT_LOGS),
       where("chatRoomID", "==", chatRoomID),

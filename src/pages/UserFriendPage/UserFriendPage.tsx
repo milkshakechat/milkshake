@@ -64,6 +64,7 @@ import {
 } from "firebase/firestore";
 import { firestore } from "@/api/firebase";
 import JankyCurtain from "@/components/JankyCurtain/JankyCurtain";
+import { useIntl } from "react-intl";
 
 enum viewModes {
   timeline = "timeline",
@@ -78,7 +79,7 @@ export const UserFriendPage = () => {
   const location = useLocation();
   const { isMobile } = useWindowSize();
   const friendships = useUserState((state) => state.friendships);
-
+  const intl = useIntl();
   const [api, contextHolder] = notification.useNotification();
   const [chatDrawerOpen, setChatDrawerOpen] = useState(false);
   const viewMode =
@@ -172,6 +173,61 @@ export const UserFriendPage = () => {
   }, [usernameFromUrl, userID]);
   const { token } = theme.useToken();
 
+  const _txt_friendRequestSent_762 = intl.formatMessage({
+    id: "_txt_friendRequestSent_762.___UserFriendPage",
+    defaultMessage: "Friend Request Sent",
+  });
+  const _txt_timeline_88f = intl.formatMessage({
+    id: "_txt_timeline_88f.___UserFriendPage",
+    defaultMessage: "Timeline",
+  });
+  const _txt_wishlist_981 = intl.formatMessage({
+    id: "_txt_wishlist_981.___UserFriendPage",
+    defaultMessage: "Wishlist",
+  });
+  const _txt_message_d4f = intl.formatMessage({
+    id: "_txt_message_d4f.___UserFriendPage",
+    defaultMessage: "Message",
+  });
+  const _txt_share_e80 = intl.formatMessage({
+    id: "_txt_share_e80.___UserFriendPage",
+    defaultMessage: "Share",
+  });
+  const _txt_remove_952 = intl.formatMessage({
+    id: "_txt_remove_952.___UserFriendPage",
+    defaultMessage: "Remove",
+  });
+  const _txt_block_c07 = intl.formatMessage({
+    id: "_txt_block_c07.___UserFriendPage",
+    defaultMessage: "Block",
+  });
+  const _txt_chat_dd1 = intl.formatMessage({
+    id: "_txt_chat_dd1.___UserFriendPage",
+    defaultMessage: "Chat",
+  });
+  const _txt_addFriend_52c = intl.formatMessage({
+    id: "_txt_addFriend_52c.___UserFriendPage",
+    defaultMessage: "Add Friend",
+  });
+  const _txt_okay_917 = intl.formatMessage({
+    id: "_txt_okay_917.___UserFriendPage",
+    defaultMessage: "Okay",
+  });
+  const _txt_transactionPending_87d = intl.formatMessage({
+    id: "_txt_transactionPending_87d.___UserFriendPage",
+    defaultMessage: "Transaction Pending",
+  });
+  const _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_9cb =
+    intl.formatMessage({
+      id: "_txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_9cb.___UserFriendPage",
+      defaultMessage:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+    });
+  const _txt_noUserFound_b32 = intl.formatMessage({
+    id: "_txt_noUserFound_b32.___UserFriendPage",
+    defaultMessage: "No User Found",
+  });
+
   const handleSendFriendRequest = async () => {
     if (spotlightUser) {
       setIsPending(true);
@@ -184,7 +240,7 @@ export const UserFriendPage = () => {
         setRecentlySentRequest(true);
       }
       setIsPending(false);
-      message.success(`Friend Request Sent`);
+      message.success(_txt_friendRequestSent_762);
     }
   };
 
@@ -199,7 +255,7 @@ export const UserFriendPage = () => {
   const TabFolders = [
     {
       key: "timeline",
-      title: "Timeline",
+      title: _txt_timeline_88f,
       children: (
         <TimelineGallery
           stories={spotlightUser.stories}
@@ -212,7 +268,7 @@ export const UserFriendPage = () => {
     },
     {
       key: "wishlist",
-      title: "Wishlist",
+      title: _txt_wishlist_981,
       children: <WishlistGallery wishlist={listWishlistData?.wishlist || []} />,
     },
     // {
@@ -254,7 +310,7 @@ export const UserFriendPage = () => {
                 key: "send-message",
                 label: (
                   <Button onClick={() => setChatDrawerOpen(true)} type="ghost">
-                    Message
+                    {_txt_message_d4f}
                   </Button>
                 ),
               },
@@ -265,7 +321,7 @@ export const UserFriendPage = () => {
                     onClick={() => console.log(`Share friend`)}
                     type="ghost"
                   >
-                    Share
+                    {_txt_share_e80}
                   </Button>
                 ),
               },
@@ -276,7 +332,7 @@ export const UserFriendPage = () => {
                     onClick={() => console.log(`Remove friend`)}
                     type="ghost"
                   >
-                    Remove
+                    {_txt_remove_952}
                   </Button>
                 ),
               },
@@ -287,14 +343,14 @@ export const UserFriendPage = () => {
                     onClick={() => console.log(`Block friend`)}
                     type="ghost"
                   >
-                    Block
+                    {_txt_block_c07}
                   </Button>
                 ),
               },
             ],
           }}
         >
-          {isAcceptedFriend ? "Chat" : "Add Friend"}
+          {isAcceptedFriend ? _txt_chat_dd1 : _txt_addFriend_52c}
         </Dropdown.Button>
       </div>
     );
@@ -305,14 +361,14 @@ export const UserFriendPage = () => {
     const btn = (
       <Space>
         <Button type="primary" size="small" onClick={() => api.destroy(key)}>
-          Okay
+          {_txt_okay_917}
         </Button>
       </Space>
     );
     api.open({
-      message: "Transaction Sent",
+      message: _txt_transactionPending_87d,
       description:
-        "Check your notifications in a minute to see confirmation of your transaction.",
+        _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_9cb,
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
@@ -396,7 +452,7 @@ export const UserFriendPage = () => {
               </div>
             ) : (
               <div>
-                <h1>No User Found</h1>
+                <h1>{_txt_noUserFound_b32}</h1>
                 <span>{`@${usernameFromUrl}`}</span>
               </div>
             )}

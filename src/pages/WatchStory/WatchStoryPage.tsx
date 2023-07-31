@@ -102,6 +102,45 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
 
   const { runMutation: runSocialPokeMutation } = useSocialPoke();
 
+  const _txt_okay_4d0 = intl.formatMessage({
+    id: "_txt_okay_4d0.___WatchStoryPage",
+    defaultMessage: "Okay",
+  });
+  const _txt_transactionPending_b74 = intl.formatMessage({
+    id: "_txt_transactionPending_b74.___WatchStoryPage",
+    defaultMessage: "Transaction Pending",
+  });
+  const _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_ae5 =
+    intl.formatMessage({
+      id: "_txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_ae5.___WatchStoryPage",
+      defaultMessage:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+    });
+  const _txt_storyIsStillProcessingCheckBackLater_8ac = intl.formatMessage({
+    id: "_txt_storyIsStillProcessingCheckBackLater_8ac.___WatchStoryPage",
+    defaultMessage: "Story is still processing. Check back later.",
+  });
+  const _txt_goBack_8e2 = intl.formatMessage({
+    id: "_txt_goBack_8e2.___WatchStoryPage",
+    defaultMessage: "Go Back",
+  });
+  const _txt_posted_7f5 = intl.formatMessage({
+    id: "_txt_posted_7f5.___WatchStoryPage",
+    defaultMessage: "Posted",
+  });
+  const _txt_shareStory_792 = intl.formatMessage({
+    id: "_txt_shareStory_792.___WatchStoryPage",
+    defaultMessage: "Share Story",
+  });
+  const _txt_reportChat_d61 = intl.formatMessage({
+    id: "_txt_reportChat_d61.___WatchStoryPage",
+    defaultMessage: "Report Chat",
+  });
+  const _txt_storyLinkCopiedToClipboard_e5b = intl.formatMessage({
+    id: "_txt_storyLinkCopiedToClipboard_e5b.___WatchStoryPage",
+    defaultMessage: "Story link copied to clipboard!",
+  });
+
   const {
     /** @type {shaka.Player} */ player,
     /** @type {shaka.ui.Overlay} */ ui,
@@ -144,11 +183,10 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
       let currentIndex = authorStories.findIndex(
         (story) => story.id === spotlightStory.id
       );
-      console.log(`currentIndex`, currentIndex);
       // Compute new position
       const newPosition =
         (currentIndex + step + authorStories.length) % authorStories.length;
-      console.log(`newPosition`, newPosition);
+
       if (currentIndex !== newPosition) {
         // Return new story
         setSrcExistStatus(SRC_STATE_STATUS.INITIAL);
@@ -248,26 +286,25 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
       /** @type {shaka.ui.Overlay} */ ui,
       /** @type {HTMLVideoElement} */ videoElement,
     } = videoControllerRef.current;
-    console.log(`toggleMuteVideo`, videoElement);
+
     if (videoElement) {
       videoElement.muted = !videoElement.muted;
     }
   };
 
   const openNotification = () => {
-    console.log("opening notification...");
     const key = `open${Date.now()}-1`;
     const btn = (
       <Space>
         <Button type="primary" size="small" onClick={() => api.destroy(key)}>
-          Okay
+          {_txt_okay_4d0}
         </Button>
       </Space>
     );
     api.open({
-      message: "Transaction Sent",
+      message: _txt_transactionPending_b74,
       description:
-        "Check your notifications in a minute to see confirmation of your transaction.",
+        _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_ae5,
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
@@ -357,12 +394,12 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                 alignItems: "center",
               }}
             >
-              <PP>Story is still processing. Check back later.</PP>
+              {_txt_storyIsStillProcessingCheckBackLater_8ac}
               <Button
                 onClick={() => navigate("/app/chats")}
                 style={{ marginTop: "20px" }}
               >
-                Go Back
+                {_txt_goBack_8e2}
               </Button>
             </div>
           )}
@@ -401,10 +438,6 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                   e.stopPropagation();
                   const watchStoryBackHomeRoute = window.localStorage.getItem(
                     WATCH_STORY_BACK_HOME_ROUTE
-                  );
-                  console.log(
-                    `watchStoryBackHomeRoute`,
-                    watchStoryBackHomeRoute
                   );
                   if (watchStoryBackHomeRoute) {
                     window.location.href = watchStoryBackHomeRoute;
@@ -454,7 +487,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                         key: "share-story",
                         label: (
                           <div onClick={() => console.log("Share Story")}>
-                            Share Story
+                            {_txt_shareStory_792}
                           </div>
                         ),
                       },
@@ -462,7 +495,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                         key: "report-user",
                         label: (
                           <div onClick={() => message.info("Coming soon")}>
-                            Report Chat
+                            {_txt_reportChat_d61}
                           </div>
                         ),
                       },
@@ -626,7 +659,7 @@ const WatchStoryPage = ({ children }: WatchStoryPageProps) => {
                     e.stopPropagation();
                     const url = window.location.href;
                     navigator.clipboard.writeText(url);
-                    message.success("Story link copied to clipboard!");
+                    message.success(_txt_storyLinkCopiedToClipboard_e5b);
                   }}
                   style={{
                     color: token.colorWhite,

@@ -12,6 +12,16 @@ const OfflineBanner = ({ children }: OfflineBannerProps) => {
   const intl = useIntl();
   const [isDismissed, setIsDismissed] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  const _txt_youAreCurrentlyOffline_ace = intl.formatMessage({
+    id: "_txt_youAreCurrentlyOffline_ace.___OfflineBanner",
+    defaultMessage: "You are currently offline",
+  });
+  const _txt_dismiss_a55 = intl.formatMessage({
+    id: "_txt_dismiss_a55.___OfflineBanner",
+    defaultMessage: "Dismiss",
+  });
+
   const handleOnlineOffline = (bool: boolean) => {
     setIsOnline(bool);
   };
@@ -26,7 +36,7 @@ const OfflineBanner = ({ children }: OfflineBannerProps) => {
       if (isDismissed) {
         setIsDismissed(false);
       }
-    }, 30000);
+    }, 10000);
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
     return () => {
@@ -41,8 +51,8 @@ const OfflineBanner = ({ children }: OfflineBannerProps) => {
     <Alert
       message={
         <$Horizontal justifyContent="space-between">
-          <span>You are currently offline</span>
-          <a onClick={() => setIsDismissed(true)}>Dismiss</a>
+          <span>{_txt_youAreCurrentlyOffline_ace}</span>
+          <a onClick={() => setIsDismissed(true)}>{_txt_dismiss_a55}</a>
         </$Horizontal>
       }
       type="error"

@@ -48,6 +48,7 @@ import { PrivacyModeEnum } from "@/api/graphql/types";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import React from "react";
 import JankyCurtain from "@/components/JankyCurtain/JankyCurtain";
+import { useIntl } from "react-intl";
 
 enum viewModes {
   qrCode = "qrCode",
@@ -57,6 +58,7 @@ enum viewModes {
 const ProfilePage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
   const location = useLocation();
   const view = searchParams.get("view");
   const [shinyLoading, setShinyLoading] = useState(true);
@@ -67,6 +69,45 @@ const ProfilePage = () => {
   const { screen, isMobile } = useWindowSize();
   const [showQRCode, setShowQRCode] = useState(false);
   const notifications = useNotificationsState((state) => state.notifications);
+
+  const intl = useIntl();
+
+  const _txt_timeline_1aa = intl.formatMessage({
+    id: "_txt_timeline_1aa.___ProfilePage",
+    defaultMessage: "Timeline",
+  });
+  const _txt_wishlist_6e5 = intl.formatMessage({
+    id: "_txt_wishlist_6e5.___ProfilePage",
+    defaultMessage: "Wishlist",
+  });
+  const _txt_upgradeToPremiumForVipBenefits_956 = intl.formatMessage({
+    id: "_txt_upgradeToPremiumForVipBenefits_956.___ProfilePage",
+    defaultMessage: "Upgrade to Premium for VIP benefits",
+  });
+  const _txt_view_e40 = intl.formatMessage({
+    id: "_txt_view_e40.___ProfilePage",
+    defaultMessage: "View",
+  });
+  const _txt_addMeOnMilkshakeclub_892 = intl.formatMessage({
+    id: "_txt_addMeOnMilkshakeclub_892.___ProfilePage",
+    defaultMessage: "Add me on Milkshake.Club",
+  });
+  const _txt_copiedProfileLink_4d9 = intl.formatMessage({
+    id: "_txt_copiedProfileLink_4d9.___ProfilePage",
+    defaultMessage: "Copied profile link!",
+  });
+  const _txt_copy_aa7 = intl.formatMessage({
+    id: "_txt_copy_aa7.___ProfilePage",
+    defaultMessage: "Copy",
+  });
+  const _txt_close_196 = intl.formatMessage({
+    id: "_txt_close_196.___ProfilePage",
+    defaultMessage: "Close",
+  });
+  const _txt_hiddenProfilesCantBeFoundByUsername_f0a = intl.formatMessage({
+    id: "_txt_hiddenProfilesCantBeFoundByUsername_f0a.___ProfilePage",
+    defaultMessage: "Hidden profiles can't be found by username",
+  });
 
   useEffect(() => {
     setTimeout(() => {
@@ -89,12 +130,12 @@ const ProfilePage = () => {
   const TabFolders = [
     {
       key: "timeline",
-      title: "Timeline",
+      title: _txt_timeline_1aa,
       children: <TimelineGallery stories={user.stories} userID={user.id} />,
     },
     {
       key: "wishlist",
-      title: "Wishlist",
+      title: _txt_wishlist_6e5,
       children: <WishlistGallery wishlist={myWishlist} />,
     },
   ];
@@ -103,10 +144,10 @@ const ProfilePage = () => {
       <Alert
         message={
           <$Horizontal justifyContent="space-between">
-            <span>Upgrade to Premium for VIP benefits</span>
+            <span>{_txt_upgradeToPremiumForVipBenefits_956}</span>
             <NavLink to="/app/premium">
               <Button type="link" size="small">
-                View
+                {_txt_view_e40}
               </Button>
             </NavLink>
           </$Horizontal>
@@ -189,7 +230,6 @@ const ProfilePage = () => {
               };
             })}
             onChange={(view) => {
-              console.log(`Changing view... ${view}`);
               navigate({
                 pathname: location.pathname,
                 search: createSearchParams({
@@ -209,11 +249,7 @@ const ProfilePage = () => {
                 }).toString(),
               });
             }}
-            title={
-              <PP>
-                <h3>Add me on Milkshake.chat</h3>
-              </PP>
-            }
+            title={<h3>{_txt_addMeOnMilkshakeclub_892}</h3>}
             style={{ overflow: "hidden", top: 20 }}
             footer={
               <Space
@@ -228,11 +264,11 @@ const ProfilePage = () => {
                           ? `${window.location.origin}/user?userID=${user.id}`
                           : `${window.location.origin}/${user.username}`
                       );
-                      message.success(<PP>Copied profile link!</PP>);
+                      message.success(_txt_copiedProfileLink_4d9);
                     }
                   }}
                 >
-                  <PP>Copy</PP>
+                  {_txt_copy_aa7}
                 </Button>
                 <Button
                   onClick={() => {
@@ -246,7 +282,7 @@ const ProfilePage = () => {
                   }}
                   type="primary"
                 >
-                  Close
+                  {_txt_close_196}
                 </Button>
               </Space>
             }
@@ -336,7 +372,7 @@ const ProfilePage = () => {
                     </div>
                     {user && user.privacyMode === PrivacyModeEnum.Hidden && (
                       <Tag color="red">
-                        <PP>{`Hidden profiles can't be found by username`}</PP>
+                        {_txt_hiddenProfilesCantBeFoundByUsername_f0a}
                       </Tag>
                     )}
                   </$Vertical>

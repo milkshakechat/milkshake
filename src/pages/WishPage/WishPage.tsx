@@ -83,6 +83,95 @@ export const WishPage = () => {
   );
   const { runMutation: runSocialPokeMutation } = useSocialPoke();
 
+  const _txt_oneTimePurchase_a95 = intl.formatMessage({
+    id: "_txt_oneTimePurchase_a95.___WishPage",
+    defaultMessage: "One Time Purchase",
+  });
+  const _txt_weeklyRecurring_c54 = intl.formatMessage({
+    id: "_txt_weeklyRecurring_c54.___WishPage",
+    defaultMessage: "Weekly Recurring",
+  });
+  const _txt_monthlyRecurring_1e9 = intl.formatMessage({
+    id: "_txt_monthlyRecurring_1e9.___WishPage",
+    defaultMessage: "Monthly Recurring",
+  });
+  const _txt_event_3d2 = intl.formatMessage({
+    id: "_txt_event_3d2.___WishPage",
+    defaultMessage: "Event",
+  });
+  const _txt_gift_730 = intl.formatMessage({
+    id: "_txt_gift_730.___WishPage",
+    defaultMessage: "Gift",
+  });
+  const _txt_attendEvent_3bf = intl.formatMessage({
+    id: "_txt_attendEvent_3bf.___WishPage",
+    defaultMessage: "ATTEND EVENT",
+  });
+  const _txt_subscribeEvent_176 = intl.formatMessage({
+    id: "_txt_subscribeEvent_176.___WishPage",
+    defaultMessage: "SUBSCRIBE EVENT",
+  });
+  const _txt_subscribeWish_102 = intl.formatMessage({
+    id: "_txt_subscribeWish_102.___WishPage",
+    defaultMessage: "SUBSCRIBE WISH",
+  });
+  const _txt_buyWish_99a = intl.formatMessage({
+    id: "_txt_buyWish_99a.___WishPage",
+    defaultMessage: "BUY WISH",
+  });
+  const _txt_purchaseWish_295 = intl.formatMessage({
+    id: "_txt_purchaseWish_295.___WishPage",
+    defaultMessage: "PURCHASE WISH",
+  });
+  const _txt_okay_935 = intl.formatMessage({
+    id: "_txt_okay_935.___WishPage",
+    defaultMessage: "Okay",
+  });
+  const _txt_transactionPending_a3c = intl.formatMessage({
+    id: "_txt_transactionPending_a3c.___WishPage",
+    defaultMessage: "Transaction Pending",
+  });
+  const _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_b56 =
+    intl.formatMessage({
+      id: "_txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_b56.___WishPage",
+      defaultMessage:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+    });
+  const _txt_youHaveRefundProtection_d7a = intl.formatMessage({
+    id: "_txt_youHaveRefundProtection_d7a.___WishPage",
+    defaultMessage: "You have 100% refund protection",
+  });
+  const _txt_milkshakeProtectsYouWithRefundGuaranteeForDays_a62 =
+    intl.formatMessage({
+      id: "_txt_milkshakeProtectsYouWithRefundGuaranteeForDays_a62.___WishPage",
+      defaultMessage:
+        "Milkshake protects you with 100% refund guarantee for 90 days",
+    });
+  const _txt_edit_19e = intl.formatMessage({
+    id: "_txt_edit_19e.___WishPage",
+    defaultMessage: "Edit",
+  });
+  const _txt_message_394 = intl.formatMessage({
+    id: "_txt_message_394.___WishPage",
+    defaultMessage: "Message",
+  });
+  const _txt_favorite_e2c = intl.formatMessage({
+    id: "_txt_favorite_e2c.___WishPage",
+    defaultMessage: "Favorite",
+  });
+  const _txt_rsvpBy_7e4 = intl.formatMessage({
+    id: "_txt_rsvpBy_7e4.___WishPage",
+    defaultMessage: "RSVP by",
+  });
+  const _txt_moreInfo_aa2 = intl.formatMessage({
+    id: "_txt_moreInfo_aa2.___WishPage",
+    defaultMessage: "More Info",
+  });
+  const _txt_unlockedStickers_695 = intl.formatMessage({
+    id: "_txt_unlockedStickers_695.___WishPage",
+    defaultMessage: "Unlocked Stickers",
+  });
+
   useEffect(() => {
     if (wishIDFromURL) {
       const run = async () => {
@@ -170,52 +259,51 @@ export const WishPage = () => {
 
   const renderBuyFrequencyTag = (buyFrequency: WishBuyFrequency) => {
     if (buyFrequency === WishBuyFrequency.OneTime) {
-      return <Tag color="green">One Time Purchase</Tag>;
+      return <Tag color="green">{_txt_oneTimePurchase_a95}</Tag>;
     } else if (buyFrequency === WishBuyFrequency.Weekly) {
-      return <Tag color="orange">Weekly Recurring</Tag>;
+      return <Tag color="orange">{_txt_weeklyRecurring_c54}</Tag>;
     } else if (buyFrequency === WishBuyFrequency.Monthly) {
-      return <Tag color="purple">Monthly Recurring</Tag>;
+      return <Tag color="purple">{_txt_monthlyRecurring_1e9}</Tag>;
     }
   };
 
   const renderWishTypeTag = (wishType: WishTypeEnumGQL) => {
     if (wishType === WishTypeEnumGQL.Event) {
-      return <Tag color="blue">Event</Tag>;
+      return <Tag color="blue">{_txt_event_3d2}</Tag>;
     } else if (wishType === WishTypeEnumGQL.Gift) {
-      return <Tag color="red">Gift</Tag>;
+      return <Tag color="red">{_txt_gift_730}</Tag>;
     }
   };
 
   const renderButtonActionText = () => {
     if (spotlightWish.wishType === WishTypeEnum.Event) {
       if (spotlightWish.buyFrequency === WishBuyFrequency.OneTime) {
-        return `ATTEND EVENT`;
+        return _txt_attendEvent_3bf;
       }
-      return `SUBSCRIBE EVENT`;
+      return _txt_subscribeEvent_176;
     }
     if (spotlightWish.buyFrequency !== WishBuyFrequency.OneTime) {
-      return `SUBSCRIBE WISH`;
+      return _txt_subscribeWish_102;
     }
     if (isMobile) {
-      return `BUY WISH`;
+      return _txt_buyWish_99a;
     }
-    return `PURCHASE WISH`;
+    return _txt_purchaseWish_295;
   };
 
   const openNotification = () => {
-    console.log("opening notification...");
     const key = `open${Date.now()}-1`;
     const btn = (
       <Space>
         <Button type="primary" size="small" onClick={() => api.destroy(key)}>
-          Okay
+          {_txt_okay_935}
         </Button>
       </Space>
     );
     api.open({
-      message: "Transaction Sent",
+      message: _txt_transactionPending_a3c,
       description:
-        "Check your notifications in a minute to see confirmation of your transaction.",
+        _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_b56,
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
@@ -231,8 +319,8 @@ export const WishPage = () => {
             <$Horizontal justifyContent="space-between">
               <span>
                 {isMobile
-                  ? `You have 100% refund protection`
-                  : `Milkshake protects you with 100% refund guarantee for 90 days`}
+                  ? _txt_youHaveRefundProtection_d7a
+                  : _txt_milkshakeProtectsYouWithRefundGuaranteeForDays_a62}
               </span>
 
               <Button type="link" size="small">
@@ -274,11 +362,11 @@ export const WishPage = () => {
                 <div>
                   {isOwnProfile ? (
                     <NavLink to={`/app/wish/${spotlightWish.id}/edit`}>
-                      <Button>Edit</Button>
+                      <Button>{_txt_edit_19e}</Button>
                     </NavLink>
                   ) : (
                     <Button onClick={() => setChatDrawerOpen(true)}>
-                      Message
+                      {_txt_message_394}
                     </Button>
                   )}
                 </div>
@@ -292,7 +380,11 @@ export const WishPage = () => {
             }}
           >
             {spotlightWish.isFavorite ? (
-              <Badge.Ribbon text="Her Favorite" color="red" placement="start">
+              <Badge.Ribbon
+                text={_txt_favorite_e2c}
+                color="red"
+                placement="start"
+              >
                 {renderImageGallery()}
               </Badge.Ribbon>
             ) : (
@@ -326,7 +418,7 @@ export const WishPage = () => {
                       fontSize: "0.8rem",
                     }}
                   >
-                    {"RSVP by"}
+                    {_txt_rsvpBy_7e4}
                   </span>
                 }
                 onFinish={() => console.log("Finished countdown")}
@@ -345,11 +437,11 @@ export const WishPage = () => {
                   marginTop: "5px",
                 }}
               >
-                More Info
+                {_txt_moreInfo_aa2}
               </a>
             )}
             <Divider />
-            <h3>Unlocked Stickers</h3>
+            <h3>{_txt_unlockedStickers_695}</h3>
             <Spacer />
             <$Horizontal alignItems="center">
               <Avatar

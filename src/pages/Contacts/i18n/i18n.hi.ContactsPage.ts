@@ -1,0 +1,65 @@
+import { i18n_Mapping } from "./types.i18n.ContactsPage";
+
+export const importLanguage = (): i18n_Mapping => {
+  const language: i18n_Mapping = {
+    "alertSentFriendRequest.___ContactsPage": "फ्रेंड रिक्वेस्ट भेजी",
+    "alertWaitingForAcceptance.___ContactsPage": "स्वीकृति की प्रतीक्षा है",
+    "alertDeclinedRequest.___ContactsPage": "अस्वीकृत अनुरोध",
+    "alertBlockedUser.___ContactsPage": "उपयोगकर्ता को अवरोधित किया गया",
+    "labelNotFriends.___ContactsPage": "कोई दोस्त नहीं",
+    "labelFriendRequestSent.___ContactsPage": "मित्र अनुरोध भेज दिया",
+    "labelSearchContacts.___ContactsPage": "संपर्क खोजें",
+    "labelFriends.___ContactsPage": "दोस्त",
+    "btnCancel.___ContactsPage": "रद्द करना",
+    "btnGroupChat.___ContactsPage": "समूह बातचीत",
+    "btnViewProfile.___ContactsPage": "प्रोफ़ाइल देखें",
+    "btnRemove.___ContactsPage": "निकालना",
+    "btnBlock.___ContactsPage": "अवरोध पैदा करना",
+    "btnChat.___ContactsPage": "बात करना",
+    "btnStartGroupChat.___ContactsPage": "समूह चैट प्रारंभ करें",
+    "labelRequests.___ContactsPage": "अनुरोध",
+    "btnSendAgain.___ContactsPage": "पुनः भेजें",
+    "btnUnblock.___ContactsPage": "अनब्लॉक",
+    "btnDecline.___ContactsPage": "पतन",
+    "alertAcceptedRequest.___ContactsPage": "मित्र अनुरोध स्वीकार किया गया",
+    "btnAccept.___ContactsPage": "स्वीकार करना",
+    "btnAddFriend.___ContactsPage": "दोस्त जोड़ें",
+    "labelContacts.___ContactsPage": "संपर्क",
+    "btnBack.___ContactsPage": "पीछे",
+    "btnAdd.___ContactsPage": "जोड़ना",
+    "alertDeclinedRequest2.___ContactsPage": "मित्र अनुरोध अस्वीकृत",
+    "btnConfirmDecline.___ContactsPage": "हाँ, अस्वीकार",
+    "labelHighlightDecline.___ContactsPage": "पतन",
+    "labelAreYouSure.___ContactsPage": "क्या आप सचमच करना चाहते हैं",
+    "labelThisFriendRequest.___ContactsPage": "यह मित्र अनुरोध?",
+    "alertRemovedFriends.___ContactsPage": "दोस्तों से दूर कर दिया गया",
+    "btnYesRemove.___ContactsPage": "हाँ, हटाएँ",
+    "btnBoldRemove.___ContactsPage": "निकालना",
+    "labelRemoveFriendExplain.___ContactsPage":
+      "यह दोस्त? यदि आप चैट करना चाहते हैं तो उन्हें एक नया मित्र अनुरोध स्वीकार करना होगा।",
+    "btnYesBlock.___ContactsPage": "हाँ, ब्लॉक करें",
+    "btnBoldBlock.___ContactsPage": "अवरोध पैदा करना",
+    "labelRemoveFriendConfirmm.___ContactsPage":
+      "यह संपर्क? वे आपको संदेश या मित्र अनुरोध नहीं भेज पाएंगे.",
+    "btnYesUnblock.___ContactsPage": "हाँ, अनब्लॉक करें",
+    "labelBoldUnblock.___ContactsPage": "अनब्लॉ",
+    "labelConfirmUnblockK.___ContactsPage":
+      "यह संपर्क? वे आपका अस्तित्व देख सकेंगे।",
+    "btnNo.___ContactsPage": "नहीं",
+    "alertCancelledRequest.___ContactsPage": "मित्र अनुरोध रद्द कर दिया गया",
+    "btnYesCancel.___ContactsPage": "हाँ, रद्द करें",
+    "labelBoldCancel.___ContactsPage": "रद्द करना",
+    "labelConfirmCancelExplain.___ContactsPage":
+      "आपका मित्र अनुरोध? आप बाद में दूसरा भेज सकते हैं.",
+    "btnSearch.___ContactsPage": "खोज",
+    "btnSearchLabel.___ContactsPage": "सटीक उपयोक्तानाम खोज",
+    "btnVisitProfile.___ContactsPage": "प्रोफ़ाइल पर जाएँ",
+    "labelSearchUsers.___ContactsPage": "उपयोगकर्ता खोजें",
+    "alertMustExactMatch.___ContactsPage":
+      "उपयोगकर्ता नाम बिल्कुल मेल खाना चाहिए",
+    "alertCopieidProfileLink.___ContactsPage": "प्रोफ़ाइल लिंक कॉपी किया गया!",
+    "btnCopyURL.___ContactsPage": "यूआरएल कॉपी करें",
+    "btnClose.___ContactsPage": "बंद करना",
+  };
+  return language;
+};

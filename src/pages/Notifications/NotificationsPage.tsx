@@ -36,6 +36,7 @@ import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import { UserOutlined } from "@ant-design/icons";
 import { useWindowSize } from "@/api/utils/screen";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useIntl } from "react-intl";
 
 const NotificationsPage = () => {
   const user = useUserState((state) => state.user);
@@ -48,6 +49,33 @@ const NotificationsPage = () => {
   const { runMutation: runMarkNotificationsAsReadMutation } =
     useMarkNotificationsAsRead();
   const { screen, isMobile } = useWindowSize();
+
+  const intl = useIntl();
+  const _txt_notifications_fbe = intl.formatMessage({
+    id: "_txt_notifications_fbe.___NotificationsPage",
+    defaultMessage: "Notifications",
+  });
+  const _txt_markAllAsRead_ad4 = intl.formatMessage({
+    id: "_txt_markAllAsRead_ad4.___NotificationsPage",
+    defaultMessage: "Mark all as read?",
+  });
+  const _txt_yes_5d1 = intl.formatMessage({
+    id: "_txt_yes_5d1.___NotificationsPage",
+    defaultMessage: "Yes",
+  });
+  const _txt_no_d16 = intl.formatMessage({
+    id: "_txt_no_d16.___NotificationsPage",
+    defaultMessage: "No",
+  });
+  const _txt_loadMore_b63 = intl.formatMessage({
+    id: "_txt_loadMore_b63.___NotificationsPage",
+    defaultMessage: "Load More",
+  });
+  const _txt_endOfList_fbd = intl.formatMessage({
+    id: "_txt_endOfList_fbd.___NotificationsPage",
+    defaultMessage: "End of List",
+  });
+
   if (!user) {
     return <LoadingAnimation width="100%" height="100%" type="cookie" />;
   }
@@ -70,11 +98,11 @@ const NotificationsPage = () => {
   return (
     <div>
       <LayoutInteriorHeader
-        title={<PP>Notifications</PP>}
+        title={_txt_notifications_fbe}
         rightAction={
           notifications.filter((n) => !n.markedRead).length > 0 ? (
             <Popconfirm
-              title="Mark all as read?"
+              title={_txt_markAllAsRead_ad4}
               description=""
               onConfirm={async () => {
                 setLoadingNotifs(
@@ -90,8 +118,8 @@ const NotificationsPage = () => {
                 });
                 setLoadingNotifs([]);
               }}
-              okText="Yes"
-              cancelText="No"
+              okText={_txt_yes_5d1}
+              cancelText={_txt_no_d16}
             >
               <$Horizontal>
                 <BellFilled style={{ fontSize: "1.3rem" }} />
@@ -132,7 +160,7 @@ const NotificationsPage = () => {
                 }}
               >
                 <Button loading={isLoading} onClick={paginateNotifications}>
-                  Load More
+                  {_txt_loadMore_b63}
                 </Button>
               </$Horizontal>
             }
@@ -145,7 +173,7 @@ const NotificationsPage = () => {
                   padding: "20px",
                 }}
               >
-                <Divider plain>End of List</Divider>
+                <Divider plain>{_txt_endOfList_fbd}</Divider>
               </$Horizontal>
             }
             scrollableTarget="scrollableDiv"

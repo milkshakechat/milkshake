@@ -48,6 +48,9 @@ import {
 import shallow from "zustand/shallow";
 import SUGAR_DADDY_IMAGE_LOCAL from "./sugardaddy.jpg";
 import { useUpdateProfile } from "@/hooks/useProfile";
+import QuickLanguage, {
+  QuickLanguageBanner,
+} from "@/components/QuickLanguage/QuickLanguage";
 
 const ONBOARDING_BACKGROUND_COLOR = "#f7fcff";
 const ONBOARDING_TITLE_COLOR = "#1a1a1a";
@@ -73,9 +76,9 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
   const carouselRef = useRef<CarouselRef>(null);
   const [searchParams] = useSearchParams();
   const urlParamTab = searchParams.get("tab");
-  console.log(`urlParamTab`, urlParamTab);
+
   const currentTab = urlParamTab ? parseInt(urlParamTab) : 0;
-  console.log(`currentTab`, currentTab);
+
   const { screen, isMobile } = useWindowSize();
   const [onboardingFriend, setOnboardingFriend] =
     useState<ViewPublicProfileResponseSuccess>();
@@ -113,16 +116,96 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
   const [gender, setGender] = useState<GenderEnum>();
   const [interestedIn, setInterestedIn] = useState<GenderEnum[]>([]);
   const onChange = (currentSlide: number) => {
-    console.log(currentSlide);
     setFocusedSlide(currentSlide);
     navigate({
       search: `?tab=${currentSlide}`,
     });
-    console.log(`currentSlide`, currentSlide);
+
     if (currentSlide === 3) {
       startPrepProfileCountdown();
     }
   };
+
+  const _txt_welcomeTo_203 = intl.formatMessage({
+    id: "_txt_welcomeTo_203.___OnboardingPage",
+    defaultMessage: "Welcome to",
+  });
+  const _txt_funGroupchatsForOnlineDating_819 = intl.formatMessage({
+    id: "_txt_funGroupchatsForOnlineDating_819.___OnboardingPage",
+    defaultMessage: "Fun groupchats for online dating.",
+  });
+  const _txt_RefundProtectionFromBadDates_4f3 = intl.formatMessage({
+    id: "_txt_RefundProtectionFromBadDates_4f3.___OnboardingPage",
+    defaultMessage: "100% refund protection from bad dates.",
+  });
+  const _txt_continue_ca3 = intl.formatMessage({
+    id: "_txt_continue_ca3.___OnboardingPage",
+    defaultMessage: "Continue",
+  });
+  const _txt_careForSomeoneReal_e27 = intl.formatMessage({
+    id: "_txt_careForSomeoneReal_e27.___OnboardingPage",
+    defaultMessage: "Care for someone real",
+  });
+  const _txt_noAiGirlfriendsOnlineDatesWithRealPeopleSharingTheirEverydayLives_5c8 =
+    intl.formatMessage({
+      id: "_txt_noAiGirlfriendsOnlineDatesWithRealPeopleSharingTheirEverydayLives_5c8.___OnboardingPage",
+      defaultMessage:
+        "No Ai girlfriends. Online dates with REAL people sharing their everyday lives.",
+    });
+  const _txt_iAmA_e4e = intl.formatMessage({
+    id: "_txt_iAmA_e4e.___OnboardingPage",
+    defaultMessage: "I am a...",
+  });
+  const _txt_man_775 = intl.formatMessage({
+    id: "_txt_man_775.___OnboardingPage",
+    defaultMessage: "Man",
+  });
+  const _txt_woman_54a = intl.formatMessage({
+    id: "_txt_woman_54a.___OnboardingPage",
+    defaultMessage: "Woman",
+  });
+  const _txt_other_2fd = intl.formatMessage({
+    id: "_txt_other_2fd.___OnboardingPage",
+    defaultMessage: "Other",
+  });
+  const _txt_interestedIn_378 = intl.formatMessage({
+    id: "_txt_interestedIn_378.___OnboardingPage",
+    defaultMessage: "Interested in...",
+  });
+  const _txt_women_615 = intl.formatMessage({
+    id: "_txt_women_615.___OnboardingPage",
+    defaultMessage: "Women",
+  });
+  const _txt_men_7b7 = intl.formatMessage({
+    id: "_txt_men_7b7.___OnboardingPage",
+    defaultMessage: "Men",
+  });
+  const _txt_join_b83 = intl.formatMessage({
+    id: "_txt_join_b83.___OnboardingPage",
+    defaultMessage: "Join",
+  });
+  const _txt_completeYourSignupWithPhone_c65 = intl.formatMessage({
+    id: "_txt_completeYourSignupWithPhone_c65.___OnboardingPage",
+    defaultMessage: "Complete your signup with phone",
+  });
+  const _txt_bringYourMatches_4d8 = intl.formatMessage({
+    id: "_txt_bringYourMatches_4d8.___OnboardingPage",
+    defaultMessage: "Bring Your Matches",
+  });
+  const _txt_milkshakePrivacyOnlyShowsYourBestSidesClaimYourHiddenUsernameToGetStarted_f34 =
+    intl.formatMessage({
+      id: "_txt_milkshakePrivacyOnlyShowsYourBestSidesClaimYourHiddenUsernameToGetStarted_f34.___OnboardingPage",
+      defaultMessage:
+        "Milkshake privacy only shows your best sides. Claim your hidden username to get started.",
+    });
+  const _txt_loading_822 = intl.formatMessage({
+    id: "_txt_loading_822.___OnboardingPage",
+    defaultMessage: "Loading",
+  });
+  const _txt_claimUsername_9f0 = intl.formatMessage({
+    id: "_txt_claimUsername_9f0.___OnboardingPage",
+    defaultMessage: "Claim Username",
+  });
 
   const startPrepProfileCountdown = () => {
     setInterval(() => {
@@ -188,22 +271,13 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
     <div
       style={{ height: "100vh", backgroundColor: ONBOARDING_BACKGROUND_COLOR }}
     >
+      <QuickLanguageBanner />
       <Carousel
         ref={carouselRef}
         afterChange={onChange}
         style={{ height: "100%", backgroundColor: ONBOARDING_BACKGROUND_COLOR }}
       >
         <div>
-          <Alert
-            message={
-              isMobile
-                ? "Min $100k annual income suggested"
-                : "You should meet the financial suggestion of $100k annual income"
-            }
-            type="info"
-            banner
-            style={{ textAlign: "center" }}
-          />
           <Result
             icon={
               <img
@@ -214,15 +288,15 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
             title={
               <b
                 style={{ color: ONBOARDING_TITLE_COLOR, fontSize: "1.7rem" }}
-              >{`Welcome to Milkshake`}</b>
+              >{`${_txt_welcomeTo_203} Milkshake`}</b>
             }
             subTitle={
               <span
                 style={{ color: ONBOARDING_SUBTITLE_COLOR, fontSize: "1rem" }}
               >
-                {`A private chat app for online dating.`}
+                {_txt_funGroupchatsForOnlineDating_819}
                 <br />
-                {`100% refund protection from bad dates.`}
+                {_txt_RefundProtectionFromBadDates_4f3}
               </span>
             }
             extra={
@@ -236,7 +310,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                 size="large"
                 style={{ marginTop: "10px", fontWeight: "bold" }}
               >
-                Continue
+                {_txt_continue_ca3}
               </Button>
             }
             style={contentStyle}
@@ -252,14 +326,18 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
               />
             }
             title={
-              <b
-                style={{ color: ONBOARDING_TITLE_COLOR, fontSize: "1.7rem" }}
-              >{`Care for someone real`}</b>
+              <b style={{ color: ONBOARDING_TITLE_COLOR, fontSize: "1.7rem" }}>
+                {_txt_careForSomeoneReal_e27}
+              </b>
             }
             subTitle={
               <span
                 style={{ color: ONBOARDING_SUBTITLE_COLOR, fontSize: "1rem" }}
-              >{`No Ai girlfriends. Online dates with REAL people sharing their everyday lives.`}</span>
+              >
+                {
+                  _txt_noAiGirlfriendsOnlineDatesWithRealPeopleSharingTheirEverydayLives_5c8
+                }
+              </span>
             }
             extra={
               <$Vertical
@@ -277,15 +355,15 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                     alignItems="flex-start"
                     style={{ flex: 1 }}
                   >
-                    <label style={{ textAlign: "left" }}>I am a...</label>
+                    <label style={{ textAlign: "left" }}>{_txt_iAmA_e4e}</label>
                     <Select
                       onChange={(gender) => {
                         setGender(gender);
                       }}
                       options={[
-                        { value: "male", label: "Man" },
-                        { value: "female", label: "Woman" },
-                        { value: "other", label: "Other" },
+                        { value: "male", label: _txt_man_775 },
+                        { value: "female", label: _txt_woman_54a },
+                        { value: "other", label: _txt_other_2fd },
                       ]}
                     />
                   </$Vertical>
@@ -295,7 +373,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                     style={{ flex: 1 }}
                   >
                     <label style={{ textAlign: "left" }}>
-                      Interested in...
+                      {_txt_interestedIn_378}
                     </label>
                     <Select
                       mode="multiple"
@@ -305,9 +383,9 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                         setInterestedIn(genders);
                       }}
                       options={[
-                        { value: "female", label: "Women" },
-                        { value: "male", label: "Men" },
-                        { value: "other", label: "Other" },
+                        { value: "female", label: _txt_women_615 },
+                        { value: "male", label: _txt_men_7b7 },
+                        { value: "other", label: _txt_other_2fd },
                       ]}
                       style={{ textAlign: "center" }}
                     />
@@ -324,7 +402,7 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                   disabled={gender && interestedIn.length > 0 ? false : true}
                   style={{ marginTop: "0px", fontWeight: "bold" }}
                 >
-                  Continue
+                  {_txt_continue_ca3}
                 </Button>
               </$Vertical>
             }
@@ -342,12 +420,14 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
             title={
               <b
                 style={{ color: ONBOARDING_TITLE_COLOR, fontSize: "1.7rem" }}
-              >{`Join Milkshake`}</b>
+              >{`${_txt_join_b83} Milkshake`}</b>
             }
             subTitle={
               <span
                 style={{ color: ONBOARDING_SUBTITLE_COLOR, fontSize: "1rem" }}
-              >{`Complete your signup with phone`}</span>
+              >
+                {_txt_completeYourSignupWithPhone_c65}
+              </span>
             }
             extra={
               <BareBonesPhoneLogin
@@ -366,14 +446,18 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
               />
             }
             title={
-              <b
-                style={{ color: ONBOARDING_TITLE_COLOR, fontSize: "1.7rem" }}
-              >{`Bring Your Matches`}</b>
+              <b style={{ color: ONBOARDING_TITLE_COLOR, fontSize: "1.7rem" }}>
+                {_txt_bringYourMatches_4d8}
+              </b>
             }
             subTitle={
               <span
                 style={{ color: ONBOARDING_SUBTITLE_COLOR, fontSize: "1rem" }}
-              >{`Milkshake privacy only shows your best sides. Claim your hidden username to get started.`}</span>
+              >
+                {
+                  _txt_milkshakePrivacyOnlyShowsYourBestSidesClaimYourHiddenUsernameToGetStarted_f34
+                }
+              </span>
             }
             extra={
               <Button
@@ -402,8 +486,8 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                 loading={loadingClaimUsername || preparingProfileCountdown > 0}
               >
                 {preparingProfileCountdown > 0
-                  ? `Loading ${preparingProfileCountdown}...`
-                  : "Claim Username"}
+                  ? `${_txt_loading_822} ${preparingProfileCountdown}...`
+                  : _txt_claimUsername_9f0}
               </Button>
             }
             style={contentStyle}
@@ -442,6 +526,36 @@ const BareBonesPhoneLogin = ({
   const auth = getAuth();
   const [recaptchaVerifier, setRecaptchaVerifier] =
     useState<RecaptchaVerifier>();
+  const intl = useIntl();
+
+  const _txt_checkSmsCodeSentTo_a63 = intl.formatMessage({
+    id: "_txt_checkSmsCodeSentTo_a63.___OnboardingPage",
+    defaultMessage: "Check SMS Code sent to",
+  });
+  const _txt_code_a1e = intl.formatMessage({
+    id: "_txt_code_a1e.___OnboardingPage",
+    defaultMessage: "Code",
+  });
+  const _txt_phone_424 = intl.formatMessage({
+    id: "_txt_phone_424.___OnboardingPage",
+    defaultMessage: "Phone",
+  });
+  const _txt_verify_91d = intl.formatMessage({
+    id: "_txt_verify_91d.___OnboardingPage",
+    defaultMessage: "VERIFY",
+  });
+  const _txt_reset_9ac = intl.formatMessage({
+    id: "_txt_reset_9ac.___OnboardingPage",
+    defaultMessage: "reset",
+  });
+  const _txt_signupPhone_ab1 = intl.formatMessage({
+    id: "_txt_signupPhone_ab1.___OnboardingPage",
+    defaultMessage: "SIGNUP PHONE",
+  });
+  const _txt_existingUser_742 = intl.formatMessage({
+    id: "_txt_existingUser_742.___OnboardingPage",
+    defaultMessage: "Existing User",
+  });
 
   const captchaRef = useCallback((node: HTMLDivElement) => {
     if (node !== null) {
@@ -458,14 +572,13 @@ const BareBonesPhoneLogin = ({
     ""
   )}`;
   const signupWithPhone = () => {
-    console.log(`computedPhone`, computedPhone);
     if (recaptchaVerifier) {
       setIsLoading(true);
       signInWithPhoneNumber(auth, computedPhone, recaptchaVerifier)
         .then((confirmationResult) => {
           // SMS sent. Prompt user to type the code from the message, then sign the
           // user in with confirmationResult.confirm(code).
-          console.log(`confirmationResult`, confirmationResult);
+
           confirmationResultRef.current = confirmationResult;
           setShowPinProceed(true);
           setIsLoading(false);
@@ -488,9 +601,8 @@ const BareBonesPhoneLogin = ({
       confirmationResultRef.current
         .confirm(phoneCode)
         .then(async (result: any) => {
-          console.log(`phone code verify result`, result);
           // You can access the new user via result.user
-          console.log(result.user);
+
           await fullLogin(result.user);
           setIsLoading(false);
           successfulSignupCallback();
@@ -510,14 +622,14 @@ const BareBonesPhoneLogin = ({
       {showPinProceed && (
         <span
           style={{ fontSize: "1rem", marginBottom: "10px" }}
-        >{`Check ${computedPhone} for SMS Code`}</span>
+        >{`${_txt_checkSmsCodeSentTo_a63} ${computedPhone}`}</span>
       )}
       {!showPinProceed && (
         <div ref={captchaRef} style={{ margin: "10px 0px" }} />
       )}
       {showPinProceed ? (
         <Input
-          placeholder="Code"
+          placeholder={_txt_code_a1e}
           type="tel"
           value={phoneCode}
           onChange={(e) => setPhoneCode(e.target.value)}
@@ -544,7 +656,7 @@ const BareBonesPhoneLogin = ({
           />
           <Input
             id="phone-input"
-            placeholder="Phone"
+            placeholder={_txt_phone_424}
             type="tel"
             value={phoneNumber}
             onChange={(e) =>
@@ -577,7 +689,7 @@ const BareBonesPhoneLogin = ({
               backgroundColor: "#fcba03",
             }}
           >
-            VERIFY
+            {_txt_verify_91d}
           </Button>
           <span
             onClick={() => setShowPinProceed(false)}
@@ -587,7 +699,7 @@ const BareBonesPhoneLogin = ({
               fontStyle: "italic",
             }}
           >
-            reset
+            {_txt_reset_9ac}
           </span>
         </>
       ) : (
@@ -604,7 +716,7 @@ const BareBonesPhoneLogin = ({
               margin: "10px 0px",
             }}
           >
-            SIGNUP PHONE
+            {_txt_signupPhone_ab1}
           </Button>
 
           <i
@@ -613,7 +725,7 @@ const BareBonesPhoneLogin = ({
             }}
             style={{ marginTop: "20px", color: token.colorInfoHover }}
           >
-            Existing User
+            {_txt_existingUser_742}
           </i>
         </$Vertical>
       )}

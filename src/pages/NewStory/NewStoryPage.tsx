@@ -54,7 +54,6 @@ const NewStoryPage = () => {
             />
           }
         />
-
         <$Vertical
           alignItems="center"
           style={{ width: "100%", alignItems: "center" }}

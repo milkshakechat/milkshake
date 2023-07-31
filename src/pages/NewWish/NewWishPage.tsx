@@ -76,29 +76,6 @@ interface StickerInitialFormValue {
   cookiePrice: number;
 }
 
-const MAX_WISH_NAME_CHARS = 60;
-const wishNameRules: Rule[] = [
-  {
-    max: MAX_WISH_NAME_CHARS,
-    message: `Wish name must be less than ${MAX_WISH_NAME_CHARS} characters`,
-  },
-];
-const MAX_WISH_ABOUT_CHARS = 560;
-const aboutRules: Rule[] = [
-  {
-    max: MAX_WISH_ABOUT_CHARS,
-    message: `Wish description must be less than ${MAX_WISH_ABOUT_CHARS} characters`,
-  },
-];
-
-const priceRules: Rule[] = [];
-const linkRules: Rule[] = [
-  {
-    type: "url",
-    message: "Must be a valid URL",
-  },
-];
-
 const contentStyle: React.CSSProperties = {
   margin: 0,
   height: "160px",
@@ -153,6 +130,229 @@ const NewWishPage = ({}: NewWishPageProps) => {
 
   const { data: getWishData, runQuery: runGetWishQuery } = useGetWish();
 
+  const _txt_wishCreated_cbc = intl.formatMessage({
+    id: "_txt_wishCreated_cbc.___NewWishPage",
+    defaultMessage: "Wish created!",
+  });
+  const _txt_wishUpdated_b02 = intl.formatMessage({
+    id: "_txt_wishUpdated_b02.___NewWishPage",
+    defaultMessage: "Wish updated!",
+  });
+  const _txt_isNotAnImageFile_67c = intl.formatMessage({
+    id: "_txt_isNotAnImageFile_67c.___NewWishPage",
+    defaultMessage: "is not an image file",
+  });
+  const _txt_updateWish_c8a = intl.formatMessage({
+    id: "_txt_updateWish_c8a.___NewWishPage",
+    defaultMessage: "Update Wish",
+  });
+  const _txt_createWish_bd8 = intl.formatMessage({
+    id: "_txt_createWish_bd8.___NewWishPage",
+    defaultMessage: "Create Wish",
+  });
+  const _txt_wishNameMustBeLessThan_ef8 = intl.formatMessage({
+    id: "_txt_wishNameMustBeLessThan_ef8.___NewWishPage",
+    defaultMessage: "Wish name must be less than ",
+  });
+  const _txt_charactersLength_c6d = intl.formatMessage({
+    id: "_txt_charactersLength_c6d.___NewWishPage",
+    defaultMessage: "characters length",
+  });
+  const _txt_wishDescriptionMustBeLessThan_982 = intl.formatMessage({
+    id: "_txt_wishDescriptionMustBeLessThan_982.___NewWishPage",
+    defaultMessage: "Wish description must be less than ",
+  });
+  const _txt_mustBeAValidUrl_e12 = intl.formatMessage({
+    id: "_txt_mustBeAValidUrl_e12.___NewWishPage",
+    defaultMessage: "Must be a valid URL",
+  });
+  const _txt_createdWish_619 = intl.formatMessage({
+    id: "_txt_createdWish_619.___NewWishPage",
+    defaultMessage: "Created Wish",
+  });
+  const _txt_createAnother_e15 = intl.formatMessage({
+    id: "_txt_createAnother_e15.___NewWishPage",
+    defaultMessage: "Create Another",
+  });
+  const _txt_viewWish_6a8 = intl.formatMessage({
+    id: "_txt_viewWish_6a8.___NewWishPage",
+    defaultMessage: "View Wish",
+  });
+  const _txt_uploading_586 = intl.formatMessage({
+    id: "_txt_uploading_586.___NewWishPage",
+    defaultMessage: "Uploading...",
+  });
+  const _txt_images_330 = intl.formatMessage({
+    id: "_txt_images_330.___NewWishPage",
+    defaultMessage: "images",
+  });
+  const _txt_event_31e = intl.formatMessage({
+    id: "_txt_event_31e.___NewWishPage",
+    defaultMessage: "Event",
+  });
+  const _txt_gift_b3b = intl.formatMessage({
+    id: "_txt_gift_b3b.___NewWishPage",
+    defaultMessage: "Gift",
+  });
+  const _txt_removeGraphic_b15 = intl.formatMessage({
+    id: "_txt_removeGraphic_b15.___NewWishPage",
+    defaultMessage: "Remove graphic?",
+  });
+  const _txt_areYouSureToRemoveImage_395 = intl.formatMessage({
+    id: "_txt_areYouSureToRemoveImage_395.___NewWishPage",
+    defaultMessage: "Are you sure to remove image #",
+  });
+  const _txt_yes_361 = intl.formatMessage({
+    id: "_txt_yes_361.___NewWishPage",
+    defaultMessage: "Yes",
+  });
+  const _txt_no_574 = intl.formatMessage({
+    id: "_txt_no_574.___NewWishPage",
+    defaultMessage: "No",
+  });
+  const _txt_wishName_556 = intl.formatMessage({
+    id: "_txt_wishName_556.___NewWishPage",
+    defaultMessage: "Wish Name",
+  });
+  const _txt_whatDoYouWishFor_ad7 = intl.formatMessage({
+    id: "_txt_whatDoYouWishFor_ad7.___NewWishPage",
+    defaultMessage: "What do you wish for?",
+  });
+  const _txt_about_692 = intl.formatMessage({
+    id: "_txt_about_692.___NewWishPage",
+    defaultMessage: "About",
+  });
+  const _txt_whyYouLikeThisWishOptional_b7f = intl.formatMessage({
+    id: "_txt_whyYouLikeThisWishOptional_b7f.___NewWishPage",
+    defaultMessage: "Why you like this wish (optional)",
+  });
+  const _txt_externalLink_ceb = intl.formatMessage({
+    id: "_txt_externalLink_ceb.___NewWishPage",
+    defaultMessage: "External link",
+  });
+  const _txt_linkToEventOrShoppingPage_716 = intl.formatMessage({
+    id: "_txt_linkToEventOrShoppingPage_716.___NewWishPage",
+    defaultMessage: "Link to event or shopping page",
+  });
+  const _txt_priceInCookies_ea9 = intl.formatMessage({
+    id: "_txt_priceInCookies_ea9.___NewWishPage",
+    defaultMessage: "Price in Cookies",
+  });
+  const _txt_wishlistsArePurchasedWithCookiesTheInappCurrencyOfMilkshakeChatYouCanRedeemCookiesForCash_7b1 =
+    intl.formatMessage({
+      id: "_txt_wishlistsArePurchasedWithCookiesTheInappCurrencyOfMilkshakeChatYouCanRedeemCookiesForCash_7b1.___NewWishPage",
+      defaultMessage:
+        "Wishlists are purchased with COOKIES, the in-app currency of Milkshake Chat. You can redeem COOKIES for cash.",
+    });
+  const _txt_howOftenThisWishPriceWillBeChargedToTheCustomerFan_3f2 =
+    intl.formatMessage({
+      id: "_txt_howOftenThisWishPriceWillBeChargedToTheCustomerFan_3f2.___NewWishPage",
+      defaultMessage:
+        "How often this wish price will be charged to the customer fan.",
+    });
+  const _txt_frequency_fa1 = intl.formatMessage({
+    id: "_txt_frequency_fa1.___NewWishPage",
+    defaultMessage: "Frequency",
+  });
+  const _txt_onceTimePayment_7f8 = intl.formatMessage({
+    id: "_txt_onceTimePayment_7f8.___NewWishPage",
+    defaultMessage: "Once Time Payment",
+  });
+  const _txt_dailyRecurring_dd1 = intl.formatMessage({
+    id: "_txt_dailyRecurring_dd1.___NewWishPage",
+    defaultMessage: "Daily Recurring",
+  });
+  const _txt_weeklyRecurring_d51 = intl.formatMessage({
+    id: "_txt_weeklyRecurring_d51.___NewWishPage",
+    defaultMessage: "Weekly Recurring",
+  });
+  const _txt_monthlyRecurring_5da = intl.formatMessage({
+    id: "_txt_monthlyRecurring_5da.___NewWishPage",
+    defaultMessage: "Monthly Recurring",
+  });
+  const _txt_doYouWantToAllowAnyoneToBuyThisWishOrFriendsOnly_a9e =
+    intl.formatMessage({
+      id: "_txt_doYouWantToAllowAnyoneToBuyThisWishOrFriendsOnly_a9e.___NewWishPage",
+      defaultMessage:
+        "Do you want to allow anyone to buy this wish, or friends only?",
+    });
+  const _txt_friendsOnly_6c8 = intl.formatMessage({
+    id: "_txt_friendsOnly_6c8.___NewWishPage",
+    defaultMessage: "Friends Only",
+  });
+  const _txt_publicMarketplace_433 = intl.formatMessage({
+    id: "_txt_publicMarketplace_433.___NewWishPage",
+    defaultMessage: "Public Marketplace",
+  });
+  const _txt_optionalCountdownTimerForYourEventOrWish_5cc = intl.formatMessage({
+    id: "_txt_optionalCountdownTimerForYourEventOrWish_5cc.___NewWishPage",
+    defaultMessage: "Optional countdown timer for your event or wish.",
+  });
+  const _txt_countdown_fae = intl.formatMessage({
+    id: "_txt_countdown_fae.___NewWishPage",
+    defaultMessage: "Countdown",
+  });
+  const _txt_favorite_317 = intl.formatMessage({
+    id: "_txt_favorite_317.___NewWishPage",
+    defaultMessage: "Favorite",
+  });
+  const _txt_isThisAFavoritedWishlistItem_cc3 = intl.formatMessage({
+    id: "_txt_isThisAFavoritedWishlistItem_cc3.___NewWishPage",
+    defaultMessage: "Is this a favorited wishlist item?",
+  });
+  const _txt_regular_a2d = intl.formatMessage({
+    id: "_txt_regular_a2d.___NewWishPage",
+    defaultMessage: "Regular",
+  });
+  const _txt_stickerGraphic_30e = intl.formatMessage({
+    id: "_txt_stickerGraphic_30e.___NewWishPage",
+    defaultMessage: "Sticker Graphic",
+  });
+  const _txt_anyoneWhoBuysYourWishlistItemWillGetAnExclusiveStickerForChat_502 =
+    intl.formatMessage({
+      id: "_txt_anyoneWhoBuysYourWishlistItemWillGetAnExclusiveStickerForChat_502.___NewWishPage",
+      defaultMessage:
+        "Anyone who buys your wishlist item will get an exclusive sticker for chat",
+    });
+  const _txt_changeSticker_a62 = intl.formatMessage({
+    id: "_txt_changeSticker_a62.___NewWishPage",
+    defaultMessage: "Change Sticker",
+  });
+  const _txt_stickerName_265 = intl.formatMessage({
+    id: "_txt_stickerName_265.___NewWishPage",
+    defaultMessage: "Sticker Name",
+  });
+  const _txt_theNameOfTheStickerThatBuyersWillSeeInTheirChats_9bc =
+    intl.formatMessage({
+      id: "_txt_theNameOfTheStickerThatBuyersWillSeeInTheirChats_9bc.___NewWishPage",
+      defaultMessage:
+        "The name of the sticker that buyers will see in their chats.",
+    });
+  const _txt_stickerNameOptional_24e = intl.formatMessage({
+    id: "_txt_stickerNameOptional_24e.___NewWishPage",
+    defaultMessage: "Sticker Name (optional)",
+  });
+  const _txt_simple_24g = intl.formatMessage({
+    id: "_txt_simple_24g.___NewWishPage",
+    defaultMessage: "Simple",
+  });
+  const _txt_advanced_24g = intl.formatMessage({
+    id: "_txt_advanced_24g.___NewWishPage",
+    defaultMessage: "Advanced",
+  });
+  const _txt_newWish_24g = intl.formatMessage({
+    id: "_txt_newWish_24g.___NewWishPage",
+    defaultMessage: "New Wish",
+  });
+  const _txt_editWish_24g = intl.formatMessage({
+    id: "_txt_editWish_24g.___NewWishPage",
+    defaultMessage: "Edit Wish",
+  });
+  const _txt_uploadImages_24g = intl.formatMessage({
+    id: "_txt_uploadImages_24g.___NewWishPage",
+    defaultMessage: "Upload Images",
+  });
+
   useEffect(() => {
     if (wishIDFromURL && !wishName) {
       const run = async () => {
@@ -177,11 +377,6 @@ const NewWishPage = ({}: NewWishPageProps) => {
           setWishType(wish.wishType);
           if (wish.externalURL) setExternalUrl(wish.externalURL);
           if (wish.countdownDate) {
-            console.log("wish.countdownDate", wish.countdownDate);
-            console.log(
-              "wish.countdownDate > dayjs",
-              dayjs(wish.countdownDate)
-            );
             setCountdownDate(dayjs(wish.countdownDate));
           }
         }
@@ -214,7 +409,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
     });
     setIsSubmitting(false);
     setSubmitted(true);
-    message.success("Wish created!");
+    message.success(_txt_wishCreated_cbc);
   };
 
   const updateForm = async () => {
@@ -270,19 +465,18 @@ const NewWishPage = ({}: NewWishPageProps) => {
     await runUpdateWishMutation(updateParams);
     setIsSubmitting(false);
     setSubmitted(true);
-    message.success("Wish updated!");
+    message.success(_txt_wishUpdated_b02);
     navigate({
       pathname: `/app/wish/${wishIDFromURL}`,
     });
   };
 
   const validateFile = (file: File) => {
-    console.log(`validateFile`, file);
     if (
       file.type.toLowerCase() in
       ["image/png", "image/jpeg", "image/jpg", "image/gif"]
     ) {
-      message.error(`${file.name} is not an image file`);
+      message.error(`${file.name} ${_txt_isNotAnImageFile_67c}`);
       return false;
     }
     return true;
@@ -315,7 +509,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
                 width: "100%",
               }}
             >
-              Update Wish
+              {_txt_updateWish_c8a}
             </Button>
           ) : (
             <Button
@@ -329,7 +523,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
                 width: "100%",
               }}
             >
-              Create Wish
+              {_txt_createWish_bd8}
             </Button>
           )}
         </div>
@@ -392,9 +586,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
   };
 
   const removeGraphic = () => {
-    console.log(`currentSlide`, currentSlide);
     const url = graphicsUrl[currentSlide];
-    console.log(`url`, url);
     if (url.indexOf("default_gift.jpeg") > -1) {
       setGraphicsUrl((prev) => prev.filter((u) => u !== url));
       setCompressedGraphicsUrl((prev) => prev.filter((u) => u !== url));
@@ -438,6 +630,30 @@ const NewWishPage = ({}: NewWishPageProps) => {
   if (!selfUser || (wishIDFromURL && !finishedLoadingEdit)) {
     return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
+
+  const MAX_WISH_NAME_CHARS = 60;
+  const wishNameRules: Rule[] = [
+    {
+      max: MAX_WISH_NAME_CHARS,
+      message: `${_txt_wishNameMustBeLessThan_ef8} ${MAX_WISH_NAME_CHARS} ${_txt_charactersLength_c6d}`,
+    },
+  ];
+  const MAX_WISH_ABOUT_CHARS = 560;
+  const aboutRules: Rule[] = [
+    {
+      max: MAX_WISH_ABOUT_CHARS,
+      message: `${_txt_wishDescriptionMustBeLessThan_982} ${MAX_WISH_ABOUT_CHARS} ${_txt_charactersLength_c6d}`,
+    },
+  ];
+
+  const priceRules: Rule[] = [];
+  const linkRules: Rule[] = [
+    {
+      type: "url",
+      message: _txt_mustBeAValidUrl_e12,
+    },
+  ];
+
   return (
     <>
       <LayoutInteriorHeader
@@ -451,11 +667,11 @@ const NewWishPage = ({}: NewWishPageProps) => {
             {backButtonText}
           </Button>
         }
-        title={wishIDFromURL ? <PP>Edit Wish</PP> : <PP>New Wish</PP>}
+        title={wishIDFromURL ? _txt_editWish_24g : _txt_newWish_24g}
         rightAction={
           <Switch
-            checkedChildren="Advanced"
-            unCheckedChildren="Simple"
+            checkedChildren={_txt_advanced_24g}
+            unCheckedChildren={_txt_simple_24g}
             checked={showAdvancedView}
             onChange={(v) => {
               setShowAdvancedView(v);
@@ -484,7 +700,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
                   color: token.colorTextHeading,
                 }}
               >
-                Created Wish
+                {_txt_createdWish_619}
               </div>
             </PP>
             <Button
@@ -493,7 +709,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
               type="primary"
               style={{ fontWeight: "bold" }}
             >
-              Create Another
+              {_txt_createAnother_e15}
             </Button>
             <Button
               type="link"
@@ -507,7 +723,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
               }}
               style={{ marginTop: "20px" }}
             >
-              View Wish
+              {_txt_viewWish_6a8}
             </Button>
           </$Vertical>
         </AppLayoutPadding>
@@ -577,8 +793,6 @@ const NewWishPage = ({}: NewWishPageProps) => {
                     maxCount={4}
                     multiple
                     customRequest={async (options) => {
-                      console.log(`uploading...`);
-                      console.log(options);
                       try {
                         await uploadWishlistGraphics(options.file);
                         if (options && options.onSuccess) {
@@ -592,12 +806,12 @@ const NewWishPage = ({}: NewWishPageProps) => {
                     }}
                     beforeUpload={validateFile}
                   >
-                    <Button>Upload Images</Button>
+                    <Button>{_txt_uploadImages_24g}</Button>
                     {isUploadingGraphics ? (
                       <span style={{ marginLeft: "10px" }}>
                         <LoadingOutlined />
 
-                        <PP>Uploading..</PP>
+                        {_txt_uploading_586}
                       </span>
                     ) : (
                       <span
@@ -606,7 +820,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
                           color: token.colorTextDisabled,
                         }}
                       >
-                        <PP>{`${graphicsUrl.length}/${MAX_GRAPHICS} images`}</PP>
+                        <PP>{`${graphicsUrl.length}/${MAX_GRAPHICS} ${_txt_images_330}`}</PP>
                       </span>
                     )}
                   </Upload>
@@ -616,20 +830,20 @@ const NewWishPage = ({}: NewWishPageProps) => {
                     onChange={(v) => setWishType(v)}
                     value={wishType}
                     options={[
-                      { value: WishTypeEnum.Event, label: "Event" },
-                      { value: WishTypeEnum.Gift, label: "Gift" },
+                      { value: WishTypeEnum.Event, label: _txt_event_31e },
+                      { value: WishTypeEnum.Gift, label: _txt_gift_b3b },
                     ]}
                   />
                 </$Horizontal>
                 {graphicsUrl.length > 0 && (
                   <Popconfirm
-                    title="Remove graphic?"
-                    description={`Are you sure to remove image #${
+                    title={_txt_removeGraphic_b15}
+                    description={`${_txt_areYouSureToRemoveImage_395}${
                       currentSlide + 1
                     }?`}
                     onConfirm={removeGraphic}
-                    okText="Yes"
-                    cancelText="No"
+                    okText={_txt_yes_361}
+                    cancelText={_txt_no_574}
                   >
                     <DeleteOutlined
                       style={{
@@ -645,7 +859,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
               <Spacer height={isMobile ? "10px" : "20px"} />
               <Form.Item
                 required
-                label={<PP>Wish Name</PP>}
+                label={_txt_wishName_556}
                 name="wishName"
                 rules={wishNameRules}
               >
@@ -654,12 +868,12 @@ const NewWishPage = ({}: NewWishPageProps) => {
                   onChange={(e) =>
                     setWishName(e.target.value.slice(0, MAX_WISH_NAME_CHARS))
                   }
-                  placeholder="What do you wish for?"
+                  placeholder={_txt_whatDoYouWishFor_ad7}
                 />
               </Form.Item>
               {showAdvancedView && (
                 <Form.Item
-                  label={<PP>About</PP>}
+                  label={_txt_about_692}
                   name="about"
                   rules={aboutRules}
                 >
@@ -671,21 +885,21 @@ const NewWishPage = ({}: NewWishPageProps) => {
                         e.target.value.slice(0, MAX_WISH_ABOUT_CHARS)
                       )
                     }
-                    placeholder="Why you like this wish (optional)"
+                    placeholder={_txt_whyYouLikeThisWishOptional_b7f}
                     style={{ resize: "none" }}
                   />
                 </Form.Item>
               )}
               {showAdvancedView && (
                 <Form.Item
-                  label={<PP>External link</PP>}
+                  label={_txt_externalLink_ceb}
                   name="link"
                   rules={linkRules}
                 >
                   <Input
                     value={externalUrl}
                     onChange={(e) => setExternalUrl(e.target.value)}
-                    placeholder="Link to event or shopping page"
+                    placeholder={_txt_linkToEventOrShoppingPage_716}
                     style={{ resize: "none" }}
                   />
                 </Form.Item>
@@ -694,13 +908,14 @@ const NewWishPage = ({}: NewWishPageProps) => {
 
               <Form.Item
                 required
-                label={<PP>Price in Cookies</PP>}
+                label={_txt_priceInCookies_ea9}
                 name="price"
                 rules={priceRules}
                 tooltip={
                   <PP>
-                    {`Wishlists are purchased with COOKIES, the in-app currency of
-                  Milkshake Chat. You can redeem COOKIES for cash.`}
+                    {
+                      _txt_wishlistsArePurchasedWithCookiesTheInappCurrencyOfMilkshakeChatYouCanRedeemCookiesForCash_7b1
+                    }
                   </PP>
                 }
               >
@@ -724,12 +939,10 @@ const NewWishPage = ({}: NewWishPageProps) => {
               </Form.Item>
               {showAdvancedView && (
                 <Form.Item
-                  label={<PP>Frequency</PP>}
+                  label={_txt_frequency_fa1}
                   name="buyFrequency"
                   tooltip={
-                    <PP>
-                      {`How often this wish price will be charged to the customer fan.`}
-                    </PP>
+                    _txt_howOftenThisWishPriceWillBeChargedToTheCustomerFan_3f2
                   }
                 >
                   <Select
@@ -741,19 +954,19 @@ const NewWishPage = ({}: NewWishPageProps) => {
                     options={[
                       {
                         value: WishBuyFrequency.OneTime,
-                        label: "Once Time Payment",
+                        label: _txt_onceTimePayment_7f8,
                       },
                       {
                         value: WishBuyFrequency.Daily,
-                        label: "Daily Recurring",
+                        label: _txt_dailyRecurring_dd1,
                       },
                       {
                         value: WishBuyFrequency.Weekly,
-                        label: "Weekly Recurring",
+                        label: _txt_weeklyRecurring_d51,
                       },
                       {
                         value: WishBuyFrequency.Monthly,
-                        label: "Monthly Recurring",
+                        label: _txt_monthlyRecurring_5da,
                       },
                     ]}
                   />
@@ -765,9 +978,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
                   label={<PP>Visibility</PP>}
                   name="visibility"
                   tooltip={
-                    <PP>
-                      {`Do you want to allow anyone to buy this wish, or friends only?`}
-                    </PP>
+                    _txt_doYouWantToAllowAnyoneToBuyThisWishOrFriendsOnly_a9e
                   }
                 >
                   <Select
@@ -779,11 +990,11 @@ const NewWishPage = ({}: NewWishPageProps) => {
                     options={[
                       {
                         value: WishlistVisibility.FriendsOnly,
-                        label: "Friends Only",
+                        label: _txt_friendsOnly_6c8,
                       },
                       {
                         value: WishlistVisibility.PublicMarketplace,
-                        label: "Public Marketplace",
+                        label: _txt_publicMarketplace_433,
                       },
                     ]}
                   />
@@ -791,11 +1002,9 @@ const NewWishPage = ({}: NewWishPageProps) => {
               )}
               {showAdvancedView && (
                 <Form.Item
-                  label={<PP>Countdown</PP>}
+                  label={_txt_countdown_fae}
                   name="countdown"
-                  tooltip={
-                    <PP>{`Optional countdown timer for your event or wish.`}</PP>
-                  }
+                  tooltip={_txt_optionalCountdownTimerForYourEventOrWish_5cc}
                 >
                   <DatePicker
                     showTime
@@ -809,13 +1018,13 @@ const NewWishPage = ({}: NewWishPageProps) => {
               )}
               {showAdvancedView && (
                 <Form.Item
-                  label={<PP>Favorite</PP>}
+                  label={_txt_favorite_317}
                   name="favorite"
-                  tooltip={<PP>{`Is this a favorited wishlist item?`}</PP>}
+                  tooltip={_txt_isThisAFavoritedWishlistItem_cc3}
                 >
                   <Switch
                     checkedChildren="Favorite"
-                    unCheckedChildren="Regular"
+                    unCheckedChildren={_txt_regular_a2d}
                     checked={isFavorite}
                     onChange={(v) => {
                       setIsFavorite(v);
@@ -827,12 +1036,9 @@ const NewWishPage = ({}: NewWishPageProps) => {
               {showAdvancedView && (
                 <Form.Item
                   name="stickerImage"
-                  label={<PP>Sticker Graphic</PP>}
+                  label={_txt_stickerGraphic_30e}
                   tooltip={
-                    <PP>
-                      Anyone who buys your wishlist item will get an exclusive
-                      sticker for chat
-                    </PP>
+                    _txt_anyoneWhoBuysYourWishlistItemWillGetAnExclusiveStickerForChat_502
                   }
                 >
                   <Avatar
@@ -862,14 +1068,10 @@ const NewWishPage = ({}: NewWishPageProps) => {
                         <Space direction="horizontal">
                           <Spin />
                           <Spacer width="5px" />
-                          <span>
-                            <PP>Uploading...</PP>
-                          </span>
+                          <span>{_txt_uploading_586}</span>
                         </Space>
                       ) : (
-                        <span>
-                          <PP>Change Sticker</PP>
-                        </span>
+                        <span>{_txt_changeSticker_a62}</span>
                       )}
                     </Button>
                   </Upload>
@@ -878,10 +1080,12 @@ const NewWishPage = ({}: NewWishPageProps) => {
 
               {showAdvancedView && (
                 <Form.Item
-                  label={<PP>Sticker Name</PP>}
+                  label={_txt_stickerName_265}
                   name="stickerTitle"
                   rules={wishNameRules}
-                  tooltip="The name of the sticker that buyers will see in their chats."
+                  tooltip={
+                    _txt_theNameOfTheStickerThatBuyersWillSeeInTheirChats_9bc
+                  }
                 >
                   <Input
                     value={stickerTitle}
@@ -890,7 +1094,7 @@ const NewWishPage = ({}: NewWishPageProps) => {
                         e.target.value.slice(0, MAX_WISH_NAME_CHARS)
                       )
                     }
-                    placeholder="Sticker Name (optional)"
+                    placeholder={_txt_stickerNameOptional_24e}
                   />
                 </Form.Item>
               )}

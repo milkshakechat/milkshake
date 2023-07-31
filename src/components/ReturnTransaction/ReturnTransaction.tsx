@@ -65,6 +65,88 @@ export const ReturnTransaction = ({
   const [api, contextHolder] = notification.useNotification();
   const [isLoading, setIsLoading] = useState(false);
 
+  const _txt_pastProtection_f2a = intl.formatMessage({
+    id: "_txt_pastProtection_f2a.___ReturnTransaction",
+    defaultMessage: "Past Protection",
+  });
+  const _txt_final_49e = intl.formatMessage({
+    id: "_txt_final_49e.___ReturnTransaction",
+    defaultMessage: "Final",
+  });
+  const _txt_okay_608 = intl.formatMessage({
+    id: "_txt_okay_608.___ReturnTransaction",
+    defaultMessage: "Okay",
+  });
+  const _txt_transactionPending_b02 = intl.formatMessage({
+    id: "_txt_transactionPending_b02.___ReturnTransaction",
+    defaultMessage: "Transaction Pending",
+  });
+  const _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_d68 =
+    intl.formatMessage({
+      id: "_txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_d68.___ReturnTransaction",
+      defaultMessage:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+    });
+  const _txt_finalized_a86 = intl.formatMessage({
+    id: "_txt_finalized_a86.___ReturnTransaction",
+    defaultMessage: "Finalized",
+  });
+  const _txt_returnCookies_988 = intl.formatMessage({
+    id: "_txt_returnCookies_988.___ReturnTransaction",
+    defaultMessage: "Return Cookies?",
+  });
+  const _txt_cancel_cc8 = intl.formatMessage({
+    id: "_txt_cancel_cc8.___ReturnTransaction",
+    defaultMessage: "Cancel",
+  });
+  const _txt_returnCookies_edf = intl.formatMessage({
+    id: "_txt_returnCookies_edf.___ReturnTransaction",
+    defaultMessage: "Return Cookies",
+  });
+  const _txt_note_2b3 = intl.formatMessage({
+    id: "_txt_note_2b3.___ReturnTransaction",
+    defaultMessage: "Note",
+  });
+  const _txt_addANoteToYourReturn_2f8 = intl.formatMessage({
+    id: "_txt_addANoteToYourReturn_2f8.___ReturnTransaction",
+    defaultMessage: "Add a note to your return",
+  });
+  const _txt_save_be5 = intl.formatMessage({
+    id: "_txt_save_be5.___ReturnTransaction",
+    defaultMessage: "Save",
+  });
+  const _txt_youCanNoLongerReturnThese_f5e = intl.formatMessage({
+    id: "_txt_youCanNoLongerReturnThese_f5e.___ReturnTransaction",
+    defaultMessage: "You can no longer return these ",
+  });
+  const _txt_CookiesAsTheTransactionIsFinalizedAfterDays_bc0 =
+    intl.formatMessage({
+      id: "_txt_CookiesAsTheTransactionIsFinalizedAfterDays_bc0.___ReturnTransaction",
+      defaultMessage: " cookies as the transaction is finalized after 90 days.",
+    });
+  const _txt_areYouSureYouWantToReturn_ebc = intl.formatMessage({
+    id: "_txt_areYouSureYouWantToReturn_ebc.___ReturnTransaction",
+    defaultMessage: "Are you sure you want to return ",
+  });
+  const _txt_CookiesTheOtherPersonWillBeNotifiedOfYourCookieReturn_e22 =
+    intl.formatMessage({
+      id: "_txt_CookiesTheOtherPersonWillBeNotifiedOfYourCookieReturn_e22.___ReturnTransaction",
+      defaultMessage:
+        " cookies? The other person will be notified of your cookie return.",
+    });
+  const _txt_transactionIsFinal_c86 = intl.formatMessage({
+    id: "_txt_transactionIsFinal_c86.___ReturnTransaction",
+    defaultMessage: "Transaction is final ",
+  });
+  const _txt_newAccountBalance_bb2 = intl.formatMessage({
+    id: "_txt_newAccountBalance_bb2.___ReturnTransaction",
+    defaultMessage: "New Account Balance",
+  });
+  const _txt_returnCookies_658 = intl.formatMessage({
+    id: "_txt_returnCookies_658.___ReturnTransaction",
+    defaultMessage: "RETURN COOKIES",
+  });
+
   const { runMutation: runRecallTransactionMutation } = useRecallTransaction();
 
   const { escrowWallet } = useWalletState(
@@ -82,11 +164,11 @@ export const ReturnTransaction = ({
     // Convert createdAt to dayjs object and add 90 days
 
     if (isAfter) {
-      return <Tag color="purple">{"Past Protection"}</Tag>;
+      return <Tag color="purple">{_txt_pastProtection_f2a}</Tag>;
     }
     // Compute the "time until" string
     const timeUntilString = targetDate.fromNow();
-    return <Tag color="green">{`Final ${timeUntilString}`}</Tag>;
+    return <Tag color="green">{`${_txt_final_49e} ${timeUntilString}`}</Tag>;
   };
   const recallTx = async () => {
     if (tx) {
@@ -107,14 +189,14 @@ export const ReturnTransaction = ({
     const btn = (
       <Space>
         <Button type="primary" size="small" onClick={() => api.destroy(key)}>
-          Okay
+          {_txt_okay_608}
         </Button>
       </Space>
     );
     api.open({
-      message: "Transaction Sent",
+      message: _txt_transactionPending_b02,
       description:
-        "Check your notifications in a minute to see confirmation of your transaction.",
+        _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_d68,
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
@@ -126,7 +208,7 @@ export const ReturnTransaction = ({
     tx && tx.createdAt ? checkIfRecallable(tx?.createdAt) : false;
   return (
     <Drawer
-      title={isAfter ? "Finalized" : "Return Cookies?"}
+      title={isAfter ? _txt_finalized_a86 : _txt_returnCookies_988}
       placement="bottom"
       width={500}
       onClose={() => {
@@ -139,7 +221,7 @@ export const ReturnTransaction = ({
       extra={
         <Space>
           {isMobile && <div>{daysProtectionLeft()}</div>}
-          {!isMobile && <Button onClick={onClose}>Cancel</Button>}
+          {!isMobile && <Button onClick={onClose}>{_txt_cancel_cc8}</Button>}
         </Space>
       }
     >
@@ -158,7 +240,7 @@ export const ReturnTransaction = ({
           <$Vertical>
             <$Horizontal justifyContent="space-between">
               <Statistic
-                title={`Return Cookies`}
+                title={_txt_returnCookies_edf}
                 value={Math.abs(tx?.amount || 0)}
                 prefix={<LogoCookie width="20px" />}
                 style={{ flex: 1 }}
@@ -193,7 +275,7 @@ export const ReturnTransaction = ({
                         marginLeft: "5px",
                       }}
                     >
-                      Note
+                      {_txt_note_2b3}
                     </span>
                   </$Horizontal>
                 )}
@@ -204,7 +286,7 @@ export const ReturnTransaction = ({
               <$Vertical style={{ position: "relative" }}>
                 <Input.TextArea
                   rows={2}
-                  placeholder="Add a note to your return"
+                  placeholder={_txt_addANoteToYourReturn_2f8}
                   style={{ resize: "none", margin: "10px 0px" }}
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
@@ -220,8 +302,8 @@ export const ReturnTransaction = ({
                     bottom: -20,
                   }}
                 >
-                  <span>Cancel</span>
-                  <span>Save</span>
+                  <span>{_txt_cancel_cc8}</span>
+                  <span>{_txt_save_be5}</span>
                 </$Horizontal>
               </$Vertical>
             ) : null}
@@ -250,9 +332,9 @@ export const ReturnTransaction = ({
                     color: token.colorTextDescription,
                     fontSize: "0.9rem",
                   }}
-                >{`You can no longer return these ${
+                >{`${_txt_youCanNoLongerReturnThese_f5e} ${
                   tx?.amount || 0
-                } cookies as the transaction is finalized after 90 days.`}</span>
+                } ${_txt_CookiesAsTheTransactionIsFinalizedAfterDays_bc0}`}</span>
               </>
             ) : (
               <>
@@ -261,16 +343,16 @@ export const ReturnTransaction = ({
                     color: token.colorTextDescription,
                     fontSize: "0.9rem",
                   }}
-                >{`Are you sure you want to return ${
+                >{`${_txt_areYouSureYouWantToReturn_ebc} ${
                   tx?.amount || 0
-                } cookies? The other person will be notified of your cookie return.`}</span>
+                } ${_txt_CookiesTheOtherPersonWillBeNotifiedOfYourCookieReturn_e22}`}</span>
 
                 <span
                   style={{
                     color: token.colorTextDescription,
                     fontSize: "0.9rem",
                   }}
-                >{`Transaction is final ${targetDate.fromNow()}`}</span>
+                >{`${_txt_transactionIsFinal_c86} ${targetDate.fromNow()}`}</span>
               </>
             )}
 
@@ -281,7 +363,7 @@ export const ReturnTransaction = ({
                 alignItems={noteMode ? "flex-end" : "flex-start"}
               >
                 <Statistic
-                  title="New Account Balance"
+                  title={_txt_newAccountBalance_bb2}
                   value={USER_COOKIE_JAR_BALANCE}
                   suffix={
                     <span>{`${tx?.amount || 0 < 0 ? "-" : "+"} ${Math.abs(
@@ -292,7 +374,7 @@ export const ReturnTransaction = ({
                 />
                 {!isMobile && (
                   <div>
-                    <Tag color="green">{`Final ${targetDate.fromNow()}`}</Tag>
+                    <Tag color="green">{`${_txt_final_49e} ${targetDate.fromNow()}`}</Tag>
                   </div>
                 )}
               </$Horizontal>
@@ -308,7 +390,9 @@ export const ReturnTransaction = ({
               disabled={isAfter || !withinGracePeriod}
               loading={isLoading}
             >
-              {withinGracePeriod ? "RETURN COOKIES" : "Past Protection"}
+              {withinGracePeriod
+                ? _txt_returnCookies_658
+                : _txt_pastProtection_f2a}
             </Button>
             {isMobile && (
               <Button
@@ -321,7 +405,7 @@ export const ReturnTransaction = ({
                   color: token.colorTextDescription,
                 }}
               >
-                Cancel
+                {_txt_cancel_cc8}
               </Button>
             )}
             {isMobile && <Spacer />}

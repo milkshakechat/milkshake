@@ -42,6 +42,19 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
   const viewingOwnProfile =
     selfUser && wishlist.every((w) => w.creatorID === selfUser.id);
 
+  const _txt_search_a91 = intl.formatMessage({
+    id: "_txt_search_a91.___WishlistGallery",
+    defaultMessage: "Search",
+  });
+  const _txt_newWish_568 = intl.formatMessage({
+    id: "_txt_newWish_568.___WishlistGallery",
+    defaultMessage: "New Wish",
+  });
+  const _txt_edit_659 = intl.formatMessage({
+    id: "_txt_edit_659.___WishlistGallery",
+    defaultMessage: "Edit",
+  });
+
   const sortByRecent = (wishlist: Wish[]) => {
     return wishlist.slice().sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -86,7 +99,7 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
           value={searchString}
           onChange={(e) => setSearchString(e.target.value)}
           addonBefore={<SearchOutlined />}
-          placeholder="Search"
+          placeholder={_txt_search_a91}
           suffix={
             <Dropdown
               menu={{
@@ -205,7 +218,7 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
                 marginLeft: "10px",
               }}
             >
-              <PP>New Wish</PP>
+              {_txt_newWish_568}
             </Button>
           </NavLink>
         )}
@@ -263,7 +276,7 @@ const WishlistGallery = ({ wishlist }: WishlistGalleryProps) => {
               {
                 viewingOwnProfile ? (
                   <NavLink to={`/app/wish/${item.id}/edit`}>
-                    <Button>Edit</Button>
+                    <Button>{_txt_edit_659}</Button>
                   </NavLink>
                 ) : null
                 // <Button

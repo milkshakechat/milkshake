@@ -1,0 +1,65 @@
+import { i18n_Mapping } from "./types.i18n.ContactsPage";
+
+export const importLanguage = (): i18n_Mapping => {
+  const language: i18n_Mapping = {
+    "alertSentFriendRequest.___ContactsPage": "ส่งคำขอเป็นเพื่อนแล้ว",
+    "alertWaitingForAcceptance.___ContactsPage": "รอการตอบรับ",
+    "alertDeclinedRequest.___ContactsPage": "คำขอที่ถูกปฏิเสธ",
+    "alertBlockedUser.___ContactsPage": "ผู้ใช้ที่ถูกบล็อก",
+    "labelNotFriends.___ContactsPage": "ไม่ใช่เพื่อน",
+    "labelFriendRequestSent.___ContactsPage": "ส่งคำขอเป็นเพื่อน",
+    "labelSearchContacts.___ContactsPage": "ค้นหาผู้ติดต่อ",
+    "labelFriends.___ContactsPage": "เพื่อน",
+    "btnCancel.___ContactsPage": "ยกเลิก",
+    "btnGroupChat.___ContactsPage": "แชทเป็นกลุ่ม",
+    "btnViewProfile.___ContactsPage": "ดูประวัติ",
+    "btnRemove.___ContactsPage": "ลบ",
+    "btnBlock.___ContactsPage": "ปิดกั้น",
+    "btnChat.___ContactsPage": "แชท",
+    "btnStartGroupChat.___ContactsPage": "เริ่มการสนทนากลุ่ม",
+    "labelRequests.___ContactsPage": "คำขอ",
+    "btnSendAgain.___ContactsPage": "ส่งอีกครั้ง",
+    "btnUnblock.___ContactsPage": "เลิกบล็อก",
+    "btnDecline.___ContactsPage": "ปฏิเสธ",
+    "alertAcceptedRequest.___ContactsPage": "ตอบรับคำขอเป็นเพื่อนแล้ว",
+    "btnAccept.___ContactsPage": "ยอมรับ",
+    "btnAddFriend.___ContactsPage": "เพิ่มเพื่อน",
+    "labelContacts.___ContactsPage": "ติดต่อ",
+    "btnBack.___ContactsPage": "กลับ",
+    "btnAdd.___ContactsPage": "เพิ่ม",
+    "alertDeclinedRequest2.___ContactsPage": "ปฏิเสธคำขอเป็นเพื่อน",
+    "btnConfirmDecline.___ContactsPage": "ใช่ปฏิเสธ",
+    "labelHighlightDecline.___ContactsPage": "ปฏิเสธ",
+    "labelAreYouSure.___ContactsPage": "คุณแน่ใจหรือว่าคุณต้องการ",
+    "labelThisFriendRequest.___ContactsPage": "คำขอเป็นเพื่อนนี้?",
+    "alertRemovedFriends.___ContactsPage": "ลบออกจากเพื่อน",
+    "btnYesRemove.___ContactsPage": "ใช่ ลบ",
+    "btnBoldRemove.___ContactsPage": "ลบ",
+    "labelRemoveFriendExplain.___ContactsPage":
+      "เพื่อนคนนี้? พวกเขาจะต้องยอมรับคำขอเป็นเพื่อนใหม่หากคุณต้องการแชท",
+    "btnYesBlock.___ContactsPage": "ครับบล๊อค",
+    "btnBoldBlock.___ContactsPage": "ปิดกั้น",
+    "labelRemoveFriendConfirmm.___ContactsPage":
+      "ติดต่อนี้? พวกเขาจะไม่สามารถส่งข้อความหรือคำขอเป็นเพื่อนถึงคุณได้",
+    "btnYesUnblock.___ContactsPage": "ใช่ เลิกบล็อก",
+    "labelBoldUnblock.___ContactsPage": "ปลดบล็อก",
+    "labelConfirmUnblockK.___ContactsPage":
+      "ติดต่อนี้? พวกเขาจะสามารถเห็นคุณมีอยู่จริง",
+    "btnNo.___ContactsPage": "เลขที่",
+    "alertCancelledRequest.___ContactsPage": "คำขอเป็นเพื่อนที่ถูกยกเลิก",
+    "btnYesCancel.___ContactsPage": "ใช่ ยกเลิก",
+    "labelBoldCancel.___ContactsPage": "ยกเลิก",
+    "labelConfirmCancelExplain.___ContactsPage":
+      "คำขอเป็นเพื่อนของคุณ? คุณสามารถส่งใหม่ได้ในภายหลัง",
+    "btnSearch.___ContactsPage": "ค้นหา",
+    "btnSearchLabel.___ContactsPage": "ค้นหาชื่อผู้ใช้ที่แน่นอน",
+    "btnVisitProfile.___ContactsPage": "เยี่ยมชมโปรไฟล์",
+    "labelSearchUsers.___ContactsPage": "ค้นหาผู้ใช้",
+    "alertMustExactMatch.___ContactsPage":
+      "ต้องเป็นชื่อผู้ใช้ที่ตรงกันทุกประการ",
+    "alertCopieidProfileLink.___ContactsPage": "คัดลอกลิงก์โปรไฟล์!",
+    "btnCopyURL.___ContactsPage": "คัดลอก URL",
+    "btnClose.___ContactsPage": "ปิด",
+  };
+  return language;
+};

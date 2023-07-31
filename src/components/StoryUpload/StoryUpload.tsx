@@ -87,6 +87,59 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
   >([]);
   const [locationPlaceID, setLocationPlaceID] = useState("");
 
+  const _txt_fileIsNotAnPngjpegImageOrAMpmovVideoFile_57c = intl.formatMessage({
+    id: "_txt_fileIsNotAnPngjpegImageOrAMpmovVideoFile_57c.___UploadStory",
+    defaultMessage: "File is not an PNG/JPEG image or a MP4/MOV video file",
+  });
+  const _txt_videoMustBeUnderSeconds_d2d = intl.formatMessage({
+    id: "_txt_videoMustBeUnderSeconds_d2d.___UploadStory",
+    defaultMessage: "Video must be under 60 seconds",
+  });
+  const _txt_videoMustBeUnderMb_89f = intl.formatMessage({
+    id: "_txt_videoMustBeUnderMb_89f.___UploadStory",
+    defaultMessage: "Video must be under 200MB",
+  });
+  const _txt_clickToUpload_c96 = intl.formatMessage({
+    id: "_txt_clickToUpload_c96.___UploadStory",
+    defaultMessage: "Click to Upload",
+  });
+  const _txt_uploadStory_199 = intl.formatMessage({
+    id: "_txt_uploadStory_199.___UploadStory",
+    defaultMessage: "Upload Story",
+  });
+  const _txt_attachWishOptional_c35 = intl.formatMessage({
+    id: "_txt_attachWishOptional_c35.___UploadStory",
+    defaultMessage: "Attach Wish (Optional)",
+  });
+  const _txt_location_a83 = intl.formatMessage({
+    id: "_txt_location_a83.___UploadStory",
+    defaultMessage: "Location",
+  });
+  const _txt_postStory_8a6 = intl.formatMessage({
+    id: "_txt_postStory_8a6.___UploadStory",
+    defaultMessage: "Post Story",
+  });
+  const _txt_caption_269 = intl.formatMessage({
+    id: "_txt_caption_269.___UploadStory",
+    defaultMessage: "Caption",
+  });
+  const _txt_captionMustBeLessThanCharacters_775 = intl.formatMessage({
+    id: "_txt_captionMustBeLessThanCharacters_775.___UploadStory",
+    defaultMessage: "Caption must be less than 240 characters",
+  });
+  const _txt_successfulPost_b9d = intl.formatMessage({
+    id: "_txt_successfulPost_b9d.___UploadStory",
+    defaultMessage: "Successful Post",
+  });
+  const _txt_postAnother_7a4 = intl.formatMessage({
+    id: "_txt_postAnother_7a4.___UploadStory",
+    defaultMessage: "Post Another",
+  });
+  const _txt_viewStory_fbb = intl.formatMessage({
+    id: "_txt_viewStory_fbb.___UploadStory",
+    defaultMessage: "View Story",
+  });
+
   useEffect(() => {
     // Initialize the Autocomplete Service
     const autoCompleteService =
@@ -98,7 +151,6 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
       autoCompleteService.getPlacePredictions(
         { input: locationSearchString },
         (predictions: google.maps.places.QueryAutocompletePrediction[]) => {
-          console.log(`predictions`, predictions);
           if (predictions) {
             setLocationPredictions(predictions);
           }
@@ -156,19 +208,19 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
         file.type.indexOf("image/jpeg") > -1 ||
         file.type.indexOf("image/jpg") > -1;
       if (!isVideo && !isImage) {
-        message.error(`File is not an PNG/JPEG image or a MP4/MOV video file`);
+        message.error(_txt_fileIsNotAnPngjpegImageOrAMpmovVideoFile_57c);
         return false;
       }
       if (file.type.indexOf("video") > -1) {
         const duration = await getVideoDuration(file);
 
         if (duration > 61) {
-          message.error("Video must be under 60 seconds");
+          message.error(_txt_videoMustBeUnderSeconds_d2d);
           return false;
         }
 
         if (file.size > 200000000) {
-          message.error("Video must be under 200MB");
+          message.error(_txt_videoMustBeUnderMb_89f);
           return false;
         }
       }
@@ -229,9 +281,9 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
             }}
           >
             <VideoCameraOutlined style={{ fontSize: "3rem", margin: "20px" }} />
-            <span style={{ fontSize: "1.5rem" }}>Upload Story</span>
+            <span style={{ fontSize: "1.5rem" }}>{_txt_uploadStory_199}</span>
             <Button icon={<UploadOutlined />} style={{ marginTop: "20px" }}>
-              Click to Upload
+              {_txt_clickToUpload_c96}
             </Button>
           </$Vertical>
         </Dragger>
@@ -276,7 +328,7 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
         <Input
           suffix={<SearchOutlined />}
           addonBefore={<FireFilled />}
-          placeholder={"Attach Wish (Optional)"}
+          placeholder={_txt_attachWishOptional_c35}
           value={searchString}
           onChange={(e) => setSearchString(e.target.value)}
         />
@@ -332,7 +384,7 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
       >
         <Input
           suffix={<SearchOutlined />}
-          placeholder="Location"
+          placeholder={_txt_location_a83}
           value={locationSearchString}
           onChange={(e) => setLocationSearchString(e.target.value)}
           addonBefore={<EnvironmentFilled />}
@@ -397,7 +449,7 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
               marginTop: "20px",
             }}
           >
-            Post Story
+            {_txt_postStory_8a6}
           </Button>
         </div>
         <Spacer />
@@ -409,14 +461,14 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
     return (
       <$Vertical>
         <Input.TextArea
-          placeholder={"Caption"}
+          placeholder={_txt_caption_269}
           rows={2}
           value={caption}
           onChange={(e) => {
             if (e.target.value.length <= 240) {
               setCaption(e.target.value);
             } else {
-              message.error("Caption must be less than 240 characters");
+              message.error(_txt_captionMustBeLessThanCharacters_775);
             }
           }}
           style={{ resize: "none" }}
@@ -458,7 +510,7 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
                 color: token.colorTextHeading,
               }}
             >
-              Successful Post
+              {_txt_successfulPost_b9d}
             </div>
           </PP>
           <Button
@@ -467,7 +519,7 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
             type="primary"
             style={{ fontWeight: "bold" }}
           >
-            Post Another
+            {_txt_postAnother_7a4}
           </Button>
           <Button
             type="link"
@@ -478,7 +530,7 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
             }}
             style={{ marginTop: "20px" }}
           >
-            View Story
+            {_txt_viewStory_fbb}
           </Button>
         </$Vertical>
       </div>

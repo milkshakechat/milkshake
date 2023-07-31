@@ -77,6 +77,69 @@ const TopUpWallet = ({
   const { screen, isMobile } = useWindowSize();
   const location = useLocation();
 
+  const _txt_oneTimePurchase_e6e = intl.formatMessage({
+    id: "_txt_oneTimePurchase_e6e.___TopUpWallet",
+    defaultMessage: "One Time Purchase",
+  });
+  const _txt_dailySubscription_1de = intl.formatMessage({
+    id: "_txt_dailySubscription_1de.___TopUpWallet",
+    defaultMessage: "Daily Subscription",
+  });
+  const _txt_monthlySubscription_7bf = intl.formatMessage({
+    id: "_txt_monthlySubscription_7bf.___TopUpWallet",
+    defaultMessage: "Monthly Subscription",
+  });
+  const _txt_weeklySubscription_b10 = intl.formatMessage({
+    id: "_txt_weeklySubscription_b10.___TopUpWallet",
+    defaultMessage: "Weekly Subscription",
+  });
+  const _txt_failedToPurchaseWish_b3c = intl.formatMessage({
+    id: "_txt_failedToPurchaseWish_b3c.___TopUpWallet",
+    defaultMessage: "Failed to purchase wish",
+  });
+  const _txt_topUpWallet_45c = intl.formatMessage({
+    id: "_txt_topUpWallet_45c.___TopUpWallet",
+    defaultMessage: "Top Up Wallet",
+  });
+  const _txt_cancel_2fc = intl.formatMessage({
+    id: "_txt_cancel_2fc.___TopUpWallet",
+    defaultMessage: "Cancel",
+  });
+  const _txt_enterACustomAmount_6e8 = intl.formatMessage({
+    id: "_txt_enterACustomAmount_6e8.___TopUpWallet",
+    defaultMessage: "Enter a custom amount",
+  });
+  const _txt_save_b7d = intl.formatMessage({
+    id: "_txt_save_b7d.___TopUpWallet",
+    defaultMessage: "Save",
+  });
+  const _txt_addCookiesToWallet_f1c = intl.formatMessage({
+    id: "_txt_addCookiesToWallet_f1c.___TopUpWallet",
+    defaultMessage: "Add cookies to wallet",
+  });
+  const _txt_suggest_3a7 = intl.formatMessage({
+    id: "_txt_suggest_3a7.___TopUpWallet",
+    defaultMessage: "Suggest",
+  });
+  const _txt_areYouSureYouWantToBuy_35a = intl.formatMessage({
+    id: "_txt_areYouSureYouWantToBuy_35a.___TopUpWallet",
+    defaultMessage: "Are you sure you want to buy ",
+  });
+  const _txt_CookiesToAddToYourWalletMilkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_e83 =
+    intl.formatMessage({
+      id: "_txt_CookiesToAddToYourWalletMilkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_e83.___TopUpWallet",
+      defaultMessage:
+        " cookies to add to your wallet? Milkshake protects you while online dating with 100% refunds within 90 days.",
+    });
+  const _txt_accountBalance_287 = intl.formatMessage({
+    id: "_txt_accountBalance_287.___TopUpWallet",
+    defaultMessage: "Account Balance",
+  });
+  const _txt_confirmPurchase_e9c = intl.formatMessage({
+    id: "_txt_confirmPurchase_e9c.___TopUpWallet",
+    defaultMessage: "CONFIRM PURCHASE",
+  });
+
   const [addPaymentMethodModalOpen, setAddPaymentMethodModalOpen] =
     useState(false);
 
@@ -101,13 +164,13 @@ const TopUpWallet = ({
 
   const renderBuyFrequencyTag = (buyFrequency: WishBuyFrequency) => {
     if (buyFrequency === WishBuyFrequency.OneTime) {
-      return <Tag>One Time Purchase</Tag>;
+      return <Tag>{_txt_oneTimePurchase_e6e}</Tag>;
     } else if (buyFrequency === WishBuyFrequency.Daily) {
-      return <Tag>Daily Subscription</Tag>;
+      return <Tag>{_txt_dailySubscription_1de}</Tag>;
     } else if (buyFrequency === WishBuyFrequency.Monthly) {
-      return <Tag>Monthly Subscription</Tag>;
+      return <Tag>{_txt_monthlySubscription_7bf}</Tag>;
     } else if (buyFrequency === WishBuyFrequency.Weekly) {
-      return <Tag>Weekly Subscription</Tag>;
+      return <Tag>{_txt_weeklySubscription_b10}</Tag>;
     }
   };
 
@@ -141,7 +204,7 @@ const TopUpWallet = ({
       });
       if (!res) {
         setIsLoading(false);
-        message.error("Failed to purchase wish");
+        message.error(_txt_failedToPurchaseWish_b3c);
         return;
       }
       if (res.checkoutToken) {
@@ -184,7 +247,7 @@ const TopUpWallet = ({
 
   return (
     <Drawer
-      title="Top Up Wallet"
+      title={_txt_topUpWallet_45c}
       placement="bottom"
       width={500}
       onClose={() => {
@@ -198,12 +261,7 @@ const TopUpWallet = ({
       height={"70vh"}
       extra={
         <Space>
-          {isMobile && (
-            <div>
-              <Tag color="green">90 Days Protection</Tag>
-            </div>
-          )}
-          {!isMobile && <Button onClick={onClose}>Cancel</Button>}
+          <Button onClick={onClose}>{_txt_cancel_2fc}</Button>
         </Space>
       }
     >
@@ -229,7 +287,9 @@ const TopUpWallet = ({
                         color: token.colorTextDescription,
                         fontSize: "1rem",
                       }}
-                    >{`Offer a custom amount`}</span>
+                    >
+                      {_txt_enterACustomAmount_6e8}
+                    </span>
                     <$Horizontal
                       alignItems="center"
                       justifyContent="flex-start"
@@ -261,14 +321,14 @@ const TopUpWallet = ({
                           type="link"
                           size="small"
                         >
-                          Save
+                          {_txt_save_b7d}
                         </Button>
                       )}
                     </$Horizontal>
                   </$Vertical>
                 ) : (
                   <Statistic
-                    title={`Add cookies to wallet`}
+                    title={_txt_addCookiesToWallet_f1c}
                     value={suggestedPrice}
                     prefix={<LogoCookie width="20px" />}
                     suffix={
@@ -290,7 +350,7 @@ const TopUpWallet = ({
                             marginLeft: "5px",
                           }}
                         >
-                          Suggest
+                          {_txt_suggest_3a7}
                         </span>
                       </$Horizontal>
                     }
@@ -320,22 +380,17 @@ const TopUpWallet = ({
                   color: token.colorTextDescription,
                   fontSize: "0.9rem",
                 }}
-              >{`Are you sure you want to buy ${suggestedPrice} cookies to add to your wallet? Milkshake protects you while online dating with 100% refunds within 90 days.`}</p>
+              >{`${_txt_areYouSureYouWantToBuy_35a} ${suggestedPrice} ${_txt_CookiesToAddToYourWalletMilkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_e83}`}</p>
 
               <$Horizontal
                 justifyContent="space-between"
                 alignItems={noteMode ? "flex-end" : "flex-start"}
               >
                 <Statistic
-                  title="Account Balance"
+                  title={_txt_accountBalance_287}
                   value={`${USER_COOKIE_JAR_BALANCE} + ${suggestedPrice}`}
                   precision={0}
                 />
-                {!isMobile && (
-                  <div>
-                    <Tag color="green">90 Days Protection</Tag>
-                  </div>
-                )}
               </$Horizontal>
             </$Vertical>
             <$Vertical spacing={1} style={{ marginTop: "10px" }}>
@@ -348,7 +403,7 @@ const TopUpWallet = ({
                 onClick={checkoutPurchase}
                 loading={isLoading}
               >
-                CONFIRM PURCHASE
+                {_txt_confirmPurchase_e9c}
               </Button>
               {isMobile && (
                 <Button

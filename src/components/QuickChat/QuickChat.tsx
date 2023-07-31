@@ -36,7 +36,7 @@ import { UserID, Username } from "@milkshakechat/helpers";
 import { WishAuthor } from "@/api/graphql/types";
 import { useState } from "react";
 import LogoCookie from "../LogoText/LogoCookie";
-import { CloseOutlined, EditOutlined, WalletOutlined } from "@ant-design/icons";
+import { CloseOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
 import { Spacer } from "../AppLayout/AppLayout";
 import { useChatsListState } from "@/state/chats.state";
 import { themeTypeEnum, useStyleConfigGlobal } from "@/state/styleconfig.state";
@@ -83,6 +83,81 @@ export const QuickChat = ({
   const [suggestMode, setSuggestMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const _txt_viewChat_ea6 = intl.formatMessage({
+    id: "_txt_viewChat_ea6.___QuickChat",
+    defaultMessage: "View Chat",
+  });
+  const _txt_youDoNotHaveEnoughCookiesInYourWallet_f12 = intl.formatMessage({
+    id: "_txt_youDoNotHaveEnoughCookiesInYourWallet_f12.___QuickChat",
+    defaultMessage: "You do not have enough cookies in your wallet.",
+  });
+  const _txt_clickHereToBuyCookies_421 = intl.formatMessage({
+    id: "_txt_clickHereToBuyCookies_421.___QuickChat",
+    defaultMessage: "Click here to buy cookies.",
+  });
+  const _txt_sendAMessage_a6a = intl.formatMessage({
+    id: "_txt_sendAMessage_a6a.___QuickChat",
+    defaultMessage: "Send a message",
+  });
+  const _txt_DaysProtection_d23 = intl.formatMessage({
+    id: "_txt_DaysProtection_d23.___QuickChat",
+    defaultMessage: "90 Days Protection",
+  });
+  const _txt_cancel_4aa = intl.formatMessage({
+    id: "_txt_cancel_4aa.___QuickChat",
+    defaultMessage: "Cancel",
+  });
+  const _txt_sendAMessage_dcd = intl.formatMessage({
+    id: "_txt_sendAMessage_dcd.___QuickChat",
+    defaultMessage: "Send a message",
+  });
+  const _txt_typeAMessage_ca4 = intl.formatMessage({
+    id: "_txt_typeAMessage_ca4.___QuickChat",
+    defaultMessage: "Type a message...",
+  });
+  const _txt_giftACustomAmount_ff3 = intl.formatMessage({
+    id: "_txt_giftACustomAmount_ff3.___QuickChat",
+    defaultMessage: "Gift a custom amount",
+  });
+  const _txt_save_727 = intl.formatMessage({
+    id: "_txt_save_727.___QuickChat",
+    defaultMessage: "Save",
+  });
+  const _txt_giveHerACookie_9cc = intl.formatMessage({
+    id: "_txt_giveHerACookie_9cc.___QuickChat",
+    defaultMessage: "Give her a cookie?",
+  });
+  const _txt_suggest_bde = intl.formatMessage({
+    id: "_txt_suggest_bde.___QuickChat",
+    defaultMessage: "Suggest",
+  });
+  const _txt_balance_f75 = intl.formatMessage({
+    id: "_txt_balance_f75.___QuickChat",
+    defaultMessage: "Balance",
+  });
+  const _txt_areYouSureYouWantToGift_617 = intl.formatMessage({
+    id: "_txt_areYouSureYouWantToGift_617.___QuickChat",
+    defaultMessage: "Are you sure you want to gift ",
+  });
+  const _txt_CookiesTo_3ee = intl.formatMessage({
+    id: "_txt_CookiesTo_3ee.___QuickChat",
+    defaultMessage: " cookies to ",
+  });
+  const _txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612 =
+    intl.formatMessage({
+      id: "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat",
+      defaultMessage:
+        "Milkshake protects you while online dating with 100% refunds within 90 days.",
+    });
+  const _txt_sendMessage_7ff = intl.formatMessage({
+    id: "_txt_sendMessage_7ff.___QuickChat",
+    defaultMessage: "SEND MESSAGE",
+  });
+  const _txt_cancel_12a = intl.formatMessage({
+    id: "_txt_cancel_12a.___QuickChat",
+    defaultMessage: "Cancel",
+  });
+
   const { tradingWallet } = useWalletState(
     (state) => ({
       tradingWallet: state.tradingWallet,
@@ -128,7 +203,7 @@ export const QuickChat = ({
     };
     return (
       <Button onClick={() => goToChatPage([user.id, selfUser.id])}>
-        View Chat
+        {_txt_viewChat_ea6}
       </Button>
     );
   };
@@ -137,8 +212,8 @@ export const QuickChat = ({
     if (tradingWallet && suggestedPrice > tradingWallet?.balance) {
       message.error(
         <span>
-          You do not have enough cookies in your wallet.{" "}
-          <a href="/app/wallet">Click here to buy cookies.</a>
+          {_txt_youDoNotHaveEnoughCookiesInYourWallet_f12}{" "}
+          <a href="/app/wallet">{_txt_clickHereToBuyCookies_421}</a>
         </span>
       );
       return;
@@ -158,7 +233,7 @@ export const QuickChat = ({
 
   return (
     <Drawer
-      title="Send a message"
+      title={_txt_sendAMessage_a6a}
       placement="bottom"
       onClose={() => {
         if (onClose) {
@@ -173,10 +248,10 @@ export const QuickChat = ({
         <Space>
           {isMobile && (
             <div>
-              <Tag color="green">90 Days Protection</Tag>
+              <Tag color="green">{_txt_DaysProtection_d23}</Tag>
             </div>
           )}
-          {!isMobile && <Button onClick={onClose}>Cancel</Button>}
+          {!isMobile && <Button onClick={onClose}>{_txt_cancel_4aa}</Button>}
         </Space>
       }
     >
@@ -226,11 +301,11 @@ export const QuickChat = ({
           </$Horizontal>
 
           <p style={{ color: token.colorTextDescription, fontSize: "0.9rem" }}>
-            Send a message
+            {_txt_sendAMessage_a6a}
           </p>
           <Input.TextArea
             rows={3}
-            placeholder={textPlaceholder || "Type a message..."}
+            placeholder={textPlaceholder || _txt_typeAMessage_ca4}
             style={{ resize: "none" }}
             value={note}
             onChange={(e) => setNote(e.target.value)}
@@ -254,7 +329,9 @@ export const QuickChat = ({
                       color: token.colorTextDescription,
                       fontSize: "1rem",
                     }}
-                  >{`Offer a custom amount`}</span>
+                  >
+                    {_txt_giftACustomAmount_ff3}
+                  </span>
                   <$Horizontal alignItems="center" justifyContent="flex-start">
                     <InputNumber
                       addonBefore={<LogoCookie width="16px" />}
@@ -283,14 +360,14 @@ export const QuickChat = ({
                         type="link"
                         size="small"
                       >
-                        Save
+                        {_txt_save_727}
                       </Button>
                     )}
                   </$Horizontal>
                 </$Vertical>
               ) : (
                 <Statistic
-                  title={`Give her a cookie?`}
+                  title={_txt_giveHerACookie_9cc}
                   value={suggestedPrice}
                   prefix={<LogoCookie width="20px" />}
                   suffix={
@@ -312,7 +389,7 @@ export const QuickChat = ({
                           marginLeft: "5px",
                         }}
                       >
-                        Suggest
+                        {_txt_suggest_bde}
                       </span>
                     </$Horizontal>
                   }
@@ -325,7 +402,7 @@ export const QuickChat = ({
                     fontSize: "0.8rem",
                   }}
                 >
-                  Balance
+                  {_txt_balance_f75}
                 </span>
                 <span
                   style={{
@@ -340,7 +417,7 @@ export const QuickChat = ({
             </$Horizontal>
             <p
               style={{ color: token.colorTextDescription, fontSize: "0.9rem" }}
-            >{`Are you sure you want to gift ${suggestedPrice} cookies to @${user.username}? Milkshake protects you while online dating with 100% refunds within 90 days.`}</p>
+            >{`${_txt_areYouSureYouWantToGift_617} ${suggestedPrice} ${_txt_CookiesTo_3ee} @${user.username}? ${_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612}`}</p>
           </$Vertical>
           <$Vertical style={{ marginTop: "10px" }}>
             <Button
@@ -351,7 +428,7 @@ export const QuickChat = ({
               style={{ fontWeight: "bold" }}
               loading={isLoading}
             >
-              SEND MESSAGE
+              {_txt_sendMessage_7ff}
             </Button>
             {isMobile && (
               <Button
@@ -364,7 +441,7 @@ export const QuickChat = ({
                   color: token.colorTextDescription,
                 }}
               >
-                Cancel
+                {_txt_cancel_4aa}
               </Button>
             )}
             {isMobile && <Spacer />}

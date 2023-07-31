@@ -35,6 +35,7 @@ import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import { $Horizontal } from "@/api/utils/spacing";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import JankyCurtain from "@/components/JankyCurtain/JankyCurtain";
+import { useIntl } from "react-intl";
 
 export const UserPublicPage = () => {
   const { username: usernameFromUrl } = useParams();
@@ -78,6 +79,43 @@ export const UserPublicPage = () => {
       );
     }
   }, [spotlightUser]);
+  const intl = useIntl();
+  const _txt_hiddenProfile_f7d = intl.formatMessage({
+    id: "_txt_hiddenProfile_f7d.___UserPublicPage",
+    defaultMessage: "Hidden Profile",
+  });
+  const _txt_privateProfile_f4a = intl.formatMessage({
+    id: "_txt_privateProfile_f4a.___UserPublicPage",
+    defaultMessage: "Private Profile",
+  });
+  const _txt_publicProfile_f6c = intl.formatMessage({
+    id: "_txt_publicProfile_f6c.___UserPublicPage",
+    defaultMessage: "Public Profile",
+  });
+  const _txt_message_b57 = intl.formatMessage({
+    id: "_txt_message_b57.___UserPublicPage",
+    defaultMessage: "Message",
+  });
+  const _txt_createAccount_9ef = intl.formatMessage({
+    id: "_txt_createAccount_9ef.___UserPublicPage",
+    defaultMessage: "Create Account",
+  });
+  const _txt_noUserFound_b9f = intl.formatMessage({
+    id: "_txt_noUserFound_b9f.___UserPublicPage",
+    defaultMessage: "No User Found",
+  });
+  const _txt_joinTheParty_2e8 = intl.formatMessage({
+    id: "_txt_joinTheParty_2e8.___UserPublicPage",
+    defaultMessage: "Join the Party",
+  });
+  const _txt_join_4ba = intl.formatMessage({
+    id: "_txt_join_4ba.___UserPublicPage",
+    defaultMessage: "JOIN",
+  });
+  const _txt_login_e06 = intl.formatMessage({
+    id: "_txt_login_e06.___UserPublicPage",
+    defaultMessage: "LOGIN",
+  });
 
   if (!spotlightUser) {
     return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
@@ -89,11 +127,11 @@ export const UserPublicPage = () => {
     ) {
       return null;
     } else if (spotlightUser.privacyMode === PrivacyModeEnum.Hidden) {
-      return <Tag color="red">Hidden Profile</Tag>;
+      return <Tag color="red">{_txt_hiddenProfile_f7d}</Tag>;
     } else if (spotlightUser.privacyMode === PrivacyModeEnum.Private) {
-      return <Tag color="orange">Private Profile</Tag>;
+      return <Tag color="orange">{_txt_privateProfile_f4a}</Tag>;
     } else if (spotlightUser.privacyMode === PrivacyModeEnum.Public) {
-      return <Tag color="green">Public Profile</Tag>;
+      return <Tag color="green">{_txt_publicProfile_f6c}</Tag>;
     }
   };
 
@@ -164,7 +202,7 @@ export const UserPublicPage = () => {
                   actionButton={
                     spotlightUser.id !== "notfound" ? (
                       <NavLink to={`/app/login`}>
-                        <Button>Message</Button>
+                        <Button>{_txt_message_b57}</Button>
                       </NavLink>
                     ) : null
                   }
@@ -182,7 +220,7 @@ export const UserPublicPage = () => {
                       title={`Join Milkshake Today`}
                       extra={
                         <NavLink to={`/app/signup/onboarding`}>
-                          <Button>Create Account</Button>
+                          <Button>{_txt_createAccount_9ef}</Button>
                         </NavLink>
                       }
                     />
@@ -191,7 +229,7 @@ export const UserPublicPage = () => {
               </div>
             ) : (
               <div>
-                <h1>No User Found</h1>
+                <h1>{_txt_noUserFound_b9f}</h1>
                 <span>{`@${usernameFromUrl}`}</span>
               </div>
             )}
@@ -226,7 +264,7 @@ export const UserPublicPage = () => {
                 fontFamily: BRANDED_FONT,
               }}
             >
-              Join the Party
+              {_txt_joinTheParty_2e8}
             </span>
           </$Horizontal>
         )}
@@ -247,7 +285,9 @@ export const UserPublicPage = () => {
               fontSize: "1rem",
             }}
           >
-            {spotlightUser.stories.length > 0 ? `JOIN MILKSHAKE` : `LOGIN`}
+            {spotlightUser.stories.length > 0
+              ? `${_txt_join_4ba} MILKSHAKE`
+              : _txt_login_e06}
           </Button>
         </NavLink>
       </div>

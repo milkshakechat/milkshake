@@ -43,17 +43,54 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
     console.log(key);
   };
 
+  const _txt_transactions_615 = intl.formatMessage({
+    id: "_txt_transactions_615.___WalletPanel",
+    defaultMessage: "Transactions",
+  });
+  const _txt_sales_c93 = intl.formatMessage({
+    id: "_txt_sales_c93.___WalletPanel",
+    defaultMessage: "Sales",
+  });
+  const _txt_purchases_efc = intl.formatMessage({
+    id: "_txt_purchases_efc.___WalletPanel",
+    defaultMessage: "Purchases",
+  });
+  const _txt_okay_1d3 = intl.formatMessage({
+    id: "_txt_okay_1d3.___WalletPanel",
+    defaultMessage: "Okay",
+  });
+  const _txt_transactionPending_8c7 = intl.formatMessage({
+    id: "_txt_transactionPending_8c7.___WalletPanel",
+    defaultMessage: "Transaction Pending",
+  });
+  const _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_be6 =
+    intl.formatMessage({
+      id: "_txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_be6.___WalletPanel",
+      defaultMessage:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+    });
+  const _txt_cookieBalance_731 = intl.formatMessage({
+    id: "_txt_cookieBalance_731.___WalletPanel",
+    defaultMessage: "COOKIE BALANCE",
+  });
+  const _txt_recharge_f7c = intl.formatMessage({
+    id: "_txt_recharge_f7c.___WalletPanel",
+    defaultMessage: "Recharge",
+  });
+
   const items: TabsProps["items"] = [
     {
       key: "transactions",
-      label: `Transactions`,
+      label: _txt_transactions_615,
       children: (
         <TransactionHistory walletAliasID={wallet.walletAliasID} txs={txs} />
       ),
     },
     {
       key: checkIfEscrowWallet(wallet.walletAliasID) ? "sales" : "purchases",
-      label: checkIfEscrowWallet(wallet.walletAliasID) ? "Sales" : "Purchases",
+      label: checkIfEscrowWallet(wallet.walletAliasID)
+        ? _txt_sales_c93
+        : _txt_purchases_efc,
       children: (
         <PurchaseHistory
           wallet={wallet}
@@ -68,19 +105,18 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
   }
 
   const openNotification = () => {
-    console.log("opening notification...");
     const key = `open${Date.now()}-1`;
     const btn = (
       <Space>
         <Button type="primary" size="small" onClick={() => api.destroy(key)}>
-          Okay
+          {_txt_okay_1d3}
         </Button>
       </Space>
     );
     api.open({
-      message: "Transaction Sent",
+      message: _txt_transactionPending_8c7,
       description:
-        "Check your notifications in a minute to see confirmation of your transaction.",
+        _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_be6,
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
@@ -108,7 +144,7 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
                     color: token.colorPrimary,
                   }}
                 >
-                  COOKIE BALANCE
+                  {_txt_cookieBalance_731}
                 </span>
               }
               prefix={
@@ -148,7 +184,7 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
                       onClick={() => setShowTopUpWallet(true)}
                       style={{ maxWidth: "250px" }}
                     >
-                      Recharge
+                      {_txt_recharge_f7c}
                     </Button>
                   </$Vertical>,
                 ]

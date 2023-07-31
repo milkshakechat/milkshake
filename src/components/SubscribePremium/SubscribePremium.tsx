@@ -36,6 +36,31 @@ export const SubscribePremium = () => {
   const location = useLocation();
   const { token } = theme.useToken();
 
+  const _txt_upgradeToPremium_d10 = intl.formatMessage({
+    id: "_txt_upgradeToPremium_d10.___SubscribePremium",
+    defaultMessage: "Upgrade to Premium",
+  });
+  const _txt_unlimitedChatVideo_cde = intl.formatMessage({
+    id: "_txt_unlimitedChatVideo_cde.___SubscribePremium",
+    defaultMessage: "Unlimited Chat & Video",
+  });
+  const _txt_premiumStickerPacks_847 = intl.formatMessage({
+    id: "_txt_premiumStickerPacks_847.___SubscribePremium",
+    defaultMessage: "Premium Sticker Packs",
+  });
+  const _txt_DaysRefundProtection_404 = intl.formatMessage({
+    id: "_txt_DaysRefundProtection_404.___SubscribePremium",
+    defaultMessage: "90 Days Refund Protection",
+  });
+  const _txt_subscribe_bf7 = intl.formatMessage({
+    id: "_txt_subscribe_bf7.___SubscribePremium",
+    defaultMessage: "SUBSCRIBE",
+  });
+  const _txt_noThanks_620 = intl.formatMessage({
+    id: "_txt_noThanks_620.___SubscribePremium",
+    defaultMessage: "No thanks",
+  });
+
   // const {
   //   data: demoQueryData,
   //   errors: demoQueryErrors,
@@ -80,28 +105,30 @@ export const SubscribePremium = () => {
               style={{ width: isMobile ? "250px" : "300px" }}
             />
           }
-          title={<b style={{ fontSize: "1.7rem" }}>{`Upgrade to Premium`}</b>}
+          title={
+            <b style={{ fontSize: "1.7rem" }}>{_txt_upgradeToPremium_d10}</b>
+          }
           subTitle={
             <>
               <span style={{ fontSize: "1.2rem" }}>
                 <CheckCircleFilled
                   style={{ color: token.colorSuccessActive, marginRight: 10 }}
                 />
-                {`Unlimited Chat & Video`}
+                {_txt_unlimitedChatVideo_cde}
               </span>
               <br />
               <span style={{ fontSize: "1.2rem" }}>
                 <CheckCircleFilled
                   style={{ color: token.colorSuccessActive, marginRight: 10 }}
                 />
-                {`Premium Sticker Packs`}
+                {_txt_premiumStickerPacks_847}
               </span>
               <br />
               <span style={{ fontSize: "1.2rem" }}>
                 <CheckCircleFilled
                   style={{ color: token.colorSuccessActive, marginRight: 10 }}
                 />
-                {`100 Days Refund Protection`}
+                {_txt_DaysRefundProtection_404}
               </span>
               <br />
               <Tag
@@ -133,7 +160,7 @@ export const SubscribePremium = () => {
                   style={{ fontWeight: "bold" }}
                   block
                 >
-                  SUBSCRIBE
+                  {_txt_subscribe_bf7}
                 </Button>
               </a>
               <NavLink to="/app/profile">
@@ -143,7 +170,9 @@ export const SubscribePremium = () => {
                     fontWeight: 300,
                     color: token.colorTextDescription,
                   }}
-                >{`No thanks`}</span>
+                >
+                  {_txt_noThanks_620}
+                </span>
               </NavLink>
             </$Vertical>
           }

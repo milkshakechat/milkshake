@@ -93,6 +93,10 @@ export const useWallets = () => {
     };
   }, [selfUser?.id]);
 
+  const { tokenID } = useUserState((state) => ({
+    tokenID: state.idToken,
+  }));
+
   const getRealtimeWallets = () => {
     const unsubs: (() => void)[] = [];
     if (selfUser) {
@@ -132,6 +136,7 @@ export const useWallets = () => {
 
   const listenRealtimeTxs = () => {
     let unsub = () => {};
+    if (!selfUser || !tokenID) return unsub;
     if (selfUser) {
       if (selfUser.tradingWallet) {
         let q = query(
@@ -154,6 +159,7 @@ export const useWallets = () => {
   };
 
   const paginateRecentTxs = () => {
+    if (!selfUser || !tokenID) return;
     if (selfUser) {
       if (selfUser.tradingWallet) {
         setIsLoadingTx(true);
@@ -278,9 +284,14 @@ export const usePurchaseManifest = () => {
   const [purchaseManifestTxs, setPmTxs] = useState<Tx_MirrorFireLedger[]>([]);
   const [purchaseManifest, setPm] = useState<PurchaseMainfest_Firestore>();
 
+  const { tokenID } = useUserState((state) => ({
+    tokenID: state.idToken,
+  }));
+
   const getPurchaseManifestTxs = async (
     purchaseManifestID: PurchaseMainfestID
   ) => {
+    if (!tokenID) return;
     if (selfUser) {
       const q = query(
         collection(firestore, FirestoreCollection.MIRROR_TX),

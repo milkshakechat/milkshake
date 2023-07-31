@@ -1,0 +1,65 @@
+import { i18n_Mapping } from "./types.i18n.ContactsPage";
+
+export const importLanguage = (): i18n_Mapping => {
+  const language: i18n_Mapping = {
+    "alertSentFriendRequest.___ContactsPage": "arkadaşlık isteği gönderdi",
+    "alertWaitingForAcceptance.___ContactsPage": "kabul bekleniyor",
+    "alertDeclinedRequest.___ContactsPage": "reddedilen istek",
+    "alertBlockedUser.___ContactsPage": "Engellenen kullanıcı",
+    "labelNotFriends.___ContactsPage": "Arkadaş değil",
+    "labelFriendRequestSent.___ContactsPage": "Arkadaşlık isteği gönderildi",
+    "labelSearchContacts.___ContactsPage": "Kişileri ara",
+    "labelFriends.___ContactsPage": "Arkadaşlar",
+    "btnCancel.___ContactsPage": "İptal etmek",
+    "btnGroupChat.___ContactsPage": "Grup Sohbeti",
+    "btnViewProfile.___ContactsPage": "Profili Görüntüle",
+    "btnRemove.___ContactsPage": "Kaldırmak",
+    "btnBlock.___ContactsPage": "Engellemek",
+    "btnChat.___ContactsPage": "Sohbet",
+    "btnStartGroupChat.___ContactsPage": "Grup Sohbeti Başlat",
+    "labelRequests.___ContactsPage": "İstekler",
+    "btnSendAgain.___ContactsPage": "Tekrar gönderin",
+    "btnUnblock.___ContactsPage": "engeli kaldırmak",
+    "btnDecline.___ContactsPage": "Reddetmek",
+    "alertAcceptedRequest.___ContactsPage": "Kabul edilen arkadaşlık isteği",
+    "btnAccept.___ContactsPage": "Kabul etmek",
+    "btnAddFriend.___ContactsPage": "Arkadaş Ekle",
+    "labelContacts.___ContactsPage": "Kişiler",
+    "btnBack.___ContactsPage": "Geri",
+    "btnAdd.___ContactsPage": "Eklemek",
+    "alertDeclinedRequest2.___ContactsPage": "arkadaşlık isteği reddedildi",
+    "btnConfirmDecline.___ContactsPage": "Evet, Reddet",
+    "labelHighlightDecline.___ContactsPage": "REDDETMEK",
+    "labelAreYouSure.___ContactsPage": "İstediğine emin misin",
+    "labelThisFriendRequest.___ContactsPage": "bu arkadaşlık isteği",
+    "alertRemovedFriends.___ContactsPage": "arkadaşlardan kaldırıldı",
+    "btnYesRemove.___ContactsPage": "Evet, Kaldır",
+    "btnBoldRemove.___ContactsPage": "KALDIRMAK",
+    "labelRemoveFriendExplain.___ContactsPage":
+      "bu arkadaş? Sohbet etmek istiyorsan yeni bir arkadaşlık isteğini kabul etmeleri gerekecek.",
+    "btnYesBlock.___ContactsPage": "Evet, Engelle",
+    "btnBoldBlock.___ContactsPage": "ENGELLEMEK",
+    "labelRemoveFriendConfirmm.___ContactsPage":
+      "bu kişi? Size mesaj veya arkadaşlık isteği gönderemezler.",
+    "btnYesUnblock.___ContactsPage": "Evet, Engellemeyi kaldır",
+    "labelBoldUnblock.___ContactsPage": "ENGELİ KALDIRMAK",
+    "labelConfirmUnblockK.___ContactsPage":
+      "bu kişi? Var olduğunuzu görebilecekler.",
+    "btnNo.___ContactsPage": "HAYIR",
+    "alertCancelledRequest.___ContactsPage": "arkadaşlık isteği iptal edildi",
+    "btnYesCancel.___ContactsPage": "Evet İptal",
+    "labelBoldCancel.___ContactsPage": "İPTAL ETMEK",
+    "labelConfirmCancelExplain.___ContactsPage":
+      "arkadaşlık isteğin Daha sonra bir tane daha gönderebilirsiniz.",
+    "btnSearch.___ContactsPage": "Aramak",
+    "btnSearchLabel.___ContactsPage": "Tam Kullanıcı Adı Araması",
+    "btnVisitProfile.___ContactsPage": "Profili ziyaret edin",
+    "labelSearchUsers.___ContactsPage": "Kullanıcı Ara",
+    "alertMustExactMatch.___ContactsPage":
+      "Tam bir kullanıcı adı eşleşmesi olmalıdır",
+    "alertCopieidProfileLink.___ContactsPage": "Profil bağlantısı kopyalandı!",
+    "btnCopyURL.___ContactsPage": "Url&#39;yi kopyala",
+    "btnClose.___ContactsPage": "Kapalı",
+  };
+  return language;
+};

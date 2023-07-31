@@ -97,6 +97,67 @@ export const TinderPage = () => {
     wishID: WishID;
   } | null>(null);
 
+  const _txt_okay_134 = intl.formatMessage({
+    id: "_txt_okay_134.___TinderPage",
+    defaultMessage: "Okay",
+  });
+  const _txt_transactionPending_2ef = intl.formatMessage({
+    id: "_txt_transactionPending_2ef.___TinderPage",
+    defaultMessage: "Transaction Pending",
+  });
+  const _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_969 =
+    intl.formatMessage({
+      id: "_txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_969.___TinderPage",
+      defaultMessage:
+        "Check your notifications in a minute to see confirmation of your transaction.",
+    });
+  const _txt_youHaveRefundProtection_aa2 = intl.formatMessage({
+    id: "_txt_youHaveRefundProtection_aa2.___TinderPage",
+    defaultMessage: "You have 100% refund protection",
+  });
+  const _txt_milkshakeProtectsYouWithRefundGuaranteeForDays_ffa =
+    intl.formatMessage({
+      id: "_txt_milkshakeProtectsYouWithRefundGuaranteeForDays_ffa.___TinderPage",
+      defaultMessage:
+        "Milkshake protects you with 100% refund guarantee for 90 days",
+    });
+  const _txt_learnMore_29f = intl.formatMessage({
+    id: "_txt_learnMore_29f.___TinderPage",
+    defaultMessage: "Learn More",
+  });
+  const _txt_viewEvent_620 = intl.formatMessage({
+    id: "_txt_viewEvent_620.___TinderPage",
+    defaultMessage: "View Event",
+  });
+  const _txt_viewGift_d09 = intl.formatMessage({
+    id: "_txt_viewGift_d09.___TinderPage",
+    defaultMessage: "View Gift",
+  });
+  const _txt_with_350 = intl.formatMessage({
+    id: "_txt_with_350.___TinderPage",
+    defaultMessage: "with",
+  });
+  const _txt_rsvpBy_8c0 = intl.formatMessage({
+    id: "_txt_rsvpBy_8c0.___TinderPage",
+    defaultMessage: "RSVP by",
+  });
+  const _txt_postYourFirstStory_a57 = intl.formatMessage({
+    id: "_txt_postYourFirstStory_a57.___TinderPage",
+    defaultMessage: "Post Your First Story",
+  });
+  const _txt_upload_836 = intl.formatMessage({
+    id: "_txt_upload_836.___TinderPage",
+    defaultMessage: "Upload",
+  });
+  const _txt_areYouComingToMyEvent_328 = intl.formatMessage({
+    id: "_txt_areYouComingToMyEvent_328.___TinderPage",
+    defaultMessage: "Are you coming to my event?",
+  });
+  const _txt_viewEvent_204 = intl.formatMessage({
+    id: "_txt_viewEvent_204.___TinderPage",
+    defaultMessage: "View Event",
+  });
+
   const [sortBy, setSortBy] = useState<WishlistSortByEnum>(
     WishlistSortByEnum.recent
   );
@@ -190,10 +251,6 @@ export const TinderPage = () => {
   };
 
   const outOfFrame = (swipeStory: SwipeStory, idx: number) => {
-    console.log(
-      `${swipeStory.story.id} (${idx}) left the screen!`,
-      currentIndexRef.current
-    );
     // handle the case in which go back is pressed before card goes outOfFrame
     currentIndexRef.current >= idx &&
       (childRefs[idx].current as any).restoreCard();
@@ -232,19 +289,18 @@ export const TinderPage = () => {
   };
 
   const openNotification = () => {
-    console.log("opening notification...");
     const key = `open${Date.now()}-1`;
     const btn = (
       <Space>
         <Button type="primary" size="small" onClick={() => api.destroy(key)}>
-          Okay
+          {_txt_okay_134}
         </Button>
       </Space>
     );
     api.open({
-      message: "Transaction Sent",
+      message: _txt_transactionPending_2ef,
       description:
-        "Check your notifications in a minute to see confirmation of your transaction.",
+        _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_969,
       btn,
       key,
       icon: <WalletOutlined style={{ color: token.colorPrimaryActive }} />,
@@ -260,12 +316,12 @@ export const TinderPage = () => {
             <$Horizontal justifyContent="space-between">
               <span>
                 {isMobile
-                  ? `You have 100% refund protection`
-                  : `Milkshake protects you with 100% refund guarantee for 90 days`}
+                  ? _txt_youHaveRefundProtection_aa2
+                  : _txt_milkshakeProtectsYouWithRefundGuaranteeForDays_ffa}
               </span>
 
               <Button type="link" size="small">
-                Learn More
+                {_txt_learnMore_29f}
               </Button>
             </$Horizontal>
           }
@@ -392,15 +448,11 @@ export const TinderPage = () => {
                         visitUser(swipeStory.story.author.id);
                       }}
                     >
-                      <PP>
-                        <b>
-                          {swipeStory.story.author.displayName ||
-                            swipeStory.story.author.username}
-                        </b>
-                      </PP>
-                      <PP>
-                        <i>{`@${swipeStory.story.author.username}`}</i>
-                      </PP>
+                      <b>
+                        {swipeStory.story.author.displayName ||
+                          swipeStory.story.author.username}
+                      </b>
+                      <i>{`@${swipeStory.story.author.username}`}</i>
                     </$Vertical>
                   </$Horizontal>
                   {swipeStory.wish !== null &&
@@ -419,8 +471,8 @@ export const TinderPage = () => {
                             style={{ marginLeft: "5px" }}
                           >
                             {swipeStory.wish.wishType === WishTypeEnum.Event
-                              ? `View Event`
-                              : "View Gift"}
+                              ? _txt_viewEvent_620
+                              : _txt_viewGift_d09}
                           </Button>
                         </NavLink>
                       </div>
@@ -494,7 +546,7 @@ export const TinderPage = () => {
                             />
                           </div>
                           <$Vertical style={{ flex: 1 }}>
-                            <$Horizontal>{`${swipeStory.wish.wishTitle} with ${swipeStory.wish.author?.displayName}`}</$Horizontal>
+                            <$Horizontal>{`${swipeStory.wish.wishTitle} ${_txt_with_350} ${swipeStory.wish.author?.displayName}`}</$Horizontal>
 
                             {swipeStory.wish !== null &&
                               swipeStory.wish !== undefined &&
@@ -517,7 +569,7 @@ export const TinderPage = () => {
                                         color: token.colorWhite,
                                       }}
                                     >
-                                      {"RSVP by"}
+                                      {_txt_rsvpBy_8c0}
                                     </span>
                                   }
                                   onFinish={() =>
@@ -627,7 +679,7 @@ export const TinderPage = () => {
                       fontFamily: BRANDED_FONT,
                     }}
                   >
-                    Post Your First Story
+                    {_txt_postYourFirstStory_a57}
                   </span>
                 }
               >
@@ -643,7 +695,7 @@ export const TinderPage = () => {
                       border: `2px solid ${token.colorPrimaryBorder}`,
                     }}
                   >
-                    Upload
+                    {_txt_upload_836}
                   </Button>
                 </NavLink>
               </Empty>
@@ -722,12 +774,12 @@ export const TinderPage = () => {
               }
             : null
         }
-        textPlaceholder="Are you coming to my event?"
+        textPlaceholder={_txt_areYouComingToMyEvent_328}
         openNotification={openNotification}
         actionButton={
           quickChatUser?.wishID && (
             <NavLink to={`/app/wish/${quickChatUser?.wishID}`}>
-              <Button>View Event</Button>
+              <Button>{_txt_viewEvent_204}</Button>
             </NavLink>
           )
         }

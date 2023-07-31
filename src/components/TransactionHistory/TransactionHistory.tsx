@@ -76,6 +76,48 @@ export const TransactionHistory = ({
   const [txCashOut, setCashOut] = useState<TransactionFE | null>(null);
   const pendingTxs = useWalletState((state) => state.pendingTxs);
 
+  const _txt_pending_827 = intl.formatMessage({
+    id: "_txt_pending_827.___TransactionHistory",
+    defaultMessage: "Pending",
+  });
+  const _txt_recalled_d98 = intl.formatMessage({
+    id: "_txt_recalled_d98.___TransactionHistory",
+    defaultMessage: "Recalled",
+  });
+  const _txt_returned_6bc = intl.formatMessage({
+    id: "_txt_returned_6bc.___TransactionHistory",
+    defaultMessage: "Returned",
+  });
+  const _txt_withdrawn_f58 = intl.formatMessage({
+    id: "_txt_withdrawn_f58.___TransactionHistory",
+    defaultMessage: "Withdrawn",
+  });
+  const _txt_recall_23f = intl.formatMessage({
+    id: "_txt_recall_23f.___TransactionHistory",
+    defaultMessage: "Recall",
+  });
+  const _txt_return_76f = intl.formatMessage({
+    id: "_txt_return_76f.___TransactionHistory",
+    defaultMessage: "Return",
+  });
+  const _txt_withdraw_d19 = intl.formatMessage({
+    id: "_txt_withdraw_d19.___TransactionHistory",
+    defaultMessage: "Withdraw",
+  });
+  const _txt_loadMore_799 = intl.formatMessage({
+    id: "_txt_loadMore_799.___TransactionHistory",
+    defaultMessage: "Load More",
+  });
+  const _txt_endOfList_577 = intl.formatMessage({
+    id: "_txt_endOfList_577.___TransactionHistory",
+    defaultMessage: "End of List",
+  });
+
+  const _txt_searchTransactions_cf3 = intl.formatMessage({
+    id: "_txt_searchTransactions_cf3.___PurchaseHistory",
+    defaultMessage: "Search transactions",
+  });
+
   const { paginateRecentTxs, isLoadingTx, DEFAULT_BATCH_SIZE_TX, recentTxs } =
     useWallets();
 
@@ -118,11 +160,6 @@ export const TransactionHistory = ({
   }
 
   const determineAction = (tx: TransactionFE) => {
-    console.log(`i am looking at tx`, tx);
-    console.log(
-      `checkIfCashOutAble(tx.createdAt) = ${checkIfCashOutAble(tx.createdAt)}`
-    );
-
     const targetDate = dayjs(tx?.date).add(1, "day");
     // check if now is after targetDate
     if (
@@ -138,19 +175,19 @@ export const TransactionHistory = ({
           key={`action-${tx.id}`}
           style={{ color: token.colorTextDescription }}
         >
-          Pending
+          {_txt_pending_827}
         </span>,
       ];
     }
     if (tx.gotRecalled) {
       if (tx.senderWalletID === walletAliasID) {
-        return [<span key={`action-${tx.id}`}>Recalled</span>];
+        return [<span key={`action-${tx.id}`}>{_txt_recalled_d98}</span>];
       }
-      return [<span key={`action-${tx.id}`}>Returned</span>];
+      return [<span key={`action-${tx.id}`}>{_txt_returned_6bc}</span>];
     }
     if (tx.gotCashOut) {
       if (tx.receiverWalletID === walletAliasID) {
-        return [<span key={`action-${tx.id}`}>Withdrawn</span>];
+        return [<span key={`action-${tx.id}`}>{_txt_withdrawn_f58}</span>];
       }
     }
     if (checkIfRecallable(tx.createdAt)) {
@@ -161,7 +198,7 @@ export const TransactionHistory = ({
             key={`action-${tx.id}`}
             style={{ color: token.colorInfo }}
           >
-            Recall
+            {_txt_recall_23f}
           </a>,
         ];
       }
@@ -171,7 +208,7 @@ export const TransactionHistory = ({
           key={`action-${tx.id}`}
           style={{ color: token.colorInfo }}
         >
-          Return
+          {_txt_return_76f}
         </a>,
       ];
     }
@@ -183,7 +220,7 @@ export const TransactionHistory = ({
             key={`action-${tx.id}`}
             style={{ color: token.colorInfo }}
           >
-            Withdraw
+            {_txt_withdraw_d19}
           </a>,
         ];
       }
@@ -238,7 +275,7 @@ export const TransactionHistory = ({
         prefix={<SearchOutlined />}
         value={searchString}
         onChange={(e) => setSearchString(e.target.value)}
-        placeholder="Search transactions"
+        placeholder={_txt_searchTransactions_cf3}
       />
       <div id="scrollableDiv" style={{ overflow: "auto", height: "100%" }}>
         <InfiniteScroll
@@ -255,7 +292,7 @@ export const TransactionHistory = ({
               }}
             >
               <Button loading={isLoadingTx} onClick={paginateRecentTxs}>
-                Load More
+                {_txt_loadMore_799}
               </Button>
             </$Horizontal>
           }
@@ -268,7 +305,7 @@ export const TransactionHistory = ({
                 padding: "20px",
               }}
             >
-              <Divider plain>End of List</Divider>
+              <Divider plain>{_txt_endOfList_577}</Divider>
             </$Horizontal>
           }
           scrollableTarget="scrollableDiv"

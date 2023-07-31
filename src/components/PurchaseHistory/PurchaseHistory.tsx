@@ -47,6 +47,27 @@ const PurchaseHistory = ({
   const [showStopped, setShowStopped] = useState(true);
   const { token } = theme.useToken();
 
+  const _txt_stopped_53c = intl.formatMessage({
+    id: "_txt_stopped_53c.___PurchaseHistory",
+    defaultMessage: "Stopped",
+  });
+  const _txt_stop_1be = intl.formatMessage({
+    id: "_txt_stop_1be.___PurchaseHistory",
+    defaultMessage: "Stop",
+  });
+  const _txt_searchTransactions_cf3 = intl.formatMessage({
+    id: "_txt_searchTransactions_cf3.___PurchaseHistory",
+    defaultMessage: "Search transactions",
+  });
+  const _txt_loadMore_512 = intl.formatMessage({
+    id: "_txt_loadMore_512.___PurchaseHistory",
+    defaultMessage: "Load More",
+  });
+  const _txt_endOfList_34c = intl.formatMessage({
+    id: "_txt_endOfList_34c.___PurchaseHistory",
+    defaultMessage: "End of List",
+  });
+
   const {
     paginatePurchaseManifests,
     isLoadingPm,
@@ -64,7 +85,7 @@ const PurchaseHistory = ({
     if (pm.isCancelled) {
       return [
         <span key={`cancelled-${pm.id}`} style={{ marginRight: "5px" }}>
-          Stopped
+          {_txt_stopped_53c}
         </span>,
       ];
     }
@@ -77,12 +98,12 @@ const PurchaseHistory = ({
         style={{ color: token.colorInfo, marginRight: "5px" }}
         type="link"
       >
-        Stop
+        {_txt_stop_1be}
       </Button>,
     ];
     return [];
   };
-  console.log(`purchaseManifests --> purchase history`, purchaseManifests);
+
   const filteredPurchaseManifests = purchaseManifests
     .filter((pm) => {
       return showStopped
@@ -117,7 +138,7 @@ const PurchaseHistory = ({
           prefix={<SearchOutlined />}
           value={searchString}
           onChange={(e) => setSearchString(e.target.value)}
-          placeholder="Search transactions"
+          placeholder={_txt_searchTransactions_cf3}
           style={{ flex: 1 }}
         />
         {showStopped ? (
@@ -155,7 +176,7 @@ const PurchaseHistory = ({
               }}
             >
               <Button loading={isLoadingPm} onClick={paginatePurchaseManifests}>
-                Load More
+                {_txt_loadMore_512}
               </Button>
             </$Horizontal>
           }
@@ -168,7 +189,7 @@ const PurchaseHistory = ({
                 padding: "20px",
               }}
             >
-              <Divider plain>End of List</Divider>
+              <Divider plain>{_txt_endOfList_34c}</Divider>
             </$Horizontal>
           }
           scrollableTarget="scrollableDiv"

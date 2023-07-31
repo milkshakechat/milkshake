@@ -441,6 +441,7 @@ export const useListFriendships = () => {
   }, [selfUser?.id]);
 
   const getRealtimeFriendships = (userID: UserID) => {
+    if (!userID) return () => {};
     const q = query(
       collection(firestore, FirestoreCollection.FRIENDSHIPS),
       where("primaryUserID", "==", userID),

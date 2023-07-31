@@ -20,12 +20,21 @@ const ChatsList = ({ chatPreviews }: ChatsListProps) => {
   const [searchString, setSearchString] = useState("");
   const { screen, isMobile } = useWindowSize();
 
+  const _txt_searchChats_272 = intl.formatMessage({
+    id: "_txt_searchChats_272.___ChatsList",
+    defaultMessage: "Search Chats",
+  });
+  const _txt_newChat_8ae = intl.formatMessage({
+    id: "_txt_newChat_8ae.___ChatsList",
+    defaultMessage: "New Chat",
+  });
+
   return (
     <$Vertical>
       <Affix offsetTop={isMobile ? 100 : 100}>
         <$Horizontal>
           <Input
-            placeholder={"Search Chats"}
+            placeholder={_txt_searchChats_272}
             allowClear
             onChange={(e) => setSearchString(e.target.value)}
             style={{ width: "100%" }}
@@ -38,7 +47,7 @@ const ChatsList = ({ chatPreviews }: ChatsListProps) => {
               type="primary"
               style={{ marginLeft: "5px" }}
             >
-              New Chat
+              {_txt_newChat_8ae}
             </Button>
           </NavLink>
         </$Horizontal>

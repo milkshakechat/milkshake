@@ -706,11 +706,14 @@ const ProfileSettingsPage = () => {
                   value={chosenCurrency || "USD"}
                   allowClear
                 >
-                  {Object.keys(CurrencyEnum).map((curr) => (
-                    <Select.Option key={curr} value={curr}>
-                      {mapCurrencyEnumToName[curr as CurrencyEnum]}
-                    </Select.Option>
-                  ))}
+                  {Object.keys(CurrencyEnum)
+                    .slice()
+                    .sort()
+                    .map((curr) => (
+                      <Select.Option key={curr} value={curr}>
+                        {mapCurrencyEnumToName[curr as CurrencyEnum]}
+                      </Select.Option>
+                    ))}
                 </Select>
               </Form.Item>
               <Form.Item name="setupBanking">

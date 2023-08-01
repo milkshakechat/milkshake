@@ -169,6 +169,7 @@ export const useRealtimeChatRooms = () => {
     const unsubscribe = onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
         const room = doc.data() as ChatRoom_Firestore;
+        console.log("found room:", room);
         upsertChat(room, friendships, (selfUser?.id || "") as UserID);
 
         room.members.forEach(async (pid) => {

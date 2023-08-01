@@ -28,7 +28,7 @@ const ChatsList = ({ chatPreviews }: ChatsListProps) => {
     id: "_txt_newChat_8ae.___ChatsList",
     defaultMessage: "New Chat",
   });
-
+  console.log(`chatPreviews`, chatPreviews);
   return (
     <$Vertical>
       <Affix offsetTop={isMobile ? 100 : 100}>
@@ -53,21 +53,19 @@ const ChatsList = ({ chatPreviews }: ChatsListProps) => {
         </$Horizontal>
       </Affix>
       <Spacer height="10px" />
-      <div style={{ overflowY: "scroll" }}>
+      <div style={{ height: "90vh", maxHeight: "90vh", overflowY: "scroll" }}>
         <List
           itemLayout="horizontal"
-          dataSource={chatPreviews
-            .filter((chat) => {
-              return (
-                chat.title.toLowerCase().indexOf(searchString.toLowerCase()) >
-                -1
-              );
-            })
-            .sort((a, b) => b.lastTimestamp - a.lastTimestamp)}
+          dataSource={chatPreviews.filter((chat) => {
+            return (
+              chat.title.toLowerCase().indexOf(searchString.toLowerCase()) > -1
+            );
+          })}
           renderItem={(item, index) => {
             return <ChatPreview preview={item} />;
           }}
         />
+        <Spacer />
       </div>
     </$Vertical>
   );

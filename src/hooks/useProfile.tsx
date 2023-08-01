@@ -101,6 +101,7 @@ export const useProfile = () => {
                       longitude
                     }
                     currency
+                    fxRateFromUSD
                     prefGeoBias
                     prefAboutMe
                     prefLookingFor
@@ -275,6 +276,7 @@ export const useUpdateProfile = () => {
                   longitude
                 }
                 currency
+                fxRateFromUSD
                 gender
                 interestedIn
                 prefGeoBias

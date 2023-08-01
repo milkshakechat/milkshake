@@ -3,7 +3,10 @@ import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import PP from "@/i18n/PlaceholderPrint";
 import { Select, message, Alert } from "antd";
 import { localeLabelText } from "@/i18n";
-import { localeEnum } from "@milkshakechat/helpers";
+import {
+  localeEnum,
+  mapLanguageLocalToAssumedCurrency,
+} from "@milkshakechat/helpers";
 import { useState } from "react";
 import { useUpdateProfile } from "@/hooks/useProfile";
 import { LanguageEnum } from "@/api/graphql/types";
@@ -44,17 +47,11 @@ const QuickLanguage = ({ children }: QuickLanguageProps) => {
 
   const handleLocaleMenuClick = async (lang: localeEnum) => {
     setIsSubmitting(true);
-    console.log("handleLocaleMenuClick");
-    console.log(`lang`, lang);
     if (selfUser && selfUser.id && idToken) {
-      console.log("logged in");
-      console.log(`selfUser`, selfUser);
-      console.log(`idToken`, idToken);
       await runUpdateProfileMutation({
         language: lang as unknown as LanguageEnum,
       });
     } else {
-      console.log("switching locally");
       await switchLocale(lang);
     }
     setIsSubmitting(false);

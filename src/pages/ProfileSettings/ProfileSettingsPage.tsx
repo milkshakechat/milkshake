@@ -36,11 +36,13 @@ import {
   useStyleConfigGlobal,
 } from "@/state/styleconfig.state";
 import {
+  CurrencyEnum,
   PWA_PERMISSIONS_DIAGRAMS,
   PrivacySettingsExplaination,
   ThemeColorHex,
   defaultThemeColorHex,
   localeEnum,
+  mapCurrencyEnumToName,
   privacyModeEnum,
 } from "@milkshakechat/helpers";
 import { LanguageEnum, PrivacyModeEnum } from "@/api/graphql/types";
@@ -338,9 +340,10 @@ const ProfileSettingsPage = () => {
       setInitialFormValues(initValues);
       form.setFieldsValue(initValues);
       setEmail(user.email);
+      setChosenCurrency(user.currency as CurrencyEnum);
     }
   }, [user]);
-
+  const [chosenCurrency, setChosenCurrency] = useState<CurrencyEnum>();
   const onFormLayoutChange = () => {
     setShowUpdate(true);
   };
@@ -422,6 +425,7 @@ const ProfileSettingsPage = () => {
       language: values.language as unknown as LanguageEnum,
       themeColor: themeColor,
       email: email !== user?.email ? email : undefined,
+      currency: user?.currency !== chosenCurrency ? chosenCurrency : undefined,
     });
     setShowUpdate(false);
     setIsSubmitting(false);
@@ -692,12 +696,22 @@ const ProfileSettingsPage = () => {
               </i>
               <Spacer />
               <Form.Item name="currency">
-                <Input
-                  placeholder="$ US Dollar"
-                  value="US Dollar"
-                  disabled
-                  style={{ maxWidth: isMobile ? "none" : "350px" }}
-                />
+                <Select
+                  onChange={(curr) => setChosenCurrency(curr as CurrencyEnum)}
+                  placeholder={
+                    mapCurrencyEnumToName[
+                      (chosenCurrency || "USD") as CurrencyEnum
+                    ]
+                  }
+                  value={chosenCurrency || "USD"}
+                  allowClear
+                >
+                  {Object.keys(CurrencyEnum).map((curr) => (
+                    <Select.Option key={curr} value={curr}>
+                      {mapCurrencyEnumToName[curr as CurrencyEnum]}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
               <Form.Item name="setupBanking">
                 <NavLink to="/app/profile/settings/merchant/banking-registration-init">

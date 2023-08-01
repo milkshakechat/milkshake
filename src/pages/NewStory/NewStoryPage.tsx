@@ -10,12 +10,25 @@ import StoryUpload from "@/components/StoryUpload/StoryUpload";
 import { useNavigate } from "react-router-dom";
 import LoadingAnimation from "@/components/LoadingAnimation/LoadingAnimation";
 import { useState } from "react";
+import { useIntl } from "react-intl";
 
 const NewStoryPage = () => {
   const user = useUserState((state) => state.user);
   const { token } = theme.useToken();
   const navigate = useNavigate();
   const [allowSwipe, setAllowSwipe] = useState(true);
+
+  const intl = useIntl();
+
+  const _txt_swipe_159 = intl.formatMessage({
+    id: "_txt_swipe_159.___UploadStory",
+    defaultMessage: "Swipe",
+  });
+  const _txt_noSwipe_5b0 = intl.formatMessage({
+    id: "_txt_noSwipe_5b0.___UploadStory",
+    defaultMessage: "No Swipe",
+  });
+
   if (!user) {
     return <LoadingAnimation width="100vw" height="100vh" type="cookie" />;
   }
@@ -45,8 +58,8 @@ const NewStoryPage = () => {
           }}
           actionButton={
             <Switch
-              checkedChildren="Swipe"
-              unCheckedChildren="No Swipe"
+              checkedChildren={_txt_swipe_159}
+              unCheckedChildren={_txt_noSwipe_5b0}
               checked={allowSwipe}
               onChange={(v) => {
                 setAllowSwipe(v);

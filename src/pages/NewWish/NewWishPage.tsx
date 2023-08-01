@@ -37,12 +37,15 @@ import {
 } from "@/components/AppLayout/AppLayout";
 import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import {
+  CurrencyEnum,
   Username,
   WishID,
   Wish_Firestore,
   cookieToUSD,
+  fxFromUSDToCurrency,
   getCompressedStickerUrl,
   getCompressedWishlistGraphicUrl,
+  mapCurrencyEnumToSymbol,
 } from "@milkshakechat/helpers";
 import { useEffect, useState } from "react";
 import {
@@ -931,9 +934,14 @@ const NewWishPage = ({}: NewWishPageProps) => {
                       setPriceInCookies(parseInt(v.toFixed(0)));
                     }
                   }}
-                  addonAfter={
-                    <PP>{`~$${cookieToUSD(priceInCookies || 0)} USD`}</PP>
-                  }
+                  addonAfter={`~${mapCurrencyEnumToSymbol(
+                    (selfUser?.currency || "") as CurrencyEnum
+                  )}${fxFromUSDToCurrency({
+                    amount: cookieToUSD(priceInCookies),
+                    fxRate: selfUser?.fxRateFromUSD || 1,
+                    currency:
+                      (selfUser?.currency as CurrencyEnum) || CurrencyEnum.USD,
+                  })} ${selfUser?.currency}`}
                   style={{ flex: 1, width: "100%" }}
                 />
               </Form.Item>

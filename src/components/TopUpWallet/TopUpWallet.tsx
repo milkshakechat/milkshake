@@ -32,7 +32,12 @@ import { $Vertical, $Horizontal } from "@/api/utils/spacing";
 import LogoCookie from "../LogoText/LogoCookie";
 import { Wish, WishBuyFrequency, WishSuggest } from "@/api/graphql/types";
 import { Spacer } from "../AppLayout/AppLayout";
-import { cookieToUSD } from "@milkshakechat/helpers";
+import {
+  CurrencyEnum,
+  cookieToUSD,
+  fxFromUSDToCurrency,
+  mapCurrencyEnumToSymbol,
+} from "@milkshakechat/helpers";
 import { CloseOutlined, EditOutlined, DownOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { Dropdown } from "antd";
@@ -182,7 +187,13 @@ const TopUpWallet = ({
           color: token.colorTextDescription,
           fontSize: "0.9rem",
         }}
-      >{`$${cookieToUSD(suggestedPrice)} USD`}</span>
+      >{`${mapCurrencyEnumToSymbol(
+        (selfUser?.currency || "") as CurrencyEnum
+      )}${fxFromUSDToCurrency({
+        amount: cookieToUSD(suggestedPrice),
+        fxRate: selfUser?.fxRateFromUSD || 1,
+        currency: (selfUser?.currency as CurrencyEnum) || CurrencyEnum.USD,
+      })} ${selfUser?.currency}`}</span>
     );
   };
 

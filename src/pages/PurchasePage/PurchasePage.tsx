@@ -5,11 +5,14 @@ import AppLayout, {
 import UserBadgeHeader from "@/components/UserBadgeHeader/UserBadgeHeader";
 import { useUserState } from "@/state/user.state";
 import {
+  CurrencyEnum,
   PurchaseMainfestID,
   TransactionType,
   UserID,
   Username,
   WishBuyFrequency,
+  fxFromUSDToCurrency,
+  mapCurrencyEnumToSymbol,
 } from "@milkshakechat/helpers";
 import {
   Button,
@@ -273,10 +276,17 @@ const PurchasePage = () => {
                     {purchaseManifest.priceUSDBasisAsMonthly
                       ? ` - Equal to ${
                           purchaseManifest.priceCookieAsMonthly
-                        } Cookies / $${
-                          purchaseManifest.priceUSDBasisAsMonthly / 100
-                        } USD Monthly`
+                        } Cookies / ${mapCurrencyEnumToSymbol(
+                          (selfUser?.currency || "") as CurrencyEnum
+                        )}${fxFromUSDToCurrency({
+                          amount: purchaseManifest.priceUSDBasisAsMonthly / 100,
+                          fxRate: selfUser?.fxRateFromUSD || 1,
+                          currency:
+                            (selfUser?.currency as CurrencyEnum) ||
+                            CurrencyEnum.USD,
+                        })} ${selfUser?.currency} Monthly`
                       : ""}
+
                     <br />
                     <i>
                       {`Created on ${dayjs(

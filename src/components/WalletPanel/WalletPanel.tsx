@@ -16,17 +16,21 @@ import TransactionHistory from "../TransactionHistory/TransactionHistory";
 import LogoCookie from "../LogoText/LogoCookie";
 import { Spacer } from "../AppLayout/AppLayout";
 import {
+  CurrencyEnum,
   Tx_MirrorFireLedger,
   WalletType,
   Wallet_MirrorFireLedger,
   checkIfEscrowWallet,
   cookieToUSD,
+  fxFromUSDToCurrency,
+  mapCurrencyEnumToSymbol,
 } from "@milkshakechat/helpers";
 import { useWalletState } from "@/state/wallets.state";
 import PurchaseHistory from "../PurchaseHistory/PurchaseHistory";
 import { useState } from "react";
 import TopUpWallet from "../TopUpWallet/TopUpWallet";
 import { WalletOutlined } from "@ant-design/icons";
+import { useUserState } from "@/state/user.state";
 
 interface WalletPanelProps {
   wallet: Wallet_MirrorFireLedger;
@@ -42,7 +46,7 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
   const onChange = (key: string) => {
     console.log(key);
   };
-
+  const selfUser = useUserState((state) => state.user);
   const _txt_transactions_615 = intl.formatMessage({
     id: "_txt_transactions_615.___WalletPanel",
     defaultMessage: "Transactions",
@@ -174,7 +178,15 @@ const WalletPanel = ({ wallet, txs }: WalletPanelProps) => {
                         fontSize: "1rem",
                         color: token.colorPrimary,
                       }}
-                    >{`Equal to $${cookieToUSD(wallet.balance)} USD`}</i>
+                    >{`${mapCurrencyEnumToSymbol(
+                      (selfUser?.currency || "") as CurrencyEnum
+                    )}${fxFromUSDToCurrency({
+                      amount: cookieToUSD(wallet.balance),
+                      fxRate: selfUser?.fxRateFromUSD || 1,
+                      currency:
+                        (selfUser?.currency as CurrencyEnum) ||
+                        CurrencyEnum.USD,
+                    })} ${selfUser?.currency}`}</i>
                     <Button
                       type="primary"
                       ghost

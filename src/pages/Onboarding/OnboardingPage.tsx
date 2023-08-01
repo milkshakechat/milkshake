@@ -28,6 +28,7 @@ import { countries, Country } from "countries-list";
 import { ADD_FRIEND_ONBOARDING_FIRST_TIME } from "@/config.env";
 import {
   GenderEnum,
+  LanguageEnum,
   ViewPublicProfileResponseSuccess,
 } from "@/api/graphql/types";
 import {
@@ -51,6 +52,7 @@ import { useUpdateProfile } from "@/hooks/useProfile";
 import QuickLanguage, {
   QuickLanguageBanner,
 } from "@/components/QuickLanguage/QuickLanguage";
+import { mapLanguageLocalToAssumedCurrency } from "@milkshakechat/helpers";
 
 const ONBOARDING_BACKGROUND_COLOR = "#f7fcff";
 const ONBOARDING_TITLE_COLOR = "#1a1a1a";
@@ -469,6 +471,8 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                         await runUpdateProfileMutation({
                           gender,
                           interestedIn,
+                          language: locale as unknown as LanguageEnum,
+                          currency: mapLanguageLocalToAssumedCurrency(locale),
                         });
                       }
                       refreshWebPage();

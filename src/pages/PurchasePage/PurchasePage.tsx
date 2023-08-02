@@ -141,7 +141,16 @@ const PurchasePage = () => {
   useEffect(() => {
     if (purchaseManifestIDFromUrl && selfUser && selfUser.id) {
       setTimeout(() => {
-        getPurchaseManifestTxs(purchaseManifestIDFromUrl as PurchaseMainfestID);
+        let unsub = () => {};
+        const run = async () => {
+          unsub = await getPurchaseManifestTxs(
+            purchaseManifestIDFromUrl as PurchaseMainfestID
+          );
+        };
+        run();
+        return () => {
+          unsub();
+        };
       }, 1500);
     }
   }, [purchaseManifestIDFromUrl, selfUser]);

@@ -98,6 +98,7 @@ export const useWallets = () => {
   }));
 
   const getRealtimeWallets = () => {
+    if (!selfUser || !selfUser.id || !tokenID) return [() => {}];
     const unsubs: (() => void)[] = [];
     if (selfUser) {
       if (selfUser.tradingWallet) {
@@ -135,8 +136,8 @@ export const useWallets = () => {
   const DEFAULT_BATCH_SIZE_TX = 50;
 
   const listenRealtimeTxs = () => {
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
     let unsub = () => {};
-    if (!selfUser || !tokenID) return unsub;
     if (selfUser) {
       if (selfUser.tradingWallet) {
         let q = query(
@@ -159,7 +160,7 @@ export const useWallets = () => {
   };
 
   const paginateRecentTxs = () => {
-    if (!selfUser || !tokenID) return;
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
     if (selfUser) {
       if (selfUser.tradingWallet) {
         setIsLoadingTx(true);
@@ -187,6 +188,7 @@ export const useWallets = () => {
 
   const DEFAULT_BATCH_SIZE_PM = 30;
   const listenRealtimePurchaseManifests = () => {
+    if (!selfUser || !selfUser.id || !tokenID) return [() => {}];
     const unsubs: (() => void)[] = [];
     if (selfUser) {
       // purchases
@@ -225,6 +227,7 @@ export const useWallets = () => {
     return unsubs;
   };
   const paginatePurchaseManifests = () => {
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
     if (selfUser) {
       setIsLoadingPm(true);
       // purchases
@@ -291,32 +294,31 @@ export const usePurchaseManifest = () => {
   const getPurchaseManifestTxs = async (
     purchaseManifestID: PurchaseMainfestID
   ) => {
-    if (!tokenID) return;
-    if (selfUser) {
-      const q = query(
-        collection(firestore, FirestoreCollection.MIRROR_TX),
-        where("purchaseManifestID", "==", purchaseManifestID),
-        limit(100)
-      );
-      onSnapshot(q, (docsSnap) => {
-        docsSnap.forEach((doc) => {
-          const tx = doc.data() as Tx_MirrorFireLedger;
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
 
-          setPmTxs((txs) => txs.filter((t) => t.id !== tx.id).concat([tx]));
-        });
+    const q = query(
+      collection(firestore, FirestoreCollection.MIRROR_TX),
+      where("purchaseManifestID", "==", purchaseManifestID),
+      limit(100)
+    );
+    onSnapshot(q, (docsSnap) => {
+      docsSnap.forEach((doc) => {
+        const tx = doc.data() as Tx_MirrorFireLedger;
+
+        setPmTxs((txs) => txs.filter((t) => t.id !== tx.id).concat([tx]));
       });
-      const unsub1 = onSnapshot(
-        doc(
-          firestore,
-          FirestoreCollection.PURCHASE_MANIFESTS,
-          purchaseManifestID
-        ),
-        (doc) => {
-          setPm(doc.data() as PurchaseMainfest_Firestore);
-        }
-      );
-    }
-    return { purchaseManifestTxs, purchaseManifest };
+    });
+    const unsub1 = onSnapshot(
+      doc(
+        firestore,
+        FirestoreCollection.PURCHASE_MANIFESTS,
+        purchaseManifestID
+      ),
+      (doc) => {
+        setPm(doc.data() as PurchaseMainfest_Firestore);
+      }
+    );
+    return unsub1;
   };
 
   return {

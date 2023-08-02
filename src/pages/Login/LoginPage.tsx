@@ -379,7 +379,7 @@ const LoginPage = () => {
             }}
           >
             <div>Milkshake</div>
-            <div>Chat</div>
+            <div>Club</div>
           </$Vertical>
           <Spacer height="5vh" flexOff />
 

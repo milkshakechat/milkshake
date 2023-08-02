@@ -209,6 +209,11 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
     defaultMessage: "Claim Username",
   });
 
+  const _txt_existingUser_742 = intl.formatMessage({
+    id: "_txt_existingUser_742.___OnboardingPage",
+    defaultMessage: "Existing User",
+  });
+
   const startPrepProfileCountdown = () => {
     setInterval(() => {
       setPreparingProfileCountdown((countdown) => countdown - 1);
@@ -302,18 +307,30 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
               </span>
             }
             extra={
-              <Button
-                onClick={() => {
-                  if (carouselRef.current) {
-                    carouselRef.current.next();
-                  }
-                }}
-                type="primary"
-                size="large"
-                style={{ marginTop: "10px", fontWeight: "bold" }}
-              >
-                {_txt_continue_ca3}
-              </Button>
+              <$Vertical spacing={2}>
+                <Button
+                  onClick={() => {
+                    if (carouselRef.current) {
+                      carouselRef.current.next();
+                    }
+                  }}
+                  type="primary"
+                  size="large"
+                  style={{ marginTop: "10px", fontWeight: "bold" }}
+                >
+                  {_txt_continue_ca3}
+                </Button>
+                <i
+                  onClick={() => {
+                    window.location.replace(
+                      `${window.location.origin}/app/login`
+                    );
+                  }}
+                  style={{ marginTop: "20px", color: token.colorInfoHover }}
+                >
+                  {_txt_existingUser_742}
+                </i>
+              </$Vertical>
             }
             style={contentStyle}
           />

@@ -214,6 +214,7 @@ export const UserPublicPage = () => {
                   <TimelineGallery
                     stories={spotlightUser.stories}
                     userID={spotlightUser.id}
+                    disableExpansion
                   />
                 ) : (
                   <div style={{ padding: "30px 0px" }}>

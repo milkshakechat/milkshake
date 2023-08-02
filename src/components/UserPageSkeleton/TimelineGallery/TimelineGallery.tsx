@@ -31,6 +31,7 @@ interface TimelineGalleryProps {
   stories: Story[];
   userID: UserID;
   handleSendFriendRequest?: () => void;
+  disableExpansion?: boolean;
 }
 
 const EMPTY_PLAYER = {
@@ -43,6 +44,7 @@ const TimelineGallery = ({
   stories,
   userID,
   handleSendFriendRequest,
+  disableExpansion = false,
 }: TimelineGalleryProps) => {
   const { screen, isMobile } = useWindowSize();
   const intl = useIntl();
@@ -132,137 +134,151 @@ const TimelineGallery = ({
                 key={`${label}-${story.id}`}
                 hoverable
                 cover={
-                  <NavLink
-                    to={`/app/story/${story.id}`}
+                  <div
                     onClick={(e) => {
-                      if (!selfUser) {
+                      if (disableExpansion) {
                         e.preventDefault();
-                        setAnonViewStoryModal(story);
-                        navigate({
-                          pathname: location.pathname,
-                          search: createSearchParams({
-                            story: story.id,
-                          }).toString(),
-                        });
-                      } else {
-                        // window.localStorage.setItem(
-                        //   WATCH_STORY_BACK_HOME_ROUTE,
-                        //   `${window.location.origin}${location.pathname}${window.location}`
-                        // );
+                        e.stopPropagation();
                       }
                     }}
+                    style={{
+                      pointerEvents: disableExpansion ? "none" : "auto",
+                    }}
                   >
-                    <div
-                      style={{
-                        minWidth: 130,
-                        height: 200,
-                        maxHeight: 200,
-                        maxWidth: 130,
-                        overflow: "hidden",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderRadius: "5px",
-                        position: "relative",
+                    <NavLink
+                      to={`/app/story/${story.id}`}
+                      onClick={(e) => {
+                        if (!selfUser) {
+                          e.preventDefault();
+                          setAnonViewStoryModal(story);
+                          navigate({
+                            pathname: location.pathname,
+                            search: createSearchParams({
+                              story: story.id,
+                            }).toString(),
+                          });
+                        } else {
+                          // window.localStorage.setItem(
+                          //   WATCH_STORY_BACK_HOME_ROUTE,
+                          //   `${window.location.origin}${location.pathname}${window.location}`
+                          // );
+                        }
                       }}
                     >
-                      <img
-                        alt={story.caption || ""}
-                        src={story.showcaseThumbnail || story.thumbnail}
+                      <div
                         style={{
-                          filter: story.showcase
-                            ? "brightness(70%)"
-                            : "brightness(20%)",
-                          position: "absolute",
-                          objectFit: "cover",
-                          width: "100%",
-                          height: "100%",
+                          minWidth: 130,
+                          height: 200,
+                          maxHeight: 200,
+                          maxWidth: 130,
+                          overflow: "hidden",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          borderRadius: "5px",
+                          position: "relative",
                         }}
-                      />
-                      {story.showcase ? null : (
-                        <EyeInvisibleOutlined
+                      >
+                        <img
+                          alt={story.caption || ""}
+                          src={story.showcaseThumbnail || story.thumbnail}
                           style={{
-                            fontWeight: "bold",
-                            fontSize: "1.5rem",
+                            filter: story.showcase
+                              ? "brightness(70%)"
+                              : "brightness(20%)",
                             position: "absolute",
-                            color: token.colorBgBase,
+                            objectFit: "cover",
+                            width: "100%",
+                            height: "100%",
                           }}
                         />
-                      )}
-                      {viewingOwnProfile && (
-                        <div style={{ position: "absolute", top: 5, right: 5 }}>
-                          <Dropdown
-                            menu={{
-                              items: [
-                                {
-                                  key: "pin-story",
-                                  label: (
-                                    <Button
-                                      type="ghost"
-                                      loading={updatingStories.includes(
-                                        story.id as StoryID
-                                      )}
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        togglePinStory(story);
-                                      }}
-                                    >
-                                      {story.pinned
-                                        ? _txt_removePin_28d
-                                        : _txt_pinStory_898}
-                                    </Button>
-                                  ),
-                                },
-                                {
-                                  key: "hide-story",
-                                  label: (
-                                    <Button
-                                      type="ghost"
-                                      loading={updatingStories.includes(
-                                        story.id as StoryID
-                                      )}
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        toggleHideStory(story);
-                                      }}
-                                    >
-                                      {story.showcase
-                                        ? _txt_hideStory_f94
-                                        : _txt_showStory_fbd}
-                                    </Button>
-                                  ),
-                                },
-                              ],
+                        {story.showcase ? null : (
+                          <EyeInvisibleOutlined
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: "1.5rem",
+                              position: "absolute",
+                              color: token.colorBgBase,
                             }}
-                            arrow
+                          />
+                        )}
+                        {viewingOwnProfile && (
+                          <div
+                            style={{ position: "absolute", top: 5, right: 5 }}
                           >
-                            <Button
-                              type="link"
-                              icon={
-                                <EllipsisOutlined
-                                  style={{
-                                    fontWeight: "bold",
-                                    fontSize: "1.2rem",
-                                  }}
-                                />
-                              }
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
+                            <Dropdown
+                              menu={{
+                                items: [
+                                  {
+                                    key: "pin-story",
+                                    label: (
+                                      <Button
+                                        type="ghost"
+                                        loading={updatingStories.includes(
+                                          story.id as StoryID
+                                        )}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          togglePinStory(story);
+                                        }}
+                                      >
+                                        {story.pinned
+                                          ? _txt_removePin_28d
+                                          : _txt_pinStory_898}
+                                      </Button>
+                                    ),
+                                  },
+                                  {
+                                    key: "hide-story",
+                                    label: (
+                                      <Button
+                                        type="ghost"
+                                        loading={updatingStories.includes(
+                                          story.id as StoryID
+                                        )}
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          e.stopPropagation();
+                                          toggleHideStory(story);
+                                        }}
+                                      >
+                                        {story.showcase
+                                          ? _txt_hideStory_f94
+                                          : _txt_showStory_fbd}
+                                      </Button>
+                                    ),
+                                  },
+                                ],
                               }}
-                              style={{
-                                border: "0px solid white",
-                                color: token.colorBgContainer,
-                                zIndex: 1,
-                              }}
-                            ></Button>
-                          </Dropdown>
-                        </div>
-                      )}
-                    </div>
-                  </NavLink>
+                              arrow
+                            >
+                              <Button
+                                type="link"
+                                icon={
+                                  <EllipsisOutlined
+                                    style={{
+                                      fontWeight: "bold",
+                                      fontSize: "1.2rem",
+                                    }}
+                                  />
+                                }
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                                style={{
+                                  border: "0px solid white",
+                                  color: token.colorBgContainer,
+                                  zIndex: 1,
+                                }}
+                              ></Button>
+                            </Dropdown>
+                          </div>
+                        )}
+                      </div>
+                    </NavLink>
+                  </div>
                 }
                 style={{
                   minWidth: 130,

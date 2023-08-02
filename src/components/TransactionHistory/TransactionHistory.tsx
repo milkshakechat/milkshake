@@ -52,6 +52,7 @@ export interface TransactionFE {
   gotCashOut: boolean;
   createdAt: TimestampFirestore;
   purchaseManifestID?: PurchaseMainfestID;
+  isPermaTransfer?: boolean;
 }
 
 interface TransactionHistoryProps {
@@ -138,6 +139,7 @@ export const TransactionHistory = ({
         gotCashOut: tx.cashOutTransactionID ? true : false,
         createdAt: tx.createdAt,
         purchaseManifestID: tx.purchaseManifestID,
+        isPermaTransfer: tx.isPermaTransfer,
       };
       return _tx;
     })
@@ -165,7 +167,8 @@ export const TransactionHistory = ({
     if (
       tx.type === TransactionType.CASH_OUT ||
       tx.type === TransactionType.TOP_UP ||
-      tx.type === TransactionType.PREMIUM_CHAT
+      tx.type === TransactionType.PREMIUM_CHAT ||
+      tx.isPermaTransfer
     ) {
       return [];
     }

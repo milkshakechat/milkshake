@@ -11,12 +11,14 @@ import { useUserState } from "@/state/user.state";
 import {
   Avatar,
   Button,
+  Checkbox,
   Drawer,
   Input,
   InputNumber,
   Space,
   Statistic,
   Tag,
+  Tooltip,
   message,
   notification,
   theme,
@@ -36,7 +38,11 @@ import { UserID, Username } from "@milkshakechat/helpers";
 import { WishAuthor } from "@/api/graphql/types";
 import { useState } from "react";
 import LogoCookie from "../LogoText/LogoCookie";
-import { CloseOutlined, EditOutlined, SendOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  EditOutlined,
+  QuestionCircleFilled,
+} from "@ant-design/icons";
 import { Spacer } from "../AppLayout/AppLayout";
 import { useChatsListState } from "@/state/chats.state";
 import { themeTypeEnum, useStyleConfigGlobal } from "@/state/styleconfig.state";
@@ -65,7 +71,7 @@ export const QuickChat = ({
   onClose,
   textPlaceholder,
   user,
-  suggestedCookies = 1,
+  suggestedCookies = 0,
   actionButton,
   openNotification,
 }: QuickChatProps) => {
@@ -82,6 +88,7 @@ export const QuickChat = ({
   const [suggestedPrice, setSuggestedPrice] = useState(suggestedCookies);
   const [suggestMode, setSuggestMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isPermaTransfer, setIsPermaTransfer] = useState(false);
 
   const _txt_viewChat_ea6 = intl.formatMessage({
     id: "_txt_viewChat_ea6.___QuickChat",
@@ -223,12 +230,14 @@ export const QuickChat = ({
       recipientID: user.id,
       amount: suggestedPrice,
       note,
+      isPermaTransfer,
     });
     openNotification();
     setIsLoading(false);
     setSuggestedPrice(suggestedCookies);
     setNote("");
     toggleOpen(false);
+    setIsPermaTransfer(false);
   };
 
   return (
@@ -238,6 +247,7 @@ export const QuickChat = ({
       onClose={() => {
         if (onClose) {
           onClose();
+          setIsPermaTransfer(false);
         }
       }}
       open={isOpen}
@@ -248,7 +258,13 @@ export const QuickChat = ({
         <Space>
           {isMobile && (
             <div>
-              <Tag color="green">{_txt_DaysProtection_d23}</Tag>
+              {isPermaTransfer ? (
+                <Tag color="red">
+                  <PP>No Protection</PP>
+                </Tag>
+              ) : (
+                <Tag color="green">{_txt_DaysProtection_d23}</Tag>
+              )}
             </div>
           )}
           {!isMobile && <Button onClick={onClose}>{_txt_cancel_4aa}</Button>}
@@ -364,6 +380,27 @@ export const QuickChat = ({
                       </Button>
                     )}
                   </$Horizontal>
+                  <$Horizontal alignItems="center" spacing={1}>
+                    <Checkbox
+                      checked={isPermaTransfer}
+                      onChange={(e) => setIsPermaTransfer(e.target.checked)}
+                    />
+                    <Tooltip
+                      title={
+                        <PP>
+                          Permanent transfer are NOT recommended. You will not
+                          have refund protection.
+                        </PP>
+                      }
+                    >
+                      <span style={{ color: token.colorTextDescription }}>
+                        <PP>Permatranfer</PP>
+                      </span>
+                      <QuestionCircleFilled
+                        style={{ color: token.colorTextDescription }}
+                      />
+                    </Tooltip>
+                  </$Horizontal>
                 </$Vertical>
               ) : (
                 <Statistic
@@ -415,9 +452,23 @@ export const QuickChat = ({
                 </span>
               </$Vertical>
             </$Horizontal>
-            <p
-              style={{ color: token.colorTextDescription, fontSize: "0.9rem" }}
-            >{`${_txt_areYouSureYouWantToGift_617} ${suggestedPrice} ${_txt_CookiesTo_3ee} @${user.username}? ${_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612}`}</p>
+            {isPermaTransfer ? (
+              <p
+                style={{
+                  color: token.colorTextDescription,
+                  fontSize: "0.9rem",
+                }}
+              >
+                {`Are you sure you want to permanently transfer ${suggestedPrice} ${_txt_CookiesTo_3ee} @${user.username}? You will not be able to refund this transfer.`}
+              </p>
+            ) : (
+              <p
+                style={{
+                  color: token.colorTextDescription,
+                  fontSize: "0.9rem",
+                }}
+              >{`${_txt_areYouSureYouWantToGift_617} ${suggestedPrice} ${_txt_CookiesTo_3ee} @${user.username}? ${_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612}`}</p>
+            )}
           </$Vertical>
           <$Vertical style={{ marginTop: "10px" }}>
             <Button

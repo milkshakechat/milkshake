@@ -332,7 +332,7 @@ export const useSearchByUsername = () => {
   }));
 
   const searchByExactUsername = async (username: Username) => {
-    if (!tokenID) return;
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
     const q = query(
       collection(firestore, FirestoreCollection.MIRROR_USER),
       where("username", "==", username),

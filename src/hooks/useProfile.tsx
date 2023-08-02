@@ -429,6 +429,8 @@ export const useListFriendships = () => {
   const setFriendships = useUserState((state) => state.setFriendships);
   const { preloadImages, PRELOAD_IMAGE_SET } = usePreloadImages();
 
+  const tokenID = useUserState((state) => state.idToken);
+
   useEffect(() => {
     let unsubscribe: () => void;
     if (selfUser && selfUser.id) {
@@ -443,7 +445,7 @@ export const useListFriendships = () => {
   }, [selfUser?.id]);
 
   const getRealtimeFriendships = (userID: UserID) => {
-    if (!userID) return () => {};
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
     const q = query(
       collection(firestore, FirestoreCollection.FRIENDSHIPS),
       where("primaryUserID", "==", userID),

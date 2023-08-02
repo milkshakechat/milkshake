@@ -52,7 +52,7 @@ export const useNotifications = () => {
   const DEFAULT_BATCH_SIZE_NOTIFS = 30;
 
   const listenRealtimeNotifications = () => {
-    if (!selfUser || !tokenID) return () => {};
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
     let q = query(
       collection(firestore, FirestoreCollection.NOTIFICATIONS),
       where("recipientID", "==", selfUser.id),
@@ -70,7 +70,7 @@ export const useNotifications = () => {
   };
 
   const paginateNotifications = () => {
-    if (!selfUser || !tokenID) return () => {};
+    if (!selfUser || !selfUser.id || !tokenID) return () => {};
     setIsLoading(true);
     let q = query(
       collection(firestore, FirestoreCollection.NOTIFICATIONS),

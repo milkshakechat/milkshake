@@ -14,7 +14,7 @@ class SendBirdService {
       appId: SENDBIRD_APP_ID,
       localCacheEnabled: true,
       localCacheConfig: new LocalCacheConfig({
-        maxSize: 256, // The value is in MB.
+        maxSize: 512, // The value is in MB.
       }),
       modules: [new GroupChannelModule()],
     }) as SendbirdGroupChat;

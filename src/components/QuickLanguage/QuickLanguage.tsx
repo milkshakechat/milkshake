@@ -63,7 +63,6 @@ const QuickLanguage = ({ children }: QuickLanguageProps) => {
       <Select
         onChange={handleLocaleMenuClick}
         placeholder={localeLabelText[locale]}
-        allowClear
         value={locale}
       >
         {Object.keys(localeEnum).map((lang) => (
@@ -83,11 +82,16 @@ const QuickLanguage = ({ children }: QuickLanguageProps) => {
 export default QuickLanguage;
 
 export const QuickLanguageBanner = () => {
+  const intl = useIntl();
+  const _txt_titleEnableNotifs = intl.formatMessage({
+    id: `titleEnableNotifs.___QuickLanguage`,
+    defaultMessage: "Choose your language",
+  });
   return (
     <Alert
       message={
         <$Horizontal justifyContent="space-between" alignItems="center">
-          <span>Choose your language</span>
+          <span>{_txt_titleEnableNotifs}</span>
           <QuickLanguage />
         </$Horizontal>
       }

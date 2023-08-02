@@ -43,6 +43,7 @@ import Sider from "antd/es/layout/Sider";
 import LogoText from "@/components/LogoText/LogoText";
 import { ShoppingOutlined } from "@ant-design/icons";
 import { useNotificationsState } from "@/state/notifications.state";
+import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 
 type detectMobileAddressBarSettingsType = {
   userAgent: "ios" | "android" | "other";
@@ -218,7 +219,7 @@ export const StickyAdaptiveMobileFooter = ({
   const notifications = useNotificationsState((state) => state.notifications);
   const navigate = useNavigate();
   const [isRefreshing, setIsRefreshing] = useState(false);
-
+  const clientGQL = useGraphqlClient();
   const showMobileFooter =
     reactRouterLocation.pathname !== "/app/chats/chat" &&
     reactRouterLocation.pathname !== "/app/premium" &&
@@ -236,6 +237,47 @@ export const StickyAdaptiveMobileFooter = ({
   const totalUnreadNotifsCount = notifications.filter(
     (n) => !n.markedRead
   ).length;
+
+  const _txt_dating_ce0 = intl.formatMessage({
+    id: "_txt_dating_ce0.___MobileScreen",
+    defaultMessage: "Dating",
+  });
+  const _txt_menu_30d = intl.formatMessage({
+    id: "_txt_menu_30d.___MobileScreen",
+    defaultMessage: "Menu",
+  });
+  const _txt_wishlist_acb = intl.formatMessage({
+    id: "_txt_wishlist_acb.___MobileScreen",
+    defaultMessage: "Wishlist",
+  });
+  const _txt_wallet_c9c = intl.formatMessage({
+    id: "_txt_wallet_c9c.___MobileScreen",
+    defaultMessage: "Wallet",
+  });
+  const _txt_refresh_5ce = intl.formatMessage({
+    id: "_txt_refresh_5ce.___MobileScreen",
+    defaultMessage: "Refresh",
+  });
+  const _txt_confirmLogout_36e = intl.formatMessage({
+    id: "_txt_confirmLogout_36e.___MobileScreen",
+    defaultMessage: "Confirm Logout",
+  });
+  const _txt_areYouSureYouWantToLogOut_bb5 = intl.formatMessage({
+    id: "_txt_areYouSureYouWantToLogOut_bb5.___MobileScreen",
+    defaultMessage: "Are you sure you want to log out?",
+  });
+  const _txt_yes_be5 = intl.formatMessage({
+    id: "_txt_yes_be5.___MobileScreen",
+    defaultMessage: "Yes",
+  });
+  const _txt_no_1e1 = intl.formatMessage({
+    id: "_txt_no_1e1.___MobileScreen",
+    defaultMessage: "No",
+  });
+  const _txt_logOut_6dc = intl.formatMessage({
+    id: "_txt_logOut_6dc.___MobileScreen",
+    defaultMessage: "Log Out",
+  });
 
   const { themeType, themeColor } = useStyleConfigGlobal(
     (state) => ({
@@ -277,7 +319,7 @@ export const StickyAdaptiveMobileFooter = ({
   const itemsMobile = [
     {
       key: "dating",
-      text: <PP>Dating</PP>,
+      text: _txt_dating_ce0,
       route: "/app/swipe",
       icon: <FireOutlined style={{ fontSize: "1rem" }} />,
     },
@@ -303,7 +345,7 @@ export const StickyAdaptiveMobileFooter = ({
     // },
     {
       key: "menu",
-      text: <PP>Menu</PP>,
+      text: _txt_menu_30d,
       icon: <MenuOutlined style={{ fontSize: "1rem" }} />,
     },
   ];
@@ -556,12 +598,9 @@ export const StickyAdaptiveMobileFooter = ({
                       e.stopPropagation();
                     }}
                   >
-                    <PP>
-                      <b>{user.displayName || user.username}</b>
-                    </PP>
-                    <PP>
-                      <i>{`@${user.username}`}</i>
-                    </PP>
+                    <b>{user.displayName || user.username}</b>
+
+                    <i>{`@${user.username}`}</i>
                   </$Vertical>
                 </$Horizontal>
               </NavLink>
@@ -692,7 +731,7 @@ export const StickyAdaptiveMobileFooter = ({
                     color: token.colorTextBase,
                   }}
                 >
-                  <PP>Wishlist</PP>
+                  {_txt_wishlist_acb}
                 </Button>
               </NavLink>
               <NavLink
@@ -715,7 +754,7 @@ export const StickyAdaptiveMobileFooter = ({
                     color: token.colorTextBase,
                   }}
                 >
-                  <PP>Wallet</PP>
+                  {_txt_wallet_c9c}
                 </Button>
               </NavLink>
 
@@ -746,6 +785,7 @@ export const StickyAdaptiveMobileFooter = ({
                 onClick={() => {
                   window.location.reload();
                   setIsRefreshing(true);
+                  clientGQL.resetStore();
                 }}
                 loading={isRefreshing}
                 style={{
@@ -756,21 +796,21 @@ export const StickyAdaptiveMobileFooter = ({
                   color: token.colorTextBase,
                 }}
               >
-                <PP>Refresh</PP>
+                {_txt_refresh_5ce}
               </Button>
             </List>
           </$Vertical>
           <Popconfirm
-            title="Confirm Logout"
-            description="Are you sure you want to log out?"
+            title={_txt_confirmLogout_36e}
+            description={_txt_areYouSureYouWantToLogOut_bb5}
             onConfirm={async () => {
               navigate("/app/logout");
             }}
-            okText="Yes"
-            cancelText="No"
+            okText={_txt_yes_be5}
+            cancelText={_txt_no_1e1}
           >
             <Button danger style={{ width: "100%" }}>
-              Log Out
+              {_txt_logOut_6dc}
             </Button>
           </Popconfirm>
         </$Vertical>

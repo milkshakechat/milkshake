@@ -33,6 +33,7 @@ export const useSendBirdConnection = () => {
   const sendbirdRef = useRef<SendbirdGroupChat>();
 
   useEffect(() => {
+    console.log(`----> initializing sendbird...`);
     // Only proceed if sendBirdService is defined
     if (sendBirdService && userId && accessToken && isSendBirdInitialized) {
       sendbirdRef.current = sendBirdService.sendbird;
@@ -42,6 +43,7 @@ export const useSendBirdConnection = () => {
           setUser(user);
         } catch (error) {
           console.error("Failed to connect to Sendbird:", error);
+          console.log(`=======================`);
         } finally {
           setLoading(false);
         }

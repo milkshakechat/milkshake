@@ -412,6 +412,11 @@ const ChatPage = () => {
           : "",
         lastTimestamp: 0,
       });
+      setAvatarUrl(
+        enterChatRoomData.chatRoom.thumbnail
+          ? enterChatRoomData.chatRoom.thumbnail
+          : ""
+      );
     }
   }, [enterChatRoomData]);
 
@@ -432,6 +437,9 @@ const ChatPage = () => {
         }, {})
       );
       setLoadingChatPanel(false);
+      setAvatarUrl(
+        spotlightChatroom.thumbnail ? spotlightChatroom.thumbnail : ""
+      );
     }
   }, [spotlightChatroom]);
 
@@ -473,6 +481,17 @@ const ChatPage = () => {
     (acc, curr) => acc + curr,
     0
   );
+
+  const visitUser = (userID: UserID) => {
+    if (selfUser && userID !== selfUser.id) {
+      navigate({
+        pathname: `/user`,
+        search: createSearchParams({
+          userID,
+        }).toString(),
+      });
+    }
+  };
 
   const queryForSpotlightChatroom = () => {
     const args: EnterChatRoomInput = {
@@ -1045,7 +1064,11 @@ const ChatPage = () => {
                     justifyContent="space-between"
                     style={{ padding: "10px 0px" }}
                   >
-                    <$Horizontal alignItems="center" spacing={3}>
+                    <$Horizontal
+                      onClick={() => visitUser(item.id)}
+                      alignItems="center"
+                      spacing={3}
+                    >
                       <Avatar src={item.avatar} size={24} />
                       <span>{item.username}</span>
                       {spotlightChatroom.admins.includes(item.id) && (
@@ -1322,17 +1345,6 @@ const ChatPage = () => {
     }
   };
 
-  const visitUser = (userID: UserID) => {
-    if (selfUser && userID !== selfUser.id) {
-      navigate({
-        pathname: `/user`,
-        search: createSearchParams({
-          userID,
-        }).toString(),
-      });
-    }
-  };
-
   return (
     <$Vertical style={{ height: "100%" }}>
       <div
@@ -1394,6 +1406,11 @@ const ChatPage = () => {
                             alignItems="center"
                             spacing={2}
                             style={{ flex: 1, cursor: "pointer" }}
+                            onClick={() => {
+                              if (otherParticipants.length > 1) {
+                                setIsSettingsMode(true);
+                              }
+                            }}
                           >
                             {spotlightChatroom.thumbnail ? (
                               <Avatar
@@ -1479,6 +1496,8 @@ const ChatPage = () => {
                                       userID: otherParticipants[0],
                                     }).toString(),
                                   });
+                                } else {
+                                  setIsSettingsMode(true);
                                 }
                               }}
                               style={{
@@ -1549,6 +1568,8 @@ const ChatPage = () => {
                           userID: otherParticipants[0],
                         }).toString(),
                       });
+                    } else {
+                      setIsSettingsMode(true);
                     }
                   }}
                   style={{

@@ -36,6 +36,7 @@ import { $Horizontal } from "@/api/utils/spacing";
 import LogoCookie from "@/components/LogoText/LogoCookie";
 import JankyCurtain from "@/components/JankyCurtain/JankyCurtain";
 import { useIntl } from "react-intl";
+import { QuickLanguageBanner } from "@/components/QuickLanguage/QuickLanguage";
 
 export const UserPublicPage = () => {
   const { username: usernameFromUrl } = useParams();
@@ -157,6 +158,7 @@ export const UserPublicPage = () => {
           overflowX: "hidden",
         }}
       >
+        <QuickLanguageBanner />
         {isMobile && (
           <LayoutLogoHeader
             rightAction={null}

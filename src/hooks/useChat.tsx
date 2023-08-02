@@ -38,7 +38,7 @@ import {
   UserID,
 } from "@milkshakechat/helpers";
 import gql from "graphql-tag";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { firestore } from "../api/firebase";
 import shallow from "zustand/shallow";
 import {
@@ -49,6 +49,9 @@ import {
   limit,
   orderBy,
   getDocs,
+  startAfter,
+  QuerySnapshot,
+  QueryDocumentSnapshot,
 } from "firebase/firestore";
 
 // export const useListChatRooms = () => {
@@ -130,6 +133,8 @@ import {
 export const useRealtimeChatRooms = () => {
   const selfUser = useUserState((state) => state.user);
   const friendships = useUserState((state) => state.friendships);
+  const [isLoading, setIsLoading] = useState(false);
+  const lastFoundRef = useRef<QueryDocumentSnapshot>();
   const { upsertChat, globalUserMirror, upsertUserMirror, getUserMirror } =
     useChatsListState(
       (state) => ({
@@ -147,6 +152,7 @@ export const useRealtimeChatRooms = () => {
     let unsubscribe: () => void;
     if (selfUser && selfUser.id) {
       unsubscribe = getRealtimeChatRooms(selfUser.id);
+      paginateChatRooms();
     }
     // Cleanup function
     return () => {
@@ -156,15 +162,14 @@ export const useRealtimeChatRooms = () => {
     };
   }, [selfUser?.id]);
 
+  const DEFAULT_BATCH_SIZE_CHATROOMS = 20;
   const getRealtimeChatRooms = (userID: UserID) => {
-    console.log("selfUser", selfUser);
-    console.log("selfUser.id", selfUser?.id);
-    console.log("tokenID", tokenID);
     if (!selfUser || !selfUser.id || !tokenID) return () => {};
     const q = query(
       collection(firestore, FirestoreCollection.CHAT_ROOMS),
       where("members", "array-contains", userID),
-      limit(100)
+      orderBy("lastUpdated", "asc"), // This will sort in asc order
+      limit(DEFAULT_BATCH_SIZE_CHATROOMS)
     );
     const unsubscribe = onSnapshot(q, (docsSnap) => {
       docsSnap.forEach((doc) => {
@@ -194,7 +199,60 @@ export const useRealtimeChatRooms = () => {
     return unsubscribe; // Return the unsubscribe function
   };
 
-  return {};
+  const paginateChatRooms = () => {
+    if (!selfUser || !tokenID) return () => {};
+    setIsLoading(true);
+    let q = query(
+      collection(firestore, FirestoreCollection.NOTIFICATIONS),
+      where("members", "array-contains", selfUser.id),
+      orderBy("lastUpdated", "asc"), // This will sort in descending order
+      limit(DEFAULT_BATCH_SIZE_CHATROOMS)
+    );
+    if (lastFoundRef.current) {
+      q = query(q, startAfter(lastFoundRef.current));
+    }
+    // Get paginated data
+    getDocs(q)
+      .then((docsSnap: QuerySnapshot) => {
+        docsSnap.forEach((doc) => {
+          lastFoundRef.current = doc;
+          const room = doc.data() as ChatRoom_Firestore;
+          console.log("found room:", room);
+          upsertChat(room, friendships, (selfUser?.id || "") as UserID);
+          setIsLoading(false);
+          room.members.forEach(async (pid) => {
+            const userMirror = getUserMirror(pid, globalUserMirror);
+
+            if (userMirror.username === NOT_FOUND_USER_MIRROR_NAME) {
+              // get firestore doc
+              const q = query(
+                collection(firestore, FirestoreCollection.MIRROR_USER),
+                where("id", "==", pid),
+                limit(1)
+              );
+              const innerDocsSnap = await getDocs(q);
+              innerDocsSnap.forEach((doc) => {
+                const mirror = doc.data() as any;
+                upsertUserMirror(mirror);
+              });
+            }
+          });
+        });
+        if (docsSnap.empty) {
+          setIsLoading(false);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        setIsLoading(false);
+      });
+  };
+
+  return {
+    DEFAULT_BATCH_SIZE_CHATROOMS,
+    paginateChatRooms,
+    isLoading,
+  };
 };
 
 export const useEnterChatRoom = () => {

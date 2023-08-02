@@ -14,6 +14,7 @@ import SignUpPage from "@/pages/SignUp/SignUpPage";
 import SignUpVerifyPage from "@/pages/SignUp/SignUpVerifyPage";
 import LogOutPage from "@/pages/LogOut/LogOutPage";
 import LoginPage from "@/pages/Login/LoginPage";
+import { Helmet } from "react-helmet";
 import {
   IntlProvider,
   FormattedMessage,
@@ -64,6 +65,7 @@ import MerchantBankingRegistrationInitPage from "./pages/MerchantBankingRegistra
 import WalletPage from "./pages/WalletPage/WalletPage";
 import PurchasePage from "./pages/PurchasePage/PurchasePage";
 import OfflineBanner from "./components/OfflineBanner/OfflineBanner";
+import config from "@/config.env";
 
 const AppRouter = () => {
   const {
@@ -98,288 +100,310 @@ const AppRouter = () => {
   const formatJSLocale = localeEnumToFormatJSLocale[locale];
 
   return (
-    <GraphqlClientProvider>
-      <ConfigProvider
-        direction={textDirection}
-        locale={antLocale}
-        theme={{
-          algorithm: themeAlgo,
-          token: {
-            colorPrimary: themeColor,
-          },
-        }}
-      >
-        <IntlProvider
-          messages={COMPILED_LANGUAGE_MAPPINGS[formatJSLocale]}
-          locale={formatJSLocale}
-          key={formatJSLocale}
-          defaultLocale={localeEnumToFormatJSLocale[localeEnum.english]}
+    <>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>Milkshake Club</title>
+        <script
+          type="text/javascript"
+          src={`https://maps.googleapis.com/maps/api/js?key=${config.INDEX_HOSTING.GOOGLE_MAPS_API_KEY}&libraries=places`}
+        ></script>
+        <meta
+          property="og:url"
+          content={`https://${config.INDEX_HOSTING.OG_URL}/`}
+        ></meta>
+        <meta
+          property="twitter:url"
+          content={`https://${config.INDEX_HOSTING.OG_URL}/`}
+        ></meta>
+        <meta
+          property="twitter:domain"
+          content={`${config.INDEX_HOSTING.OG_URL}`}
+        ></meta>
+      </Helmet>
+      <GraphqlClientProvider>
+        <ConfigProvider
+          direction={textDirection}
+          locale={antLocale}
+          theme={{
+            algorithm: themeAlgo,
+            token: {
+              colorPrimary: themeColor,
+            },
+          }}
         >
-          <OfflineBanner />
-          <AuthProtectProvider>
-            <UserInfoProvider>
-              <BrowserRouter>
-                <TransitionGroup>
-                  <CSSTransition
-                    key={window.location.pathname}
-                    classNames="fade"
-                    timeout={300}
-                  >
-                    <Routes>
-                      <Route
-                        path="/"
-                        element={
-                          <AuthProtect>
-                            <div>
-                              {/* <HomePage /> */}
-                              <Navigate to="/app/swipe" replace />
-                            </div>
-                          </AuthProtect>
-                        }
-                        index
-                      />
-                      <Route path="/:username" element={<UsernamePage />} />
-                      <Route path="/app" element={<div>app</div>}></Route>
-                      <Route path="/app" errorElement={<Page404 />}>
-                        {/* Public Routes */}
-                        <Route path="welcome" element={<div>welcome</div>} />
-                        <Route path="login" element={<LoginPage />} />
-                        <Route path="logout" element={<LogOutPage />} />
-                        <Route path="signup" element={<SignUpPage />} />
-                        <Route
-                          path="signup/verify"
-                          element={<SignUpVerifyPage />}
-                        />
-                        <Route
-                          path="signup/onboarding"
-                          element={<OnboardingPage />}
-                        />
-                      </Route>
-                    </Routes>
-                  </CSSTransition>
-                </TransitionGroup>
-
-                <SendBirdServiceProvider>
+          <IntlProvider
+            messages={COMPILED_LANGUAGE_MAPPINGS[formatJSLocale]}
+            locale={formatJSLocale}
+            key={formatJSLocale}
+            defaultLocale={localeEnumToFormatJSLocale[localeEnum.english]}
+          >
+            <OfflineBanner />
+            <AuthProtectProvider>
+              <UserInfoProvider>
+                <BrowserRouter>
                   <TransitionGroup>
                     <CSSTransition
                       key={window.location.pathname}
                       classNames="fade"
                       timeout={300}
                     >
-                      {/* Private Routes */}
-
                       <Routes>
+                        <Route
+                          path="/"
+                          element={
+                            <AuthProtect>
+                              <div>
+                                {/* <HomePage /> */}
+                                <Navigate to="/app/swipe" replace />
+                              </div>
+                            </AuthProtect>
+                          }
+                          index
+                        />
+                        <Route path="/:username" element={<UsernamePage />} />
+                        <Route path="/app" element={<div>app</div>}></Route>
                         <Route path="/app" errorElement={<Page404 />}>
+                          {/* Public Routes */}
+                          <Route path="welcome" element={<div>welcome</div>} />
+                          <Route path="login" element={<LoginPage />} />
+                          <Route path="logout" element={<LogOutPage />} />
+                          <Route path="signup" element={<SignUpPage />} />
                           <Route
-                            path="chats/*"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <ChatsPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
+                            path="signup/verify"
+                            element={<SignUpVerifyPage />}
                           />
                           <Route
-                            path="swipe"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <TinderPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
+                            path="signup/onboarding"
+                            element={<OnboardingPage />}
                           />
-
-                          <Route
-                            path="wallet"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <WalletPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-
-                          <Route
-                            path="wallet/purchase/:purchaseManifestID"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <PurchasePage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-
-                          <Route
-                            path="story/:storyID"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <WatchStoryPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="wish/new"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <NewWishPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="wish/:wishID"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <WishPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="wish/:wishID/edit"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <NewWishPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="settings"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <SettingsPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="profile"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <ProfilePage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-
-                          <Route
-                            path="friends"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <ContactsPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="profile/style"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <ProfileStylePage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="profile/settings"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <ProfileSettingsPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-
-                          <Route
-                            path="profile/settings/merchant/banking-registration-init"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <MerchantBankingRegistrationInitPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="profile/settings/merchant/banking-registration-refresh"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <MerchantBankingRegistrationRefreshPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-
-                          <Route
-                            path="premium"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <SubscribePremium />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="premium/success"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <SubscribePremiumSuccess />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-
-                          <Route
-                            path="notifications"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <NotificationsPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-                          <Route
-                            path="story/new"
-                            element={
-                              <AuthProtect>
-                                <AppLayout>
-                                  <NewStoryPage />
-                                </AppLayout>
-                              </AuthProtect>
-                            }
-                          />
-
-                          {/* <Route path="*" element={<Page404 />} /> */}
                         </Route>
                       </Routes>
                     </CSSTransition>
                   </TransitionGroup>
-                </SendBirdServiceProvider>
-              </BrowserRouter>
-            </UserInfoProvider>
-          </AuthProtectProvider>
-        </IntlProvider>
-      </ConfigProvider>
-    </GraphqlClientProvider>
+
+                  <SendBirdServiceProvider>
+                    <TransitionGroup>
+                      <CSSTransition
+                        key={window.location.pathname}
+                        classNames="fade"
+                        timeout={300}
+                      >
+                        {/* Private Routes */}
+
+                        <Routes>
+                          <Route path="/app" errorElement={<Page404 />}>
+                            <Route
+                              path="chats/*"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <ChatsPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="swipe"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <TinderPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+
+                            <Route
+                              path="wallet"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <WalletPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+
+                            <Route
+                              path="wallet/purchase/:purchaseManifestID"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <PurchasePage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+
+                            <Route
+                              path="story/:storyID"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <WatchStoryPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="wish/new"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <NewWishPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="wish/:wishID"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <WishPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="wish/:wishID/edit"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <NewWishPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="settings"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <SettingsPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="profile"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <ProfilePage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+
+                            <Route
+                              path="friends"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <ContactsPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="profile/style"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <ProfileStylePage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="profile/settings"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <ProfileSettingsPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+
+                            <Route
+                              path="profile/settings/merchant/banking-registration-init"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <MerchantBankingRegistrationInitPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="profile/settings/merchant/banking-registration-refresh"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <MerchantBankingRegistrationRefreshPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+
+                            <Route
+                              path="premium"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <SubscribePremium />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="premium/success"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <SubscribePremiumSuccess />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+
+                            <Route
+                              path="notifications"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <NotificationsPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+                            <Route
+                              path="story/new"
+                              element={
+                                <AuthProtect>
+                                  <AppLayout>
+                                    <NewStoryPage />
+                                  </AppLayout>
+                                </AuthProtect>
+                              }
+                            />
+
+                            {/* <Route path="*" element={<Page404 />} /> */}
+                          </Route>
+                        </Routes>
+                      </CSSTransition>
+                    </TransitionGroup>
+                  </SendBirdServiceProvider>
+                </BrowserRouter>
+              </UserInfoProvider>
+            </AuthProtectProvider>
+          </IntlProvider>
+        </ConfigProvider>
+      </GraphqlClientProvider>
+    </>
   );
 };
 

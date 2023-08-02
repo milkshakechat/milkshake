@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake 90 دنوں کے اندر 100% ریفنڈ کے ساتھ آن لائن ڈیٹنگ کے دوران آپ کی حفاظت کرتا ہے۔",
 "_txt_sendMessage_7ff.___QuickChat": "پیغام بھیجیں",
 "_txt_cancel_12a.___QuickChat": "منسوخ کریں۔",
+"_txt_noProtection.___QuickChat": "کوئی تحفظ نہیں۔",
+"_txt_permanetNotRecc.___QuickChat": "مستقل منتقلی کی سفارش نہیں کی جاتی ہے۔ آپ کو رقم کی واپسی کا تحفظ حاصل نہیں ہوگا۔",
+"_txt_lbelPermant.___QuickChat": "مستقل",
+"_txt_areYourSurePerm.___QuickChat": "کیا آپ واقعی مستقل طور پر منتقل کرنا چاہتے ہیں۔",
+"_txt_cannotRefundPerm.___QuickChat": "آپ اس ٹرانسفر کو ریفنڈ نہیں کر سکیں گے۔",
   };
   return language;
 };

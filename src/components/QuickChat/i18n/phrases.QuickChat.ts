@@ -28,6 +28,11 @@
 { key: "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612", text: "Milkshake protects you while online dating with 100% refunds within 90 days." },
 { key: "_txt_sendMessage_7ff", text: "SEND MESSAGE" },
 { key: "_txt_cancel_12a", text: "Cancel" },
+{ key: "_txt_noProtection", text: "No Protection" },
+{ key: "_txt_permanetNotRecc", text: "Permanent transfer are NOT recommended. You will not have refund protection." },
+{ key: "_txt_lbelPermant", text: "Permanent" },
+{ key: "_txt_areYourSurePerm", text: "Are you sure you want to permanently transfer " },
+{ key: "_txt_cannotRefundPerm", text: "You will not be able to refund this transfer." },
 ];
 
 const translationConfig: TranslatePageProps = {

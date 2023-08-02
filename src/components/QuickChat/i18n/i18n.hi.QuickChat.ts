@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "मिल्कशेक 90 दिनों के भीतर 100% रिफंड के साथ ऑनलाइन डेटिंग के दौरान आपकी सुरक्षा करता है।",
 "_txt_sendMessage_7ff.___QuickChat": "मेसेज भेजें",
 "_txt_cancel_12a.___QuickChat": "रद्द करना",
+"_txt_noProtection.___QuickChat": "सुरक्षा नहीं",
+"_txt_permanetNotRecc.___QuickChat": "स्थायी स्थानांतरण की अनुशंसा नहीं की जाती है. आपको धनवापसी सुरक्षा नहीं मिलेगी.",
+"_txt_lbelPermant.___QuickChat": "स्थायी",
+"_txt_areYourSurePerm.___QuickChat": "क्या आप वाकई स्थायी रूप से स्थानांतरण करना चाहते हैं?",
+"_txt_cannotRefundPerm.___QuickChat": "आप इस स्थानांतरण को वापस नहीं कर पाएंगे.",
   };
   return language;
 };

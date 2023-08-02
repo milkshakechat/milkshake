@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake protege você durante o namoro online com reembolso de 100% em 90 dias.",
 "_txt_sendMessage_7ff.___QuickChat": "ENVIAR MENSAGEM",
 "_txt_cancel_12a.___QuickChat": "Cancelar",
+"_txt_noProtection.___QuickChat": "Sem proteção",
+"_txt_permanetNotRecc.___QuickChat": "A transferência permanente NÃO é recomendada. Você não terá proteção de reembolso.",
+"_txt_lbelPermant.___QuickChat": "Permanente",
+"_txt_areYourSurePerm.___QuickChat": "Tem certeza de que deseja transferir permanentemente",
+"_txt_cannotRefundPerm.___QuickChat": "Você não poderá reembolsar esta transferência.",
   };
   return language;
 };

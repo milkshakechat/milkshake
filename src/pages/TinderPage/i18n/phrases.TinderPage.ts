@@ -24,6 +24,7 @@
 { key: "_txt_upload_836", text: "Upload" },
 { key: "_txt_areYouComingToMyEvent_328", text: "Are you coming to my event?" },
 { key: "_txt_viewEvent_204", text: "View Event" },
+{ key: "_txt_btnPostStory_204", text: "Post Story" },
 ];
 
 const translationConfig: TranslatePageProps = {

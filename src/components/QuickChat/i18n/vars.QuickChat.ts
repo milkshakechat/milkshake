@@ -19,6 +19,11 @@
 // const _txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612 = intl.formatMessage({ id: "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat", defaultMessage: "Milkshake protects you while online dating with 100% refunds within 90 days." });
 // const _txt_sendMessage_7ff = intl.formatMessage({ id: "_txt_sendMessage_7ff.___QuickChat", defaultMessage: "SEND MESSAGE" });
 // const _txt_cancel_12a = intl.formatMessage({ id: "_txt_cancel_12a.___QuickChat", defaultMessage: "Cancel" });
+// const _txt_noProtection = intl.formatMessage({ id: "_txt_noProtection.___QuickChat", defaultMessage: "No Protection" });
+// const _txt_permanetNotRecc = intl.formatMessage({ id: "_txt_permanetNotRecc.___QuickChat", defaultMessage: "Permanent transfer are NOT recommended. You will not have refund protection." });
+// const _txt_lbelPermant = intl.formatMessage({ id: "_txt_lbelPermant.___QuickChat", defaultMessage: "Permanent" });
+// const _txt_areYourSurePerm = intl.formatMessage({ id: "_txt_areYourSurePerm.___QuickChat", defaultMessage: "Are you sure you want to permanently transfer " });
+// const _txt_cannotRefundPerm = intl.formatMessage({ id: "_txt_cannotRefundPerm.___QuickChat", defaultMessage: "You will not be able to refund this transfer." });
 
 export const varsComponentName = "QuickChat"
   

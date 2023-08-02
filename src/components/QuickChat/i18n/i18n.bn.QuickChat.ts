@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "90 দিনের মধ্যে 100% রিফান্ড সহ অনলাইন ডেটিং করার সময় মিল্কশেক আপনাকে রক্ষা করে।",
 "_txt_sendMessage_7ff.___QuickChat": "বার্তা পাঠান",
 "_txt_cancel_12a.___QuickChat": "বাতিল করুন",
+"_txt_noProtection.___QuickChat": "কোনো সুরক্ষা নেই",
+"_txt_permanetNotRecc.___QuickChat": "স্থায়ী স্থানান্তর সুপারিশ করা হয় না. আপনার রিফান্ড সুরক্ষা থাকবে না।",
+"_txt_lbelPermant.___QuickChat": "স্থায়ী",
+"_txt_areYourSurePerm.___QuickChat": "আপনি কি নিশ্চিত আপনি স্থায়ীভাবে স্থানান্তর করতে চান?",
+"_txt_cannotRefundPerm.___QuickChat": "আপনি এই স্থানান্তর ফেরত দিতে সক্ষম হবে না.",
   };
   return language;
 };

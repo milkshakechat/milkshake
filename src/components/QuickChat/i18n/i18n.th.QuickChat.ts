@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake ปกป้องคุณในขณะที่ออกเดทออนไลน์ด้วยการคืนเงิน 100% ภายใน 90 วัน",
 "_txt_sendMessage_7ff.___QuickChat": "ส่งข้อความ",
 "_txt_cancel_12a.___QuickChat": "ยกเลิก",
+"_txt_noProtection.___QuickChat": "ไม่มีการป้องกัน",
+"_txt_permanetNotRecc.___QuickChat": "ไม่แนะนำให้โอนถาวร คุณจะไม่ได้รับการคุ้มครองการคืนเงิน",
+"_txt_lbelPermant.___QuickChat": "ถาวร",
+"_txt_areYourSurePerm.___QuickChat": "คุณแน่ใจหรือไม่ว่าต้องการโอนอย่างถาวร",
+"_txt_cannotRefundPerm.___QuickChat": "คุณจะไม่สามารถคืนเงินโอนนี้",
   };
   return language;
 };

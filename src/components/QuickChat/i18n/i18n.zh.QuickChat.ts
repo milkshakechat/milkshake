@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake 在网上约会时为您提供 90 天内 100% 退款的保护。",
 "_txt_sendMessage_7ff.___QuickChat": "发信息",
 "_txt_cancel_12a.___QuickChat": "取消",
+"_txt_noProtection.___QuickChat": "无保护",
+"_txt_permanetNotRecc.___QuickChat": "不建议永久转移。您将没有退款保护。",
+"_txt_lbelPermant.___QuickChat": "永恒的",
+"_txt_areYourSurePerm.___QuickChat": "您确定要永久转移吗",
+"_txt_cannotRefundPerm.___QuickChat": "您将无法退还这笔转账。",
   };
   return language;
 };

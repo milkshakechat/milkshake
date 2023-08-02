@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake는 90일 이내에 100% 환불로 온라인 데이트 동안 당신을 보호합니다.",
 "_txt_sendMessage_7ff.___QuickChat": "문자 보내",
 "_txt_cancel_12a.___QuickChat": "취소",
+"_txt_noProtection.___QuickChat": "보호 없음",
+"_txt_permanetNotRecc.___QuickChat": "영구 전송은 권장되지 않습니다. 환불 보호가 제공되지 않습니다.",
+"_txt_lbelPermant.___QuickChat": "영구적인",
+"_txt_areYourSurePerm.___QuickChat": "영구적으로 이전하시겠습니까?",
+"_txt_cannotRefundPerm.___QuickChat": "이 송금은 환불할 수 없습니다.",
   };
   return language;
 };

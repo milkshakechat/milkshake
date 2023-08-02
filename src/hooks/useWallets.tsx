@@ -109,6 +109,7 @@ export const useWallets = () => {
             selfUser.tradingWallet
           ),
           (doc) => {
+            console.log("Current wallet: ", doc.data());
             setWallet(doc.data() as Wallet_MirrorFireLedger);
           }
         );
@@ -123,7 +124,7 @@ export const useWallets = () => {
             selfUser.escrowWallet
           ),
           (doc) => {
-            console.log("Current data: ", doc.data());
+            console.log("Current wallet: ", doc.data());
             setWallet(doc.data() as Wallet_MirrorFireLedger);
           }
         );

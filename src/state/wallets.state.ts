@@ -31,6 +31,8 @@ export const useWalletState = create<WalletsState>()((set) => ({
   pendingTxs: [],
   setWallet: (wallet) =>
     set((state) => {
+      console.log("Wtf");
+      console.log("useWalletState--", wallet);
       if (wallet.type === WalletType.ESCROW) {
         return { escrowWallet: wallet };
       } else if (wallet.type === WalletType.TRADING) {

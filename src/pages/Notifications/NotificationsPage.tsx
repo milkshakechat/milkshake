@@ -195,18 +195,15 @@ const NotificationsPage = () => {
                     <List.Item
                       onClick={async () => {
                         if (notif.route) {
-                          navigate(notif.route);
                           setLoadingNotifs((prev) => [
                             ...prev,
                             notif.id as NotificationID,
                           ]);
-                          await runMarkNotificationsAsReadMutation({
+                          runMarkNotificationsAsReadMutation({
                             read: [],
                             unread: [notif.id],
                           });
-                          setLoadingNotifs((prev) =>
-                            prev.filter((n) => n !== notif.id)
-                          );
+                          navigate(notif.route);
                         }
                       }}
                       style={{ width: "100%", cursor: "pointer" }}

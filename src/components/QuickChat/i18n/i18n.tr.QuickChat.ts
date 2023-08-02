@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake, 90 gün içinde %100 geri ödeme ile çevrimiçi flört sırasında sizi korur.",
 "_txt_sendMessage_7ff.___QuickChat": "MESAJ GÖNDER",
 "_txt_cancel_12a.___QuickChat": "İptal etmek",
+"_txt_noProtection.___QuickChat": "Koruma yok",
+"_txt_permanetNotRecc.___QuickChat": "Kalıcı transfer önerilmez. Geri ödeme korumanız olmayacak.",
+"_txt_lbelPermant.___QuickChat": "Kalıcı",
+"_txt_areYourSurePerm.___QuickChat": "Kalıcı olarak aktarmak istediğinizden emin misiniz?",
+"_txt_cannotRefundPerm.___QuickChat": "Bu transferi iade edemezsiniz.",
   };
   return language;
 };

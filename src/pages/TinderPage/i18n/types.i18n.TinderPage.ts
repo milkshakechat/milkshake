@@ -15,5 +15,6 @@ export interface i18n_Mapping {
 "_txt_upload_836.___TinderPage": string;
 "_txt_areYouComingToMyEvent_328.___TinderPage": string;
 "_txt_viewEvent_204.___TinderPage": string;
+"_txt_btnPostStory_204.___TinderPage": string;
 }
   

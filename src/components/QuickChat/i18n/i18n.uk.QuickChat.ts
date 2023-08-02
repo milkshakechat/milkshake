@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake захищає вас під час онлайн-знайомств зі 100% відшкодуванням протягом 90 днів.",
 "_txt_sendMessage_7ff.___QuickChat": "ВІДПРАВИТИ ПОВІДОМЛЕННЯ",
 "_txt_cancel_12a.___QuickChat": "Скасувати",
+"_txt_noProtection.___QuickChat": "Без захисту",
+"_txt_permanetNotRecc.___QuickChat": "Постійна передача НЕ рекомендована. Ви не матимете захисту від відшкодування.",
+"_txt_lbelPermant.___QuickChat": "Постійний",
+"_txt_areYourSurePerm.___QuickChat": "Ви впевнені, що хочете остаточно перенести?",
+"_txt_cannotRefundPerm.___QuickChat": "Ви не зможете відшкодувати цей переказ.",
   };
   return language;
 };

@@ -193,9 +193,20 @@ const NotificationsPage = () => {
                 renderItem={(notif, index) => {
                   return (
                     <List.Item
-                      onClick={() => {
+                      onClick={async () => {
                         if (notif.route) {
                           navigate(notif.route);
+                          setLoadingNotifs((prev) => [
+                            ...prev,
+                            notif.id as NotificationID,
+                          ]);
+                          await runMarkNotificationsAsReadMutation({
+                            read: [],
+                            unread: [notif.id],
+                          });
+                          setLoadingNotifs((prev) =>
+                            prev.filter((n) => n !== notif.id)
+                          );
                         }
                       }}
                       style={{ width: "100%", cursor: "pointer" }}

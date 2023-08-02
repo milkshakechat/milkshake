@@ -160,9 +160,26 @@ export const QuickChat = ({
     id: "_txt_sendMessage_7ff.___QuickChat",
     defaultMessage: "SEND MESSAGE",
   });
-  const _txt_cancel_12a = intl.formatMessage({
-    id: "_txt_cancel_12a.___QuickChat",
-    defaultMessage: "Cancel",
+  const _txt_noProtection = intl.formatMessage({
+    id: "_txt_noProtection.___QuickChat",
+    defaultMessage: "No Protection",
+  });
+  const _txt_permanetNotRecc = intl.formatMessage({
+    id: "_txt_permanetNotRecc.___QuickChat",
+    defaultMessage:
+      "Permanent transfer are NOT recommended. You will not have refund protection.",
+  });
+  const _txt_lbelPermant = intl.formatMessage({
+    id: "_txt_lbelPermant.___QuickChat",
+    defaultMessage: "Permanent",
+  });
+  const _txt_areYourSurePerm = intl.formatMessage({
+    id: "_txt_areYourSurePerm.___QuickChat",
+    defaultMessage: "Are you sure you want to permanently transfer ",
+  });
+  const _txt_cannotRefundPerm = intl.formatMessage({
+    id: "_txt_cannotRefundPerm.___QuickChat",
+    defaultMessage: "You will not be able to refund this transfer.",
   });
 
   const { tradingWallet } = useWalletState(
@@ -259,9 +276,7 @@ export const QuickChat = ({
           {isMobile && (
             <div>
               {isPermaTransfer ? (
-                <Tag color="red">
-                  <PP>No Protection</PP>
-                </Tag>
+                <Tag color="red">{_txt_noProtection}</Tag>
               ) : (
                 <Tag color="green">{_txt_DaysProtection_d23}</Tag>
               )}
@@ -385,20 +400,15 @@ export const QuickChat = ({
                       checked={isPermaTransfer}
                       onChange={(e) => setIsPermaTransfer(e.target.checked)}
                     />
-                    <Tooltip
-                      title={
-                        <PP>
-                          Permanent transfer are NOT recommended. You will not
-                          have refund protection.
-                        </PP>
-                      }
-                    >
-                      <span style={{ color: token.colorTextDescription }}>
-                        <PP>Permatranfer</PP>
-                      </span>
-                      <QuestionCircleFilled
-                        style={{ color: token.colorTextDescription }}
-                      />
+                    <Tooltip title={_txt_permanetNotRecc}>
+                      <$Horizontal alignItems="center" spacing={1}>
+                        <span style={{ color: token.colorTextDescription }}>
+                          {_txt_lbelPermant}
+                        </span>
+                        <QuestionCircleFilled
+                          style={{ color: token.colorTextDescription }}
+                        />
+                      </$Horizontal>
                     </Tooltip>
                   </$Horizontal>
                 </$Vertical>
@@ -459,7 +469,7 @@ export const QuickChat = ({
                   fontSize: "0.9rem",
                 }}
               >
-                {`Are you sure you want to permanently transfer ${suggestedPrice} ${_txt_CookiesTo_3ee} @${user.username}? You will not be able to refund this transfer.`}
+                {`${_txt_areYourSurePerm} ${suggestedPrice} ${_txt_CookiesTo_3ee} @${user.username}? ${_txt_cannotRefundPerm}`}
               </p>
             ) : (
               <p

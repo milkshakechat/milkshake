@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Pinoprotektahan ka ng Milkshake habang online dating na may 100% refund sa loob ng 90 araw.",
 "_txt_sendMessage_7ff.___QuickChat": "MAGPADALA NG MENSAHE",
 "_txt_cancel_12a.___QuickChat": "Kanselahin",
+"_txt_noProtection.___QuickChat": "Walang Proteksyon",
+"_txt_permanetNotRecc.___QuickChat": "HINDI inirerekomenda ang permanenteng paglipat. Hindi ka magkakaroon ng proteksyon sa refund.",
+"_txt_lbelPermant.___QuickChat": "Permanente",
+"_txt_areYourSurePerm.___QuickChat": "Sigurado ka bang gusto mong permanenteng lumipat",
+"_txt_cannotRefundPerm.___QuickChat": "Hindi mo magagawang i-refund ang paglilipat na ito.",
   };
   return language;
 };

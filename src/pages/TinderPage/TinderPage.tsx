@@ -49,7 +49,7 @@ import {
   HeartOutlined,
   MessageOutlined,
   ArrowRightOutlined,
-  UserOutlined,
+  PlusOutlined,
   WalletOutlined,
   FireFilled,
 } from "@ant-design/icons";
@@ -226,8 +226,12 @@ export const TinderPage = () => {
   };
 
   const canGoBack = currentIndex < localSwipeStack.length - 1;
-
   const canSwipe = currentIndex >= 0;
+
+  const _txt_btnPostStory_204 = intl.formatMessage({
+    id: "_txt_btnPostStory_204.___TinderPage",
+    defaultMessage: "Post Story",
+  });
 
   // set last direction and decrease current index
   const swiped = (
@@ -332,24 +336,24 @@ export const TinderPage = () => {
       {isMobile ? (
         <LayoutLogoHeader
           rightAction={
-            <NavLink to="/app/notifications">
-              <$Horizontal>
-                <BellFilled
-                  style={{ color: token.colorBgSpotlight, fontSize: "1.2rem" }}
-                />
-                <Badge
-                  count={notifications.filter((n) => !n.markedRead).length}
-                  style={{ margin: "0px 5px" }}
-                />
-              </$Horizontal>
+            <NavLink to="/app/story/new">
+              <Button icon={<PlusOutlined />}>{_txt_btnPostStory_204}</Button>
             </NavLink>
           }
         />
       ) : null}
 
+      {!isMobile && (
+        <$Horizontal justifyContent="flex-end" style={{ padding: "10px" }}>
+          <NavLink to="/app/story/new">
+            <Button icon={<PlusOutlined />}>{_txt_btnPostStory_204}</Button>
+          </NavLink>
+        </$Horizontal>
+      )}
+
       <Spacer
-        height={isMobile ? "20px" : "70px"}
-        style={{ maxHeight: isMobile ? "20px" : "70px" }}
+        height={isMobile ? "20px" : "10px"}
+        style={{ maxHeight: isMobile ? "20px" : "10px" }}
       />
 
       <div style={{ padding: isMobile ? "5px" : "0px", flex: 1 }}>

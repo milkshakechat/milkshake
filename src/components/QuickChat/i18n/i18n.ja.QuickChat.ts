@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "ミルクシェイクは、90 日以内の 100% 返金でオンライン デート中のあなたを守ります。",
 "_txt_sendMessage_7ff.___QuickChat": "メッセージを送る",
 "_txt_cancel_12a.___QuickChat": "キャンセル",
+"_txt_noProtection.___QuickChat": "保護なし",
+"_txt_permanetNotRecc.___QuickChat": "永久移転はお勧めしません。返金保護はありません。",
+"_txt_lbelPermant.___QuickChat": "永続",
+"_txt_areYourSurePerm.___QuickChat": "完全に転送してもよろしいですか?",
+"_txt_cannotRefundPerm.___QuickChat": "この送金を返金することはできません。",
   };
   return language;
 };

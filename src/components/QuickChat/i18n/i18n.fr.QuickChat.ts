@@ -18,9 +18,14 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_balance_f75.___QuickChat": "Équilibre",
 "_txt_areYouSureYouWantToGift_617.___QuickChat": "Êtes-vous sûr de vouloir offrir",
 "_txt_CookiesTo_3ee.___QuickChat": "biscuits à",
-"_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake vous protège lors de rencontres en ligne avec un remboursement à 100% dans les 90 jours.",
+"_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake vous protège pendant vos rencontres en ligne avec un remboursement à 100% dans les 90 jours.",
 "_txt_sendMessage_7ff.___QuickChat": "ENVOYER LE MESSAGE",
 "_txt_cancel_12a.___QuickChat": "Annuler",
+"_txt_noProtection.___QuickChat": "Pas de protection",
+"_txt_permanetNotRecc.___QuickChat": "Le transfert permanent n&#39;est PAS recommandé. Vous n&#39;aurez pas de protection contre le remboursement.",
+"_txt_lbelPermant.___QuickChat": "Permanent",
+"_txt_areYourSurePerm.___QuickChat": "Êtes-vous sûr de vouloir transférer définitivement",
+"_txt_cannotRefundPerm.___QuickChat": "Vous ne pourrez pas rembourser ce transfert.",
   };
   return language;
 };

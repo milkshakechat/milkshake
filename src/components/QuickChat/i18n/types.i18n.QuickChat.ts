@@ -19,5 +19,10 @@ export interface i18n_Mapping {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": string;
 "_txt_sendMessage_7ff.___QuickChat": string;
 "_txt_cancel_12a.___QuickChat": string;
+"_txt_noProtection.___QuickChat": string;
+"_txt_permanetNotRecc.___QuickChat": string;
+"_txt_lbelPermant.___QuickChat": string;
+"_txt_areYourSurePerm.___QuickChat": string;
+"_txt_cannotRefundPerm.___QuickChat": string;
 }
   

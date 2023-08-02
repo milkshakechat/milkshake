@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Sữa lắc bảo vệ bạn khi hẹn hò trực tuyến với khoản tiền hoàn lại 100% trong vòng 90 ngày.",
 "_txt_sendMessage_7ff.___QuickChat": "GỬI TIN NHẮN",
 "_txt_cancel_12a.___QuickChat": "Hủy bỏ",
+"_txt_noProtection.___QuickChat": "Không có bảo vệ",
+"_txt_permanetNotRecc.___QuickChat": "Chuyển nhượng vĩnh viễn KHÔNG được khuyến nghị. Bạn sẽ không có bảo vệ hoàn lại tiền.",
+"_txt_lbelPermant.___QuickChat": "Vĩnh viễn",
+"_txt_areYourSurePerm.___QuickChat": "Bạn có chắc chắn muốn chuyển vĩnh viễn",
+"_txt_cannotRefundPerm.___QuickChat": "Bạn sẽ không thể hoàn lại tiền chuyển khoản này.",
   };
   return language;
 };

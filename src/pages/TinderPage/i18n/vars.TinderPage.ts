@@ -15,6 +15,7 @@
 // const _txt_upload_836 = intl.formatMessage({ id: "_txt_upload_836.___TinderPage", defaultMessage: "Upload" });
 // const _txt_areYouComingToMyEvent_328 = intl.formatMessage({ id: "_txt_areYouComingToMyEvent_328.___TinderPage", defaultMessage: "Are you coming to my event?" });
 // const _txt_viewEvent_204 = intl.formatMessage({ id: "_txt_viewEvent_204.___TinderPage", defaultMessage: "View Event" });
+// const _txt_btnPostStory_204 = intl.formatMessage({ id: "_txt_btnPostStory_204.___TinderPage", defaultMessage: "Post Story" });
 
 export const varsComponentName = "TinderPage"
   

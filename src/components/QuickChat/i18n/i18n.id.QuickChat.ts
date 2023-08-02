@@ -21,6 +21,11 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_milkshakeProtectsYouWhileOnlineDatingWithRefundsWithinDays_612.___QuickChat": "Milkshake melindungi Anda saat kencan online dengan pengembalian uang 100% dalam 90 hari.",
 "_txt_sendMessage_7ff.___QuickChat": "MENGIRIM PESAN",
 "_txt_cancel_12a.___QuickChat": "Membatalkan",
+"_txt_noProtection.___QuickChat": "Tidak Ada Perlindungan",
+"_txt_permanetNotRecc.___QuickChat": "Transfer permanen TIDAK disarankan. Anda tidak akan memiliki perlindungan pengembalian uang.",
+"_txt_lbelPermant.___QuickChat": "Permanen",
+"_txt_areYourSurePerm.___QuickChat": "Apakah Anda yakin ingin mentransfer secara permanen",
+"_txt_cannotRefundPerm.___QuickChat": "Anda tidak akan dapat mengembalikan dana transfer ini.",
   };
   return language;
 };

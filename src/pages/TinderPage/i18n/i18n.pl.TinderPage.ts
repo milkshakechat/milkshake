@@ -17,6 +17,7 @@ export const importLanguage = (): i18n_Mapping => {
 "_txt_upload_836.___TinderPage": "Wgrywać",
 "_txt_areYouComingToMyEvent_328.___TinderPage": "Przyjdziesz na moje wydarzenie?",
 "_txt_viewEvent_204.___TinderPage": "Zobacz wydarzenie",
+"_txt_btnPostStory_204.___TinderPage": "Opublikuj historię",
   };
   return language;
 };

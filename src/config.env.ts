@@ -103,8 +103,8 @@ const prodConfig: ConfigEnv = {
     OG_URL: "milkshake.club",
   },
   GRAPHQL_SOCKET_SERVER:
-    "wss://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
-  GRAPHQL_SERVER: "https://milkshake-sockets-hcdyzvq35a-wm.a.run.app/graphql",
+    "wss://milkshake-sockets-qagjtluvcq-wm.a.run.app/graphql",
+  GRAPHQL_SERVER: "https://milkshake-sockets-qagjtluvcq-wm.a.run.app/graphql",
   SENDBIRD_APP_ID: "AE88AAA6-1206-4FEF-B384-052B14A3C6B6",
   VERIFY_EMAIL_DOMAIN: "https://milkshake.club",
   FIREBASE: {

@@ -121,7 +121,6 @@ export const UserInfoProvider = ({ children }: Props) => {
         runListWishlistQuery({
           userID: selfUser.id,
         });
-
         runListWishlistQuery({
           // marketplace
         });
@@ -151,7 +150,9 @@ export const UserInfoProvider = ({ children }: Props) => {
   };
 
   useEffect(() => {
-    getProfile();
+    if (idToken) {
+      getProfile();
+    }
     initialStartupQueries({ refresh: false });
   }, [idToken, refetchNonce, selfUser?.id]);
 

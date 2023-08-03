@@ -200,8 +200,8 @@ const NotificationsPage = () => {
                             notif.id as NotificationID,
                           ]);
                           runMarkNotificationsAsReadMutation({
-                            read: [],
-                            unread: [notif.id],
+                            read: [notif.id],
+                            unread: [],
                           });
                           navigate(notif.route);
                         }

@@ -131,7 +131,7 @@ const prodConfig: ConfigEnv = {
       "pk_live_51McyYLBbKljWimkIPHDXaUNbCAblcSqFZ85plSzYQMyW06Yup2FHzoc1eMY4FTrYkoEuYtC2c5dTZ4A7vgMOFtZ2004wxx8sZR",
     PREMIUM_SUBSCRIPTION: {
       priceInUSDCents: 1299,
-      paymentLink: "",
+      paymentLink: "https://buy.stripe.com/fZe5lngCYgAEdvq004",
     },
   },
   LEDGER: {

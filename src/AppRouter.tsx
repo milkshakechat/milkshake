@@ -152,7 +152,7 @@ const AppRouter = () => {
                         <Route
                           path="/"
                           element={
-                            <AuthProtect>
+                            <AuthProtect path="/app/signup/onboarding">
                               <div>
                                 {/* <HomePage /> */}
                                 <Navigate to="/app/swipe" replace />

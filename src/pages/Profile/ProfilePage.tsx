@@ -112,6 +112,13 @@ const ProfilePage = () => {
   useEffect(() => {
     setTimeout(() => {
       setShinyLoading(false);
+      if (user) {
+        window.history.replaceState(
+          null,
+          `${user.username}`,
+          `/${user.username}`
+        );
+      }
     }, 400);
   }, []);
 

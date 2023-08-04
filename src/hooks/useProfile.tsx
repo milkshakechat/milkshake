@@ -22,7 +22,7 @@ import {
   Query,
 } from "@/api/graphql/types";
 import { useUserState } from "@/state/user.state";
-import { Observable, FetchResult } from "@apollo/client/core";
+import { Observable, FetchResult, FetchPolicy } from "@apollo/client/core";
 import { shallow } from "zustand/shallow";
 import { useStyleConfigGlobal } from "@/state/styleconfig.state";
 import {
@@ -45,6 +45,76 @@ import {
 import { firestore } from "@/api/firebase";
 import { useChatsListState } from "@/state/chats.state";
 
+export const GET_MY_PROFILE = gql`
+  query GetMyProfile {
+    getMyProfile {
+      __typename
+      ... on GetMyProfileResponseSuccess {
+        user {
+          id
+          email
+          username
+          phone
+          displayName
+          bio
+          avatar
+          link
+          disabled
+          isPaidChat
+          isCreator
+          createdAt
+          privacyMode
+          themeColor
+          language
+          gender
+          interestedIn
+          sendBirdAccessToken
+          tradingWallet
+          escrowWallet
+          defaultPaymentMethodID
+          location {
+            title
+            geoHash
+            latitude
+            longitude
+          }
+          currency
+          fxRateFromUSD
+          prefGeoBias
+          prefAboutMe
+          prefLookingFor
+          stories {
+            id
+            userID
+            caption
+            pinned
+            showcase
+            thumbnail
+            showcaseThumbnail
+            outboundLink
+            createdAt
+            expiresAt
+            attachments {
+              id
+              userID
+              thumbnail
+              stream
+              altText
+              url
+              type
+            }
+            author {
+              id
+              username
+              avatar
+              displayName
+            }
+          }
+        }
+      }
+    }
+  }
+`;
 export const useProfile = () => {
   const [data, setData] = useState<GetMyProfileResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
@@ -63,83 +133,14 @@ export const useProfile = () => {
     shallow
   );
 
-  const runQuery = async () => {
+  const runQuery = async (fetchPolicy?: FetchPolicy) => {
     try {
       const result = await new Promise<GetMyProfileResponseSuccess>(
         (resolve, reject) => {
-          const GET_MY_PROFILE = gql`
-            query GetMyProfile {
-              getMyProfile {
-                __typename
-                ... on GetMyProfileResponseSuccess {
-                  user {
-                    id
-                    email
-                    username
-                    phone
-                    displayName
-                    bio
-                    avatar
-                    link
-                    disabled
-                    isPaidChat
-                    isCreator
-                    createdAt
-                    privacyMode
-                    themeColor
-                    language
-                    gender
-                    interestedIn
-                    sendBirdAccessToken
-                    tradingWallet
-                    escrowWallet
-                    defaultPaymentMethodID
-                    location {
-                      title
-                      geoHash
-                      latitude
-                      longitude
-                    }
-                    currency
-                    fxRateFromUSD
-                    prefGeoBias
-                    prefAboutMe
-                    prefLookingFor
-                    stories {
-                      id
-                      userID
-                      caption
-                      pinned
-                      showcase
-                      thumbnail
-                      showcaseThumbnail
-                      outboundLink
-                      createdAt
-                      expiresAt
-                      attachments {
-                        id
-                        userID
-                        thumbnail
-                        stream
-                        altText
-                        url
-                        type
-                      }
-                      author {
-                        id
-                        username
-                        avatar
-                        displayName
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          `;
           client
             .query<GetMyProfileQuery>({
               query: GET_MY_PROFILE,
+              fetchPolicy: fetchPolicy ? fetchPolicy : "cache-first",
             })
             .then(({ data }) => {
               if (

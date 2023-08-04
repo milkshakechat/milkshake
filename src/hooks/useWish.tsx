@@ -24,6 +24,7 @@ export const useCreateWish = () => {
   const [data, setData] = useState<CreateWishResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
   const client = useGraphqlClient();
+  const selfUser = useUserState((state) => state.user);
   const upsertWish = useWishState((state) => state.upsertWish);
   const runMutation = async (args: CreateWishInput) => {
     try {
@@ -73,6 +74,15 @@ export const useCreateWish = () => {
             .mutate<Pick<Mutation, "createWish">>({
               mutation: CREATE_WISH,
               variables: { input: args },
+              refetchQueries: [
+                {
+                  query: LIST_WISHLIST,
+                  variables: {
+                    input: { userID: selfUser?.id },
+                  },
+                  context: { fetchPolicy: "network-only" },
+                },
+              ],
             })
             .then(({ data }) => {
               if (data?.createWish.__typename === "CreateWishResponseSuccess") {
@@ -98,6 +108,52 @@ export const useCreateWish = () => {
   return { data, errors, runMutation };
 };
 
+export const LIST_WISHLIST = gql`
+  query ListWishlist($input: ListWishlistInput!) {
+    listWishlist(input: $input) {
+      __typename
+      ... on ListWishlistResponseSuccess {
+        wishlist {
+          id
+          creatorID
+          wishTitle
+          stickerTitle
+          description
+          thumbnail
+          cookiePrice
+          visibility
+          galleryMediaSet {
+            small
+            medium
+            large
+          }
+          stickerMediaSet {
+            small
+            medium
+            large
+          }
+          isFavorite
+          buyFrequency
+          createdAt
+          author {
+            id
+            username
+            avatar
+            displayName
+          }
+          wishType
+          countdownDate
+          externalURL
+        }
+      }
+      ... on ResponseError {
+        error {
+          message
+        }
+      }
+    }
+  }
+`;
 export const useListWishlist = () => {
   const [data, setData] = useState<ListWishlistResponseSuccess>();
   const [errors, setErrors] = useState<ErrorLine[]>([]);
@@ -111,52 +167,6 @@ export const useListWishlist = () => {
 
   const runQuery = async (args: ListWishlistInput) => {
     try {
-      const LIST_WISHLIST = gql`
-        query ListWishlist($input: ListWishlistInput!) {
-          listWishlist(input: $input) {
-            __typename
-            ... on ListWishlistResponseSuccess {
-              wishlist {
-                id
-                creatorID
-                wishTitle
-                stickerTitle
-                description
-                thumbnail
-                cookiePrice
-                visibility
-                galleryMediaSet {
-                  small
-                  medium
-                  large
-                }
-                stickerMediaSet {
-                  small
-                  medium
-                  large
-                }
-                isFavorite
-                buyFrequency
-                createdAt
-                author {
-                  id
-                  username
-                  avatar
-                  displayName
-                }
-                wishType
-                countdownDate
-                externalURL
-              }
-            }
-            ... on ResponseError {
-              error {
-                message
-              }
-            }
-          }
-        }
-      `;
       const result = await new Promise<ListWishlistResponseSuccess>(
         async (resolve, reject) => {
           client

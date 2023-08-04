@@ -157,6 +157,13 @@ export const UserFriendPage = () => {
         userID: spotlightUser.id,
       });
       // getRelatedTxs();
+      if (spotlightUser) {
+        window.history.replaceState(
+          null,
+          `${spotlightUser.username}`,
+          `/${spotlightUser.username}`
+        );
+      }
     }
   }, [spotlightUser, selfUser]);
 
@@ -216,6 +223,10 @@ export const UserFriendPage = () => {
   const _txt_transactionPending_87d = intl.formatMessage({
     id: "_txt_transactionPending_87d.___UserFriendPage",
     defaultMessage: "Transaction Pending",
+  });
+  const _txt_alertCopieidProfileLink = intl.formatMessage({
+    id: `alertCopieidProfileLink.___ContactsPage`,
+    defaultMessage: "Copied profile link!",
   });
   const _txt_checkYourNotificationsInAMinuteToSeeConfirmationOfYourTransaction_9cb =
     intl.formatMessage({
@@ -318,7 +329,12 @@ export const UserFriendPage = () => {
                 key: "share-friend",
                 label: (
                   <Button
-                    onClick={() => console.log(`Share friend`)}
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        `${window.location.origin}/${spotlightUser.username}`
+                      );
+                      message.success(_txt_alertCopieidProfileLink);
+                    }}
                     type="ghost"
                   >
                     {_txt_share_e80}

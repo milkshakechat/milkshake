@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { createClient, Client, ClientOptions } from "graphql-ws";
 import config from "@/config.env";
 import { print } from "graphql";
@@ -47,52 +53,51 @@ class WebSocketLink extends ApolloLink {
   }
 }
 export const GraphqlClientProvider = ({ children }: Props) => {
-  const [client, setClient] =
-    useState<ApolloClient<NormalizedCacheObject> | null>(null);
+  const client = useRef<ApolloClient<NormalizedCacheObject> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const socketLink = useRef<WebSocketLink | null>(null);
+
+  const auth = getAuth();
+  const createNewClient = async () => {
+    const user = auth.currentUser;
+
+    let idToken = user ? await user.getIdToken() : undefined;
+
+    const httpLink = new HttpLink({
+      uri: GRAPHQL_SERVER,
+      headers: {
+        authorization: idToken ? `Bearer ${idToken}` : "",
+      },
+    });
+    if (socketLink.current) {
+      await socketLink.current.client.dispose();
+      socketLink.current = null;
+    }
+    socketLink.current = new WebSocketLink({
+      url: GRAPHQL_SOCKET_SERVER,
+      lazy: true,
+      connectionParams: async () => ({
+        authorization: idToken ? `Bearer ${idToken}` : "",
+      }),
+      shouldRetry: () => true,
+      retryAttempts: Infinity,
+    });
+    const cache = new InMemoryCache();
+    await persistCache({
+      cache,
+      storage: new LocalStorageWrapper(window.localStorage),
+    });
+    const _client = new ApolloClient({
+      link: ApolloLink.from([httpLink, socketLink.current]),
+      cache,
+    });
+    client.current = _client;
+    setIsLoading(false);
+  };
 
   useEffect(() => {
-    let socketLink: WebSocketLink | null;
-    const auth = getAuth();
-    const createNewClient = async () => {
-      const user = auth.currentUser;
-
-      let idToken = user ? await user.getIdToken() : undefined;
-
-      const httpLink = new HttpLink({
-        uri: GRAPHQL_SERVER,
-        headers: {
-          authorization: idToken ? `Bearer ${idToken}` : "",
-        },
-      });
-      if (socketLink) {
-        await socketLink.client.dispose();
-        socketLink = null;
-      }
-      socketLink = new WebSocketLink({
-        url: GRAPHQL_SOCKET_SERVER,
-        lazy: true,
-        connectionParams: async () => ({
-          authorization: idToken ? `Bearer ${idToken}` : "",
-        }),
-        shouldRetry: () => true,
-        retryAttempts: Infinity,
-      });
-      const cache = new InMemoryCache();
-      await persistCache({
-        cache,
-        storage: new LocalStorageWrapper(window.localStorage),
-      });
-      const client = new ApolloClient({
-        link: ApolloLink.from([httpLink, socketLink]),
-        cache,
-      });
-
-      setClient(client);
-      setIsLoading(false);
-    };
-
     onIdTokenChanged(auth, async (user) => {
+      console.log("onIdTokenChanged...", user);
       // if (user) {
       createNewClient();
       // } else {
@@ -108,8 +113,8 @@ export const GraphqlClientProvider = ({ children }: Props) => {
     });
 
     return () => {
-      if (socketLink) {
-        socketLink.client.dispose();
+      if (socketLink.current) {
+        socketLink.current.client.dispose();
       }
     };
   }, []);
@@ -119,7 +124,7 @@ export const GraphqlClientProvider = ({ children }: Props) => {
   }
 
   return (
-    <GraphqlClientContext.Provider value={client}>
+    <GraphqlClientContext.Provider value={client.current}>
       {children}
     </GraphqlClientContext.Provider>
   );

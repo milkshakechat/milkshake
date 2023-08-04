@@ -169,7 +169,7 @@ export const FreeChatPanel = ({
         style={{
           backgroundColor: token.colorBgContainer,
           width: "100%",
-          minHeight: isMobile ? "200px" : "200px",
+          minHeight: isMobile ? "250px" : "250px",
         }}
       >
         <Alert
@@ -212,6 +212,7 @@ export const FreeChatPanel = ({
         >
           <i>{_txt_labelEveryonePrefers}</i>
         </$Horizontal>
+        <Spacer height={isMobile ? "30px" : "30px"} />
       </div>
     </$Vertical>
   );

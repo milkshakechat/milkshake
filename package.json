@@ -3,17 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "clean": "rimraf build", 
+    "clean": "rimraf build",
     "dev": "NODE_ENV=development && craco start",
     "start": "NODE_ENV=staging && craco start",
     "build:i18n": "npx ts-node --project tsconfig.scripts.json -r tsconfig-paths/register ./src/scripts/build-i18n-messages.ts",
-    "build": "npm run clean && npm run generate && npm run build:i18n && craco build",
+    "build:staging": "npm run clean && npm run generate && npm run build:i18n && craco build",
+    "build:production": "npm run clean && npm run generate && npm run build:i18n && NODE_ENV=production craco build --config craco.config.production.js",
     "test": "craco test",
     "generate": "graphql-codegen",
     "generate:prod": "graphql-codegen --config codegen.prod.yml",
     "eject": "react-scripts eject",
-    "deploy:staging": "NODE_ENV=staging npm run build && NODE_ENV=staging npm firebase deploy",
-    "deploy:production": "NODE_ENV=production npm run build && NODE_ENV=production firebase deploy --project milkshake-club"
+    "deploy:staging": "npm run build:staging && NODE_ENV=staging npm firebase deploy",
+    "deploy:production": "npm run build:production && NODE_ENV=production firebase deploy --project milkshake-club"
   },
   "dependencies": {
     "@apollo/client": "^3.7.15",
@@ -111,6 +112,7 @@
     "eslint-plugin-formatjs": "^4.10.3",
     "graphql-codegen": "^0.4.0",
     "styled-components": "^5.3.10",
+    "terser-webpack-plugin": "^5.3.9",
     "ts-node": "^10.9.1",
     "video.js": "^8.3.0"
   }

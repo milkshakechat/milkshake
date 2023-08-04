@@ -6,6 +6,7 @@ import {
   PUSH_TOKEN_LOCALSTORAGE,
   THEME_COLOR_LOCALSTORAGE,
 } from "@/config.env";
+import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 import {
   themeColorEnum,
   themeColorToHexMap,
@@ -21,6 +22,7 @@ import shallow from "zustand/shallow";
 const LogOutPage = () => {
   const auth = getAuth();
   const navigate = useNavigate();
+  const clientGQL = useGraphqlClient();
   const {
     themeType,
     locale,
@@ -63,6 +65,7 @@ const LogOutPage = () => {
           idToken: null,
         });
         setGQLUser(null);
+        clientGQL.resetStore();
         navigate("/app/login");
       })
       .catch((error) => {

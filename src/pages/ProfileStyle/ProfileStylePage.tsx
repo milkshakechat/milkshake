@@ -398,7 +398,7 @@ const ProfileStylePage = () => {
   }, [usernameValue, debouncedLog]);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsernameValue(e.target.value);
+    setUsernameValue(e.target.value.toLowerCase());
   };
 
   const onFormLayoutChange = () => {

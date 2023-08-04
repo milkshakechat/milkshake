@@ -50,6 +50,7 @@ import {
 } from "@ant-design/icons";
 import LogoCookie from "../LogoText/LogoCookie";
 import { Spacer } from "../AppLayout/AppLayout";
+import { useProfile } from "@/hooks/useProfile";
 
 const placeholderPreviewUrl =
   "https://firebasestorage.googleapis.com/v0/b/milkshake-dev-faf77.appspot.com/o/users%2Fm2fb0WWHOBesIAsevvCeNfv1w2Z2%2Fstory%2Fvideo%2Fc0b7e600-5d58-4c2e-af3c-ba714126208c.mp4?alt=media&token=a6a32b37-efe4-4010-ad0a-c1fb43b4a710";
@@ -62,6 +63,7 @@ interface StoryUploadProps {
 const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
   const intl = useIntl();
   const [fileForUpload, setFileForUpload] = useState<UploadFile>();
+  const { runQuery: getProfile } = useProfile();
   const [uploadProgress, setUploadProgress] = useState(0);
   const [previewUrl, setPreviewUrl] = useState("");
   const { uploadFileWithProgress } = useStorage();
@@ -413,6 +415,7 @@ const StoryUpload = ({ allowSwipe }: StoryUploadProps) => {
         setLocationPlaceID("");
         setLocationSearchString("");
       }
+      await getProfile("network-only");
     }
   };
 

@@ -18,6 +18,7 @@ import { useUserState } from "@/state/user.state";
 import gql from "graphql-tag";
 import { useState } from "react";
 import { usePreloadImages } from "./usePreloadImages";
+import { GET_MY_PROFILE } from "./useProfile";
 
 export const useStoryCreate = () => {
   const [data, setData] = useState<CreateStoryResponseSuccess>();
@@ -83,6 +84,13 @@ export const useStoryCreate = () => {
             .mutate<Pick<Mutation, "createStory">>({
               mutation: CREATE_STORY,
               variables: { input: args },
+              // refetchQueries: [
+              //   {
+              //     query: GET_MY_PROFILE,
+              //     // variables: {},
+              //     context: { fetchPolicy: "network-only" },
+              //   },
+              // ],
             })
             .then(({ data }) => {
               if (

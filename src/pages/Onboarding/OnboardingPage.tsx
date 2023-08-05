@@ -209,6 +209,8 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
     defaultMessage: "Claim Username",
   });
 
+  const [isLoadingExistingUserRedirect, setIsLoadingExistingUserRedirect] =
+    useState(false);
   const _txt_existingUser_742 = intl.formatMessage({
     id: "_txt_existingUser_742.___OnboardingPage",
     defaultMessage: "Existing User",
@@ -320,16 +322,20 @@ const OnboardingPage = ({ children }: OnboardingPageProps) => {
                 >
                   {_txt_continue_ca3}
                 </Button>
-                <i
+                <Button
+                  type="primary"
+                  ghost
+                  loading={isLoadingExistingUserRedirect}
                   onClick={() => {
+                    setIsLoadingExistingUserRedirect(true);
                     window.location.replace(
                       `${window.location.origin}/app/login`
                     );
                   }}
-                  style={{ marginTop: "20px", color: token.colorInfoHover }}
+                  style={{ marginTop: "0px", color: token.colorInfoHover }}
                 >
                   {_txt_existingUser_742}
-                </i>
+                </Button>
               </$Vertical>
             }
             style={contentStyle}
@@ -578,6 +584,9 @@ const BareBonesPhoneLogin = ({
     defaultMessage: "Existing User",
   });
 
+  const [isLoadingExistingUserRedirect, setIsLoadingExistingUserRedirect] =
+    useState(false);
+
   const captchaRef = useCallback((node: HTMLDivElement) => {
     if (node !== null) {
       const verifier = new RecaptchaVerifier(node, {}, auth);
@@ -740,14 +749,18 @@ const BareBonesPhoneLogin = ({
             {_txt_signupPhone_ab1}
           </Button>
 
-          <i
+          <Button
+            type="primary"
+            ghost
+            loading={isLoadingExistingUserRedirect}
             onClick={() => {
+              setIsLoadingExistingUserRedirect(true);
               window.location.replace(`${window.location.origin}/app/login`);
             }}
-            style={{ marginTop: "20px", color: token.colorInfoHover }}
+            style={{ marginTop: "0px", color: token.colorInfoHover }}
           >
             {_txt_existingUser_742}
-          </i>
+          </Button>
         </$Vertical>
       )}
     </$Vertical>

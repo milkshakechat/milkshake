@@ -498,7 +498,10 @@ const LoginPage = () => {
           <Button
             type="ghost"
             onClick={() => setEmailLoginMode(true)}
-            style={{ marginTop: "50px", color: token.colorTextDescription }}
+            style={{
+              marginTop: "50px",
+              color: `${token.colorTextDescription}`,
+            }}
           >
             {_txt_emailLogin_d6f}
           </Button>

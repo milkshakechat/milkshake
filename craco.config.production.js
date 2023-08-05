@@ -20,9 +20,10 @@ module.exports = {
         // Push the plugin to the existing plugins array.
         webpackConfig.plugins.push(terserPlugin);
       }
-      if (env === "production") {
-        webpackConfig.devtool = false;
-      }
+      // toggle enable source maps (mainly for sentry bugs)
+      // if (env === "production") {
+      //   webpackConfig.devtool = false;
+      // }
 
       return webpackConfig;
     },

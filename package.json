@@ -14,7 +14,8 @@
     "generate:prod": "graphql-codegen --config codegen.prod.yml",
     "eject": "react-scripts eject",
     "deploy:staging": "npm run build:staging && NODE_ENV=staging npm firebase deploy",
-    "deploy:production": "npm run build:production && NODE_ENV=production firebase deploy --project milkshake-club"
+    "deploy:production": "npm run build:production && npm run sentry:sourcemaps && NODE_ENV=production firebase deploy --project milkshake-club",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org milkshake-club --project milkshake-prod ./build && sentry-cli sourcemaps upload --org milkshake-club --project milkshake-prod ./build"
   },
   "dependencies": {
     "@apollo/client": "^3.7.15",

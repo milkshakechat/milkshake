@@ -211,7 +211,7 @@ const useWebPermissions = ({ closeModal }: UseWebPermissions) => {
       }
     };
     const checkNotificationsPermission = async () => {
-      if (Notification.permission === "granted") {
+      if (Notification && Notification.permission === "granted") {
         setPermission({ key: permissionsKeyEnum.notifications, value: true });
       } else {
         setPermission({ key: permissionsKeyEnum.notifications, value: false });

@@ -55,15 +55,17 @@ export const useAuthProtect = () => {
 
 interface AuthProtectProps {
   children: React.ReactElement;
+  path?: string;
 }
 export const AuthProtect = ({
   children,
+  path = "/app/login",
 }: AuthProtectProps): React.ReactElement => {
   const { token } = useAuthProtect();
   const location = useLocation();
 
   if (!token) {
-    return <Navigate to="/app/login" replace state={{ from: location }} />;
+    return <Navigate to={path} replace state={{ from: location }} />;
   }
 
   return children;

@@ -2,7 +2,13 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage } from "firebase/storage";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import {
+  getMessaging,
+  getToken,
+  onMessage,
+  isSupported as isMessagingSupported,
+  Messaging,
+} from "firebase/messaging";
 import {
   getFirestore,
   initializeFirestore,
@@ -21,17 +27,27 @@ const firebaseConfig = config.FIREBASE;
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 export const storage = getStorage(app);
-export const messaging = getMessaging(app);
+
+export let messaging: Messaging;
+const initFirebaseMessaging = async () => {
+  const isCompatible = await isMessagingSupported();
+  console.log(`Firebase messaging compatibility = ${isCompatible}`);
+  if (isCompatible) {
+    messaging = getMessaging(app);
+    onMessage(messaging, (payload) => {
+      console.log(`Foreground message received!`, payload);
+    });
+  }
+};
+console.log("Attemping firebase messaging...");
+initFirebaseMessaging();
+
 initializeFirestore(app, {
   localCache: persistentLocalCache(
     /*settings*/ { tabManager: persistentMultipleTabManager() }
   ),
 });
 export const firestore = getFirestore(app);
-
-onMessage(messaging, (payload) => {
-  console.log(`Foreground message received!`, payload);
-});
 
 export const getFirebaseCloudMessagingToken = async () => {
   const currentToken = await getToken(messaging, {

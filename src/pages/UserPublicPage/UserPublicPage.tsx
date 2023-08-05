@@ -6,6 +6,7 @@ import {
 import AppLayout, {
   AppLayoutPadding,
   LayoutLogoHeader,
+  Spacer,
 } from "@/components/AppLayout/AppLayout";
 import { useViewPublicProfile } from "@/hooks/useFriendship";
 import PP from "@/i18n/PlaceholderPrint";
@@ -136,6 +137,16 @@ export const UserPublicPage = () => {
     }
   };
 
+  const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+  console.log(`useragent`, ua);
+  const isInstagramBrowser =
+    ua.toLowerCase().indexOf("instagram") > -1 ||
+    ua.toLowerCase().indexOf("whatsapp") > -1 ||
+    ua.toLowerCase().indexOf("messenger") > -1
+      ? true
+      : false;
+  const footerHeight = isInstagramBrowser ? 150 : 80;
+  const languageBannerHeight = 20;
   return (
     <div
       style={{
@@ -148,11 +159,17 @@ export const UserPublicPage = () => {
         style={{
           maxHeight: isMobile
             ? // eslint-disable-next-line no-restricted-globals
-              screen.availHeight - addressBarHeight - 80
+              screen.availHeight -
+              addressBarHeight -
+              footerHeight -
+              languageBannerHeight
             : "85vh",
           height: isMobile
             ? // eslint-disable-next-line no-restricted-globals
-              screen.availHeight - addressBarHeight - 80
+              screen.availHeight -
+              addressBarHeight -
+              footerHeight -
+              languageBannerHeight
             : "85vh",
           overflowY: "scroll",
           overflowX: "hidden",
@@ -203,7 +220,7 @@ export const UserPublicPage = () => {
                   glowColor={token.colorPrimaryText}
                   actionButton={
                     spotlightUser.id !== "notfound" ? (
-                      <NavLink to={`/app/login`}>
+                      <NavLink to={`/app/signup/onboarding`}>
                         <Button>{_txt_message_b57}</Button>
                       </NavLink>
                     ) : null
@@ -242,13 +259,13 @@ export const UserPublicPage = () => {
 
       <div
         style={{
-          height: isMobile ? 80 : "15vh",
+          height: isMobile ? footerHeight : "15vh",
           backgroundColor: token.colorPrimaryActive,
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
-          alignItems: "center",
-          padding: "0px 20px",
+          alignItems: isInstagramBrowser ? "flex-start" : "center",
+          padding: isMobile ? "10px 20px" : "0px 20px",
         }}
       >
         {!isMobile && (
@@ -272,11 +289,7 @@ export const UserPublicPage = () => {
           </$Horizontal>
         )}
         <NavLink
-          to={
-            spotlightUser.stories.length > 0
-              ? `/app/signup/onboarding`
-              : `/app/login`
-          }
+          to={`/app/signup/onboarding`}
           style={{ width: "100%", maxWidth: isMobile ? "none" : "300px" }}
         >
           <Button

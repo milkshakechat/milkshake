@@ -13,8 +13,9 @@
     "generate": "graphql-codegen",
     "generate:prod": "graphql-codegen --config codegen.prod.yml",
     "eject": "react-scripts eject",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org milkshake-club --project milkshake-prod ./build && sentry-cli sourcemaps upload --org milkshake-club --project milkshake-prod ./build",
     "deploy:staging": "npm run build:staging && NODE_ENV=staging npm firebase deploy",
-    "deploy:production": "npm run build:production && NODE_ENV=production firebase deploy --project milkshake-club"
+    "deploy:production": "npm run build:production && npm run sentry:sourcemaps && NODE_ENV=production firebase deploy --project milkshake-club"
   },
   "dependencies": {
     "@apollo/client": "^3.7.15",
@@ -25,6 +26,7 @@
     "@react-spring/web": "^9.5.5",
     "@sendbird/chat": "^4.9.0",
     "@sendbird/uikit-react": "^3.5.1",
+    "@sentry/react": "^7.61.1",
     "@stripe/react-stripe-js": "^2.1.1",
     "@stripe/stripe-js": "^1.54.1",
     "@testing-library/jest-dom": "^5.16.5",

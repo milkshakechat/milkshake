@@ -301,6 +301,7 @@ export const useEnterChatRoom = () => {
             .query<Pick<Query, "enterChatRoom">>({
               query: ENTER_CHAT_ROOM,
               variables: { input: args },
+              fetchPolicy: "network-only",
             })
             .then(({ data }) => {
               if (

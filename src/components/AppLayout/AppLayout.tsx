@@ -41,6 +41,7 @@ import PP from "@/i18n/PlaceholderPrint";
 import { useChatsListState } from "@/state/chats.state";
 import { $Horizontal, $Vertical } from "@/api/utils/spacing";
 import { useNotificationsState } from "@/state/notifications.state";
+import { useGraphqlClient } from "@/context/GraphQLSocketProvider";
 const { Header, Content, Footer, Sider } = Layout;
 
 interface MenuItem {
@@ -74,6 +75,7 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const { screen: windowScreen } = useWindowSize();
   const _location = useLocation();
   const intl = useIntl();
+  const clientGQL = useGraphqlClient();
   const notifications = useNotificationsState((state) => state.notifications);
   const { triggerRefetch } = useUserState(
     (state) => ({
@@ -150,6 +152,10 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const _txt_settings_sidebar = intl.formatMessage({
     id: "_txt_settings_sidebar.___AppLayout",
     defaultMessage: "Settings",
+  });
+  const _txt_refresh_5ce = intl.formatMessage({
+    id: "_txt_refresh_5ce.___MobileScreen",
+    defaultMessage: "Refresh",
   });
 
   const items = [
@@ -256,6 +262,18 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </NavLink>,
           "settings",
           "/app/profile/settings"
+        ),
+        getItem(
+          <div
+            onClick={() => {
+              window.location.reload();
+              clientGQL.resetStore();
+            }}
+          >
+            {_txt_refresh_5ce}
+          </div>,
+          "refresh",
+          "/"
         ),
         getItem(
           <Popconfirm

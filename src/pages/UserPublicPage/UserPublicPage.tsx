@@ -145,7 +145,7 @@ export const UserPublicPage = () => {
     ua.toLowerCase().indexOf("messenger") > -1
       ? true
       : false;
-  const footerHeight = isInstagramBrowser ? 200 : 80;
+  const footerHeight = isInstagramBrowser ? 150 : 80;
   const languageBannerHeight = 20;
   return (
     <div
@@ -264,7 +264,7 @@ export const UserPublicPage = () => {
           display: "flex",
           flexDirection: "row",
           justifyContent: "center",
-          alignItems: isMobile ? "center" : "center",
+          alignItems: isInstagramBrowser ? "flex-start" : "center",
           padding: isMobile ? "10px 20px" : "0px 20px",
         }}
       >

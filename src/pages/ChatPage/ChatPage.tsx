@@ -492,6 +492,10 @@ const ChatPage = () => {
       });
     }
   };
+  const _txt_refresh_5ce = intl.formatMessage({
+    id: "_txt_refresh_5ce.___MobileScreen",
+    defaultMessage: "Refresh",
+  });
 
   const queryForSpotlightChatroom = () => {
     const args: EnterChatRoomInput = {
@@ -552,11 +556,16 @@ const ChatPage = () => {
           title={_txt_resChatNotFound}
           subTitle={_txt_resNoPermViewChat}
           extra={
-            <NavLink to="/app/chats">
-              <Button type="primary" key="console">
-                {_txt_btnGoBackk}
+            <$Vertical spacing={1}>
+              <Button type="primary" key="refresh">
+                {_txt_refresh_5ce}
               </Button>
-            </NavLink>
+              <NavLink to="/app/chats">
+                <Button type="primary" ghost key="console">
+                  {_txt_btnGoBackk}
+                </Button>
+              </NavLink>
+            </$Vertical>
           }
         />
       </$Vertical>

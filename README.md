@@ -2,9 +2,9 @@
 
 Progressive Web App frontend for Milkshake Chat
 
+https://www.youtube.com/shorts/GJWhyiDRjOk
 
-
-https://github.com/milkshakechat/milkshake/assets/96885027/6a80b351-9409-49ca-a729-2d9bc3dddefd
+[video](https://github.com/milkshakechat/milkshake/assets/96885027/6a80b351-9409-49ca-a729-2d9bc3dddefd)
 
 
 

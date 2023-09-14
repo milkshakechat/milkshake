@@ -2,6 +2,12 @@
 
 Progressive Web App frontend for Milkshake Chat
 
+
+
+https://github.com/milkshakechat/milkshake/assets/96885027/6a80b351-9409-49ca-a729-2d9bc3dddefd
+
+
+
 ## Deployment
 
 ```sh
